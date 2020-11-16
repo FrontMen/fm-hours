@@ -22,7 +22,7 @@ export default {
   ],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [],
+  plugins: ['~plugins/filters.js'],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -36,16 +36,30 @@ export default {
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/bootstrap
-    'bootstrap-vue/nuxt',
+    ['bootstrap-vue/nuxt', {
+      icons: true,
+    }],
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
-    '@nuxtjs/pwa'
-    //'@nuxtjs/firebase'
+    '@nuxtjs/pwa',
+    '@nuxtjs/firebase'
   ],
 
   firebase: {
-    // options
+    config: {
+      // REQUIRED: Official config for firebase.initializeApp(config):
+      apiKey: process.env.FB_API_Key,
+      authDomain: process.env.FB_AUTH_DOMAIN,
+      databaseURL: process.env.FB_DATABASE_URL,
+      projectId: process.env.FB_PROJECT_ID,
+      storageBucket: process.env.FB_STORAGE_BUCKET,
+      messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
+      appId: process.env.FB_APP_ID,
+    },
+    services: {
+      firestore: true
+    }
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
