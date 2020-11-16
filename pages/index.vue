@@ -47,11 +47,12 @@ export default Vue.extend({
         form: {
           email: '',
           password: '',
+          test: ''
         },
       }
     },
     methods: {
-      onSubmit(evt) {
+      onSubmit(evt: any) {
         evt.preventDefault();
         console.log(this.form.password);
         this.$router.push('/hours');
