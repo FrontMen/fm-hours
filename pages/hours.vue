@@ -7,7 +7,6 @@
 
                 </div>
                 {{currentWeekLabel}}
-                {{this.$store.state.hours.count}}
             </div>
             <b-row class="hours-table__top-row text-center">
                 <b-col></b-col>
@@ -77,23 +76,22 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import moment from 'moment';
+import { addDays, getMonth, getYear, startOfISOWeek, format } from 'date-fns';
 
 export default Vue.extend({
     computed: {
         currentWeekLabel: function () {
-            const startDate = moment(this.currentWeek.startDate).startOf('isoWeek');
-            const endDate = moment(startDate).add('4', 'days');
-            let label: string = moment(startDate).format('DD');
-            // check for differences between the startdate and the end date. 
-            // i.e. if the end date is different than the begin date, add the month to the begin date
-            if (startDate.month() !== endDate.month()) {
-                label += ` ${startDate.format('MMM')}`;
-                if (startDate.year() !== endDate.year()) {
-                    label += ` ${startDate.format('YYYY')}`;
+            const startDate = startOfISOWeek(new Date(this.currentWeek.startDate));
+            const endDate = addDays(startDate, 0);
+            let label: string = format(startDate, 'dd');
+            if (getMonth(startDate) !== getMonth(endDate)) {
+                label += ` ${format(startDate, 'MMM')}`;
+
+                if (getYear(startDate) !== getYear(endDate)) {
+                    label += ` ${format(startDate, 'yyyy')}`;
                 }
             }
-            label += ` - ${endDate.format('DD MMM YYYY')}`;
+            label += ` - ${format(endDate, 'dd MMM yyyy')}`;
             return label;
         }
     },

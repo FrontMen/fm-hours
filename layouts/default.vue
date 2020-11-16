@@ -15,7 +15,7 @@
   .layout-wrapper {
     padding: 0 10px;
   }
-  
+
   .row > .col,
   .row > [class*="col-"] {
     padding-right: 5px;
