@@ -58,7 +58,12 @@ export default {
       appId: process.env.FB_APP_ID,
     },
     services: {
-      firestore: true
+      firestore: true,
+      auth: {
+        initialize: {
+          onAuthStateChangedAction: 'auth/onAuthStateChangedAction'
+        },
+      },
     }
   },
 
