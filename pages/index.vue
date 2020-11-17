@@ -51,11 +51,18 @@ export default Vue.extend({
         },
       }
     },
+    created() {
+      this.$store.dispatch('customers/getCustomers');
+    },
     methods: {
-      onSubmit(evt: any) {
-        evt.preventDefault();
-        console.log(this.form.password);
-        this.$router.push('/hours');
+      async onSubmit(evt: any) {
+        evt.preventDefault()
+        let provider = new this.$fireModule.auth.GoogleAuthProvider();
+        await this.$fire.auth.signInWithPopup(provider)
+
+        // evt.preventDefault();
+        // console.log(this.form.password);
+        // this.$router.push('/hours');
       },
     }
 })

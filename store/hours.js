@@ -14,5 +14,5 @@ export const actions = {
 export const mutations = {
     getUsersSuccess(state, payload) {
         state.users = payload;
-    }
+    },
 }
