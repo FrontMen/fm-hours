@@ -1,6 +1,10 @@
 <template>
     <b-row class="hours-table__project-row project-row mb-1">
-        <b-col sm="12" md="5">
+        <b-col
+            class=" project-row__project-title"
+            sm="12"
+            md="5"
+        >
             <div class="project-row__title">
                 {{title}}
             </div>
@@ -11,8 +15,8 @@
         <b-col sm="12" md="5">
             <b-container fluid class="p-0">
                 <b-row class="text-center">
-                    <b-col 
-                        v-for="input in weekInputsArray" 
+                    <b-col
+                        v-for="input in weekInputsArray"
                         :key="input"
                     >
                         <div class="d-md-none">{{input}}</div>
@@ -27,7 +31,7 @@
                 </b-row>
             </b-container>
         </b-col>
-        <b-col 
+        <b-col
             sm="12"
             md="2"
             class="project-row__hours-column"
@@ -89,13 +93,13 @@ export default {
 
 
 <style scoped lang="scss">
-
+@import 'node_modules/bootstrap/scss/bootstrap';
 .project-row {
     padding: 12px 0 8px;
     border-bottom: 1px solid;
 
     &:last-child {
-        border-bottom: none;    
+        border-bottom: none;
     }
 
     &__input {
@@ -121,8 +125,14 @@ export default {
         }
     }
 
+    &__project-title {
+         @media (max-width: map-get($grid-breakpoints, md)) {
+            margin-bottom: 6px;
+        }
+    }
+
     &__title {
-        font-weight: bold;    
+        font-weight: bold;
     }
 
     &__description {
@@ -132,6 +142,12 @@ export default {
     &__hours-column {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
+
+        @media (max-width: map-get($grid-breakpoints, md)) {
+            padding-top: 16px;
+            padding-bottom: 10px;
+        }
     }
 
     &__total-hours {
