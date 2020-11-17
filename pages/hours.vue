@@ -3,8 +3,13 @@
     <div class="hours-table">
         <b-container fluid="lg">
             <div class="hours-table__date">
-                <div class="hours-table__date-nav date-nav">
-
+                <div class="hours-table__date-nav date-nav mr-3">
+                    <b-button>
+                        <b-icon icon="arrow-left"></b-icon>
+                    </b-button>
+                    <b-button>
+                        <b-icon icon="arrow-right"></b-icon>
+                    </b-button>
                 </div>
                 {{currentWeekLabel}}
             </div>
@@ -141,8 +146,7 @@ export default Vue.extend({
                 title: 'Nieuw Project',
                 description: 'Een beschrijving van een nieuw aangemaakt project'
             });
-            this.$store.commit('hours/increment');
-            this.getusers();
+            this.$store.dispatch('hours/getUsers');
         },
         removeRow: function(projectId: number) {
             this.currentWeek.projects = this.currentWeek.projects.filter((p) => p.id !== projectId);
@@ -150,16 +154,6 @@ export default Vue.extend({
         onUpdate: function(event: any) {
             console.log('Onupdate', event);
         },
-        async getusers() {
-            const ref = this.$fire.firestore.collection('users');
-            try {
-                const users = await ref.get();
-                const test = users.docs.map((res) => res.data());
-                console.log('usssers', test)
-            } catch (e) {
-                console.log('errrr', e);
-            }
-        }
     }
 })
 </script>
@@ -172,11 +166,13 @@ export default Vue.extend({
     &__date {
         font-size: 24px;
         padding: 18px 0px;
+        display: flex;
+        align-items: center;
     }
 
     &__top-row {
         background: #ccc;
-        height: 50px; 
+        height: 50px;
     }
 }
 </style>
