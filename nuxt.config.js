@@ -61,7 +61,7 @@ export default {
       firestore: true,
       auth: {
         initialize: {
-          onAuthStateChangedAction: 'auth/onAuthStateChangedAction'
+          onAuthStateChangedAction: 'user/onAuthStateChangedAction'
         },
       },
     }
