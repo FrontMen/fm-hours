@@ -78,8 +78,7 @@ export default {
         },
         customerProjectList: function() {
             if (!!this.projects[this.selectedCustomerId]) {
-                let proj = this.projects[this.selectedCustomerId];
-                return CreateSelectOptions(proj, 'Select a project')
+                return CreateSelectOptions(this.projects[this.selectedCustomerId], 'Select a project')
             }
             return CreateSelectOptions([], 'Select a project');
         }
@@ -112,23 +111,29 @@ export default {
     },
     data() {
         return {
-            selectedCustomerId: undefined
+            selectedCustomerId: undefined,
+            selectedProjectId: undefined
         }
     },
     methods: {
-        update: function(inputweekInput, value, index) {
+        update: function(inputweekInput, value, weekdayIndex) {
             // check for NAN and if the value is below 0. If zo, set value to 0
             const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
             this.weekInputs[inputweekInput] = hours;
-            console.log('index', index);
-            this.$emit('on-update', this.weekInputs);
+            const output = {
+                selectedProject: this.selectedProjectId,
+                selectedCustomer: this.selectedCustomerId,
+                weekdayIndex,
+                hours,
+            }
+            this.$emit('on-hours-change', output);
         },
         selectCustomer: function(customerId) {
             this.$store.dispatch('customers/getCustomersProjects', customerId);
             this.selectedCustomerId = customerId;
         },
-        selectProject: function(ev) {
-            console.log('selectCustomerProject', ev);
+        selectProject: function(projectId) {
+            this.selectedProjectId = projectId;
         },
     }
 };

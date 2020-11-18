@@ -50,7 +50,7 @@
                 :description="project.description"
                 :weekInputs="project.hours"
                 @on-remove="removeRow(project.id)"
-                @on-update="onUpdate($event)"
+                @on-hours-change="changeHours($event)"
             ></project-row>
 
             <b-row>
@@ -85,20 +85,17 @@ import { addDays, getMonth, getYear, startOfISOWeek, format } from 'date-fns';
 
 export default Vue.extend({
     computed: {
-        currentWeekLabel: function () {
-            const startDate = startOfISOWeek(new Date(this.currentWeek.startDate));
-            const endDate = addDays(startDate, 0);
-            let label: string = format(startDate, 'dd');
-            if (getMonth(startDate) !== getMonth(endDate)) {
-                label += ` ${format(startDate, 'MMM')}`;
-
-                if (getYear(startDate) !== getYear(endDate)) {
-                    label += ` ${format(startDate, 'yyyy')}`;
-                }
-            }
-            label += ` - ${format(endDate, 'dd MMM yyyy')}`;
-            return label;
-        }
+        ...mapGetters({
+            user: 'auth/getUser',
+            customers: 'customers/getCustomersArray',
+            customersEntities: 'customers/getCustomersEntities',
+            projects: 'customers/getProjects',
+            weekLabel: 'week-dates/currentWeekLabel',
+            currentWeek: 'week-dates/currentWeek'
+        }),
+    },
+    created() {
+      this.$store.dispatch('customers/getCustomers');
     },
     data() {
       return {
@@ -146,14 +143,25 @@ export default Vue.extend({
                 title: 'Nieuw Project',
                 description: 'Een beschrijving van een nieuw aangemaakt project'
             });
-            this.$store.dispatch('hours/getUsers');
         },
         removeRow: function(projectId: number) {
             this.currentWeek.projects = this.currentWeek.projects.filter((p) => p.id !== projectId);
         },
-        onUpdate: function(event: any) {
-            console.log('Onupdate', event);
+        prevWeek: function() {
+            this.$store.commit('week-dates/prevWeek');
         },
+        nextWeek: function() {
+            this.$store.commit('week-dates/nextWeek');
+        },
+        changeHours: function(ev: any) {
+            const timeRecord = {
+                hours: ev.hours,
+                customer: this.customersEntities[ev.selectedCustomer].name,
+                project: this.projects[ev.selectedCustomer].find((project: any) => project.id === ev.selectedProject).name,
+                date: this.currentWeek[ev.weekdayIndex].date,
+            };
+            this.$store.dispatch('user/addHoursRecords', timeRecord);
+        }
     }
 })
 </script>

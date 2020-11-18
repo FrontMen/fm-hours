@@ -1,6 +1,6 @@
 export const state = () => ({
     isLoggedin: undefined,
-    user: undefined
+    user: undefined,
 });
 
 
@@ -24,7 +24,10 @@ export const actions = {
     },
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
-    }
+    },
+    addHoursRecords (context, payload) {
+        console.log('write action for saving timerecords');
+    },
 }
 
 export const mutations = {
@@ -36,7 +39,6 @@ export const mutations = {
 
 export const getters = {
     getUser: state => {
-        console.log('state', state.user);
       return state.user
     }
 }
