@@ -7,6 +7,18 @@
         >
             <div class="project-row__title">
                 {{title}}
+                <b-form-select
+                    :options="customerList"
+                    value="null"
+                    @change="selectCustomer($event)"
+                >
+                </b-form-select>
+                <b-form-select
+                    :options="customerProjectList"
+                    @change="selectProject($event)"
+                    value="null"
+                >
+                </b-form-select>
             </div>
             <div class="project-row__description">
                 {{description}}
@@ -16,14 +28,14 @@
             <b-container fluid class="p-0">
                 <b-row class="text-center">
                     <b-col
-                        v-for="input in weekInputsArray"
+                        v-for="(input, index) in weekInputsArray"
                         :key="input"
                     >
                         <div class="d-md-none">{{input}}</div>
                         <b-form-input
                             type="number"
                             no-wheel
-                            @update="update(input, $event)"
+                            @update="update(input, $event, index)"
                             v-model="weekInputs[input]"
                             class="project-row__input"
                         ></b-form-input>
@@ -51,14 +63,25 @@
     </b-row>
 </template>
 
-<script lang="ts">
+<script>
+import { CreateSelectOptions } from '../helpers/create-select-options';
 export default {
     computed: {
-        weekInputsArray: function (): string[] {
+        weekInputsArray: function () {
             return Object.keys(this.weekInputs);
         },
-        totalWeekHours: function (): number {
-            return Object.values(this.weekInputs).reduce((x: number, y: any) => x + y , 0);
+        totalWeekHours: function () {
+            return Object.values(this.weekInputs).reduce((x, y) => x + y , 0);
+        },
+        customerList: function() {
+            return CreateSelectOptions(this.customers, 'Select a customer');
+        },
+        customerProjectList: function() {
+            if (!!this.projects[this.selectedCustomerId]) {
+                let proj = this.projects[this.selectedCustomerId];
+                return CreateSelectOptions(proj, 'Select a project')
+            }
+            return CreateSelectOptions([], 'Select a project');
         }
     },
     props: {
@@ -78,16 +101,37 @@ export default {
                 }
             }
         },
+        customers: {
+            type: Array,
+            default: []
+        },
+        projects: {
+            type: Object,
+            default: () => {}
+        }
+    },
+    data() {
+        return {
+            selectedCustomerId: undefined
+        }
     },
     methods: {
-        update: function(inputweekInput: string, value: string): void {
+        update: function(inputweekInput, value, index) {
             // check for NAN and if the value is below 0. If zo, set value to 0
-            const hours: number = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
+            const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
             this.weekInputs[inputweekInput] = hours;
+            console.log('index', index);
             this.$emit('on-update', this.weekInputs);
         },
+        selectCustomer: function(customerId) {
+            this.$store.dispatch('customers/getCustomersProjects', customerId);
+            this.selectedCustomerId = customerId;
+        },
+        selectProject: function(ev) {
+            console.log('selectCustomerProject', ev);
+        },
     }
-}
+};
 </script>
 
 
