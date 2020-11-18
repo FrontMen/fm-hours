@@ -39,7 +39,7 @@
                 :customers="customers"
                 :projects="projects"
                 @on-remove="removeRow(project.id)"
-                @on-update="onUpdate($event)"
+                @on-hours-change="changeHours($event)"
             ></project-row>
 
             <b-row>
@@ -77,6 +77,7 @@ export default Vue.extend({
         ...mapGetters({
             user: 'auth/getUser',
             customers: 'customers/getCustomersArray',
+            customersEntities: 'customers/getCustomersEntities',
             projects: 'customers/getProjects',
             weekLabel: 'week-dates/currentWeekLabel',
             currentWeek: 'week-dates/currentWeek'
@@ -127,19 +128,24 @@ export default Vue.extend({
                 title: 'Nieuw Project',
                 description: 'Een beschrijving van een nieuw aangemaakt project',
             });
-            this.$store.dispatch('hours/getUsers');
         },
         removeRow: function(projectId: number) {
            this.projectsRows = this.projectsRows.filter((p) => p.id !== projectId);
-        },
-        onUpdate: function(event: any) {
-            console.log('Onupdate', event);
         },
         prevWeek: function() {
             this.$store.commit('week-dates/prevWeek');
         },
         nextWeek: function() {
             this.$store.commit('week-dates/nextWeek');
+        },
+        changeHours: function(ev: any) {
+            const timeRecord = {
+                hours: ev.hours,
+                customer: this.customersEntities[ev.selectedCustomer].name,
+                project: this.projects[ev.selectedCustomer].find((project: any) => project.id === ev.selectedProject).name,
+                date: this.currentWeek[ev.weekdayIndex].date,
+            };
+            this.$store.dispatch('user/addHoursRecords', timeRecord);
         }
     }
 })

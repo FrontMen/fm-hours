@@ -35,6 +35,7 @@ export const getters = {
         return [...Array(5)].map((_, index) => {
             const newDate = addDays(new Date(startDate), index);
             return {
+                date: newDate,
                 weekDay: format(newDate, 'EEEEEE'),
                 monthDay: format(newDate, 'dd'),
                 month: format(newDate, 'MMM')

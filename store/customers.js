@@ -3,7 +3,7 @@ import { CreateSelectOptions } from '../helpers/create-select-options';
 import {CreateEntities} from '../helpers/create-entities';
 
 export const state = () => ({
-    customers: [],
+    customers: {},
     projects: {}
 });
 

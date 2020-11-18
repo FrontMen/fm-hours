@@ -59,10 +59,6 @@ export default Vue.extend({
         evt.preventDefault()
         let provider = new this.$fireModule.auth.GoogleAuthProvider();
         await this.$fire.auth.signInWithPopup(provider)
-
-        // evt.preventDefault();
-        // console.log(this.form.password);
-        // this.$router.push('/hours');
       },
     }
 })
