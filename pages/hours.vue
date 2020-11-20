@@ -90,9 +90,7 @@ export default Vue.extend({
     },
     data() {
       return {
-          hoursDebouncer: debounce(function (fn: any) {
-            fn();
-        }, 2000),
+        hoursDebouncer: debounce((fn: Function) => fn(), 2000),
         projectsRows: [
             {
                 id: 1,
@@ -143,17 +141,17 @@ export default Vue.extend({
         nextWeek: function() {
             this.$store.commit('week-dates/nextWeek');
         },
-        changeHours: function(ev: any) {
+        changeHours: function(record: any) {
             this.hoursDebouncer(() => {
                 const timeRecord = {
-                    hours: ev.hours,
-                    customer: this.customersEntities[ev.selectedCustomer].name,
-                    project: this.projects[ev.selectedCustomer].find((project: any) => project.id === ev.selectedProject).name,
-                    date: format(this.currentWeek[ev.weekdayIndex].date, 'dd/MM/yyyy'),
+                    hours: record.hours,
+                    customer: this.customersEntities[record.selectedCustomer].name,
+                    project: this.projects[record.selectedCustomer].find((project: any) => project.id === record.selectedProject).name,
+                    date: format(this.currentWeek[record.weekdayIndex].date, 'dd/MM/yyyy'),
                 };
                 this.$store.dispatch('user/addHoursRecords', timeRecord);
             });
-        }
+        },
     }
 })
 </script>
