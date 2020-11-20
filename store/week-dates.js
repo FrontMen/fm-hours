@@ -16,18 +16,19 @@ export const mutations = {
 }
 
 export const getters = {
-    currentWeekLabel: state => {
-        const startDate = startOfISOWeek(new Date(state.currentDate));
-        const endDate = addDays(startDate, 4);
-        let label = format(startDate, 'dd');
-        if (getMonth(startDate) !== getMonth(endDate)) {
-            label += ` ${format(startDate, 'MMM')}`;
+    currentWeekLabel: (_, getters) => {
+        const currentWeek = getters.currentWeek;
+        const firstDay = currentWeek[0];
+        const lastDay = currentWeek[4];
+        let label = format(firstDay.date, 'dd');
+        if (firstDay.month !== lastDay.month) {
+            label += ` ${format(firstDay.date, 'MMM')}`;
 
-            if (getYear(startDate) !== getYear(endDate)) {
-                label += ` ${format(startDate, 'yyyy')}`;
+            if (firstDay.year !== lastDay.year) {
+                label += ` ${format(firstDay.date, 'yyyy')}`;
             }
         }
-        label += ` - ${format(endDate, 'dd MMM yyyy')}`;
+        label += ` - ${format(lastDay.date, 'dd MMM yyyy')}`;
         return label;
     },
     currentWeek: state => {
@@ -35,9 +36,11 @@ export const getters = {
         return [...Array(5)].map((_, index) => {
             const newDate = addDays(new Date(startDate), index);
             return {
+                date: newDate,
                 weekDay: format(newDate, 'EEEEEE'),
                 monthDay: format(newDate, 'dd'),
-                month: format(newDate, 'MMM')
+                month: format(newDate, 'MMM'),
+                year: format(newDate, 'yyyy'),
             }
         });
     },
