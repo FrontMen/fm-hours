@@ -1,4 +1,4 @@
-import { addDays, subDays, getMonth, getYear, startOfISOWeek, format } from 'date-fns';
+import { addDays, subDays, startOfISOWeek, format } from 'date-fns';
 
 export const state = () => ({
     currentDate: new Date(),
