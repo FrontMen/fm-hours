@@ -10,7 +10,7 @@ export const actions = {
             const usersRef = this.$fire.firestore.collection('users');
             const user = await usersRef.doc(claims.user_id).get();
             if (user.exists) {
-                context.dispatch('loginSuccess', user.data());
+                context.dispatch('loginSuccess', {id: user.id, ...user.data()});
             } else {
                 const newUser = await usersRef.doc(claims.user_id).set({
                     name: claims.name,
@@ -25,8 +25,13 @@ export const actions = {
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
     },
-    addHoursRecords (context, payload) {
-        console.log('write action for saving timerecords');
+    async addHoursRecords (context, payload) {
+        // const userId = context.getters.getUser.id;
+        // console.log('write action for saving timerecords', payload);
+        // const res = await this.$fire.firestore.collection('users').doc(userId).update({
+        //     time_records: this.$fireModule.firestore.FieldValue.arrayUnion(payload)
+        // });
+        console.log('res', payload);
     },
 }
 
@@ -34,6 +39,7 @@ export const mutations = {
     loginSuccess: (state, payload) => {
         state.isLoggedin = true;
         state.user = payload;
+        console.log('user', state);
       },
 }
 

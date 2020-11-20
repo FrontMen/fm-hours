@@ -71,6 +71,8 @@
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from "vuex";
+import { format } from "date-fns";
+import { debounce } from '../helpers/debounce';
 
 export default Vue.extend({
     computed: {
@@ -88,6 +90,9 @@ export default Vue.extend({
     },
     data() {
       return {
+          hoursDebouncer: debounce(function (fn: any) {
+            fn();
+        }, 2000),
         projectsRows: [
             {
                 id: 1,
@@ -139,13 +144,15 @@ export default Vue.extend({
             this.$store.commit('week-dates/nextWeek');
         },
         changeHours: function(ev: any) {
-            const timeRecord = {
-                hours: ev.hours,
-                customer: this.customersEntities[ev.selectedCustomer].name,
-                project: this.projects[ev.selectedCustomer].find((project: any) => project.id === ev.selectedProject).name,
-                date: this.currentWeek[ev.weekdayIndex].date,
-            };
-            this.$store.dispatch('user/addHoursRecords', timeRecord);
+            this.hoursDebouncer(() => {
+                const timeRecord = {
+                    hours: ev.hours,
+                    customer: this.customersEntities[ev.selectedCustomer].name,
+                    project: this.projects[ev.selectedCustomer].find((project: any) => project.id === ev.selectedProject).name,
+                    date: format(this.currentWeek[ev.weekdayIndex].date, 'dd/MM/yyyy'),
+                };
+                this.$store.dispatch('user/addHoursRecords', timeRecord);
+            });
         }
     }
 })
