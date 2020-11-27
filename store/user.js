@@ -1,4 +1,4 @@
-import { isWithinInterval } from 'date-fns';
+import { isWithinInterval, isSameDay } from 'date-fns';
 import { debounce } from '../helpers/debounce';
 
 export const state = () => ({
@@ -16,7 +16,7 @@ const AddRecordToList = (allRecords, newRecord, transformation) => {
     const record = newRecords.find((record) => newRecord.customer === record.customer && newRecord.project === record.project);
     const hours = CreateHoursEntry(newRecord.date, newRecord.hours);
     if (record) {
-        const recordIndex = record.hours.findIndex((record) => record.date === newRecord.date);
+        const recordIndex = record.hours.findIndex((record) => isSameDay(new Date(record.date), new Date(newRecord.date)));
         if (recordIndex === -1) {
             record.hours.push(hours);
         } else {
@@ -87,7 +87,8 @@ export const actions = {
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getTimeRecords;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
-        context.dispatch('updateToDb', newRecords);
+        context.dispatch('saveToFirestore', newRecords);
+        context.commit('updateProjectRow', newRecords);
     },
     removeRecordRow (context, payload) {
         const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
@@ -98,10 +99,10 @@ export const actions = {
             (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
             transformToTimeEntryList
         );
-        context.dispatch('updateToDb', newprojects);
-        context.commit('removeProjectRow', newprojects);
+        context.dispatch('saveToFirestore', newprojects);
+        context.commit('updateProjectRow', newprojects);
     },
-    async updateToDb (context, payload) {
+    async saveToFirestore (context, payload) {
         debouncer(() => {
             console.log('updating firestore');
             const user = context.getters.getUser;
@@ -126,7 +127,7 @@ export const mutations = {
     addProjectRow: (state, payload) => {
         state.time_records = [...state.time_records, payload];
     },
-    removeProjectRow: (state, payload) => {
+    updateProjectRow: (state, payload) => {
         state.time_records = payload;
     },
 }

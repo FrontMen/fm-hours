@@ -65,8 +65,7 @@ export default {
             });
         },
         totalWeekHours: function () {
-            console.log('this.project.hours', this.project.hours);
-            return this.project.hours.reduce((acc, curr) => acc + curr.hours, 0);
+            return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0);
         },
     },
     props: {
@@ -81,8 +80,10 @@ export default {
     },
     methods: {
         update: function(date, value) {
+            const val = parseFloat(value).toFixed(2);
             // check for NAN and if the value is below 0. If so, set value to 0
             const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
+
             const output = {
                 project: this.project.project,
                 customer: this.project.customer,
