@@ -7,7 +7,7 @@
                     <b-button @click="prevWeek()">
                         <b-icon icon="arrow-left"></b-icon>
                     </b-button>
-                    <b-button @click="nextWeek()">
+                    <b-button @click="nextWeek()" :disabled="disableNextWeek">
                         <b-icon icon="arrow-right"></b-icon>
                     </b-button>
                 </div>
@@ -31,20 +31,17 @@
                 <b-col cols="2"></b-col>
             </b-row>
             <project-row
-                v-for="project in projectsRows"
-                :key="project.id"
-                :title="project.title"
-                :description="project.description"
-                :weekInputs="project.hours"
-                :customers="customers"
-                :projects="projects"
-                @on-remove="removeRow(project.id)"
+                v-for="project in currentWeekRecords"
+                :key="project.project"
+                :currentWeek="currentWeek"
+                :project="project"
+                @on-remove="removeRow(project)"
                 @on-hours-change="changeHours($event)"
             ></project-row>
 
             <b-row>
                 <b-col>
-                    <b-button @click="addRow()">
+                    <b-button v-b-modal.modal-center>
                         + New row
                     </b-button>
                 </b-col>
@@ -65,92 +62,83 @@
             </b-row>
         </b-container>
     </div>
+    <b-modal
+        id="modal-center"
+        centered
+        title="BootstrapVue"
+        :ok-disabled="!canAddRow"
+        @ok="addRow()"
+        @hidden="resetCustomerToAdd"
+    >
+        <p class="my-4">Select a customer</p>
+        <select-project
+            :customers="customers"
+            :projects="selectableProjects"
+            @on-customer-select="getProjectForCustomer($event)"
+            @on-project-select="selectProject($event)"
+        ></select-project>
+    </b-modal>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 import { mapGetters } from "vuex";
-import { format } from "date-fns";
-import { debounce } from '../helpers/debounce';
+import { format, formatISO } from "date-fns";
 
 export default Vue.extend({
     computed: {
         ...mapGetters({
             user: 'auth/getUser',
-            customers: 'customers/getCustomersArray',
-            customersEntities: 'customers/getCustomersEntities',
+            customers: 'customers/getCustomers',
             projects: 'customers/getProjects',
             weekLabel: 'week-dates/currentWeekLabel',
-            currentWeek: 'week-dates/currentWeek'
+            currentWeek: 'week-dates/currentWeek',
+            timeRecords: 'user/getTimeRecords',
+            currentWeekRecords: 'user/getTimeRecordsForCurrentWeek',
+            selectableProjects: 'customers/getSelectableProjects',
+            customerToAdd: 'customers/getCustomerToAdd',
+            disableNextWeek: 'week-dates/isNextweekInFuture',
         }),
+        canAddRow: function() {
+            return !!(this.customerToAdd.customer && this.customerToAdd.project)
+        }
     },
     created() {
       this.$store.dispatch('customers/getCustomers');
     },
-    data() {
-      return {
-        hoursDebouncer: debounce((fn: Function) => fn(), 2000),
-        projectsRows: [
-            {
-                id: 1,
-                title: 'Rabobank',
-                description: 'Afdeling hypotheken',
-                hours: {
-                    mo: 1,
-                    tu: 2,
-                    we: 3,
-                    th: 4,
-                    fr: 5
-                }
-            },
-            {
-                id: 2,
-                title: 'Rabobank',
-                description: 'Afdeling verzekeringen',
-                hours: {
-                    mo: 5,
-                    tu: 2,
-                    we: 10,
-                    th: 4,
-                    fr: 5
-                }
-            },
-            {
-                id: 3,
-                title: 'Postcode loterij',
-                description: 'Algemeen'
-            },
-        ]
-      }
-    },
     methods: {
         addRow: function() {
-            this.projectsRows.push({
-                id: + new Date(),
-                title: 'Nieuw Project',
-                description: 'Een beschrijving van een nieuw aangemaakt project',
-            });
+            const customer = this.customers.find((customer: any) => customer.id === this.customerToAdd.customer);
+            const project = this.projects[this.customerToAdd.customer].find((customer: any) => customer.id === this.customerToAdd.project);
+            let item = {
+                customer: customer.name,
+                date: formatISO(this.currentWeek[0].date),
+                hours: 0,
+                project: project.name
+            }
+            this.$store.dispatch('user/addProjectRow', item);
         },
-        removeRow: function(projectId: number) {
-           this.projectsRows = this.projectsRows.filter((p) => p.id !== projectId);
+        removeRow(project: any) {
+            this.$store.dispatch('user/removeRecordRow', project);
         },
-        prevWeek: function() {
+        prevWeek() {
             this.$store.commit('week-dates/prevWeek');
         },
-        nextWeek: function() {
+        nextWeek() {
             this.$store.commit('week-dates/nextWeek');
         },
-        changeHours: function(record: any) {
-            this.hoursDebouncer(() => {
-                const timeRecord = {
-                    hours: record.hours,
-                    customer: this.customersEntities[record.selectedCustomer].name,
-                    project: this.projects[record.selectedCustomer].find((project: any) => project.id === record.selectedProject).name,
-                    date: format(this.currentWeek[record.weekdayIndex].date, 'dd/MM/yyyy'),
-                };
-                this.$store.dispatch('user/addHoursRecords', timeRecord);
-            });
+        changeHours(record: any) {
+            this.$store.dispatch('user/addHoursRecords', record);
+        },
+        getProjectForCustomer(customerId: number) {
+            this.$store.dispatch('customers/selectCustomerToAdd', customerId);
+        },
+        selectProject(projectId: number) {
+            this.$store.commit('customers/selectCustomerToAddProject', projectId);
+        },
+        resetCustomerToAdd(projectId: number) {
+            this.$store.commit('customers/resetCustomerToAdd');
         },
     }
 })

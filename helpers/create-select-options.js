@@ -1,13 +1,16 @@
 export const CreateSelectOptions = (array, firstOptionLabel) => {
-    const firstOption = { value: null, text: firstOptionLabel };
-    const options = array.map((entry) => {
-        return {
-            value: entry.id,
-            text: entry.name
-        }
-    });
+    const firstOption = CreateDefaultSelectOption(firstOptionLabel);
+    const options = array.map((entry) => CreateSingleSelectOption(entry.id, entry.name));
     return [
         firstOption,
         ...options,
     ];
+}
+
+export const CreateDefaultSelectOption = (firstOptionLabel) => {
+    return CreateSingleSelectOption(null, firstOptionLabel);
+}
+
+export const CreateSingleSelectOption = (value, label, disabled = false) => {
+    return { value, text: label, disabled };
 }

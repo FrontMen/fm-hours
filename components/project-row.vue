@@ -6,37 +6,25 @@
             md="5"
         >
             <div class="project-row__title">
-                {{title}}
-                <b-form-select
-                    :options="customerList"
-                    value="null"
-                    @change="selectCustomer($event)"
-                >
-                </b-form-select>
-                <b-form-select
-                    :options="customerProjectList"
-                    @change="selectProject($event)"
-                    value="null"
-                >
-                </b-form-select>
+                {{project.customer}}
             </div>
             <div class="project-row__description">
-                {{description}}
+                {{project.project}}
             </div>
         </b-col>
         <b-col sm="12" md="5">
             <b-container fluid class="p-0">
                 <b-row class="text-center">
                     <b-col
-                        v-for="(input, index) in weekInputsArray"
-                        :key="input"
+                        v-for="(input, index) in weekyHours"
+                        :key="index"
                     >
-                        <div class="d-md-none">{{input}}</div>
+                        <div class="d-md-none">{{input.date | formatDate('EEEEEE')}}</div>
                         <b-form-input
                             type="number"
                             no-wheel
-                            @update="update(input, $event, index)"
-                            v-model="weekInputs[input]"
+                            @update="update(input.date, $event)"
+                            :value="input.hours"
                             class="project-row__input"
                         ></b-form-input>
                     </b-col>
@@ -64,76 +52,44 @@
 </template>
 
 <script>
-import { CreateSelectOptions } from '../helpers/create-select-options';
+import { formatISO, isSameDay } from "date-fns";
 export default {
     computed: {
-        weekInputsArray: function () {
-            return Object.keys(this.weekInputs);
+        weekyHours: function () {
+            return this.currentWeek.map((entry) => {
+                const input = this.project.hours.find((input) => isSameDay(new Date(input.date), entry.date));
+                return {
+                    ...entry,
+                    hours: input ? input.hours : 0
+                }
+            });
         },
         totalWeekHours: function () {
-            return Object.values(this.weekInputs).reduce((x, y) => x + y , 0);
+            console.log('this.project.hours', this.project.hours);
+            return this.project.hours.reduce((acc, curr) => acc + curr.hours, 0);
         },
-        customerList: function() {
-            return CreateSelectOptions(this.customers, 'Select a customer');
-        },
-        customerProjectList: function() {
-            if (!!this.projects[this.selectedCustomerId]) {
-                return CreateSelectOptions(this.projects[this.selectedCustomerId], 'Select a project')
-            }
-            return CreateSelectOptions([], 'Select a project');
-        }
     },
     props: {
-        title: String,
-        description: String,
-        weekInputs: {
-            type: Object,
-            // Object or array defaults must be returned from
-            // a factory function
-            default: function () {
-                return {
-                    mo: 0,
-                    tu: 0,
-                    we: 0,
-                    th: 0,
-                    fr: 0
-                }
-            }
-        },
-        customers: {
+        currentWeek: {
             type: Array,
             default: []
         },
-        projects: {
+        project: {
             type: Object,
             default: () => {}
-        }
-    },
-    data() {
-        return {
-            selectedCustomerId: undefined,
-            selectedProjectId: undefined
-        }
+        },
     },
     methods: {
-        update: function(inputweekInput, value, weekdayIndex) {
-            // check for NAN and if the value is below 0. If zo, set value to 0
+        update: function(date, value) {
+            // check for NAN and if the value is below 0. If so, set value to 0
             const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
-            this.weekInputs[inputweekInput] = hours;
             const output = {
-                selectedProject: this.selectedProjectId,
-                selectedCustomer: this.selectedCustomerId,
-                weekdayIndex,
+                project: this.project.project,
+                customer: this.project.customer,
+                date: formatISO(date),
                 hours,
             }
             this.$emit('on-hours-change', output);
-        },
-        selectCustomer: function(customerId) {
-            this.$store.dispatch('customers/getCustomersProjects', customerId);
-            this.selectedCustomerId = customerId;
-        },
-        selectProject: function(projectId) {
-            this.selectedProjectId = projectId;
         },
     }
 };

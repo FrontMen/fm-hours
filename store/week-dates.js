@@ -1,4 +1,4 @@
-import { addDays, subDays, startOfISOWeek, format } from 'date-fns';
+import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay } from 'date-fns';
 
 export const state = () => ({
     currentDate: new Date(),
@@ -43,5 +43,14 @@ export const getters = {
                 year: format(newDate, 'yyyy'),
             }
         });
+    },
+    isNextweekInFuture: (_, getters) => {
+        const { endDate } = getters.getcurrentWeekRange;
+        const today = new Date();
+        return isAfter(endDate, today) || isSameDay(endDate, today);
+    },
+    getcurrentWeekRange: (_, getters) => {
+        const currWeek = getters.currentWeek;
+        return {startDate: currWeek[0].date, endDate: currWeek[4].date}
     },
 }
