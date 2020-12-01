@@ -1,4 +1,3 @@
-import { resetAutoDestroyState } from '@vue/test-utils';
 import { CreateSingleSelectOption, CreateDefaultSelectOption } from '../helpers/create-select-options';
 
 export const state = () => ({
@@ -11,18 +10,43 @@ export const state = () => ({
     }
 });
 
-// const getProjectsByCustomer = async (customer) => {
-//     console.log('customer', customer);
-//     const ref = this.$fire.firestore.collection(`customers/${customer}/projects`);
-//     const { docs } = await ref.get()
-//     return docs;
-// }
+const getProjectsByCustomer = async (fire, customer) => {
+    const ref = fire.firestore.collection(`customers/${customer}/projects`);
+    const { docs } = await ref.get()
+    return docs;
+}
 
 export const actions = {
+    async addNewCustomer (context, payload) {
+        const ref = this.$fire.firestore.collection('customers');
+        const { id } = await ref.add(payload);
+        context.commit('addNewCustomerSuccess', {
+            ...payload,
+            id
+        });
+
+        const project = {
+            customerId: id,
+            project: {
+                name: 'my-project'
+            }
+        }
+
+        context.dispatch('addProjectToCustomer', project);
+    },
+    async addProjectToCustomer (_, payload) {
+        console.log('payload', payload);
+        const {customerId, project } = payload;
+        console.log('customerId', customerId);
+        const ref = this.$fire.firestore.collection('customers').doc(customerId).collection('projects');
+        await ref.add(project);
+    },
     async getCustomers (context) {
         const ref = this.$fire.firestore.collection('customers');
         const customers = await ref.get();
+        console.log('customers', customers);
         const customersEntities = customers.docs.map((res) => ({id: res.id, ...res.data()}));
+        console.log('customersEntities', customersEntities);
         context.commit('getCustomersSuccess', customersEntities)
     },
     selectCustomerToAdd (context, payload) {
@@ -34,8 +58,7 @@ export const actions = {
         if (customerProjects[payload]) {
             return;
         }
-        const ref = this.$fire.firestore.collection(`customers/${payload}/projects`);
-        let projects = (await ref.get()).docs.map((res) => ({id: res.id, ...res.data()}));
+        let projects = (await getProjectsByCustomer(this.$fire, payload)).map((res) => ({id: res.id, ...res.data()}));
         context.commit('getProjectsForCustomerSuccess', {id: payload, projects });
     },
 }
@@ -60,6 +83,9 @@ export const mutations = {
     resetCustomerToAdd(state) {
         state.customerToAdd.customer = null;
         state.customerToAdd.project = null;
+    },
+    addNewCustomerSuccess(state, payload) {
+        state.customers = [...state.customers, payload];
     },
 }
 

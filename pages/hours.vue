@@ -82,7 +82,7 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue from 'vue';
 import { mapGetters } from "vuex";
 import { format, formatISO } from "date-fns";
 
