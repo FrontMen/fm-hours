@@ -1,23 +1,35 @@
 <template>
   <div class="page-wrapper">
     <div class="hours-table">
-        <b-container fluid="lg">
+        <b-container class="hours-table__container" fluid="md">
             <div class="hours-table__date">
-                <div class="hours-table__date-nav date-nav mr-3">
-                    <b-button @click="prevWeek()">
+                <div class="hours-table__date-nav date-nav mr-md-3">
+                    <b-button @click="prevWeek()" class="mr-3 mr-md-0">
                         <b-icon icon="arrow-left"></b-icon>
+                        <span class="d-md-none">
+                            Previous week
+                        </span>
                     </b-button>
                     <b-button @click="nextWeek()" :disabled="disableNextWeek">
+                        <span class="d-md-none">
+                            Next week
+                        </span>
                         <b-icon icon="arrow-right"></b-icon>
                     </b-button>
                 </div>
-                {{weekLabel}}
+                <span class="d-none d-md-block">
+                    {{weekLabel}}
+                </span>
             </div>
-            <b-row class="hours-table__top-row text-center">
-                <b-col></b-col>
-                <b-col>
+            <b-row align-v="center" class="hours-table__top-row">
+                <b-col cols="10" md="5">
+                    <span class="d-md-none hours-table__mobile-week-label">
+                        {{weekLabel}}
+                    </span>
+                </b-col>
+                <b-col class="d-none d-md-block">
                     <b-container class="p-0 d-none d-md-block">
-                        <b-row class="text-center">
+                        <b-row :no-gutters="true" class="text-center">
                             <b-col
                                 v-for="date in currentWeek"
                                 :key="date.weekDay"
@@ -28,28 +40,41 @@
                         </b-row>
                     </b-container>
                 </b-col>
-                <b-col cols="2"></b-col>
+                <b-col class="d-flex justify-content-end" cols="2" md="2">
+                    <b-button class="d-md-none" v-b-modal.modal-center>
+                        +
+                    </b-button>
+                </b-col>
             </b-row>
-            <project-row
-                v-for="project in currentWeekRecords"
-                :key="project.project"
-                :currentWeek="currentWeek"
-                :project="project"
-                @on-remove="removeRow(project)"
-                @on-hours-change="changeHours($event)"
-            ></project-row>
-
-            <b-row>
+            <template v-if="hasCustomersThisWeek">
+                <project-row
+                    v-for="project in currentWeekRecords"
+                    :key="project.project"
+                    :currentWeek="currentWeek"
+                    :project="project"
+                    @on-remove="removeRow(project)"
+                    @on-hours-change="changeHours($event)"
+                ></project-row>
+            </template>
+            <template v-else>
+                <b-row>
+                    <b-col class="pt-5 pb-4 text-center">
+                        <p>There are no projects registered this week.</p>
+                        <b-button v-b-modal.modal-center>
+                            Register a project
+                        </b-button>
+                    </b-col>
+                </b-row>
+            </template>
+            <b-row v-if="hasCustomersThisWeek" class="py-3 hours-table__bottom-row">
                 <b-col>
-                    <b-button v-b-modal.modal-center>
+                    <b-button class="d-none d-md-block" v-b-modal.modal-center>
                         + New row
                     </b-button>
                 </b-col>
-                <b-col>
+                <b-col class="d-none d-md-block">
                     <b-container>
                     <b-row class="text-center">
-                        <b-col>0</b-col>
-                        <b-col>0</b-col>
                         <b-col>0</b-col>
                         <b-col>0</b-col>
                         <b-col>0</b-col>
@@ -65,12 +90,11 @@
     <b-modal
         id="modal-center"
         centered
-        title="BootstrapVue"
+        title="Add a customer"
         :ok-disabled="!canAddRow"
         @ok="addRow()"
         @hidden="resetCustomerToAdd"
     >
-        <p class="my-4">Select a customer</p>
         <select-project
             :customers="customers"
             :projects="selectableProjects"
@@ -102,6 +126,11 @@ export default Vue.extend({
         }),
         canAddRow: function() {
             return !!(this.customerToAdd.customer && this.customerToAdd.project)
+        },
+        hasCustomersThisWeek: function() {
+            console.log('currentWeekRecords', this.currentWeekRecords);
+            
+            return this.currentWeekRecords.length > 0;
         }
     },
     created() {
@@ -148,6 +177,9 @@ export default Vue.extend({
 .date {
     font-size: 12px;
 }
+.no-projects {
+    padding: 20px;
+}
 .hours-table {
     &__date {
         font-size: 24px;
@@ -159,6 +191,31 @@ export default Vue.extend({
     &__top-row {
         background: #ccc;
         height: 50px;
+    }
+
+    &__bottom-row {
+        background: #ccc;
+    }
+
+    &__mobile-week-label {
+        font-size: 18px;
+    }
+
+    @media screen and (max-width: 767px) {
+        .date-nav {
+            display: flex;
+            width: 100%;
+            justify-content: center;
+        }
+        .hours-table__container {
+            padding-top: 50px;
+        }
+        .hours-table__top-row {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
     }
 }
 </style>
