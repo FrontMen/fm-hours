@@ -2,6 +2,7 @@
     <div>
         <b-form-select
             :options="customerList"
+            class="mb-3"
             @change="selectCustomer($event)"
             v-model="selectedCustomerId"
         >
@@ -17,6 +18,7 @@
 
 <script>
 import { CreateSelectOptions } from '../helpers/create-select-options';
+import { isWithinInterval } from 'date-fns';
 export default {
     computed: {
         customerList: function() {

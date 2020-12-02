@@ -1,8 +1,7 @@
 <template>
-    <b-row class="hours-table__project-row project-row mb-1">
+    <b-row cols-sm="1" class="hours-table__project-row project-row">
         <b-col
             class=" project-row__project-title"
-            sm="12"
             md="5"
         >
             <div class="project-row__title">
@@ -12,10 +11,11 @@
                 {{project.project}}
             </div>
         </b-col>
-        <b-col sm="12" md="5">
+        <b-col md="5">
             <b-container fluid class="p-0">
-                <b-row class="text-center">
+                <b-row :no-gutters="true" class="text-center">
                     <b-col
+                        class="project-row__hours-input"
                         v-for="(input, index) in weekyHours"
                         :key="index"
                     >
@@ -32,7 +32,6 @@
             </b-container>
         </b-col>
         <b-col
-            sm="12"
             md="2"
             class="project-row__hours-column"
         >
@@ -44,7 +43,7 @@
                 class="project-row__remove-button border-0"
                 @click="$emit('on-remove')"
             >
-                <span class="d-md-none">Verwijderen</span>
+                <span class="d-md-none">Remove</span>
                 <b-icon icon="x-square"></b-icon>
             </b-button>
         </b-col>
@@ -102,10 +101,21 @@ export default {
 @import 'node_modules/bootstrap/scss/bootstrap';
 .project-row {
     padding: 12px 0 8px;
-    border-bottom: 1px solid;
 
-    &:last-child {
-        border-bottom: none;
+    + .project-row {
+        border-top: 1px solid;
+    }
+
+    &__hours-input {
+        margin-right: 20px;
+
+        &:last-child {
+            margin-right: 0;
+        }
+
+        @media (max-width: 998px) {
+            margin-right: 10px;
+        }
     }
 
     &__input {
@@ -138,27 +148,37 @@ export default {
     }
 
     &__title {
+        font-size: 17px;
         font-weight: bold;
     }
 
     &__description {
-        font-size: 12px;
+        font-size: 15px;
     }
 
     &__hours-column {
         display: flex;
         align-items: center;
         justify-content: flex-end;
-
-        @media (max-width: map-get($grid-breakpoints, md)) {
-            padding-top: 16px;
-            padding-bottom: 10px;
-        }
     }
 
     &__total-hours {
         width: 50%;
         text-align: center;
+    }
+
+    @media (max-width: map-get($grid-breakpoints, md)) {
+        .project-row__hours-column {
+            justify-content: flex-start;
+            padding-top: 16px;
+            padding-bottom: 10px;
+        }
+
+        .project-row__total-hours {
+            width: auto;
+            margin-right: 20px;
+        }
+
     }
 }
 </style>
