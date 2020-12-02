@@ -5,6 +5,7 @@ export const state = () => ({
     isLoggedin: undefined,
     user: undefined,
     time_records: [],
+    lastSaved: undefined
 });
 
 const CreateHoursEntry = (date, hours) => {
@@ -61,7 +62,7 @@ const transformToTimeEntryList = (entries) => {
     }, []);
 }
 
-const debouncer = debounce((fn) => fn(), 2000)
+const debouncer = debounce((fn) => fn(), 2000);
 
 export const actions = {
     async onAuthStateChangedAction (context, { authUser, claims }) {
@@ -87,30 +88,36 @@ export const actions = {
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getTimeRecords;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
-        context.dispatch('saveToFirestore', newRecords);
+        context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
         context.commit('updateProjectRow', newRecords);
     },
     removeRecordRow (context, payload) {
         const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
         const timeRecords = context.getters.getTimeRecords;
-        const newprojects = RemoveRow(
+        const newRecords = RemoveRow(
             timeRecords,
             payload,
             (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
             transformToTimeEntryList
         );
-        context.dispatch('saveToFirestore', newprojects);
-        context.commit('updateProjectRow', newprojects);
+        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
+        context.commit('updateProjectRow', newRecords);
     },
     async saveToFirestore (context, payload) {
-        debouncer(() => {
-            console.log('updating firestore');
+        const { records, debounce } = payload;
+        const saving = () => {
             const user = context.getters.getUser;
             const usersRef = this.$fire.firestore.collection('users').doc(user.id);
             usersRef.set({
-                time_records: payload
+                time_records: records
             }, { merge: true });
-        });
+            context.commit('saveToFirestore');
+        }
+        if (debounce) {
+            debouncer(() => saving());
+        } else {
+            saving();
+        }
     },
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
@@ -122,7 +129,6 @@ export const mutations = {
         state.isLoggedin = true;
         state.user = payload;
         state.time_records = payload.time_records
-        console.log('payload, payload', state);
     },
     addProjectRow: (state, payload) => {
         state.time_records = [...state.time_records, payload];
@@ -130,13 +136,16 @@ export const mutations = {
     updateProjectRow: (state, payload) => {
         state.time_records = payload;
     },
+    saveToFirestore: (state) => {
+        state.lastSaved = new Date();
+    },
 }
 
 export const getters = {
     getUser: state => {
       return state.user
     },
-    getTimeRecords: (state, getters, rootState, rootGetters) => {
+    getTimeRecords: (state) => {
         return state.time_records.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer && a.project === entry.project);
             if(!record) {
@@ -161,6 +170,18 @@ export const getters = {
         });
         return rows;
     },
+    getWeekTotals: (state, getters, _, rootGetters) => {
+        const currentWeek = rootGetters['week-dates/currentWeek'];
+        const currentWeekRecords = getters.getTimeRecordsForCurrentWeek;
+        return currentWeek.map((weekDay) => {
+            const currDate = new Date(weekDay.date);
+            return currentWeekRecords.reduce((acc, curr) => {
+                const registeredHours = curr.hours.find((entry) => isSameDay(currDate, new Date(entry.date)));
+                return acc + (registeredHours ? registeredHours.hours : 0);
+            }, 0);
+        });
+    },
+    getLastSavedDate: (state) => {
+        return state.lastSaved;
+    },
 }
-
-// week

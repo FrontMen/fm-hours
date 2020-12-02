@@ -68,18 +68,22 @@
             </template>
             <b-row v-if="hasCustomersThisWeek" class="py-3 hours-table__bottom-row">
                 <b-col>
-                    <b-button class="d-none d-md-block" v-b-modal.modal-center>
-                        + New row
-                    </b-button>
+                    <div class="d-flex align-items-center">
+                        <b-button class="d-none d-md-block" v-b-modal.modal-center>
+                            + New row
+                        </b-button>
+                        <span class="ml-3" v-if="lastSavedDate">
+                            Last saved on {{lastSavedDate | formatDate('HH:mm:ss')}}
+                        </span>
+                    </div>
                 </b-col>
                 <b-col class="d-none d-md-block">
                     <b-container>
                     <b-row class="text-center">
-                        <b-col>0</b-col>
-                        <b-col>0</b-col>
-                        <b-col>0</b-col>
-                        <b-col>0</b-col>
-                        <b-col>0</b-col>
+                        <b-col
+                            v-for="(dayTotal, index) in weekTotals"
+                            :key="index"
+                        >{{dayTotal}}</b-col>
                     </b-row>
                     </b-container>
                 </b-col>
@@ -123,13 +127,13 @@ export default Vue.extend({
             selectableProjects: 'customers/getSelectableProjects',
             customerToAdd: 'customers/getCustomerToAdd',
             disableNextWeek: 'week-dates/isNextweekInFuture',
+            weekTotals: 'user/getWeekTotals',
+            lastSavedDate: 'user/getLastSavedDate'
         }),
         canAddRow: function() {
             return !!(this.customerToAdd.customer && this.customerToAdd.project)
         },
         hasCustomersThisWeek: function() {
-            console.log('currentWeekRecords', this.currentWeekRecords);
-            
             return this.currentWeekRecords.length > 0;
         }
     },
@@ -176,9 +180,6 @@ export default Vue.extend({
 <style lang="scss">
 .date {
     font-size: 12px;
-}
-.no-projects {
-    padding: 20px;
 }
 .hours-table {
     &__date {
