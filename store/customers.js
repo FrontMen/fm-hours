@@ -1,4 +1,3 @@
-import { resetAutoDestroyState } from '@vue/test-utils';
 import { CreateSingleSelectOption, CreateDefaultSelectOption } from '../helpers/create-select-options';
 
 export const state = () => ({
