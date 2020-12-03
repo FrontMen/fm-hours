@@ -11,13 +11,6 @@ export const state = () => ({
     }
 });
 
-// const getProjectsByCustomer = async (customer) => {
-//     console.log('customer', customer);
-//     const ref = this.$fire.firestore.collection(`customers/${customer}/projects`);
-//     const { docs } = await ref.get()
-//     return docs;
-// }
-
 export const actions = {
     async getCustomers (context) {
         const ref = this.$fire.firestore.collection('customers');
