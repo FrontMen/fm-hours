@@ -24,38 +24,33 @@ export const actions = {
             ...payload,
             id
         });
-
-        const project = {
-            customerId: id,
-            project: {
-                name: 'my-project'
-            }
-        }
-
-        context.dispatch('addProjectToCustomer', project);
     },
-    async addProjectToCustomer (_, payload) {
-        console.log('payload', payload);
+    async addProjectToCustomer (context, payload) {
         const {customerId, project } = payload;
-        console.log('customerId', customerId);
         const ref = this.$fire.firestore.collection('customers').doc(customerId).collection('projects');
-        await ref.add(project);
+        const { id } = await ref.add(project);
+        context.commit('addProjectForCustomerSuccess', {
+            customer: customerId,
+            project: {
+                id,
+                name: project.name
+            },
+        });
     },
     async getCustomers (context) {
         const ref = this.$fire.firestore.collection('customers');
         const customers = await ref.get();
-        console.log('customers', customers);
         const customersEntities = customers.docs.map((res) => ({id: res.id, ...res.data()}));
-        console.log('customersEntities', customersEntities);
         context.commit('getCustomersSuccess', customersEntities)
     },
     selectCustomerToAdd (context, payload) {
         context.commit('selectCustomerToAdd', payload);
-        context.dispatch('selectCustomerToAddProject', payload);
+        context.dispatch('getProjectsByCustomer', payload);
     },
-    async selectCustomerToAddProject (context, payload) {
+    async getProjectsByCustomer (context, payload) {
         const customerProjects = context.getters.getProjects;
         if (customerProjects[payload]) {
+            console.log('niet ophalen');
             return;
         }
         let projects = (await getProjectsByCustomer(this.$fire, payload)).map((res) => ({id: res.id, ...res.data()}));
@@ -86,6 +81,13 @@ export const mutations = {
     },
     addNewCustomerSuccess(state, payload) {
         state.customers = [...state.customers, payload];
+    },
+    addProjectForCustomerSuccess(state, payload) {
+        const { customer, project } = payload;
+        state.projects[customer] = {
+            ...state.projects[customer],
+            project
+        };
     },
 }
 
