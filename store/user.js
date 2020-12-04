@@ -65,6 +65,10 @@ const transformToTimeEntryList = (entries) => {
 const debouncer = debounce((fn) => fn(), 2000);
 
 export const actions = {
+    async login () {
+        let provider = new this.$fireModule.auth.GoogleAuthProvider();
+        await this.$fire.auth.signInWithPopup(provider);
+    },
     async onAuthStateChangedAction (context, { authUser, claims }) {
         if (authUser) {
             const usersRef = this.$fire.firestore.collection('users');
@@ -74,6 +78,7 @@ export const actions = {
             } else {
                 const newUser = await usersRef.doc(claims.user_id).set({
                     name: claims.name,
+                    picture: claims.picture,
                     time_records: []
                 });
                 context.dispatch('loginSuccess', newUser.data());
@@ -84,6 +89,7 @@ export const actions = {
     },
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
+        this.app.router.push('/hours');
     },
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getTimeRecords;
@@ -122,6 +128,11 @@ export const actions = {
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
     },
+    logout (context) {
+        this.$fire.auth.signOut();
+        this.app.router.push('/');
+        context.commit('logout');
+    },
 }
 
 export const mutations = {
@@ -139,11 +150,17 @@ export const mutations = {
     saveToFirestore: (state) => {
         state.lastSaved = new Date();
     },
+    logout: (state) => {
+        state.isLoggedin = false;
+    },
 }
 
 export const getters = {
     getUser: state => {
-      return state.user
+        return state.user;
+    },
+    getUserLoginStatus: state => {
+        return state.isLoggedin;
     },
     getTimeRecords: (state) => {
         return state.time_records.reduce((acc, entry) => {
