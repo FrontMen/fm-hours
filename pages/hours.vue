@@ -1,5 +1,23 @@
 <template>
   <div class="page-wrapper">
+      <b-container fluid class="d-md-none py-2 mobile-date-bar">
+          <b-row :no-gutters="true">
+              <b-col class="d-flex align-items-center">
+                  <span class="d-md-none hours-table__mobile-week-label">
+                    {{weekLabel}}
+                    <div class="last-saved" v-if="lastSavedDate">
+                        Last saved on {{lastSavedDate | formatDate('HH:mm:ss')}}
+                    </div>
+                </span>
+              </b-col>
+              <b-col cols="2" class="d-flex justify-content-end">
+                  <b-button class="d-md-none p-1" v-b-modal.modal-center>
+                    +
+                </b-button>
+              </b-col>
+          </b-row>
+      </b-container>
+
     <div class="hours-table">
         <b-container class="hours-table__container" fluid="md">
             <div class="hours-table__date">
@@ -21,12 +39,8 @@
                     {{weekLabel}}
                 </span>
             </div>
-            <b-row align-v="center" class="hours-table__top-row">
-                <b-col cols="10" md="5">
-                    <span class="d-md-none hours-table__mobile-week-label">
-                        {{weekLabel}}
-                    </span>
-                </b-col>
+            <b-row align-v="center" class="d-none d-md-flex hours-table__top-row">
+                <b-col cols="5"></b-col>
                 <b-col class="d-none d-md-block">
                     <b-container class="p-0 d-none d-md-block">
                         <b-row :no-gutters="true" class="text-center">
@@ -40,11 +54,7 @@
                         </b-row>
                     </b-container>
                 </b-col>
-                <b-col class="d-flex justify-content-end" cols="2" md="2">
-                    <b-button class="d-md-none" v-b-modal.modal-center>
-                        +
-                    </b-button>
-                </b-col>
+                <b-col cols="2"></b-col>
             </b-row>
             <template v-if="hasCustomersThisWeek">
                 <project-row
@@ -117,7 +127,6 @@ import { format, formatISO } from "date-fns";
 export default Vue.extend({
     computed: {
         ...mapGetters({
-            user: 'auth/getUser',
             customers: 'customers/getCustomers',
             projects: 'customers/getProjects',
             weekLabel: 'week-dates/currentWeekLabel',
@@ -181,6 +190,7 @@ export default Vue.extend({
 .date {
     font-size: 12px;
 }
+
 .hours-table {
     &__date {
         font-size: 24px;
@@ -200,23 +210,36 @@ export default Vue.extend({
 
     &__mobile-week-label {
         font-size: 18px;
-    }
 
-    @media screen and (max-width: 767px) {
-        .date-nav {
-            display: flex;
-            width: 100%;
-            justify-content: center;
+        .last-saved {
+            font-size: 14px;
         }
-        .hours-table__container {
-            padding-top: 50px;
+    }
+}
+
+.mobile-date-bar {
+    background: #ccc;
+
+    button {
+        font-size: 22px;
+        width: 45px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .page-wrapper {
+        height: 100vh;
+        display: grid;
+        grid-template-rows: 65px 1fr;
+
+        .hours-table {
+            overflow-y: scroll;
         }
-        .hours-table__top-row {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            z-index: 10;
-        }
+    }
+    .date-nav {
+        display: flex;
+        width: 100%;
+        justify-content: center;
     }
 }
 </style>

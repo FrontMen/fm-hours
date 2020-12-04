@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrapper">
-        <b-container fluid="xl" class="customers-table">
+        <b-container fluid="xl" class="mt-5 customers-table">
             <b-row class="customers-table__inner">
                 <b-col class="customer-list">
                     <div>

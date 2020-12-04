@@ -10,6 +10,12 @@ html {
     box-sizing: border-box;
 }
 
-.page-wrapper {
-  height: 100vh;
+img {
+  max-width: 100%;
+}
+
+@media (max-width: 998px) {
+  body {
+    overflow: hidden;
+  }
 }
