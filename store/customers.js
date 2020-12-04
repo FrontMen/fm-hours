@@ -10,7 +10,33 @@ export const state = () => ({
     }
 });
 
+const getProjectsByCustomer = async (fire, customer) => {
+    const ref = fire.firestore.collection(`customers/${customer}/projects`);
+    const { docs } = await ref.get()
+    return docs;
+}
+
 export const actions = {
+    async addNewCustomer (context, payload) {
+        const ref = this.$fire.firestore.collection('customers');
+        const { id } = await ref.add(payload);
+        context.commit('addNewCustomerSuccess', {
+            ...payload,
+            id
+        });
+    },
+    async addProjectToCustomer (context, payload) {
+        const {customerId, project } = payload;
+        const ref = this.$fire.firestore.collection('customers').doc(customerId).collection('projects');
+        const { id } = await ref.add(project);
+        context.commit('addProjectForCustomerSuccess', {
+            customer: customerId,
+            project: {
+                id,
+                name: project.name
+            },
+        });
+    },
     async getCustomers (context) {
         const ref = this.$fire.firestore.collection('customers');
         const customers = await ref.get();
@@ -19,15 +45,15 @@ export const actions = {
     },
     selectCustomerToAdd (context, payload) {
         context.commit('selectCustomerToAdd', payload);
-        context.dispatch('selectCustomerToAddProject', payload);
+        context.dispatch('getProjectsByCustomer', payload);
     },
-    async selectCustomerToAddProject (context, payload) {
+    async getProjectsByCustomer (context, payload) {
         const customerProjects = context.getters.getProjects;
         if (customerProjects[payload]) {
+            console.log('niet ophalen');
             return;
         }
-        const ref = this.$fire.firestore.collection(`customers/${payload}/projects`);
-        let projects = (await ref.get()).docs.map((res) => ({id: res.id, ...res.data()}));
+        let projects = (await getProjectsByCustomer(this.$fire, payload)).map((res) => ({id: res.id, ...res.data()}));
         context.commit('getProjectsForCustomerSuccess', {id: payload, projects });
     },
 }
@@ -52,6 +78,16 @@ export const mutations = {
     resetCustomerToAdd(state) {
         state.customerToAdd.customer = null;
         state.customerToAdd.project = null;
+    },
+    addNewCustomerSuccess(state, payload) {
+        state.customers = [...state.customers, payload];
+    },
+    addProjectForCustomerSuccess(state, payload) {
+        const { customer, project } = payload;
+        state.projects[customer] = {
+            ...state.projects[customer],
+            project
+        };
     },
 }
 
