@@ -3,6 +3,7 @@ import { debounce } from '../helpers/debounce';
 
 export const state = () => ({
     isLoggedin: undefined,
+    isAdmin: undefined,
     user: undefined,
     time_records: [],
     lastSaved: undefined
@@ -73,13 +74,17 @@ export const actions = {
         if (authUser) {
             const usersRef = this.$fire.firestore.collection('users');
             const user = await usersRef.doc(claims.user_id).get();
+            const snapshot = await this.$fire.firestore.collection('admins').get();
+            const { admins: adminList } = snapshot.docs[0].data();
+            const isAdmin = adminList.some((email) => email === claims.email);
             if (user.exists) {
-                context.dispatch('loginSuccess', {id: user.id, ...user.data()});
+                context.dispatch('loginSuccess', {id: user.id, ...user.data(), isAdmin});
             } else {
                 const newUser = await usersRef.doc(claims.user_id).set({
                     name: claims.name,
                     picture: claims.picture,
-                    time_records: []
+                    time_records: [],
+                    isAdmin
                 });
                 context.dispatch('loginSuccess', newUser.data());
             }
@@ -139,7 +144,8 @@ export const mutations = {
     loginSuccess: (state, payload) => {
         state.isLoggedin = true;
         state.user = payload;
-        state.time_records = payload.time_records
+        state.time_records = payload.time_records;
+        state.isAdmin = payload.isAdmin;
     },
     addProjectRow: (state, payload) => {
         state.time_records = [...state.time_records, payload];
@@ -158,6 +164,9 @@ export const mutations = {
 export const getters = {
     getUser: state => {
         return state.user;
+    },
+    getIsAdmin: state => {
+        return state.isAdmin;
     },
     getUserLoginStatus: state => {
         return state.isLoggedin;

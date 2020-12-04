@@ -6,7 +6,13 @@
           <b-col>
             <div class="d-flex align-items-center">
               <img src="@/assets/images/logo.png" alt="frontmen logo">
-              <b-button @click="toCustomersPage()" class="ml-2 ml-md-5 py-1 manage-customers-button">Manage customers</b-button>
+              <b-button
+                v-if="isAdmin"
+                @click="toCustomersPage()"
+                class="ml-2 ml-md-5 py-1 manage-customers-button"
+              >
+                Manage customers
+              </b-button>
             </div>
           </b-col>
           <b-col cols="4">
@@ -40,6 +46,7 @@ export default Vue.extend({
     computed: {
         ...mapGetters({
             user: 'user/getUser',
+            isAdmin: 'user/getIsAdmin'
       })
     },
     methods: {
@@ -47,7 +54,7 @@ export default Vue.extend({
         this.$store.dispatch('user/logout');
       },
       toCustomersPage() {
-        console.log('dssdsd');
+        this.$router.push('/customers');
       }
     }
 });
