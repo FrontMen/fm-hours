@@ -105,15 +105,13 @@
         id="modal-center"
         centered
         title="Add a customer"
-        :ok-disabled="!canAddRow"
         @ok="addRow()"
-        @hidden="resetCustomerToAdd"
+        @hidden="selectedCustomerId = undefined"
+        :ok-disabled="!selectedCustomerId"
     >
         <select-project
-            :customers="customers"
-            :projects="selectableProjects"
-            @on-customer-select="getProjectForCustomer($event)"
-            @on-project-select="selectProject($event)"
+            :customers="selectableCustomers"
+            @on-customer-select="selectedCustomerId = $event"
         ></select-project>
     </b-modal>
   </div>
@@ -125,22 +123,25 @@ import { mapGetters } from "vuex";
 import { format, formatISO } from "date-fns";
 
 export default Vue.extend({
+    data() {
+        return {
+            selectedCustomerId: undefined
+        }
+    },
     computed: {
         ...mapGetters({
             customers: 'customers/getCustomers',
-            projects: 'customers/getProjects',
             weekLabel: 'week-dates/currentWeekLabel',
             currentWeek: 'week-dates/currentWeek',
-            timeRecords: 'user/getTimeRecords',
             currentWeekRecords: 'user/getTimeRecordsForCurrentWeek',
-            selectableProjects: 'customers/getSelectableProjects',
             customerToAdd: 'customers/getCustomerToAdd',
             disableNextWeek: 'week-dates/isNextweekInFuture',
             weekTotals: 'user/getWeekTotals',
-            lastSavedDate: 'user/getLastSavedDate'
+            lastSavedDate: 'user/getLastSavedDate',
+            selectableCustomers: 'customers/getSelectableCustomers'
         }),
         canAddRow: function() {
-            return !!(this.customerToAdd.customer && this.customerToAdd.project)
+            return !!this.customerToAdd.customer;
         },
         hasCustomersThisWeek: function() {
             return this.currentWeekRecords.length > 0;
@@ -151,13 +152,12 @@ export default Vue.extend({
     },
     methods: {
         addRow: function() {
-            const customer = this.customers.find((customer: any) => customer.id === this.customerToAdd.customer);
-            const project = this.projects[this.customerToAdd.customer].find((customer: any) => customer.id === this.customerToAdd.project);
+            const customer = this.customers.find((customer: any) => customer.id === this.selectedCustomerId);
             let item = {
                 customer: customer.name,
+                debtor: customer.debtor,
                 date: formatISO(this.currentWeek[0].date),
                 hours: 0,
-                project: project.name
             }
             this.$store.dispatch('user/addProjectRow', item);
         },
@@ -172,15 +172,6 @@ export default Vue.extend({
         },
         changeHours(record: any) {
             this.$store.dispatch('user/addHoursRecords', record);
-        },
-        getProjectForCustomer(customerId: number) {
-            this.$store.dispatch('customers/selectCustomerToAdd', customerId);
-        },
-        selectProject(projectId: number) {
-            this.$store.commit('customers/selectCustomerToAddProject', projectId);
-        },
-        resetCustomerToAdd(projectId: number) {
-            this.$store.commit('customers/resetCustomerToAdd');
         },
     }
 })

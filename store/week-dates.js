@@ -5,6 +5,9 @@ export const state = () => ({
 });
 
 export const mutations = {
+    setToday(state) {
+        state.currentDate = new Date();
+    },
     nextWeek(state) {
         const startDate = startOfISOWeek(new Date(state.currentDate));
         state.currentDate = addDays(new Date(startDate), 7);

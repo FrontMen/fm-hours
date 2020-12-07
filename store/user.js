@@ -15,7 +15,7 @@ const CreateHoursEntry = (date, hours) => {
 
 const AddRecordToList = (allRecords, newRecord, transformation) => {
     let newRecords = [...allRecords];
-    const record = newRecords.find((record) => newRecord.customer === record.customer && newRecord.project === record.project);
+    const record = newRecords.find((record) => newRecord.customer === record.customer);
     const hours = CreateHoursEntry(newRecord.date, newRecord.hours);
     if (record) {
         const recordIndex = record.hours.findIndex((record) => isSameDay(new Date(record.date), new Date(newRecord.date)));
@@ -28,7 +28,6 @@ const AddRecordToList = (allRecords, newRecord, transformation) => {
         newRecords.push(
             {
                 customer: newRecord.customer,
-                project: newRecord.project,
                 hours: [hours]
             }
         );
@@ -54,7 +53,6 @@ const transformToTimeEntryList = (entries) => {
             ...curr.hours.map((entry) => {
                 return {
                     customer: curr.customer,
-                    project: curr.project,
                     date: entry.date,
                     hours: entry.hours
                 }
@@ -94,6 +92,7 @@ export const actions = {
     },
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
+        context.commit('week-dates/setToday', null, {root:true});
         setTimeout(() => {
             this.app.router.push('/hours');
         }, 500);
@@ -175,11 +174,10 @@ export const getters = {
     },
     getTimeRecords: (state) => {
         return state.time_records.reduce((acc, entry) => {
-            let record = acc.find((a) => a.customer === entry.customer && a.project === entry.project);
+            let record = acc.find((a) => a.customer === entry.customer);
             if(!record) {
               record = {
                 customer: entry.customer,
-                project: entry.project,
                 hours: []
               }
               acc.push(record);

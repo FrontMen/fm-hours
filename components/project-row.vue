@@ -7,9 +7,6 @@
             <div class="project-row__title">
                 {{project.customer}}
             </div>
-            <div class="project-row__description">
-                {{project.project}}
-            </div>
         </b-col>
         <b-col md="5">
             <b-container fluid class="p-0">
@@ -150,10 +147,6 @@ export default {
     &__title {
         font-size: 17px;
         font-weight: bold;
-    }
-
-    &__description {
-        font-size: 15px;
     }
 
     &__hours-column {
