@@ -94,7 +94,9 @@ export const actions = {
     },
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
-        this.app.router.push('/hours');
+        setTimeout(() => {
+            this.app.router.push('/hours');
+        }, 500);
     },
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getTimeRecords;

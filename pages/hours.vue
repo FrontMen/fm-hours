@@ -200,12 +200,12 @@ export default Vue.extend({
     }
 
     &__top-row {
-        background: #ccc;
+        background: var(--color-secondary);
         height: 50px;
     }
 
     &__bottom-row {
-        background: #ccc;
+        background: var(--color-secondary);
     }
 
     &__mobile-week-label {
@@ -218,7 +218,7 @@ export default Vue.extend({
 }
 
 .mobile-date-bar {
-    background: #ccc;
+    background: var(--color-secondary);
 
     button {
         font-size: 22px;

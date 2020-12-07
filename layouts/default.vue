@@ -5,7 +5,7 @@
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img src="@/assets/images/logo.png" alt="frontmen logo">
+              <img src="@/assets/images/logo-dark.png" alt="frontmen logo">
               <b-button
                 v-if="isAdmin"
                 @click="toCustomersPage()"
@@ -69,7 +69,7 @@ export default Vue.extend({
   }
 
 .top-bar {
-  background: #201e33;
+  background: var(--color-primary);
 
   img {
     width: 50px;
