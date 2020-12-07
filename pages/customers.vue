@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrapper">
-        <b-container fluid="xl" class="customers-table">
+        <b-container fluid="xl" class="mt-5 customers-table">
             <b-row class="customers-table__inner">
                 <b-col class="customer-list">
                     <div>
@@ -13,14 +13,14 @@
                     </div>
 
                     <div
-                        class="py-3 px-2 item"
+                        class="item"
                         v-for="customer in customers"
                         :key="customer.id"
                         :class="{ 'is-selected': customer.id === activeCustomerId }"
                     >
                         <b-button
                             block
-                            class="p-0 rounded-0 border-0 text-left d-flex justify-content-between align-items-center bg-white text-dark"
+                            class="py-3 px-2 rounded-0 border-0 text-left d-flex justify-content-between align-items-center bg-white text-dark"
                             @click="getProjectForCustomer(customer.id)"
                         >
                             {{customer.name}}
@@ -145,8 +145,9 @@ export default Vue.extend({
 }
 
 .customer-list__head {
-    background: #ccc;
+    background: var(--color-tertiary);
     font-size: 20px;
+    color: white;
 }
 
 .customer-list {
@@ -162,13 +163,14 @@ export default Vue.extend({
         background: transparent !important;
         font-size: 17px;
 
-        &:focus {
-            box-shadow: none;
+        &:focus,
+        &:active {
+            box-shadow: none !important;
         }
     }
 
     &.is-selected {
-        background: #ccc;
+        background: var(--color-secondary);
     }
 }
 </style>

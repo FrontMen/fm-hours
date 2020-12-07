@@ -50,7 +50,6 @@ export const actions = {
     async getProjectsByCustomer (context, payload) {
         const customerProjects = context.getters.getProjects;
         if (customerProjects[payload]) {
-            console.log('niet ophalen');
             return;
         }
         let projects = (await getProjectsByCustomer(this.$fire, payload)).map((res) => ({id: res.id, ...res.data()}));
@@ -84,10 +83,7 @@ export const mutations = {
     },
     addProjectForCustomerSuccess(state, payload) {
         const { customer, project } = payload;
-        state.projects[customer] = {
-            ...state.projects[customer],
-            project
-        };
+        state.projects[customer] = [...state.projects[customer], project];
     },
 }
 

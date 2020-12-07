@@ -1,0 +1,16 @@
+:root {
+    --color-primary: #201e33;
+    --color-secondary: #e6e6e6;
+    --color-tertiary: #0cc;
+}
+
+$theme-colors: (
+  "primary": red,
+  "secondary": #00cccc,
+);
+
+
+// Bootstrap and its default variables
+@import '../../node_modules/bootstrap/scss/bootstrap';
+// BootstrapVue and its default variables
+@import '../../node_modules/bootstrap-vue/src/index.scss';
