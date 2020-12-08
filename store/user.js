@@ -102,14 +102,14 @@ export const actions = {
         context.commit('week-dates/setToday', null, {root:true});
     },
     addHoursRecords (context, payload) {
-        const timeRecords = context.getters.getUiFormattedTimeRecords;
+        const timeRecords = context.getters.getRecordsByCustomer;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
         context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
         context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
         const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
-        const timeRecords = context.getters.getUiFormattedTimeRecords;
+        const timeRecords = context.getters.getRecordsByCustomer;
         const newRecords = RemoveRow(
             timeRecords,
             payload,
@@ -139,7 +139,7 @@ export const actions = {
         context.commit('addProjectRow', payload);
     },
     copyPrevWeekrecords (context) {
-        const records = context.getters.getUiFormattedTimeRecords;
+        const records = context.getters.getRecordsByCustomer;
         const allRecords = context.getters.getTimeRecords;
         const currentWeek = context.rootGetters['week-dates/currentWeek'];
         const startDate = subDays(currentWeek[0].date, 7);
@@ -208,7 +208,7 @@ export const getters = {
     getTimeRecords: (state) => {
         return state.time_records;
     },
-    getUiFormattedTimeRecords: (state, getters) => {
+    getRecordsByCustomer: (state, getters) => {
         return getters.getTimeRecords.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer);
             if(!record) {
@@ -226,7 +226,7 @@ export const getters = {
           }, []);
     },
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
-        const timeRecords = getters.getUiFormattedTimeRecords;
+        const timeRecords = getters.getRecordsByCustomer;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
         const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
         return rows;

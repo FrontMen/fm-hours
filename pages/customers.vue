@@ -31,6 +31,7 @@
         id="modal-center"
         centered
         title="Add a customer"
+        :ok-disabled="!canAddCustomer"
         @ok="addCustomer()"
     >
         <b-form-input v-model="newCustomer.name" placeholder="Customer name"></b-form-input>
@@ -50,6 +51,9 @@ export default Vue.extend({
         ...mapGetters({
             customers: 'customers/getCustomers',
         }),
+        canAddCustomer: function() {
+            return this.newCustomer['name'] && this.newCustomer['debtor']
+        }
     },
     data() {
         return {
