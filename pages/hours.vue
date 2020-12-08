@@ -122,7 +122,7 @@ import { mapGetters } from "vuex";
 import { format, formatISO, formatDistanceToNow } from "date-fns";
 
 export default Vue.extend({
-    middleware: 'isLoggedIn',
+    middleware: 'isAuthenticated',
     data() {
         return {
             selectedCustomerId: undefined

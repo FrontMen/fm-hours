@@ -100,9 +100,6 @@ export const actions = {
     loginSuccess (context, payload) {
         context.commit('loginSuccess', payload);
         context.commit('week-dates/setToday', null, {root:true});
-        setTimeout(() => {
-            this.app.router.push('/hours');
-        }, 500);
     },
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getUiFormattedTimeRecords;

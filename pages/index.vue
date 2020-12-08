@@ -9,14 +9,27 @@
 
 <script lang="ts">
 import Vue from 'vue'
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
   layout: 'login',
-
+  middleware: 'isLoggedIn',
   methods: {
     login() {
       //this.$router.push('/hours');
       this.$store.dispatch('user/login');
+    }
+  },
+  computed: {
+        ...mapGetters({
+            isLoggedIn: 'user/isUserLoggedIn',
+        }),
+  },
+  watch: {
+    isLoggedIn: function (isLoggedIn) {
+      if (isLoggedIn) {
+        this.$router.push('/hours');
+      }
     }
   }
 })
