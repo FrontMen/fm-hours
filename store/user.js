@@ -105,7 +105,7 @@ export const actions = {
         const timeRecords = context.getters.getUiFormattedTimeRecords;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
         context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
-        context.commit('updateProjectRow', newRecords);
+        context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
         const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
@@ -117,7 +117,7 @@ export const actions = {
             transformToTimeEntryList
         );
         context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
-        context.commit('updateProjectRow', newRecords);
+        context.commit('updateTimeRecords', newRecords);
     },
     async saveToFirestore (context, payload) {
         const { records, debounce } = payload;
@@ -159,7 +159,7 @@ export const actions = {
         },[]);
         const newRecords = [...allRecords, ...copiedRecords];
         context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
-        context.commit('updateProjectRow', newRecords);
+        context.commit('updateTimeRecords', newRecords);
     },
     logout (context) {
         this.$fire.auth.signOut();
@@ -178,7 +178,7 @@ export const mutations = {
     addProjectRow: (state, payload) => {
         state.time_records = [...state.time_records, payload];
     },
-    updateProjectRow: (state, payload) => {
+    updateTimeRecords: (state, payload) => {
         state.time_records = payload;
     },
     saveToFirestore: (state) => {
@@ -186,6 +186,8 @@ export const mutations = {
     },
     logout: (state) => {
         state.isLoggedin = false;
+        state.isAdmin = false;
+        state.user = undefined;
     },
 }
 
