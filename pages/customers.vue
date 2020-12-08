@@ -45,6 +45,7 @@ import { mapGetters } from "vuex";
 import { format, formatISO } from "date-fns";
 
 export default Vue.extend({
+    middleware: 'isAdmin',
     computed: {
         ...mapGetters({
             customers: 'customers/getCustomers',

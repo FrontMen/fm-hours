@@ -26,7 +26,7 @@
                             Previous week
                         </span>
                     </b-button>
-                    <b-button @click="nextWeek()" :disabled="disableNextWeek">
+                    <b-button @click="nextWeek()" :disabled="isCurrentWeek">
                         <span class="d-md-none">
                             Next week
                         </span>
@@ -36,8 +36,7 @@
                 <span class="d-none d-md-block">
                     {{weekLabel}}
                 </span>
-
-                <b-button @click="toCurrentWeek()">To current week</b-button>
+                <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">To current week</b-button>
             </div>
             <b-row align-v="center" class="d-none d-md-flex hours-table__top-row">
                 <b-col cols="4"></b-col>
@@ -73,9 +72,8 @@
                         <b-button v-b-modal.modal-center>
                             Register a project
                         </b-button>
-                        <b-button @click="copyFromPrevWeek()">
-                            copy from previous week
-                        </b-button>
+                        or
+                        <b-button @click="copyFromPrevWeek()">Copy from previous week</b-button>
                     </b-col>
                 </b-row>
             </template>
@@ -124,6 +122,7 @@ import { mapGetters } from "vuex";
 import { format, formatISO, formatDistanceToNow } from "date-fns";
 
 export default Vue.extend({
+    middleware: 'isLoggedIn',
     data() {
         return {
             selectedCustomerId: undefined
@@ -136,7 +135,7 @@ export default Vue.extend({
             currentWeek: 'week-dates/currentWeek',
             currentWeekRecords: 'user/getTimeRecordsForCurrentWeek',
             customerToAdd: 'customers/getCustomerToAdd',
-            disableNextWeek: 'week-dates/isNextweekInFuture',
+            isCurrentWeek: 'week-dates/isNextweekInFuture',
             weekTotals: 'user/getWeekTotals',
             lastSavedDate: 'user/getLastSavedDate',
             selectableCustomers: 'customers/getSelectableCustomers'

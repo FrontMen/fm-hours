@@ -1,4 +1,4 @@
-import { isWithinInterval, isSameDay, startOfISOWeek, addDays, subDays } from 'date-fns';
+import { isWithinInterval, isSameDay, formatISO, startOfISOWeek, addDays, subDays } from 'date-fns';
 import { debounce } from '../helpers/debounce';
 
 export const state = () => ({
@@ -105,16 +105,14 @@ export const actions = {
         }, 500);
     },
     addHoursRecords (context, payload) {
-        console.log('payload', payload);
-        const timeRecords = context.getters.getTimeRecords;
+        const timeRecords = context.getters.getUiFormattedTimeRecords;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
-        console.log('newRecords', newRecords);
         context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
         context.commit('updateProjectRow', newRecords);
     },
     removeRecordRow (context, payload) {
         const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
-        const timeRecords = context.getters.getTimeRecords;
+        const timeRecords = context.getters.getUiFormattedTimeRecords;
         const newRecords = RemoveRow(
             timeRecords,
             payload,
@@ -143,15 +141,28 @@ export const actions = {
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
     },
-    copyPrevWeekrecords (context, payload) {
-        const records = context.getters.getTimeRecords;
-        console.log('records', records);
+    copyPrevWeekrecords (context) {
+        const records = context.getters.getUiFormattedTimeRecords;
+        const allRecords = context.getters.getTimeRecords;
         const startDate = subDays(startOfISOWeek(new Date()), 7);
         const endDate = addDays(startDate, 6);
         const rows = getRecordsForWeekRange(records, startDate, endDate);
-
-        console.log('rows', rows);
-        //context.commit('addProjectRow', payload);
+        const copiedRecords = rows.reduce((acc, curr) => {
+            return [
+                ...acc,
+                ...curr.hours.map((entry) => {
+                    return {
+                        customer: curr.customer,
+                        debtor: curr.debtor,
+                        date: formatISO(addDays(new Date(entry.date), 7)),
+                        hours: entry.hours,
+                    }
+                })
+            ]
+        },[]);
+        const newRecords = [...allRecords, ...copiedRecords];
+        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
+        context.commit('updateProjectRow', newRecords);
     },
     logout (context) {
         this.$fire.auth.signOut();
@@ -168,7 +179,6 @@ export const mutations = {
         state.isAdmin = payload.isAdmin;
     },
     addProjectRow: (state, payload) => {
-        console.log('payload', payload);
         state.time_records = [...state.time_records, payload];
     },
     updateProjectRow: (state, payload) => {
@@ -186,15 +196,17 @@ export const getters = {
     getUser: state => {
         return state.user;
     },
-    getIsAdmin: state => {
+    isUserAdmin: state => {
         return state.isAdmin;
     },
-    getUserLoginStatus: state => {
+    isUserLoggedIn: state => {
         return state.isLoggedin;
     },
     getTimeRecords: (state) => {
-        console.log('state.time_records', state.time_records);
-        return state.time_records.reduce((acc, entry) => {
+        return state.time_records;
+    },
+    getUiFormattedTimeRecords: (state, getters) => {
+        return getters.getTimeRecords.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer);
             if(!record) {
               record = {
@@ -211,10 +223,9 @@ export const getters = {
           }, []);
     },
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
-        const timeRecords = getters.getTimeRecords;
+        const timeRecords = getters.getUiFormattedTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
         const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
-        console.log('rows123', rows);
         return rows;
     },
     getWeekTotals: (state, getters, _, rootGetters) => {

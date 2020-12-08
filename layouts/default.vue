@@ -46,7 +46,7 @@ export default Vue.extend({
     computed: {
         ...mapGetters({
             user: 'user/getUser',
-            isAdmin: 'user/getIsAdmin'
+            isAdmin: 'user/isUserAdmin'
       })
     },
     methods: {
