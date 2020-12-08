@@ -141,9 +141,13 @@ export const actions = {
     copyPrevWeekrecords (context) {
         const records = context.getters.getUiFormattedTimeRecords;
         const allRecords = context.getters.getTimeRecords;
-        const startDate = subDays(startOfISOWeek(new Date()), 7);
+        const currentWeek = context.rootGetters['week-dates/currentWeek'];
+        const startDate = subDays(currentWeek[0].date, 7);
         const endDate = addDays(startDate, 6);
         const rows = getRecordsForWeekRange(records, startDate, endDate);
+        if (rows.length === 0) {
+            return;
+        }
         const copiedRecords = rows.reduce((acc, curr) => {
             return [
                 ...acc,
@@ -158,8 +162,8 @@ export const actions = {
             ]
         },[]);
         const newRecords = [...allRecords, ...copiedRecords];
-        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
         context.commit('updateTimeRecords', newRecords);
+        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
     },
     logout (context) {
         this.$fire.auth.signOut();
