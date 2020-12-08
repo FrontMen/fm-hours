@@ -1,4 +1,4 @@
-import { isWithinInterval, isSameDay } from 'date-fns';
+import { isWithinInterval, isSameDay, startOfISOWeek, addDays, subDays } from 'date-fns';
 import { debounce } from '../helpers/debounce';
 
 export const state = () => ({
@@ -54,7 +54,8 @@ const transformToTimeEntryList = (entries) => {
                 return {
                     customer: curr.customer,
                     date: entry.date,
-                    hours: entry.hours
+                    hours: entry.hours,
+                    debtor: curr.debtor
                 }
             })
         ]
@@ -62,6 +63,12 @@ const transformToTimeEntryList = (entries) => {
 }
 
 const debouncer = debounce((fn) => fn(), 2000);
+
+const getRecordsForWeekRange = (records, startDate, endDate) => {
+    return records.filter((record) => {
+        return record.hours.some((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
+    });
+}
 
 export const actions = {
     async login () {
@@ -98,8 +105,10 @@ export const actions = {
         }, 500);
     },
     addHoursRecords (context, payload) {
+        console.log('payload', payload);
         const timeRecords = context.getters.getTimeRecords;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
+        console.log('newRecords', newRecords);
         context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
         context.commit('updateProjectRow', newRecords);
     },
@@ -134,6 +143,16 @@ export const actions = {
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
     },
+    copyPrevWeekrecords (context, payload) {
+        const records = context.getters.getTimeRecords;
+        console.log('records', records);
+        const startDate = subDays(startOfISOWeek(new Date()), 7);
+        const endDate = addDays(startDate, 6);
+        const rows = getRecordsForWeekRange(records, startDate, endDate);
+
+        console.log('rows', rows);
+        //context.commit('addProjectRow', payload);
+    },
     logout (context) {
         this.$fire.auth.signOut();
         this.app.router.push('/');
@@ -149,6 +168,7 @@ export const mutations = {
         state.isAdmin = payload.isAdmin;
     },
     addProjectRow: (state, payload) => {
+        console.log('payload', payload);
         state.time_records = [...state.time_records, payload];
     },
     updateProjectRow: (state, payload) => {
@@ -173,12 +193,14 @@ export const getters = {
         return state.isLoggedin;
     },
     getTimeRecords: (state) => {
+        console.log('state.time_records', state.time_records);
         return state.time_records.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer);
             if(!record) {
               record = {
                 customer: entry.customer,
-                hours: []
+                hours: [],
+                debtor: entry.debtor
               }
               acc.push(record);
             }
@@ -191,9 +213,8 @@ export const getters = {
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
         const timeRecords = getters.getTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
-        const rows = timeRecords.filter((record) => {
-            return record.hours.some((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
-        });
+        const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
+        console.log('rows123', rows);
         return rows;
     },
     getWeekTotals: (state, getters, _, rootGetters) => {

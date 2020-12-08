@@ -1,4 +1,4 @@
-import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay } from 'date-fns';
+import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay, isWeekend } from 'date-fns';
 
 export const state = () => ({
     currentDate: new Date(),
@@ -22,7 +22,7 @@ export const getters = {
     currentWeekLabel: (_, getters) => {
         const currentWeek = getters.currentWeek;
         const firstDay = currentWeek[0];
-        const lastDay = currentWeek[4];
+        const lastDay = currentWeek[6];
         let label = format(firstDay.date, 'dd');
         if (firstDay.month !== lastDay.month) {
             label += ` ${format(firstDay.date, 'MMM')}`;
@@ -36,7 +36,7 @@ export const getters = {
     },
     currentWeek: state => {
         const startDate = startOfISOWeek(new Date(state.currentDate));
-        return [...Array(5)].map((_, index) => {
+        return [...Array(7)].map((_, index) => {
             const newDate = addDays(new Date(startDate), index);
             return {
                 date: newDate,
@@ -44,6 +44,7 @@ export const getters = {
                 monthDay: format(newDate, 'dd'),
                 month: format(newDate, 'MMM'),
                 year: format(newDate, 'yyyy'),
+                isWeekend: isWeekend(newDate)
             }
         });
     },
@@ -54,6 +55,6 @@ export const getters = {
     },
     getcurrentWeekRange: (_, getters) => {
         const currWeek = getters.currentWeek;
-        return {startDate: currWeek[0].date, endDate: currWeek[4].date}
+        return {startDate: currWeek[0].date, endDate: currWeek[6].date}
     },
 }

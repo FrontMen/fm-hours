@@ -17,7 +17,12 @@
                         v-for="customer in customers"
                         :key="customer.id"
                     >
-                        {{customer.name}}
+                        <div class="font-weight-bold">
+                            {{customer.name}}
+                        </div>
+                        <div>
+                            {{customer.debtor}}
+                        </div>
                     </div>
                 </b-col>
             </b-row>
@@ -29,7 +34,7 @@
         @ok="addCustomer()"
     >
         <b-form-input v-model="newCustomer.name" placeholder="Customer name"></b-form-input>
-        <b-form-input v-model="newCustomer.debtor" placeholder="Debtor of Customer"></b-form-input>
+        <b-form-input v-model="newCustomer.debtor" placeholder="Debtor of Customer" class="mt-3"></b-form-input>
     </b-modal>
   </div>
 </template>

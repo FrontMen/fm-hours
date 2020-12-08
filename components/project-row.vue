@@ -1,8 +1,8 @@
 <template>
-    <b-row cols-sm="1" class="hours-table__project-row project-row">
+    <b-row cols-sm="1" class="hours-table__project-row project-row align-items-center">
         <b-col
             class=" project-row__project-title"
-            md="5"
+            md="4"
         >
             <div class="project-row__title">
                 {{project.customer}}
@@ -15,6 +15,7 @@
                         class="project-row__hours-input"
                         v-for="(input, index) in weekyHours"
                         :key="index"
+                        :class="{'is-weekend': input.isWeekend}"
                     >
                         <div class="d-md-none">{{input.date | formatDate('EEEEEE')}}</div>
                         <b-form-input
@@ -81,7 +82,7 @@ export default {
             const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
 
             const output = {
-                project: this.project.project,
+                debtor: this.project.debtor,
                 customer: this.project.customer,
                 date: formatISO(date),
                 hours,
@@ -108,6 +109,10 @@ export default {
 
         &:last-child {
             margin-right: 0;
+        }
+
+        &.is-weekend input {
+            background: #efefef;
         }
 
         @media (max-width: 998px) {

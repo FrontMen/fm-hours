@@ -5,11 +5,11 @@
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img src="@/assets/images/logo-dark.png" alt="frontmen logo">
+              <img @click="toPage('/hours')" src="@/assets/images/logo-dark.png" alt="frontmen logo">
               <b-button
                 v-if="isAdmin"
-                @click="toCustomersPage()"
-                class="ml-2 ml-md-5 py-1 manage-customers-button"
+                @click="toPage('/customers')"
+                class="ml-2 ml-md-3 py-1 manage-customers-button"
               >
                 Manage customers
               </b-button>
@@ -53,14 +53,23 @@ export default Vue.extend({
       logout() {
         this.$store.dispatch('user/logout');
       },
-      toCustomersPage() {
-        this.$router.push('/customers');
+      toPage(page) {
+        this.$router.push(page);
       }
     }
 });
 </script>
 
 <style lang="scss">
+.manage-customers-button {
+    background: transparent !important;
+    border: none;
+    border-radius: 0;
+
+    &:hover {
+      border-bottom: 1px solid white;
+    }
+}
 
 @media screen and (max-width: 767px) {
       .manage-customers-button {

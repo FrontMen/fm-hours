@@ -5,9 +5,7 @@
               <b-col class="d-flex align-items-center">
                   <span class="d-md-none hours-table__mobile-week-label">
                     {{weekLabel}}
-                    <div class="last-saved" v-if="lastSavedDate">
-                        Last saved on {{lastSavedDate | formatDate('HH:mm:ss')}}
-                    </div>
+                    <last-saved></last-saved>
                 </span>
               </b-col>
               <b-col cols="2" class="d-flex justify-content-end">
@@ -19,7 +17,7 @@
       </b-container>
 
     <div class="hours-table">
-        <b-container class="hours-table__container" fluid="md">
+        <b-container class="hours-table__container" fluid="xl">
             <div class="hours-table__date">
                 <div class="hours-table__date-nav date-nav mr-md-3">
                     <b-button @click="prevWeek()" class="mr-3 mr-md-0">
@@ -38,10 +36,12 @@
                 <span class="d-none d-md-block">
                     {{weekLabel}}
                 </span>
+
+                <b-button @click="toCurrentWeek()">To current week</b-button>
             </div>
             <b-row align-v="center" class="d-none d-md-flex hours-table__top-row">
-                <b-col cols="5"></b-col>
-                <b-col class="d-none d-md-block">
+                <b-col cols="4"></b-col>
+                <b-col md="5" class="d-none d-md-block">
                     <b-container class="p-0 d-none d-md-block">
                         <b-row :no-gutters="true" class="text-center">
                             <b-col
@@ -58,11 +58,11 @@
             </b-row>
             <template v-if="hasCustomersThisWeek">
                 <project-row
-                    v-for="project in currentWeekRecords"
-                    :key="project.project"
+                    v-for="customer in currentWeekRecords"
+                    :key="customer.project"
                     :currentWeek="currentWeek"
-                    :project="project"
-                    @on-remove="removeRow(project)"
+                    :project="customer"
+                    @on-remove="removeRow(customer)"
                     @on-hours-change="changeHours($event)"
                 ></project-row>
             </template>
@@ -73,21 +73,22 @@
                         <b-button v-b-modal.modal-center>
                             Register a project
                         </b-button>
+                        <b-button @click="copyFromPrevWeek()">
+                            copy from previous week
+                        </b-button>
                     </b-col>
                 </b-row>
             </template>
             <b-row v-if="hasCustomersThisWeek" class="py-3 hours-table__bottom-row">
-                <b-col>
+                <b-col cols="4">
                     <div class="d-flex align-items-center">
                         <b-button class="d-none d-md-block" v-b-modal.modal-center>
                             + New row
                         </b-button>
-                        <span class="ml-3" v-if="lastSavedDate">
-                            Last saved on {{lastSavedDate | formatDate('HH:mm:ss')}}
-                        </span>
+                        <last-saved class="ml-3"></last-saved>
                     </div>
                 </b-col>
-                <b-col class="d-none d-md-block">
+                <b-col md="5" class="d-none d-md-block">
                     <b-container>
                     <b-row class="text-center">
                         <b-col
@@ -120,7 +121,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import { mapGetters } from "vuex";
-import { format, formatISO } from "date-fns";
+import { format, formatISO, formatDistanceToNow } from "date-fns";
 
 export default Vue.extend({
     data() {
@@ -140,12 +141,15 @@ export default Vue.extend({
             lastSavedDate: 'user/getLastSavedDate',
             selectableCustomers: 'customers/getSelectableCustomers'
         }),
+        lastSavedLabel: function() {
+            return formatDistanceToNow(new Date(this.lastSavedDate), { includeSeconds: true, addSuffix: true });
+        },
         canAddRow: function() {
             return !!this.customerToAdd.customer;
         },
         hasCustomersThisWeek: function() {
             return this.currentWeekRecords.length > 0;
-        }
+        },
     },
     created() {
       this.$store.dispatch('customers/getCustomers');
@@ -172,6 +176,12 @@ export default Vue.extend({
         },
         changeHours(record: any) {
             this.$store.dispatch('user/addHoursRecords', record);
+        },
+        copyFromPrevWeek(record: any) {
+            this.$store.dispatch('user/copyPrevWeekrecords');
+        },
+        toCurrentWeek(record: any) {
+            this.$store.commit('week-dates/setToday');
         },
     }
 })
@@ -202,7 +212,7 @@ export default Vue.extend({
     &__mobile-week-label {
         font-size: 18px;
 
-        .last-saved {
+        last-saved {
             font-size: 14px;
         }
     }
