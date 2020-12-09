@@ -1,0 +1,141 @@
+<template>
+    <three-col-row class="project-row">
+        <template #col1>
+            <div class="project-row__title font-weight-bold">
+                {{project.customer}}
+            </div>
+        </template>
+        <template #col2>
+            <div
+                class=""
+                v-for="(input, index) in weekyHours"
+                :key="index"
+                :class="{'is-weekend': input.isWeekend}"
+            >
+                <div class="d-md-none">{{input.date | formatDate('EEEEEE')}}</div>
+                <b-form-input
+                    type="number"
+                    no-wheel
+                    @update="update(input.date, $event)"
+                    :value="input.hours"
+                    class="project-row__input"
+                ></b-form-input>
+            </div>
+        </template>
+        <template #col3>
+            <div class="d-flex align-items-center project-row__hours-column">
+                <div class="mr-2">
+                    <span class="d-md-none">Totale uren:</span>
+                    {{totalWeekHours}}
+                </div>
+                <b-button
+                    class="project-row__remove-button border-0"
+                    @click="$emit('on-remove')"
+                >
+                    <span class="d-md-none">Remove</span>
+                    <b-icon icon="x-square"></b-icon>
+                </b-button>
+            </div>
+        </template>
+    </three-col-row>
+</template>
+
+<script>
+import { formatISO, isSameDay } from "date-fns";
+export default {
+    computed: {
+        weekyHours: function () {
+            return this.currentWeek.map((entry) => {
+                const input = this.project.hours.find((input) => isSameDay(new Date(input.date), entry.date));
+                return {
+                    ...entry,
+                    hours: input ? input.hours : 0
+                }
+            });
+        },
+        totalWeekHours: function () {
+            return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0);
+        },
+    },
+    props: {
+        currentWeek: {
+            type: Array,
+            default: []
+        },
+        project: {
+            type: Object,
+            default: () => {}
+        },
+    },
+    methods: {
+        update: function(date, value) {
+            const val = parseFloat(value).toFixed(2);
+            // check for NAN and if the value is below 0. If so, set value to 0
+            const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
+
+            const output = {
+                debtor: this.project.debtor,
+                customer: this.project.customer,
+                date: formatISO(date),
+                hours,
+            }
+            this.$emit('on-hours-change', output);
+        },
+    }
+};
+</script>
+
+
+
+<style scoped lang="scss">
+@import 'node_modules/bootstrap/scss/bootstrap';
+.project-row {
+    padding: 16px 0;
+
+    + .project-row {
+        border-top: 1px solid var(--color-primary);
+    }
+
+    &__input {
+        padding: 0;
+        text-align: center;
+        border:1px solid #00cccc7a;
+
+        &:focus {
+            outline: none;
+        }
+    }
+
+    &__remove-button {
+        display: flex;
+        align-items: center;
+
+        span {
+            margin-right: 8px;
+        }
+
+        @media (min-width: 767px) {
+            background: transparent;
+            color: #1d1d1d;
+        }
+    }
+
+    &__title {
+        font-size: 17px;
+        color: var(--color-primary);
+    }
+
+    &__hours-column {
+        justify-content: flex-end;
+        height: 100%;
+    }
+
+    @media (max-width: map-get($grid-breakpoints, md)) {
+        .project-row__hours-column {
+            justify-content: flex-start;
+            padding-top: 16px;
+            padding-bottom: 10px;
+        }
+    }
+}
+</style>

@@ -25,8 +25,6 @@ export default Vue.extend({
 <style lang="scss">
 
 .top-bar {
-  background: #201e33;
-
   img {
     width: 50px;
     max-height: 100%;

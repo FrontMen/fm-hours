@@ -1,0 +1,7 @@
+p {
+    //color: var(--color-primary);
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}

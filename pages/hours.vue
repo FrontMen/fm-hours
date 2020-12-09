@@ -1,5 +1,38 @@
 <template>
   <div class="page-wrapper">
+      <div class="top-bar py-3">
+      <b-container>
+          <b-row>
+              <b-col>
+                  <div class="d-flex align-items-center">
+                    <img @click="toPage('/hours')" src="@/assets/images/logo-dark.png" alt="frontmen logo">
+                  </div>
+              </b-col>
+              <b-col>
+                  <div class="d-flex align-items-center justify-content-center h-100 font-weight-bold week-label">
+                    <p>{{weekLabel}}</p>
+                  </div>
+              </b-col>
+              <b-col>
+                    <div class="user d-flex align-items-center justify-content-end">
+                        <!-- <div class="d-none d-md-block user__name mr-3">
+                        {{user.name}}
+                        </div> -->
+                        <b-dropdown right class="user__dropdown">
+                            <template #button-content>
+                                <div class="user__image flex-shrink-0 mr-1">
+                                <img :src="user.picture" alt="user image">
+                                </div>
+                            </template>
+                        <b-dropdown-item @click="logout()">Logout</b-dropdown-item>
+                        </b-dropdown>
+                    </div>
+              </b-col>
+          </b-row>
+      </b-container>
+    </div>
+
+
       <b-container fluid class="d-md-none py-2 mobile-date-bar">
           <b-row :no-gutters="true">
               <b-col class="d-flex align-items-center">
@@ -16,87 +49,93 @@
           </b-row>
       </b-container>
 
+      <b-container class="mb-3" fluid="xl">
+          <b-row>
+              <b-col>
+                <div class="hours-table__date justify-content-between">
+                        <div class="d-flex">
+                            <div class="hours-table__date-nav date-nav mr-md-3">
+                                <b-button @click="prevWeek()" class="mr-3 mr-md-0">
+                                    <b-icon icon="arrow-left"></b-icon>
+                                    <span class="d-md-none">
+                                        Previous week
+                                    </span>
+                                </b-button>
+                                <b-button @click="nextWeek()" :disabled="isCurrentWeek">
+                                    <span class="d-md-none">
+                                        Next week
+                                    </span>
+                                    <b-icon icon="arrow-right"></b-icon>
+                                </b-button>
+                            </div>
+                            <span class="d-none d-md-block">
+                                {{weekLabel}}
+                            </span>
+                        </div>
+                        <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">To current week</b-button>
+                    </div>
+              </b-col>
+          </b-row>
+      </b-container>
+
     <div class="hours-table">
         <b-container class="hours-table__container" fluid="xl">
-            <div class="hours-table__date">
-                <div class="hours-table__date-nav date-nav mr-md-3">
-                    <b-button @click="prevWeek()" class="mr-3 mr-md-0">
-                        <b-icon icon="arrow-left"></b-icon>
-                        <span class="d-md-none">
-                            Previous week
-                        </span>
-                    </b-button>
-                    <b-button @click="nextWeek()" :disabled="isCurrentWeek">
-                        <span class="d-md-none">
-                            Next week
-                        </span>
-                        <b-icon icon="arrow-right"></b-icon>
-                    </b-button>
-                </div>
-                <span class="d-none d-md-block">
-                    {{weekLabel}}
-                </span>
-                <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">To current week</b-button>
-            </div>
-            <b-row align-v="center" class="d-none d-md-flex hours-table__top-row">
-                <b-col cols="4"></b-col>
-                <b-col md="5" class="d-none d-md-block">
-                    <b-container class="p-0 d-none d-md-block">
-                        <b-row :no-gutters="true" class="text-center">
-                            <b-col
-                                v-for="date in currentWeek"
-                                :key="date.weekDay"
-                            >
-                                {{date.weekDay}}
-                                <div class="date">{{date.monthDay}} {{date.month}}</div>
-                            </b-col>
-                        </b-row>
-                    </b-container>
-                </b-col>
-                <b-col cols="2"></b-col>
-            </b-row>
+            <three-col-row class="d-none d-md-block hours-table__top-row">
+                <template #col2 v-if="hasCustomersThisWeek">
+                    <div
+                        v-for="date in currentWeek"
+                        :key="date.weekDay"
+                    >
+                        {{date.weekDay}}
+                        <div class="date">{{date.monthDay}} {{date.month}}</div>
+                    </div>
+                </template>
+            </three-col-row>
             <template v-if="hasCustomersThisWeek">
-                <project-row
+                <new-row
                     v-for="customer in currentWeekRecords"
                     :key="customer.project"
                     :currentWeek="currentWeek"
                     :project="customer"
                     @on-remove="removeRow(customer)"
                     @on-hours-change="changeHours($event)"
-                ></project-row>
+                ></new-row>
             </template>
             <template v-else>
                 <b-row>
-                    <b-col class="pt-5 pb-4 text-center">
-                        <p>There are no projects registered this week.</p>
-                        <b-button v-b-modal.modal-center>
-                            Register a project
-                        </b-button>
-                        or
-                        <b-button @click="copyFromPrevWeek()">Copy from previous week</b-button>
+                    <b-col>
+                        <div class="text-center py-5">
+                            <p>There are no projects registered this week.</p>
+                            <b-button v-b-modal.modal-center>
+                                Add a project
+                            </b-button>
+                            <span class="mx-2">
+                                or
+                            </span>
+                            <b-button @click="copyFromPrevWeek()">Copy from previous week</b-button>
+                        </div>
                     </b-col>
                 </b-row>
             </template>
-            <b-row v-if="hasCustomersThisWeek" class="py-3 hours-table__bottom-row">
-                <b-col cols="4">
-                    <div class="d-flex align-items-center">
-                        <b-button class="d-none d-md-block" v-b-modal.modal-center>
-                            + New row
-                        </b-button>
-                        <last-saved class="ml-3"></last-saved>
-                    </div>
+            <three-col-row v-if="hasCustomersThisWeek" class="hours-table__bottom-row">
+                <template #col1>
+                    <last-saved></last-saved>
+                </template>
+                <template #col2>
+                    <div class="hours-table-day-total"
+                        v-for="(dayTotal, index) in weekTotals"
+                        :key="index"
+                    >{{dayTotal}}</div>
+                </template>
+            </three-col-row>
+        </b-container>
+        <b-container class="mt-3">
+            <b-row>
+                <b-col>
+                    <b-button class="d-none d-md-block" v-b-modal.modal-center>
+                        + New row
+                    </b-button>
                 </b-col>
-                <b-col md="5" class="d-none d-md-block">
-                    <b-container>
-                    <b-row class="text-center">
-                        <b-col
-                            v-for="(dayTotal, index) in weekTotals"
-                            :key="index"
-                        >{{dayTotal}}</b-col>
-                    </b-row>
-                    </b-container>
-                </b-col>
-                <b-col cols="2"></b-col>
             </b-row>
         </b-container>
     </div>
@@ -138,7 +177,8 @@ export default Vue.extend({
             isCurrentWeek: 'week-dates/isNextweekInFuture',
             weekTotals: 'user/getWeekTotals',
             lastSavedDate: 'user/getLastSavedDate',
-            selectableCustomers: 'customers/getSelectableCustomers'
+            selectableCustomers: 'customers/getSelectableCustomers',
+            user: 'user/getUser',
         }),
         lastSavedLabel: function() {
             return formatDistanceToNow(new Date(this.lastSavedDate), { includeSeconds: true, addSuffix: true });
@@ -187,6 +227,11 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
+
+.week-label {
+    font-size: 22px;
+    color: white;
+}
 .date {
     font-size: 12px;
 }
@@ -194,18 +239,30 @@ export default Vue.extend({
 .hours-table {
     &__date {
         font-size: 24px;
-        padding: 18px 0px;
         display: flex;
+        margin-top: 50px;
         align-items: center;
     }
 
-    &__top-row {
+    &__container {
         background: var(--color-secondary);
-        height: 50px;
+        border-radius: 10px;
+    }
+
+    &__top-row {
+        background: var(--color-tertiary);
+        padding: 12px 0;
+        border-radius: 10px 10px 0 0;
     }
 
     &__bottom-row {
-        background: var(--color-secondary);
+        background: var(--color-tertiary);
+        border-radius: 0 0 10px 10px;
+        padding: 14px 0;
+
+        .table-row .hours-table-day-total {
+            text-align: center;
+        }
     }
 
     &__mobile-week-label {

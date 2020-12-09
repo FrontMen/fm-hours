@@ -95,88 +95,89 @@ export default {
 
 
 
-<style scoped lang="scss">
-@import 'node_modules/bootstrap/scss/bootstrap';
-.project-row {
-    padding: 12px 0 8px;
+// <style scoped lang="scss">
+// @import 'node_modules/bootstrap/scss/bootstrap';
+// .project-row {
+//     padding: 12px 0 8px;
 
-    + .project-row {
-        border-top: 1px solid;
-    }
+//     + .project-row {
+//         border-top: 1px solid var(--color-primary);
+//     }
 
-    &__hours-input {
-        margin-right: 20px;
+//     &__hours-input {
+//         margin-right: 20px;
 
-        &:last-child {
-            margin-right: 0;
-        }
+//         &:last-child {
+//             margin-right: 0;
+//         }
 
-        &.is-weekend input {
-            background: #efefef;
-        }
+//         &.is-weekend input {
+//             background: #efefef;
+//         }
 
-        @media (max-width: 998px) {
-            margin-right: 10px;
-        }
-    }
+//         @media (max-width: 998px) {
+//             margin-right: 10px;
+//         }
+//     }
 
-    &__input {
-        padding: 0;
-        text-align: center;
+//     &__input {
+//         padding: 0;
+//         text-align: center;
+//         border:1px solid #00cccc7a;
 
-        &:focus {
-            outline: none;
-        }
-    }
+//         &:focus {
+//             outline: none;
+//         }
+//     }
 
-    &__remove-button {
-        display: flex;
-        align-items: center;
+//     &__remove-button {
+//         display: flex;
+//         align-items: center;
 
-        span {
-            margin-right: 8px;
-        }
+//         span {
+//             margin-right: 8px;
+//         }
 
-        @media (min-width: 767px) {
-            background: transparent;
-            color: #1d1d1d;
-        }
-    }
+//         @media (min-width: 767px) {
+//             background: transparent;
+//             color: #1d1d1d;
+//         }
+//     }
 
-    &__project-title {
-         @media (max-width: map-get($grid-breakpoints, md)) {
-            margin-bottom: 6px;
-        }
-    }
+//     &__project-title {
+//          @media (max-width: map-get($grid-breakpoints, md)) {
+//             margin-bottom: 6px;
+//         }
+//     }
 
-    &__title {
-        font-size: 17px;
-        font-weight: bold;
-    }
+//     &__title {
+//         font-size: 17px;
+//         font-weight: bold;
+//     }
 
-    &__hours-column {
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-    }
+//     &__hours-column {
+//         display: flex;
+//         align-items: center;
+//         justify-content: flex-end;
+//     }
 
-    &__total-hours {
-        width: 50%;
-        text-align: center;
-    }
+//     &__total-hours {
+//         width: 50%;
+//         text-align: center;
+//     }
 
-    @media (max-width: map-get($grid-breakpoints, md)) {
-        .project-row__hours-column {
-            justify-content: flex-start;
-            padding-top: 16px;
-            padding-bottom: 10px;
-        }
+//     @media (max-width: map-get($grid-breakpoints, md)) {
+//         .project-row__hours-column {
+//             justify-content: flex-start;
+//             padding-top: 16px;
+//             padding-bottom: 10px;
+//         }
 
-        .project-row__total-hours {
-            width: auto;
-            margin-right: 20px;
-        }
+//         .project-row__total-hours {
+//             width: auto;
+//             margin-right: 20px;
+//         }
 
-    }
-}
-</style>
+//     }
+// }
+// </style>
