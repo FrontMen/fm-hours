@@ -1,36 +1,44 @@
 <template>
   <div class="page-wrapper">
-        <b-container fluid="xl" class="mt-5 customers-table">
-            <b-row class="customers-table__inner">
-                <b-col class="customer-list">
-                    <div>
-                        <div class="py-2 px-3 d-flex align-items-center justify-content-between customer-list__head">
-                            Customers
-                            <b-button v-b-modal.modal-center>
-                                + New customer
-                            </b-button>
-                        </div>
-                    </div>
-
-                    <div
-                        class="item py-3 px-2"
-                        v-for="customer in customers"
-                        :key="customer.id"
-                    >
-                        <div class="font-weight-bold">
-                            {{customer.name}}
-                        </div>
-                        <div>
-                            {{customer.debtor}}
-                        </div>
+      <div class="content-wrapper mt-5">
+        <b-container class="mx-0 px-0 mb-3" fluid>
+            <b-row :no-gutters="true">
+                <b-col>
+                    <div class="d-flex justify-content-end">
+                        <b-button v-b-modal.modal-center>
+                            + New customer
+                        </b-button>
                     </div>
                 </b-col>
             </b-row>
         </b-container>
+        <b-container fluid class="customers-table">
+            <b-row class="customers-table__head py-3">
+                <b-col>
+                    <span class="font-weight-bold">Customers</span>
+                </b-col>
+            </b-row>
+            <b-row
+                class="item py-3 customers-table__customer"
+                v-for="customer in customers"
+                :key="customer.id"
+            >
+                <b-col>
+                    <div class="font-weight-bold">
+                        {{customer.name}}
+                    </div>
+                    <div>
+                        {{customer.debtor}}
+                    </div>
+                </b-col>
+            </b-row>
+        </b-container>
+      </div>
     <b-modal
         id="modal-center"
         centered
         title="Add a customer"
+        cancel-variant="danger"
         :ok-disabled="!canAddCustomer"
         @ok="addCustomer()"
     >
@@ -79,28 +87,24 @@ export default Vue.extend({
 <style lang="scss">
 
 .customers-table {
-    background: #efefef;
+    background: rgba(255, 255, 255, .8);
     height: 100%;
+    border-radius: 10px;
+
+    &__head {
+        background: var(--color-tertiary);
+        border-radius: 10px 10px 0 0;
+    }
 }
 
 .customers-table__inner {
     height: 100%;
 }
 
-.customer-list__head {
-    background: var(--color-tertiary);
-    font-size: 20px;
-    color: white;
-}
-
-.customer-list {
-    box-shadow: 5px 0px 5px -2px rgba(0, 0, 0, 0.2);
-    position: relative;
-    z-index: 10;
-}
-
 .item {
-    border-bottom: 1px solid;
+    + .item {
+        border-top: 1px solid var(--color-primary);
+    }
 
     button {
         background: transparent !important;

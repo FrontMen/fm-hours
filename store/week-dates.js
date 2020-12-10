@@ -1,4 +1,4 @@
-import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay, isWeekend } from 'date-fns';
+import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay, isWeekend, isToday } from 'date-fns';
 
 export const state = () => ({
     currentDate: new Date(),
@@ -44,7 +44,8 @@ export const getters = {
                 monthDay: format(newDate, 'dd'),
                 month: format(newDate, 'MMM'),
                 year: format(newDate, 'yyyy'),
-                isWeekend: isWeekend(newDate)
+                isWeekend: isWeekend(newDate),
+                isToday: isToday(newDate)
             }
         });
     },

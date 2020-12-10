@@ -5,7 +5,7 @@
               <b-col class="d-flex align-items-center">
                   <span class="d-md-none">
                     <span class="font-weight-bold mobile-week-label">{{weekLabel}}</span>
-                    <last-saved class="mobile-saved-label"></last-saved>
+                    <last-saved class="last-saved"></last-saved>
                 </span>
               </b-col>
               <b-col cols="2" class="d-flex justify-content-end">
@@ -16,13 +16,13 @@
           </b-row>
       </b-container>
 
-      <div class="hours-table__container">
+      <div class="hours-table__container content-wrapper">
 
       <b-container class="mb-3 mx-0 px-0" fluid>
           <b-row :no-gutters="true">
               <b-col>
                 <div class="hours-table__date justify-content-between">
-                        <div class="d-flex">
+                        <div class="d-flex align-items-center">
                             <div class="hours-table__date-nav date-nav mr-md-3">
                                 <b-button @click="prevWeek()" class="mr-2 mr-md-0">
                                     <b-icon icon="arrow-left"></b-icon>
@@ -48,11 +48,12 @@
 
     <div class="hours-table">
         <b-container class="hours-table__inner" fluid>
-            <three-col-row class="d-none d-md-block hours-table__top-row">
+            <three-col-row class="d-none d-md-block py-2 hours-table__top-row">
                 <template #col2 v-if="hasCustomersThisWeek">
                     <div
                         v-for="date in currentWeek"
                         :key="date.weekDay"
+                        :class="{'is-today' : date.isToday}"
                     >
                         <span class="font-weight-bold">{{date.weekDay}}</span>
                         <div class="date">{{date.monthDay}} {{date.month}}</div>
@@ -60,14 +61,14 @@
                 </template>
             </three-col-row>
             <template v-if="hasCustomersThisWeek">
-                <new-row
+                <project-row
                     v-for="customer in currentWeekRecords"
                     :key="customer.project"
                     :currentWeek="currentWeek"
                     :project="customer"
                     @on-remove="removeRow(customer)"
                     @on-hours-change="changeHours($event)"
-                ></new-row>
+                ></project-row>
             </template>
             <template v-else>
                 <b-row>
@@ -87,7 +88,7 @@
             </template>
             <three-col-row v-if="hasCustomersThisWeek" class="hours-table__bottom-row">
                 <template #col1>
-                    <last-saved class="d-none d-md-block"></last-saved>
+                    <last-saved class="d-none d-md-block last-saved"></last-saved>
                 </template>
                 <template #col2>
                     <div class="hours-table-day-total font-weight-bold"
@@ -102,7 +103,8 @@
     <b-modal
         id="modal-center"
         centered
-        title="Add a customer"
+        title="Add a row"
+        cancel-variant="danger"
         @ok="addRow()"
         @hidden="selectedCustomerId = undefined"
         :ok-disabled="!selectedCustomerId"
@@ -188,6 +190,10 @@ export default Vue.extend({
 
 <style lang="scss">
 
+.last-saved {
+    font-size: 13px;
+}
+
 .week-label {
     font-size: 22px;
     color: white;
@@ -196,9 +202,17 @@ export default Vue.extend({
     font-size: 12px;
 }
 
-.mobile-saved-label {
-    font-size: 13px;
-    margin-top: -2px;
+.is-today {
+    position: relative;
+    &:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        bottom: -8px;
+        background: var(--color-primary);
+        width: 100%;
+        height: 4px;
+    }
 }
 
 .mobile-week-label {
@@ -213,12 +227,6 @@ export default Vue.extend({
         align-items: center;
     }
 
-    &__container {
-        max-width: 1060px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-
     &__inner {
         background: rgba(255, 255, 255, .8);
         border-radius: 10px;
@@ -226,8 +234,8 @@ export default Vue.extend({
 
     &__top-row {
         background: var(--color-tertiary);
-        padding: 12px 0;
         border-radius: 10px 10px 0 0;
+        min-height: 30px;
     }
 
     &__bottom-row {
@@ -259,13 +267,16 @@ export default Vue.extend({
     }
     .page-wrapper {
         .hours-table__container {
-            padding: 0 10px 10px;
+            padding-bottom: 10px;
         }
     }
     .date-nav {
         display: flex;
         width: 100%;
         justify-content: center;
+    }
+    .last-saved {
+        margin-top: -2px;
     }
 }
 </style>

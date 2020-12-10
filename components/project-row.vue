@@ -1,51 +1,42 @@
 <template>
-    <b-row cols-sm="1" class="hours-table__project-row project-row align-items-center">
-        <b-col
-            class=" project-row__project-title"
-            md="4"
-        >
-            <div class="project-row__title">
+    <three-col-row class="project-row">
+        <template #col1>
+            <div class="project-row__title font-weight-bold">
                 {{project.customer}}
             </div>
-        </b-col>
-        <b-col md="5">
-            <b-container fluid class="p-0">
-                <b-row :no-gutters="true" class="text-center">
-                    <b-col
-                        class="project-row__hours-input"
-                        v-for="(input, index) in weekyHours"
-                        :key="index"
-                        :class="{'is-weekend': input.isWeekend}"
-                    >
-                        <div class="d-md-none">{{input.date | formatDate('EEEEEE')}}</div>
-                        <b-form-input
-                            type="number"
-                            no-wheel
-                            @update="update(input.date, $event)"
-                            :value="input.hours"
-                            class="project-row__input"
-                        ></b-form-input>
-                    </b-col>
-                </b-row>
-            </b-container>
-        </b-col>
-        <b-col
-            md="2"
-            class="project-row__hours-column"
-        >
-            <div class="project-row__total-hours">
-                <span class="d-md-none">Totale uren:</span>
-                {{totalWeekHours}}
-            </div>
-            <b-button
-                class="project-row__remove-button border-0"
-                @click="$emit('on-remove')"
+        </template>
+        <template #col2>
+            <div
+                class=""
+                v-for="(input, index) in weekyHours"
+                :key="index"
+                :class="{'is-weekend': input.isWeekend}"
             >
-                <span class="d-md-none">Remove</span>
-                <b-icon icon="x-square"></b-icon>
-            </b-button>
-        </b-col>
-    </b-row>
+                <div class="d-md-none mb-1">{{input.date | formatDate('EEEEEE')}}</div>
+                <b-form-input
+                    type="number"
+                    no-wheel
+                    @update="update(input.date, $event)"
+                    :value="input.hours"
+                    class="project-row__input"
+                ></b-form-input>
+            </div>
+        </template>
+        <template #col3>
+            <div class="d-flex align-items-center project-row__hours-column">
+                <div class="mr-2">
+                    <span class="d-md-none">Totale uren:</span>
+                    {{totalWeekHours}}
+                </div>
+                <b-button
+                    class="project-row__remove-button border-0"
+                    @click="$emit('on-remove')"
+                >
+                    <b-icon icon="x-square"></b-icon>
+                </b-button>
+            </div>
+        </template>
+    </three-col-row>
 </template>
 
 <script>
@@ -95,89 +86,61 @@ export default {
 
 
 
-// <style scoped lang="scss">
-// @import 'node_modules/bootstrap/scss/bootstrap';
-// .project-row {
-//     padding: 12px 0 8px;
+<style scoped lang="scss">
+@import 'node_modules/bootstrap/scss/bootstrap';
+.project-row {
+    padding: 16px 0;
 
-//     + .project-row {
-//         border-top: 1px solid var(--color-primary);
-//     }
+    + .project-row {
+        border-top: 1px solid var(--color-primary);
+    }
 
-//     &__hours-input {
-//         margin-right: 20px;
+    .is-weekend .project-row__input {
+        background: var(--color-secondary);
+    }
 
-//         &:last-child {
-//             margin-right: 0;
-//         }
+    &__input {
+        padding: 0;
+        text-align: center;
+        border:1px solid #00cccc7a;
 
-//         &.is-weekend input {
-//             background: #efefef;
-//         }
+        &:focus {
+            outline: none;
+        }
+    }
 
-//         @media (max-width: 998px) {
-//             margin-right: 10px;
-//         }
-//     }
+    &__remove-button {
+        display: flex;
+        align-items: center;
+        background: transparent;
+        color: var(--color-primary);
 
-//     &__input {
-//         padding: 0;
-//         text-align: center;
-//         border:1px solid #00cccc7a;
+        span {
+            margin-right: 8px;
+        }
 
-//         &:focus {
-//             outline: none;
-//         }
-//     }
+        @media (min-width: 767px) {
+            background: transparent;
+            color: #1d1d1d;
+        }
+    }
 
-//     &__remove-button {
-//         display: flex;
-//         align-items: center;
+    &__title {
+        font-size: 17px;
+        color: var(--color-primary);
+    }
 
-//         span {
-//             margin-right: 8px;
-//         }
+    &__hours-column {
+        justify-content: flex-end;
+        height: 100%;
+    }
 
-//         @media (min-width: 767px) {
-//             background: transparent;
-//             color: #1d1d1d;
-//         }
-//     }
-
-//     &__project-title {
-//          @media (max-width: map-get($grid-breakpoints, md)) {
-//             margin-bottom: 6px;
-//         }
-//     }
-
-//     &__title {
-//         font-size: 17px;
-//         font-weight: bold;
-//     }
-
-//     &__hours-column {
-//         display: flex;
-//         align-items: center;
-//         justify-content: flex-end;
-//     }
-
-//     &__total-hours {
-//         width: 50%;
-//         text-align: center;
-//     }
-
-//     @media (max-width: map-get($grid-breakpoints, md)) {
-//         .project-row__hours-column {
-//             justify-content: flex-start;
-//             padding-top: 16px;
-//             padding-bottom: 10px;
-//         }
-
-//         .project-row__total-hours {
-//             width: auto;
-//             margin-right: 20px;
-//         }
-
-//     }
-// }
-// </style>
+    @media (max-width: map-get($grid-breakpoints, md)) {
+        .project-row__hours-column {
+            justify-content: flex-start;
+            padding-top: 16px;
+            padding-bottom: 10px;
+        }
+    }
+}
+</style>
