@@ -1,6 +1,6 @@
 <template>
   <div class="layout-wrapper">
-    <!-- <div class="top-bar">
+    <div class="top-bar">
       <b-container>
         <b-row class="py-2" align-v="center">
           <b-col>
@@ -32,9 +32,7 @@
           </b-col>
         </b-row>
       </b-container>
-    </div> -->
-    <div>
-</div>
+    </div>
     <Nuxt />
   </div>
 </template>
@@ -80,6 +78,8 @@ export default Vue.extend({
 .top-bar {
   background: var(--color-primary);
   border-bottom: 5px solid var(--color-secondary);
+
+  
 
   img {
     width: 50px;

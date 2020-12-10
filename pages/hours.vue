@@ -1,44 +1,11 @@
 <template>
   <div class="page-wrapper">
-      <div class="top-bar py-3">
-      <b-container>
-          <b-row>
-              <b-col>
-                  <div class="d-flex align-items-center">
-                    <img @click="toPage('/hours')" src="@/assets/images/logo-dark.png" alt="frontmen logo">
-                  </div>
-              </b-col>
-              <b-col>
-                  <div class="d-flex align-items-center justify-content-center h-100 font-weight-bold week-label">
-                    <p>{{weekLabel}}</p>
-                  </div>
-              </b-col>
-              <b-col>
-                    <div class="user d-flex align-items-center justify-content-end">
-                        <!-- <div class="d-none d-md-block user__name mr-3">
-                        {{user.name}}
-                        </div> -->
-                        <b-dropdown right class="user__dropdown">
-                            <template #button-content>
-                                <div class="user__image flex-shrink-0 mr-1">
-                                <img :src="user.picture" alt="user image">
-                                </div>
-                            </template>
-                        <b-dropdown-item @click="logout()">Logout</b-dropdown-item>
-                        </b-dropdown>
-                    </div>
-              </b-col>
-          </b-row>
-      </b-container>
-    </div>
-
-
       <b-container fluid class="d-md-none py-2 mobile-date-bar">
           <b-row :no-gutters="true">
               <b-col class="d-flex align-items-center">
-                  <span class="d-md-none hours-table__mobile-week-label">
-                    {{weekLabel}}
-                    <last-saved></last-saved>
+                  <span class="d-md-none">
+                    <span class="font-weight-bold mobile-week-label">{{weekLabel}}</span>
+                    <last-saved class="mobile-saved-label"></last-saved>
                 </span>
               </b-col>
               <b-col cols="2" class="d-flex justify-content-end">
@@ -49,44 +16,45 @@
           </b-row>
       </b-container>
 
-      <b-container class="mb-3" fluid="xl">
-          <b-row>
+      <div class="hours-table__container">
+
+      <b-container class="mb-3 mx-0 px-0" fluid>
+          <b-row :no-gutters="true">
               <b-col>
                 <div class="hours-table__date justify-content-between">
                         <div class="d-flex">
                             <div class="hours-table__date-nav date-nav mr-md-3">
-                                <b-button @click="prevWeek()" class="mr-3 mr-md-0">
+                                <b-button @click="prevWeek()" class="mr-2 mr-md-0">
                                     <b-icon icon="arrow-left"></b-icon>
-                                    <span class="d-md-none">
-                                        Previous week
-                                    </span>
                                 </b-button>
                                 <b-button @click="nextWeek()" :disabled="isCurrentWeek">
-                                    <span class="d-md-none">
-                                        Next week
-                                    </span>
                                     <b-icon icon="arrow-right"></b-icon>
                                 </b-button>
                             </div>
-                            <span class="d-none d-md-block">
+                            <span class="d-none d-md-block font-weight-bold">
                                 {{weekLabel}}
                             </span>
                         </div>
-                        <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">To current week</b-button>
+                        <div class="d-flex">
+                            <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">To current week</b-button>
+                            <b-button class="d-none d-md-block ml-3" v-b-modal.modal-center>
+                                + New row
+                            </b-button>
+                        </div>
                     </div>
               </b-col>
           </b-row>
       </b-container>
 
     <div class="hours-table">
-        <b-container class="hours-table__container" fluid="xl">
+        <b-container class="hours-table__inner" fluid>
             <three-col-row class="d-none d-md-block hours-table__top-row">
                 <template #col2 v-if="hasCustomersThisWeek">
                     <div
                         v-for="date in currentWeek"
                         :key="date.weekDay"
                     >
-                        {{date.weekDay}}
+                        <span class="font-weight-bold">{{date.weekDay}}</span>
                         <div class="date">{{date.monthDay}} {{date.month}}</div>
                     </div>
                 </template>
@@ -104,7 +72,7 @@
             <template v-else>
                 <b-row>
                     <b-col>
-                        <div class="text-center py-5">
+                        <div class="d-flex flex-column d-md-block text-center py-5">
                             <p>There are no projects registered this week.</p>
                             <b-button v-b-modal.modal-center>
                                 Add a project
@@ -119,25 +87,17 @@
             </template>
             <three-col-row v-if="hasCustomersThisWeek" class="hours-table__bottom-row">
                 <template #col1>
-                    <last-saved></last-saved>
+                    <last-saved class="d-none d-md-block"></last-saved>
                 </template>
                 <template #col2>
-                    <div class="hours-table-day-total"
+                    <div class="hours-table-day-total font-weight-bold"
                         v-for="(dayTotal, index) in weekTotals"
                         :key="index"
                     >{{dayTotal}}</div>
                 </template>
             </three-col-row>
         </b-container>
-        <b-container class="mt-3">
-            <b-row>
-                <b-col>
-                    <b-button class="d-none d-md-block" v-b-modal.modal-center>
-                        + New row
-                    </b-button>
-                </b-col>
-            </b-row>
-        </b-container>
+    </div>
     </div>
     <b-modal
         id="modal-center"
@@ -236,6 +196,15 @@ export default Vue.extend({
     font-size: 12px;
 }
 
+.mobile-saved-label {
+    font-size: 13px;
+    margin-top: -2px;
+}
+
+.mobile-week-label {
+    font-size: 20px;
+}
+
 .hours-table {
     &__date {
         font-size: 24px;
@@ -245,7 +214,13 @@ export default Vue.extend({
     }
 
     &__container {
-        background: var(--color-secondary);
+        max-width: 1060px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    &__inner {
+        background: rgba(255, 255, 255, .8);
         border-radius: 10px;
     }
 
@@ -264,18 +239,10 @@ export default Vue.extend({
             text-align: center;
         }
     }
-
-    &__mobile-week-label {
-        font-size: 18px;
-
-        last-saved {
-            font-size: 14px;
-        }
-    }
 }
 
 .mobile-date-bar {
-    background: var(--color-secondary);
+    background: var(--color-tertiary);
 
     button {
         font-size: 22px;
@@ -284,13 +251,15 @@ export default Vue.extend({
 }
 
 @media screen and (max-width: 767px) {
+    .hours-table__date {
+        margin-top: 20px;
+    }
+    .hours-table__inner {
+        border-top: 30px solid var(--color-tertiary);
+    }
     .page-wrapper {
-        height: 100vh;
-        display: grid;
-        grid-template-rows: 65px 1fr;
-
-        .hours-table {
-            overflow-y: scroll;
+        .hours-table__container {
+            padding: 0 10px 10px;
         }
     }
     .date-nav {

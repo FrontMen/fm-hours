@@ -96,6 +96,10 @@ export default {
         border-top: 1px solid var(--color-primary);
     }
 
+    .is-weekend .project-row__input {
+        background: var(--color-secondary);
+    }
+
     &__input {
         padding: 0;
         text-align: center;

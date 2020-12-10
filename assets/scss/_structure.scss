@@ -10,12 +10,16 @@ html {
     box-sizing: border-box;
 }
 
+body {
+  background-color: #00cccc2b !important;
+}
+
 img {
   max-width: 100%;
 }
 
 @media (max-width: 998px) {
-  body {
-    overflow: hidden;
-  }
+  // body {
+  //   overflow: hidden;
+  // }
 }
