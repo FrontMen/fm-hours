@@ -149,9 +149,10 @@ export const actions = {
             return;
         }
         const copiedRecords = rows.reduce((acc, curr) => {
+            const newHours = curr.hours.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
             return [
                 ...acc,
-                ...curr.hours.map((entry) => {
+                ...newHours.map((entry) => {
                     return {
                         customer: curr.customer,
                         debtor: curr.debtor,
