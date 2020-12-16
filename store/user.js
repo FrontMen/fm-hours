@@ -10,66 +10,9 @@ export const state = () => ({
     travelAllowance_records: []
 });
 
-const CreateHoursEntry = (date, hours) => {
-    return { date: date, hours: hours }
-}
-
-const AddRecordToList = (allRecords, newRecord, transformation) => {
-    let newRecords = [...allRecords];
-    const record = newRecords.find((record) => newRecord.customer === record.customer);
-    const hours = CreateHoursEntry(newRecord.date, newRecord.hours);
-    if (record) {
-        const recordIndex = record.hours.findIndex((record) => isSameDay(new Date(record.date), new Date(newRecord.date)));
-        if (recordIndex === -1) {
-            record.hours.push(hours);
-        } else {
-            record.hours[recordIndex] = hours;
-        }
-    } else {
-        newRecords.push(
-            {
-                customer: newRecord.customer,
-                hours: [hours]
-            }
-        );
-    }
-    return transformation ? transformation(newRecords) : newRecords;
-}
-
-const RemoveRow = (allRecords, newRecord, hoursCondition, transformation) => {
-    let newRecords = [...allRecords];
-    const recordIndex = newRecords.findIndex((record) => newRecord.customer === record.customer && newRecord.project === record.project);
-    const project = {
-        ...newRecords[recordIndex],
-        hours: newRecords[recordIndex].hours.filter(hoursCondition)
-    };
-    newRecords[recordIndex] = project;
-    return transformation ? transformation(newRecords) : newRecords;
-}
-
-const transformToTimeEntryList = (entries) => {
-    return entries.reduce((acc, curr) => {
-        return [
-            ...acc,
-            ...curr.hours.map((entry) => {
-                return {
-                    customer: curr.customer,
-                    date: entry.date,
-                    hours: entry.hours,
-                    debtor: curr.debtor
-                }
-            })
-        ]
-    }, []);
-}
-
 const debouncer = debounce((fn) => fn(), 2000);
-
 const getRecordsForWeekRange = (records, startDate, endDate) => {
     return records.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}));
-    return records.filter((record) => {
-        return record.hours.some((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
-    });
 }
 
 export const actions = {
@@ -220,29 +163,13 @@ export const getters = {
     getTravelAllowanceRecords: (state) => {
         return state.travelAllowance_records;
     },
-    getRecordsByCustomer: (state, getters) => {
-        return getters.getTimeRecords.reduce((acc, entry) => {
-            let record = acc.find((a) => a.customer === entry.customer);
-            if(!record) {
-              record = {
-                customer: entry.customer,
-                hours: [],
-                debtor: entry.debtor
-              }
-              acc.push(record);
-            }
-            record.hours.push({
-              date: entry.date, hours: entry.hours
-            });
-            return acc;
-          }, []);
-    },
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
         const records = getters.getTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
+        console.log('sdssdsd', getRecordsForWeekRange(records, startDate, endDate));
         return getRecordsForWeekRange(records, startDate, endDate);
     },
-    getTimeRecordsForCurrentWeekInUIFormat: (state, getters, _, rootGetters) => {
+    getTimeRecordsForCurrentWeekInUIFormat: (_, getters) => {
         const records = getters.getTimeRecordsForCurrentWeek;
         return records.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer);
@@ -273,9 +200,8 @@ export const getters = {
         const currentWeek = rootGetters['week-dates/currentWeek'];
         const currentWeekRecords = getters.getTimeRecordsForCurrentWeek;
         return currentWeek.map((weekDay) => {
-            const currDate = new Date(weekDay.date);
             return currentWeekRecords.reduce((acc, curr) => {
-                const registeredHours = isSameDay(currDate, new Date(curr.date));
+                const registeredHours = isSameDay(new Date(weekDay.date), new Date(curr.date));
                 return acc + (registeredHours ? curr.hours : 0);
             }, 0);
         });
