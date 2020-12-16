@@ -66,6 +66,7 @@ const transformToTimeEntryList = (entries) => {
 const debouncer = debounce((fn) => fn(), 2000);
 
 const getRecordsForWeekRange = (records, startDate, endDate) => {
+    return records.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}));
     return records.filter((record) => {
         return record.hours.some((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
     });
@@ -105,8 +106,7 @@ export const actions = {
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getTimeRecords;
         let newRecords = [...timeRecords];
-        const newDate = new Date(payload.date);
-        const index = newRecords.findIndex((entry) => isSameDay(newDate, new Date(entry.date)) && entry.customer === payload.customer);
+        const index = newRecords.findIndex((entry) => isSameDay(new Date(payload.date), new Date(entry.date)) && entry.customer === payload.customer);
         if (index > -1) {
             newRecords[index] = payload;
         } else {
@@ -116,21 +116,8 @@ export const actions = {
         context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
-        // const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
-        // const timeRecords = context.getters.getRecordsByCustomer;
         const allRecords = context.getters.getTimeRecords;
         const newRecs = allRecords.filter((record) => !payload.hours.some((entry) => isSameDay(new Date(entry.date), new Date(record.date)) && record.customer === payload.customer));
-
-        // console.log('payload', payload);
-        // console.log('newRecords2', newRecords2);
-        // console.log('allRecords', allRecords);
-        // console.log('newRecs', newRecs);
-        // const newRecords = RemoveRow(
-        //     timeRecords,
-        //     payload,
-        //     (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
-        //     transformToTimeEntryList
-        // );
         context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecs}, debounce: false });
         context.commit('updateTimeRecords', newRecs);
     },
@@ -138,30 +125,21 @@ export const actions = {
         context.commit('addProjectRow', payload);
     },
     copyPrevWeekrecords (context) {
-        const records = context.getters.getRecordsByCustomer;
-        const allRecords = context.getters.getTimeRecords;
+        const records = context.getters.getTimeRecords;
         const currentWeek = context.rootGetters['week-dates/currentWeek'];
         const startDate = subDays(currentWeek[0].date, 7);
         const endDate = addDays(startDate, 6);
-        const rows = getRecordsForWeekRange(records, startDate, endDate);
-        if (rows.length === 0) {
+        const prevWeekRows = getRecordsForWeekRange(records, startDate, endDate);
+        if (prevWeekRows.length === 0) {
             return;
         }
-        const copiedRecords = rows.reduce((acc, curr) => {
-            const newHours = curr.hours.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
-            return [
-                ...acc,
-                ...newHours.map((entry) => {
-                    return {
-                        customer: curr.customer,
-                        debtor: curr.debtor,
-                        date: formatISO(addDays(new Date(entry.date), 7)),
-                        hours: entry.hours,
-                    }
-                })
-            ]
-        },[]);
-        const newRecords = [...allRecords, ...copiedRecords];
+        const copiedRecords = prevWeekRows.map((entry) => {
+            return {
+                ...entry,
+                date: formatISO(addDays(new Date(entry.date), 7)),
+            }
+        });
+        const newRecords = [...records, ...copiedRecords];
         context.commit('updateTimeRecords', newRecords);
         context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: false });
     },
@@ -260,12 +238,9 @@ export const getters = {
           }, []);
     },
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
-        const newRecords = getters.getTimeRecords;
+        const records = getters.getTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
-        const rec = newRecords.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
-        // const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
-        // console.log('rows', rows);
-        return rec;
+        return getRecordsForWeekRange(records, startDate, endDate);
     },
     getTimeRecordsForCurrentWeekInUIFormat: (state, getters, _, rootGetters) => {
         const records = getters.getTimeRecordsForCurrentWeek;

@@ -44,7 +44,7 @@
         <b-button
           v-if="isAdmin"
           @click="toPage('/users')"
-          class="ml-2 ml-md-3 py-1"
+          class="ml-2 ml-md-3 py-1 mt-3"
         >
           Manage users
         </b-button>
