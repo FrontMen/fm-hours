@@ -153,8 +153,7 @@ export const actions = {
     },
     addKilometers (context, payload) {
         const records = context.getters.getTravelAllowanceRecords;
-        let newRecords = [...records];
-        console.log('goeeed', records);
+        let newRecords = [...records]
         const newDate = new Date(payload.date);
         const index = newRecords.findIndex((entry) => isSameDay(newDate, new Date(entry.date)));
         if (index > -1) {
@@ -201,7 +200,6 @@ export const mutations = {
         state.time_records = payload;
     },
     updateTravelAllowanceRecords: (state, payload) => {
-        console.log('updaten', payload);
         state.travelAllowance_records = payload;
     },
     saveToFirestore: (state) => {
