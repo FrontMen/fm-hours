@@ -16,14 +16,14 @@
           </b-row>
       </b-container>
 
-      <div class="hours-table__container content-wrapper">
+    <div class="hours-table__container content-wrapper">
 
-      <b-container class="mb-3 mx-0 px-0" fluid>
-          <b-row :no-gutters="true">
-              <b-col>
-                <div class="hours-table__date justify-content-between">
+        <b-container class="mb-3 mx-0 px-0" fluid>
+            <b-row :no-gutters="true">
+                <b-col>
+                <div class="date-nav justify-content-between">
                         <div class="d-flex align-items-center">
-                            <div class="hours-table__date-nav date-nav mr-md-3">
+                            <div class="date-nav__buttons mr-md-3">
                                 <b-button @click="prevWeek()" class="mr-2 mr-md-0">
                                     <b-icon icon="arrow-left"></b-icon>
                                 </b-button>
@@ -42,64 +42,98 @@
                             </b-button>
                         </div>
                     </div>
-              </b-col>
-          </b-row>
-      </b-container>
-
-    <div class="hours-table">
-        <b-container class="hours-table__inner" fluid>
-            <three-col-row class="d-none d-md-block py-2 hours-table__top-row">
-                <template #col2 v-if="hasCustomersThisWeek">
-                    <div
-                        v-for="date in currentWeek"
-                        :key="date.weekDay"
-                        :class="{'is-today' : date.isToday}"
-                    >
-                        <span class="font-weight-bold">{{date.weekDay}}</span>
-                        <div class="date">{{date.monthDay}} {{date.month}}</div>
-                    </div>
-                </template>
-            </three-col-row>
-            <template v-if="hasCustomersThisWeek">
-                <project-row
-                    v-for="customer in currentWeekRecords"
-                    :key="customer.project"
-                    :currentWeek="currentWeek"
-                    :project="customer"
-                    @on-remove="removeRow(customer)"
-                    @on-hours-change="changeHours($event)"
-                ></project-row>
-            </template>
-            <template v-else>
-                <b-row>
-                    <b-col>
-                        <div class="d-flex flex-column d-md-block text-center py-5">
-                            <p>There are no projects registered this week.</p>
-                            <b-button v-b-modal.modal-center>
-                                Add a project
-                            </b-button>
-                            <span class="mx-2">
-                                or
-                            </span>
-                            <b-button @click="copyFromPrevWeek()">Copy from previous week</b-button>
-                        </div>
-                    </b-col>
-                </b-row>
-            </template>
-            <three-col-row v-if="hasCustomersThisWeek" class="hours-table__bottom-row">
-                <template #col1>
-                    <last-saved class="d-none d-md-block last-saved"></last-saved>
-                </template>
-                <template #col2>
-                    <div class="hours-table-day-total font-weight-bold"
-                        v-for="(dayTotal, index) in weekTotals"
-                        :key="index"
-                    >{{dayTotal}}</div>
-                </template>
-            </three-col-row>
+                </b-col>
+            </b-row>
         </b-container>
+
+        <div class="app-table">
+            <b-container class="hours-table__inner" fluid>
+                <three-col-row class="d-none d-md-block py-2 app-table__top-row">
+                    <template #col2 v-if="hasCustomersThisWeek">
+                        <div
+                            v-for="date in currentWeek"
+                            :key="date.weekDay"
+                            :class="{'is-today' : date.isToday}"
+                        >
+                            <span class="font-weight-bold">{{date.weekDay}}</span>
+                            <div class="date">{{date.monthDay}} {{date.month}}</div>
+                        </div>
+                    </template>
+                </three-col-row>
+                <template v-if="hasCustomersThisWeek">
+                    <project-row
+                        v-for="customer in currentWeekRecords"
+                        :key="customer.project"
+                        :currentWeek="currentWeek"
+                        :project="customer"
+                        @on-remove="removeRow(customer)"
+                        @on-hours-change="changeHours($event)"
+                    ></project-row>
+                </template>
+                <template v-else>
+                    <b-row>
+                        <b-col>
+                            <div class="d-flex flex-column d-md-block text-center py-5">
+                                <p>There are no projects registered this week.</p>
+                                <b-button v-b-modal.modal-center>
+                                    Add a project
+                                </b-button>
+                                <span class="mx-2">
+                                    or
+                                </span>
+                                <b-button @click="copyFromPrevWeek()">Copy from previous week</b-button>
+                            </div>
+                        </b-col>
+                    </b-row>
+                </template>
+                <three-col-row v-if="hasCustomersThisWeek" class="app-table__bottom-row">
+                    <template #col1>
+                        <last-saved class="d-none d-md-block last-saved"></last-saved>
+                    </template>
+                    <template #col2>
+                        <div class="font-weight-bold"
+                            v-for="(dayTotal, index) in weekTotals"
+                            :key="index"
+                        >{{dayTotal}}</div>
+                    </template>
+                </three-col-row>
+            </b-container>
+        </div>
+
+        <div
+            class="travel-allowance-registering mt-5"
+            v-if="user.travelAllowance"
+        >
+            <div class="travel-allowance-registering__title mb-2 font-weight-bold">
+                Travel allowance
+            </div>
+            <div class="app-table">
+                <b-container class="hours-table__inner" fluid>
+                    <three-col-row class="d-none d-md-block py-2 app-table__top-row">
+                        <template #col2>
+                            <div
+                                v-for="date in currentWeek"
+                                :key="date.weekDay"
+                                :class="{'is-today' : date.isToday}"
+                            >
+                                <span class="font-weight-bold">{{date.weekDay}}</span>
+                                <div class="date">{{date.monthDay}} {{date.month}}</div>
+                            </div>
+                        </template>
+                    </three-col-row>
+                    <project-row
+                        v-if="user.travelAllowance"
+                        :project="currentWeekTravelRecords"
+                        :canDeleteRow="false"
+                        :currentWeek="currentWeek"
+                        @on-hours-change="registerKilometers($event)"
+                    ></project-row>
+                    <three-col-row class="app-table__bottom-row"></three-col-row>
+                </b-container>
+            </div>
+        </div>
     </div>
-    </div>
+
     <b-modal
         id="modal-center"
         centered
@@ -126,7 +160,7 @@ export default Vue.extend({
     middleware: 'isAuthenticated',
     data() {
         return {
-            selectedCustomerId: undefined
+            selectedCustomerId: undefined,
         }
     },
     computed: {
@@ -135,6 +169,8 @@ export default Vue.extend({
             weekLabel: 'week-dates/currentWeekLabel',
             currentWeek: 'week-dates/currentWeek',
             currentWeekRecords: 'user/getTimeRecordsForCurrentWeek',
+            currentWeekTravelRecords: 'user/getTravelAllowanceRecordsForCurrentWeek',
+            currentWeekTravelRecords2: 'user/getTravelAllowanceRecords',
             customerToAdd: 'customers/getCustomerToAdd',
             isCurrentWeek: 'week-dates/isNextweekInFuture',
             weekTotals: 'user/getWeekTotals',
@@ -184,6 +220,10 @@ export default Vue.extend({
         toCurrentWeek(record: any) {
             this.$store.commit('week-dates/setToday');
         },
+        registerKilometers(record: any) {
+            const {hours, date } = record;
+            this.$store.dispatch('user/addKilometers', {hours, date});
+        },
     }
 })
 </script>
@@ -219,34 +259,11 @@ export default Vue.extend({
     font-size: 20px;
 }
 
-.hours-table {
-    &__date {
-        font-size: 24px;
-        display: flex;
-        margin-top: 50px;
-        align-items: center;
-    }
-
-    &__inner {
-        background: rgba(255, 255, 255, .8);
-        border-radius: 10px;
-    }
-
-    &__top-row {
-        background: var(--color-tertiary);
-        border-radius: 10px 10px 0 0;
-        min-height: 30px;
-    }
-
-    &__bottom-row {
-        background: var(--color-tertiary);
-        border-radius: 0 0 10px 10px;
-        padding: 14px 0;
-
-        .table-row .hours-table-day-total {
-            text-align: center;
-        }
-    }
+.date-nav {
+    font-size: 24px;
+    display: flex;
+    margin-top: 50px;
+    align-items: center;
 }
 
 .mobile-date-bar {
@@ -258,19 +275,23 @@ export default Vue.extend({
     }
 }
 
-@media screen and (max-width: 767px) {
-    .hours-table__date {
-        margin-top: 20px;
+.travel-allowance-registering {
+    &__title {
+        font-size: 24px;
     }
+}
+
+@media screen and (max-width: 767px) {
     .hours-table__inner {
         border-top: 30px solid var(--color-tertiary);
+        border-radius: 10px;
     }
     .page-wrapper {
         .hours-table__container {
             padding-bottom: 10px;
         }
     }
-    .date-nav {
+    .date-nav__buttons {
         display: flex;
         width: 100%;
         justify-content: center;

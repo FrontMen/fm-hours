@@ -6,7 +6,8 @@ export const state = () => ({
     isAdmin: undefined,
     user: undefined,
     time_records: [],
-    lastSaved: undefined
+    lastSaved: undefined,
+    travelAllowance_records: []
 });
 
 const CreateHoursEntry = (date, hours) => {
@@ -104,7 +105,7 @@ export const actions = {
     addHoursRecords (context, payload) {
         const timeRecords = context.getters.getRecordsByCustomer;
         const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
-        context.dispatch('saveToFirestore', { records: newRecords, debounce: true });
+        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: true });
         context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
@@ -116,24 +117,8 @@ export const actions = {
             (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
             transformToTimeEntryList
         );
-        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
+        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: false });
         context.commit('updateTimeRecords', newRecords);
-    },
-    async saveToFirestore (context, payload) {
-        const { records, debounce } = payload;
-        const saving = () => {
-            const user = context.getters.getUser;
-            const usersRef = this.$fire.firestore.collection('users').doc(user.id);
-            usersRef.set({
-                time_records: records
-            }, { merge: true });
-            context.commit('saveToFirestore');
-        }
-        if (debounce) {
-            debouncer(() => saving());
-        } else {
-            saving();
-        }
     },
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
@@ -164,7 +149,35 @@ export const actions = {
         },[]);
         const newRecords = [...allRecords, ...copiedRecords];
         context.commit('updateTimeRecords', newRecords);
-        context.dispatch('saveToFirestore', { records: newRecords, debounce: false });
+        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: false });
+    },
+    addKilometers (context, payload) {
+        const records = context.getters.getTravelAllowanceRecords;
+        let newRecords = [...records];
+        console.log('goeeed', records);
+        const newDate = new Date(payload.date);
+        const index = newRecords.findIndex((entry) => isSameDay(newDate, new Date(entry.date)));
+        if (index > -1) {
+            newRecords[index] = payload;
+        } else {
+            newRecords.push(payload);
+        }
+        context.commit('updateTravelAllowanceRecords', newRecords);
+        context.dispatch('saveToFirestore', { dataToSave: {travelAllowance_records: newRecords}, debounce: true });
+    },
+    async saveToFirestore (context, payload) {
+        const { dataToSave, debounce } = payload;
+        const saving = () => {
+            const user = context.getters.getUser;
+            const usersRef = this.$fire.firestore.collection('users').doc(user.id);
+            usersRef.set(dataToSave, { merge: true });
+            context.commit('saveToFirestore');
+        }
+        if (debounce) {
+            debouncer(() => saving());
+        } else {
+            saving();
+        }
     },
     logout (context) {
         this.$fire.auth.signOut();
@@ -178,6 +191,7 @@ export const mutations = {
         state.isLoggedin = true;
         state.user = payload;
         state.time_records = payload.time_records;
+        state.travelAllowance_records = payload.travelAllowance_records || [];
         state.isAdmin = payload.isAdmin;
     },
     addProjectRow: (state, payload) => {
@@ -185,6 +199,10 @@ export const mutations = {
     },
     updateTimeRecords: (state, payload) => {
         state.time_records = payload;
+    },
+    updateTravelAllowanceRecords: (state, payload) => {
+        console.log('updaten', payload);
+        state.travelAllowance_records = payload;
     },
     saveToFirestore: (state) => {
         state.lastSaved = new Date();
@@ -209,6 +227,9 @@ export const getters = {
     getTimeRecords: (state) => {
         return state.time_records;
     },
+    getTravelAllowanceRecords: (state) => {
+        return state.travelAllowance_records;
+    },
     getRecordsByCustomer: (state, getters) => {
         return getters.getTimeRecords.reduce((acc, entry) => {
             let record = acc.find((a) => a.customer === entry.customer);
@@ -231,6 +252,15 @@ export const getters = {
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
         const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
         return rows;
+    },
+    getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
+        const records = getters.getTravelAllowanceRecords;
+        const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
+        const rows = records.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}));
+        return {
+            customer: 'Kilometers',
+            hours: rows
+        }
     },
     getWeekTotals: (state, getters, _, rootGetters) => {
         const currentWeek = rootGetters['week-dates/currentWeek'];

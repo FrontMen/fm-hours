@@ -29,7 +29,7 @@
 
     > div {
         margin-right: 24px;
-        text-align: right;
+        text-align: center;
         flex: 1 1 0px;
         &:last-child {
             margin-right: 0;

@@ -7,7 +7,6 @@
         </template>
         <template #col2>
             <div
-                class=""
                 v-for="(input, index) in weekyHours"
                 :key="index"
                 :class="{'is-weekend': input.isWeekend}"
@@ -31,6 +30,7 @@
                 <b-button
                     class="project-row__remove-button border-0"
                     @click="$emit('on-remove')"
+                    v-if="canDeleteRow"
                 >
                     <b-icon icon="x-square"></b-icon>
                 </b-button>
@@ -65,6 +65,10 @@ export default {
             type: Object,
             default: () => {}
         },
+        canDeleteRow: {
+            type: Boolean,
+            default: true
+        }
     },
     methods: {
         update: function(date, value) {

@@ -12,14 +12,14 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-container fluid class="customers-table">
-            <b-row class="customers-table__head py-3">
+        <b-container fluid class="app-table">
+            <b-row class="app-table__top-row py-3">
                 <b-col>
                     <span class="font-weight-bold">Customers</span>
                 </b-col>
             </b-row>
             <b-row
-                class="item py-3 customers-table__customer"
+                class="app-table__row py-3"
                 v-for="customer in customers"
                 :key="customer.id"
             >
@@ -83,41 +83,3 @@ export default Vue.extend({
     }
 })
 </script>
-
-<style lang="scss">
-
-.customers-table {
-    background: rgba(255, 255, 255, .8);
-    height: 100%;
-    border-radius: 10px;
-
-    &__head {
-        background: var(--color-tertiary);
-        border-radius: 10px 10px 0 0;
-    }
-}
-
-.customers-table__inner {
-    height: 100%;
-}
-
-.item {
-    + .item {
-        border-top: 1px solid var(--color-primary);
-    }
-
-    button {
-        background: transparent !important;
-        font-size: 17px;
-
-        &:focus,
-        &:active {
-            box-shadow: none !important;
-        }
-    }
-
-    &.is-selected {
-        background: var(--color-secondary);
-    }
-}
-</style>
