@@ -27,9 +27,7 @@ export const mutations = {
         state.users = payload;
     },
     updateUser: (state, payload) => {
-        console.log('payload', payload);
         state.users = state.users.map((user) => user.id === payload.id ? payload : user);
-        console.log('state', state.users);
     },
 }
 
