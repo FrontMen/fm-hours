@@ -17,7 +17,6 @@
       </b-container>
 
     <div class="hours-table__container content-wrapper">
-
         <b-container class="mb-3 mx-0 px-0" fluid>
             <b-row :no-gutters="true">
                 <b-col>
@@ -168,9 +167,8 @@ export default Vue.extend({
             customers: 'customers/getCustomers',
             weekLabel: 'week-dates/currentWeekLabel',
             currentWeek: 'week-dates/currentWeek',
-            currentWeekRecords: 'user/getTimeRecordsForCurrentWeek',
+            currentWeekRecords: 'user/getTimeRecordsForCurrentWeekInUIFormat',
             currentWeekTravelRecords: 'user/getTravelAllowanceRecordsForCurrentWeek',
-            currentWeekTravelRecords2: 'user/getTravelAllowanceRecords',
             customerToAdd: 'customers/getCustomerToAdd',
             isCurrentWeek: 'week-dates/isNextweekInFuture',
             weekTotals: 'user/getWeekTotals',

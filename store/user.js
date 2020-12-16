@@ -103,22 +103,36 @@ export const actions = {
         context.commit('week-dates/setToday', null, {root:true});
     },
     addHoursRecords (context, payload) {
-        const timeRecords = context.getters.getRecordsByCustomer;
-        const newRecords = AddRecordToList(timeRecords, payload, transformToTimeEntryList);
+        const timeRecords = context.getters.getTimeRecords;
+        let newRecords = [...timeRecords];
+        const newDate = new Date(payload.date);
+        const index = newRecords.findIndex((entry) => isSameDay(newDate, new Date(entry.date)) && entry.customer === payload.customer);
+        if (index > -1) {
+            newRecords[index] = payload;
+        } else {
+            newRecords.push(payload);
+        }
         context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: true });
         context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
-        const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
-        const timeRecords = context.getters.getRecordsByCustomer;
-        const newRecords = RemoveRow(
-            timeRecords,
-            payload,
-            (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
-            transformToTimeEntryList
-        );
-        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: false });
-        context.commit('updateTimeRecords', newRecords);
+        // const {startDate, endDate} = context.rootGetters['week-dates/getcurrentWeekRange'];
+        // const timeRecords = context.getters.getRecordsByCustomer;
+        const allRecords = context.getters.getTimeRecords;
+        const newRecs = allRecords.filter((record) => !payload.hours.some((entry) => isSameDay(new Date(entry.date), new Date(record.date)) && record.customer === payload.customer));
+
+        // console.log('payload', payload);
+        // console.log('newRecords2', newRecords2);
+        // console.log('allRecords', allRecords);
+        // console.log('newRecs', newRecs);
+        // const newRecords = RemoveRow(
+        //     timeRecords,
+        //     payload,
+        //     (entry) => !isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}),
+        //     transformToTimeEntryList
+        // );
+        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecs}, debounce: false });
+        context.commit('updateTimeRecords', newRecs);
     },
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
@@ -246,10 +260,30 @@ export const getters = {
           }, []);
     },
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
-        const timeRecords = getters.getRecordsByCustomer;
+        const newRecords = getters.getTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
-        const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
-        return rows;
+        const rec = newRecords.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}))
+        // const rows = getRecordsForWeekRange(timeRecords, startDate, endDate);
+        // console.log('rows', rows);
+        return rec;
+    },
+    getTimeRecordsForCurrentWeekInUIFormat: (state, getters, _, rootGetters) => {
+        const records = getters.getTimeRecordsForCurrentWeek;
+        return records.reduce((acc, entry) => {
+            let record = acc.find((a) => a.customer === entry.customer);
+            if(!record) {
+              record = {
+                customer: entry.customer,
+                hours: [],
+                debtor: entry.debtor
+              }
+              acc.push(record);
+            }
+            record.hours.push({
+              date: entry.date, hours: entry.hours
+            });
+            return acc;
+        }, []);
     },
     getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
         const records = getters.getTravelAllowanceRecords;
@@ -266,8 +300,8 @@ export const getters = {
         return currentWeek.map((weekDay) => {
             const currDate = new Date(weekDay.date);
             return currentWeekRecords.reduce((acc, curr) => {
-                const registeredHours = curr.hours.find((entry) => isSameDay(currDate, new Date(entry.date)));
-                return acc + (registeredHours ? registeredHours.hours : 0);
+                const registeredHours = isSameDay(currDate, new Date(curr.date));
+                return acc + (registeredHours ? curr.hours : 0);
             }, 0);
         });
     },
