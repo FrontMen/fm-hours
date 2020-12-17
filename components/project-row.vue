@@ -24,7 +24,7 @@
         <template #col3>
             <div class="d-flex align-items-center project-row__hours-column">
                 <div class="mr-2">
-                    <span class="d-md-none">Totale uren:</span>
+                    <span class="d-md-none">Total uren:</span>
                     {{totalWeekHours}}
                 </div>
                 <b-button
@@ -72,13 +72,10 @@ export default {
     },
     methods: {
         update: function(date, value) {
-            const val = parseFloat(value).toFixed(2);
             // check for NAN and if the value is below 0. If so, set value to 0
             const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
 
             const output = {
-                debtor: this.project.debtor,
-                customer: this.project.customer,
                 date: formatISO(date),
                 hours,
             }

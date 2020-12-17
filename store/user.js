@@ -15,7 +15,6 @@ const GetRecordsForWeekRange = (records, startDate, endDate) => {
     return records.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}));
 }
 const AddRecord = (allRecords, newRecord, findCondition) => {
-    console.log('condition', findCondition);
     let newRecords = [...allRecords];
     const recordIndex = newRecords.findIndex(findCondition);
     if (recordIndex > -1) {

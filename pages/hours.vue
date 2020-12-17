@@ -66,7 +66,7 @@
                         :currentWeek="currentWeek"
                         :project="customer"
                         @on-remove="removeRow(customer)"
-                        @on-hours-change="changeHours($event)"
+                        @on-hours-change="changeHours($event, customer)"
                     ></project-row>
                 </template>
                 <template v-else>
@@ -209,8 +209,15 @@ export default Vue.extend({
         nextWeek() {
             this.$store.commit('week-dates/nextWeek');
         },
-        changeHours(record: any) {
-            this.$store.dispatch('user/addHoursRecords', record);
+        changeHours(registerData: any, customer: any) {
+            const { hours, date } = registerData;
+            const newRecords = {
+                customer: customer.customer,
+                debtor: customer.debtor,
+                date,
+                hours,
+            }
+            this.$store.dispatch('user/addHoursRecords', newRecords);
         },
         copyFromPrevWeek(record: any) {
             this.$store.dispatch('user/copyPrevWeekrecords');
@@ -218,8 +225,8 @@ export default Vue.extend({
         toCurrentWeek(record: any) {
             this.$store.commit('week-dates/setToday');
         },
-        registerKilometers(record: any) {
-            const {hours, date } = record;
+        registerKilometers(registerData: any) {
+            const { hours, date } = registerData;
             this.$store.dispatch('user/addKilometers', {hours, date});
         },
     }
