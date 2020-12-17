@@ -11,8 +11,19 @@ export const state = () => ({
 });
 
 const debouncer = debounce((fn) => fn(), 2000);
-const getRecordsForWeekRange = (records, startDate, endDate) => {
+const GetRecordsForWeekRange = (records, startDate, endDate) => {
     return records.filter((entry) => isWithinInterval(new Date(entry.date), { start: new Date(startDate), end: new Date(endDate)}));
+}
+const AddRecord = (allRecords, newRecord, findCondition) => {
+    console.log('condition', findCondition);
+    let newRecords = [...allRecords];
+    const recordIndex = newRecords.findIndex(findCondition);
+    if (recordIndex > -1) {
+        newRecords[recordIndex] = newRecord;
+    } else {
+        newRecords.push(newRecord);
+    }
+    return newRecords;
 }
 
 export const actions = {
@@ -47,22 +58,16 @@ export const actions = {
         context.commit('week-dates/setToday', null, {root:true});
     },
     addHoursRecords (context, payload) {
-        const timeRecords = context.getters.getTimeRecords;
-        let newRecords = [...timeRecords];
-        const index = newRecords.findIndex((entry) => isSameDay(new Date(payload.date), new Date(entry.date)) && entry.customer === payload.customer);
-        if (index > -1) {
-            newRecords[index] = payload;
-        } else {
-            newRecords.push(payload);
-        }
+        const records = context.getters.getTimeRecords;
+        const newRecords = AddRecord(records, payload, (entry) => isSameDay(new Date(payload.date), new Date(entry.date)) && entry.customer === payload.customer);
         context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: true });
         context.commit('updateTimeRecords', newRecords);
     },
     removeRecordRow (context, payload) {
         const allRecords = context.getters.getTimeRecords;
-        const newRecs = allRecords.filter((record) => !payload.hours.some((entry) => isSameDay(new Date(entry.date), new Date(record.date)) && record.customer === payload.customer));
-        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecs}, debounce: false });
-        context.commit('updateTimeRecords', newRecs);
+        const newRecords = allRecords.filter((record) => !payload.hours.some((entry) => isSameDay(new Date(entry.date), new Date(record.date)) && record.customer === payload.customer));
+        context.dispatch('saveToFirestore', { dataToSave: {time_records: newRecords}, debounce: false });
+        context.commit('updateTimeRecords', newRecords);
     },
     addProjectRow (context, payload) {
         context.commit('addProjectRow', payload);
@@ -72,7 +77,7 @@ export const actions = {
         const currentWeek = context.rootGetters['week-dates/currentWeek'];
         const startDate = subDays(currentWeek[0].date, 7);
         const endDate = addDays(startDate, 6);
-        const prevWeekRows = getRecordsForWeekRange(records, startDate, endDate);
+        const prevWeekRows = GetRecordsForWeekRange(records, startDate, endDate);
         if (prevWeekRows.length === 0) {
             return;
         }
@@ -88,14 +93,7 @@ export const actions = {
     },
     addKilometers (context, payload) {
         const records = context.getters.getTravelAllowanceRecords;
-        let newRecords = [...records]
-        const newDate = new Date(payload.date);
-        const index = newRecords.findIndex((entry) => isSameDay(newDate, new Date(entry.date)));
-        if (index > -1) {
-            newRecords[index] = payload;
-        } else {
-            newRecords.push(payload);
-        }
+        const newRecords = AddRecord(records, payload, (entry) => isSameDay(new Date(payload.date), new Date(entry.date)));
         context.commit('updateTravelAllowanceRecords', newRecords);
         context.dispatch('saveToFirestore', { dataToSave: {travelAllowance_records: newRecords}, debounce: true });
     },
@@ -166,8 +164,7 @@ export const getters = {
     getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
         const records = getters.getTimeRecords;
         const {startDate, endDate} = rootGetters['week-dates/getcurrentWeekRange'];
-        console.log('sdssdsd', getRecordsForWeekRange(records, startDate, endDate));
-        return getRecordsForWeekRange(records, startDate, endDate);
+        return GetRecordsForWeekRange(records, startDate, endDate);
     },
     getTimeRecordsForCurrentWeekInUIFormat: (_, getters) => {
         const records = getters.getTimeRecordsForCurrentWeek;
