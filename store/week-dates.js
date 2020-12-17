@@ -1,8 +1,18 @@
-import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay, isWeekend, isToday } from 'date-fns';
+import { addDays, subDays, startOfISOWeek, format, isAfter, isSameDay, isWeekend, isToday, compareAsc } from 'date-fns';
 
 export const state = () => ({
     currentDate: new Date(),
 });
+
+export const actions = {
+    async addHoliday (context, payload) {
+        const allDates = context.getters.getHolidayDates;
+        const newDates = [...allDates, payload].sort((accDate, currDate) => compareAsc(new Date(accDate), new Date(currDate)));
+        const ref = this.$fire.firestore.collection('holidays').doc('6WuBEKz07eGilq2B8A3l');
+        await ref.set({dates: newDates});
+        context.commit('setHolidays', newDates);
+    },
+}
 
 export const mutations = {
     setToday(state) {
@@ -34,8 +44,9 @@ export const getters = {
         label += ` - ${format(lastDay.date, 'dd MMM yyyy')}`;
         return label;
     },
-    currentWeek: state => {
+    currentWeek: (state, getters, _, rootGetters) => {
         const startDate = startOfISOWeek(new Date(state.currentDate));
+        const holidays = rootGetters['holidays/getHolidayDates'];
         return [...Array(7)].map((_, index) => {
             const newDate = addDays(new Date(startDate), index);
             return {
@@ -45,7 +56,8 @@ export const getters = {
                 month: format(newDate, 'MMM'),
                 year: format(newDate, 'yyyy'),
                 isWeekend: isWeekend(newDate),
-                isToday: isToday(newDate)
+                isToday: isToday(newDate),
+                isHoliday: holidays.some((date) => isSameDay(new Date(date), newDate)),
             }
         });
     },

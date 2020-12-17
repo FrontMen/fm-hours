@@ -37,6 +37,7 @@ export const actions = {
             const snapshot = await this.$fire.firestore.collection('admins').get();
             const { admins: adminList } = snapshot.docs[0].data();
             const isAdmin = adminList.some((email) => email === claims.email);
+            context.dispatch('holidays/getHolidays', null, {root:true} );
             if (user.exists) {
                 context.dispatch('loginSuccess', {id: user.id, ...user.data(), isAdmin});
             } else {

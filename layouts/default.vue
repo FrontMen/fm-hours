@@ -33,21 +33,25 @@
         </b-container>
       </div>
     </div>
-    <b-sidebar id="sidebar-1" title="Admin" shadow backdrop>
-        <b-button
-          v-if="isAdmin"
-          @click="toPage('/customers')"
-          class="ml-2 ml-md-3 py-1"
-        >
-          Manage customers
-        </b-button>
-        <b-button
-          v-if="isAdmin"
-          @click="toPage('/users')"
-          class="ml-2 ml-md-3 py-1 mt-3"
-        >
-          Manage users
-        </b-button>
+    <b-sidebar
+      id="sidebar-1"
+      class="pl-2"
+      v-if="isAdmin"
+      title="Admin"
+      shadow
+      backdrop
+    >
+      <div class="mx-2 mx-md-3">
+          <b-button
+            v-for="(button, index) in buttons"
+            :key="index"
+            block
+            @click="toPage(button.page)"
+            class="py-2 text-left"
+          >
+            {{button.label}}
+          </b-button>
+        </div>
     </b-sidebar>
     <Nuxt />
   </div>
@@ -57,6 +61,24 @@
 import Vue from 'vue'
 import { mapGetters } from "vuex";
 export default Vue.extend({
+    data() {
+      return {
+        buttons: [
+          {
+            label: 'Manage customers',
+            page: '/customers'
+          },
+          {
+            label: 'Manage users',
+            page: '/users'
+          },
+          {
+            label: 'Manage holidays',
+            page: '/holidays'
+          },
+        ]
+      }
+    },
     computed: {
         ...mapGetters({
             user: 'user/getUser',

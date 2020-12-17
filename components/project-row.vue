@@ -9,7 +9,7 @@
             <div
                 v-for="(input, index) in weekyHours"
                 :key="index"
-                :class="{'is-weekend': input.isWeekend}"
+                :class="{'is-weekend': input.isWeekend, 'is-holiday': input.isHoliday}"
             >
                 <div class="d-md-none mb-1">{{input.date | formatDate('EEEEEE')}}</div>
                 <b-form-input
@@ -96,7 +96,8 @@ export default {
         border-top: 1px solid var(--color-primary);
     }
 
-    .is-weekend .project-row__input {
+    .is-weekend .project-row__input,
+    .is-holiday .project-row__input {
         background: var(--color-secondary);
     }
 
