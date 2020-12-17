@@ -176,9 +176,6 @@ export default Vue.extend({
             selectableCustomers: 'customers/getSelectableCustomers',
             user: 'user/getUser',
         }),
-        lastSavedLabel: function() {
-            return formatDistanceToNow(new Date(this.lastSavedDate), { includeSeconds: true, addSuffix: true });
-        },
         canAddRow: function() {
             return !!this.customerToAdd.customer;
         },
