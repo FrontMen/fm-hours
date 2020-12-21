@@ -12,7 +12,13 @@
     "test": "jest"
   },
   "lint-staged": {
-    "*.{js,vue}": "eslint"
+    "*.{js,vue}": "eslint --fix"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@nuxtjs/eslint-config",
+      "@nuxtjs/eslint-config-typescript"
+    ]
   },
   "husky": {
     "hooks": {
