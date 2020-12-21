@@ -11,9 +11,9 @@ export default {
     meta: [
       { charset: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1, user-scalable=no' },
-      { hid: 'description', name: 'description', content: '' },
+      { hid: 'description', name: 'description', content: '' }
     ],
-    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+    link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }]
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
@@ -30,14 +30,14 @@ export default {
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
     // https://go.nuxtjs.dev/typescript
-    '@nuxt/typescript-build',
+    '@nuxt/typescript-build'
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     ['bootstrap-vue/nuxt', {
-      icons: true,
+      icons: true
     }],
     // https://go.nuxtjs.dev/axios
     '@nuxtjs/axios',
@@ -55,15 +55,15 @@ export default {
       projectId: process.env.FB_PROJECT_ID,
       storageBucket: process.env.FB_STORAGE_BUCKET,
       messagingSenderId: process.env.FB_MESSAGING_SENDER_ID,
-      appId: process.env.FB_APP_ID,
+      appId: process.env.FB_APP_ID
     },
     services: {
       firestore: true,
       auth: {
         initialize: {
           onAuthStateChangedAction: 'user/onAuthStateChangedAction'
-        },
-      },
+        }
+      }
     }
   },
 
@@ -71,5 +71,5 @@ export default {
   axios: {},
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  build: {}
 }

@@ -6,52 +6,54 @@
           <b-row class="py-2" align-v="center">
             <b-col>
               <div class="d-flex align-items-center">
-                <img @click="toPage('/hours')" src="@/assets/images/logo-dark.png" alt="frontmen logo">
+                <img src="@/assets/images/logo-dark.png" alt="frontmen logo" @click="toPage('/hours')">
                 <div
-                  class="hamburger ml-4"
-                  v-b-toggle.sidebar-1
                   v-if="isAdmin"
-                ></div>
+                  v-b-toggle.sidebar-1
+                  class="hamburger ml-4"
+                />
               </div>
             </b-col>
             <b-col>
-                <div class="user d-flex align-items-center justify-content-end">
-                  <div class="d-none d-md-block user__name mr-3">
-                    {{user.name}}
-                  </div>
-                    <b-dropdown right class="user__dropdown">
-                        <template #button-content>
-                          <div class="user__image flex-shrink-0 mr-1">
-                            <img :src="user.picture" alt="user image">
-                          </div>
-                        </template>
-                    <b-dropdown-item @click="logout()">Logout</b-dropdown-item>
-                  </b-dropdown>
+              <div class="user d-flex align-items-center justify-content-end">
+                <div class="d-none d-md-block user__name mr-3">
+                  {{ user.name }}
                 </div>
+                <b-dropdown right class="user__dropdown">
+                  <template #button-content>
+                    <div class="user__image flex-shrink-0 mr-1">
+                      <img :src="user.picture" alt="user image">
+                    </div>
+                  </template>
+                  <b-dropdown-item @click="logout()">
+                    Logout
+                  </b-dropdown-item>
+                </b-dropdown>
+              </div>
             </b-col>
           </b-row>
         </b-container>
       </div>
     </div>
     <b-sidebar
+      v-if="isAdmin"
       id="sidebar-1"
       class="pl-2"
-      v-if="isAdmin"
       title="Admin"
       shadow
       backdrop
     >
       <div class="mx-2 mx-md-3">
-          <b-button
-            v-for="(button, index) in buttons"
-            :key="index"
-            block
-            @click="toPage(button.page)"
-            class="py-2 text-left"
-          >
-            {{button.label}}
-          </b-button>
-        </div>
+        <b-button
+          v-for="(button, index) in buttons"
+          :key="index"
+          block
+          class="py-2 text-left"
+          @click="toPage(button.page)"
+        >
+          {{ button.label }}
+        </b-button>
+      </div>
     </b-sidebar>
     <Nuxt />
   </div>
@@ -59,41 +61,41 @@
 
 <script>
 import Vue from 'vue'
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 export default Vue.extend({
-    data() {
-      return {
-        buttons: [
-          {
-            label: 'Manage customers',
-            page: '/customers'
-          },
-          {
-            label: 'Manage users',
-            page: '/users'
-          },
-          {
-            label: 'Manage holidays',
-            page: '/holidays'
-          },
-        ]
-      }
-    },
-    computed: {
-        ...mapGetters({
-            user: 'user/getUser',
-            isAdmin: 'user/isUserAdmin'
-      })
-    },
-    methods: {
-      logout() {
-        this.$store.dispatch('user/logout');
-      },
-      toPage(page) {
-        this.$router.push(page);
-      }
+  data () {
+    return {
+      buttons: [
+        {
+          label: 'Manage customers',
+          page: '/customers'
+        },
+        {
+          label: 'Manage users',
+          page: '/users'
+        },
+        {
+          label: 'Manage holidays',
+          page: '/holidays'
+        }
+      ]
     }
-});
+  },
+  computed: {
+    ...mapGetters({
+      user: 'user/getUser',
+      isAdmin: 'user/isUserAdmin'
+    })
+  },
+  methods: {
+    logout () {
+      this.$store.dispatch('user/logout')
+    },
+    toPage (page) {
+      this.$router.push(page)
+    }
+  }
+})
 </script>
 
 <style lang="scss">

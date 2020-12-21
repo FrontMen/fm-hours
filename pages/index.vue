@@ -1,35 +1,36 @@
 <template>
-    <b-container fluid class="d-flex justify-content-center login-wrapper">
-        <img src="@/assets/images/logo.png" alt="Frontmen logo">
-        <h1>Login</h1>
-        <p>Login to use the hours registration tool</p>
-        <b-button class="login-button" @click="login()">Login</b-button>
-    </b-container>
+  <b-container fluid class="d-flex justify-content-center login-wrapper">
+    <img src="@/assets/images/logo.png" alt="Frontmen logo">
+    <h1>Login</h1>
+    <p>Login to use the hours registration tool</p>
+    <b-button class="login-button" @click="login()">
+      Login
+    </b-button>
+  </b-container>
 </template>
 
-<script lang="ts">
+<script>
 import Vue from 'vue'
-import { mapGetters } from "vuex";
+import { mapGetters } from 'vuex'
 
 export default Vue.extend({
   layout: 'login',
   middleware: 'isLoggedIn',
-  methods: {
-    login() {
-      //this.$router.push('/hours');
-      this.$store.dispatch('user/login');
-    }
-  },
   computed: {
-        ...mapGetters({
-            isLoggedIn: 'user/isUserLoggedIn',
-        }),
+    ...mapGetters({
+      isLoggedIn: 'user/isUserLoggedIn'
+    })
   },
   watch: {
-    isLoggedIn: function (isLoggedIn) {
+    isLoggedIn (isLoggedIn) {
       if (isLoggedIn) {
-        this.$router.push('/hours');
+        this.$router.push('/hours')
       }
+    }
+  },
+  methods: {
+    login () {
+      this.$store.dispatch('user/login')
     }
   }
 })
@@ -37,15 +38,14 @@ export default Vue.extend({
 
 <style>
 .login-wrapper {
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    flex-flow: column;
-    justify-content: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  flex-flow: column;
+  justify-content: center;
 }
 
 .login-button {
-    font-size: 20px;
+  font-size: 20px;
 }
-
 </style>

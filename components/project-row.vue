@@ -1,91 +1,91 @@
 <template>
-    <three-col-row class="project-row">
-        <template #col1>
-            <div class="project-row__title font-weight-bold">
-                {{project.customer}}
-            </div>
-        </template>
-        <template #col2>
-            <div
-                v-for="(input, index) in weekyHours"
-                :key="index"
-                :class="{'is-weekend': input.isWeekend, 'is-holiday': input.isHoliday}"
-            >
-                <div class="d-md-none mb-1">{{input.date | formatDate('EEEEEE')}}</div>
-                <b-form-input
-                    type="number"
-                    no-wheel
-                    @update="update(input.date, $event)"
-                    :value="input.hours"
-                    class="project-row__input"
-                ></b-form-input>
-            </div>
-        </template>
-        <template #col3>
-            <div class="d-flex align-items-center project-row__hours-column">
-                <div class="mr-2">
-                    <span class="d-md-none">Total uren:</span>
-                    {{totalWeekHours}}
-                </div>
-                <b-button
-                    class="project-row__remove-button border-0"
-                    @click="$emit('on-remove')"
-                    v-if="canDeleteRow"
-                >
-                    <b-icon icon="x-square"></b-icon>
-                </b-button>
-            </div>
-        </template>
-    </three-col-row>
+  <three-col-row class="project-row">
+    <template #col1>
+      <div class="project-row__title font-weight-bold">
+        {{ project.customer }}
+      </div>
+    </template>
+    <template #col2>
+      <div
+        v-for="(input, index) in weekyHours"
+        :key="index"
+        :class="{'is-weekend': input.isWeekend, 'is-holiday': input.isHoliday}"
+      >
+        <div class="d-md-none mb-1">
+          {{ input.date | formatDate('EEEEEE') }}
+        </div>
+        <b-form-input
+          type="number"
+          no-wheel
+          :value="input.hours"
+          class="project-row__input"
+          @update="update(input.date, $event)"
+        />
+      </div>
+    </template>
+    <template #col3>
+      <div class="d-flex align-items-center project-row__hours-column">
+        <div class="mr-2">
+          <span class="d-md-none">Total uren:</span>
+          {{ totalWeekHours }}
+        </div>
+        <b-button
+          v-if="canDeleteRow"
+          class="project-row__remove-button border-0"
+          @click="$emit('on-remove')"
+        >
+          <b-icon icon="x-square" />
+        </b-button>
+      </div>
+    </template>
+  </three-col-row>
 </template>
 
 <script>
-import { formatISO, isSameDay } from "date-fns";
+import { formatISO, isSameDay } from 'date-fns'
 export default {
-    computed: {
-        weekyHours: function () {
-            return this.currentWeek.map((entry) => {
-                const input = this.project.hours.find((input) => isSameDay(new Date(input.date), entry.date));
-                return {
-                    ...entry,
-                    hours: input ? input.hours : 0
-                }
-            });
-        },
-        totalWeekHours: function () {
-            return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0);
-        },
+  props: {
+    currentWeek: {
+      type: Array,
+      default: () => []
     },
-    props: {
-        currentWeek: {
-            type: Array,
-            default: []
-        },
-        project: {
-            type: Object,
-            default: () => {}
-        },
-        canDeleteRow: {
-            type: Boolean,
-            default: true
-        }
+    project: {
+      type: Object,
+      default: () => {}
     },
-    methods: {
-        update: function(date, value) {
-            // check for NAN and if the value is below 0. If so, set value to 0
-            const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value));
-
-            const output = {
-                date: formatISO(date),
-                hours,
-            }
-            this.$emit('on-hours-change', output);
-        },
+    canDeleteRow: {
+      type: Boolean,
+      default: true
     }
-};
+  },
+  computed: {
+    weekyHours () {
+      return this.currentWeek.map((entry) => {
+        const input = this.project.hours.find(input => isSameDay(new Date(input.date), entry.date))
+        return {
+          ...entry,
+          hours: input ? input.hours : 0
+        }
+      })
+    },
+    totalWeekHours () {
+      return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0)
+    }
+  },
+  methods: {
+    update (date, value) {
+      // check for NAN and if the value is below 0. If so, set value to 0
+      const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value))
+
+      const output = {
+        date: formatISO(date),
+        hours
+      }
+      this.$emit('on-hours-change', output)
+    }
+  }
+}
 </script>
-
-
 
 <style scoped lang="scss">
 @import 'node_modules/bootstrap/scss/bootstrap';
