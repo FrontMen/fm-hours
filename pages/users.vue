@@ -29,23 +29,23 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import Vue from "vue";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
-  middleware: 'isAdmin',
+  middleware: "isAdmin",
   computed: {
     ...mapGetters({
-      users: 'users/getUsers'
-    })
+      users: "users/getUsers",
+    }),
   },
-  created () {
-    this.$store.dispatch('users/getUserList')
+  created() {
+    this.$store.dispatch("users/getUserList");
   },
   methods: {
-    toggleTravelAllowance (user) {
-      this.$store.dispatch('users/toggleTravelAllowance', user)
-    }
-  }
-})
+    toggleTravelAllowance(user) {
+      this.$store.dispatch("users/toggleTravelAllowance", user);
+    },
+  },
+});
 </script>

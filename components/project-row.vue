@@ -9,10 +9,13 @@
       <div
         v-for="(input, index) in weekyHours"
         :key="index"
-        :class="{'is-weekend': input.isWeekend, 'is-holiday': input.isHoliday}"
+        :class="{
+          'is-weekend': input.isWeekend,
+          'is-holiday': input.isHoliday,
+        }"
       >
         <div class="d-md-none mb-1">
-          {{ input.date | formatDate('EEEEEE') }}
+          {{ input.date | formatDate("EEEEEE") }}
         </div>
         <b-form-input
           type="number"
@@ -42,107 +45,111 @@
 </template>
 
 <script>
-import { formatISO, isSameDay } from 'date-fns'
+import { formatISO, isSameDay } from "date-fns";
 export default {
   props: {
     currentWeek: {
       type: Array,
-      default: () => []
+      default: () => [],
     },
     project: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     canDeleteRow: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   computed: {
-    weekyHours () {
+    weekyHours() {
       return this.currentWeek.map((entry) => {
-        const input = this.project.hours.find(input => isSameDay(new Date(input.date), entry.date))
+        const input = this.project.hours.find((input) =>
+          isSameDay(new Date(input.date), entry.date)
+        );
         return {
           ...entry,
-          hours: input ? input.hours : 0
-        }
-      })
+          hours: input ? input.hours : 0,
+        };
+      });
     },
-    totalWeekHours () {
-      return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0)
-    }
+    totalWeekHours() {
+      return this.weekyHours.reduce((acc, curr) => acc + curr.hours, 0);
+    },
   },
   methods: {
-    update (date, value) {
+    update(date, value) {
       // check for NAN and if the value is below 0. If so, set value to 0
-      const hours = isNaN(parseFloat(value)) ? 0 : Math.max(0, parseFloat(value))
+      const hours = isNaN(parseFloat(value))
+        ? 0
+        : Math.max(0, parseFloat(value));
 
       const output = {
         date: formatISO(date),
-        hours
-      }
-      this.$emit('on-hours-change', output)
-    }
-  }
-}
+        hours,
+      };
+      this.$emit("on-hours-change", output);
+    },
+  },
+};
 </script>
 
 <style scoped lang="scss">
-@import 'node_modules/bootstrap/scss/bootstrap';
+@import "node_modules/bootstrap/scss/bootstrap";
 .project-row {
-    padding: 16px 0;
+  padding: 16px 0;
 
-    + .project-row {
-        border-top: 1px solid var(--color-primary);
+  + .project-row {
+    border-top: 1px solid var(--color-primary);
+  }
+
+  .is-weekend .project-row__input,
+  .is-holiday .project-row__input {
+    background: var(--color-secondary);
+  }
+
+  &__input {
+    padding: 0;
+    text-align: center;
+    border: 1px solid #00cccc7a;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &__remove-button {
+    display: flex;
+    align-items: center;
+    background: transparent;
+    color: var(--color-primary);
+
+    span {
+      margin-right: 8px;
     }
 
-    .is-weekend .project-row__input,
-    .is-holiday .project-row__input {
-        background: var(--color-secondary);
+    @media (min-width: 767px) {
+      background: transparent;
+      color: #1d1d1d;
     }
+  }
 
-    &__input {
-        padding: 0;
-        text-align: center;
-        border:1px solid #00cccc7a;
+  &__title {
+    font-size: 17px;
+    color: var(--color-primary);
+  }
 
-        &:focus {
-            outline: none;
-        }
+  &__hours-column {
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  @media (max-width: map-get($grid-breakpoints, md)) {
+    .project-row__hours-column {
+      justify-content: flex-start;
+      padding-top: 16px;
+      padding-bottom: 10px;
     }
-
-    &__remove-button {
-        display: flex;
-        align-items: center;
-        background: transparent;
-        color: var(--color-primary);
-
-        span {
-            margin-right: 8px;
-        }
-
-        @media (min-width: 767px) {
-            background: transparent;
-            color: #1d1d1d;
-        }
-    }
-
-    &__title {
-        font-size: 17px;
-        color: var(--color-primary);
-    }
-
-    &__hours-column {
-        justify-content: flex-end;
-        height: 100%;
-    }
-
-    @media (max-width: map-get($grid-breakpoints, md)) {
-        .project-row__hours-column {
-            justify-content: flex-start;
-            padding-top: 16px;
-            padding-bottom: 10px;
-        }
-    }
+  }
 }
 </style>

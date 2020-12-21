@@ -14,19 +14,19 @@ export default {
   props: {
     customers: {
       type: Array,
-      default: () => []
-    }
+      default: () => [],
+    },
   },
-  data () {
+  data() {
     return {
-      selectedCustomerId: null
-    }
+      selectedCustomerId: null,
+    };
   },
   methods: {
-    selectCustomer (customerId) {
-      this.$emit('on-customer-select', customerId)
-      this.selectedProjectId = null
-    }
-  }
-}
+    selectCustomer(customerId) {
+      this.$emit("on-customer-select", customerId);
+      this.selectedProjectId = null;
+    },
+  },
+};
 </script>

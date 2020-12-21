@@ -11,9 +11,7 @@
           </span>
         </b-col>
         <b-col cols="2" class="d-flex justify-content-end">
-          <b-button v-b-modal.modal-center class="d-md-none p-1">
-            +
-          </b-button>
+          <b-button v-b-modal.modal-center class="d-md-none p-1"> + </b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -37,10 +35,7 @@
                 </span>
               </div>
               <div class="d-flex">
-                <b-button
-                  v-if="!isCurrentWeek"
-                  @click="toCurrentWeek()"
-                >
+                <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">
                   To current week
                 </b-button>
                 <b-button v-b-modal.modal-center class="d-none d-md-block ml-3">
@@ -62,9 +57,7 @@
                 :class="{ 'is-today': date.isToday }"
               >
                 <span class="font-weight-bold">{{ date.weekDay }}</span>
-                <div class="date">
-                  {{ date.monthDay }} {{ date.month }}
-                </div>
+                <div class="date">{{ date.monthDay }} {{ date.month }}</div>
               </div>
             </template>
           </three-col-row>
@@ -83,13 +76,9 @@
               <b-col>
                 <div class="d-flex flex-column d-md-block text-center py-5">
                   <p>There are no projects registered this week.</p>
-                  <b-button v-b-modal.modal-center>
-                    Add a project
-                  </b-button>
+                  <b-button v-b-modal.modal-center> Add a project </b-button>
                   <span class="mx-2"> or </span>
-                  <b-button
-                    @click="copyFromPrevWeek()"
-                  >
+                  <b-button @click="copyFromPrevWeek()">
                     Copy from previous week
                   </b-button>
                 </div>
@@ -133,9 +122,7 @@
                   :class="{ 'is-today': date.isToday }"
                 >
                   <span class="font-weight-bold">{{ date.weekDay }}</span>
-                  <div class="date">
-                    {{ date.monthDay }} {{ date.month }}
-                  </div>
+                  <div class="date">{{ date.monthDay }} {{ date.month }}</div>
                 </div>
               </template>
             </three-col-row>
@@ -170,85 +157,85 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
-import { formatISO } from 'date-fns'
+import Vue from "vue";
+import { mapGetters } from "vuex";
+import { formatISO } from "date-fns";
 
 export default Vue.extend({
-  middleware: 'isAuthenticated',
-  data () {
+  middleware: "isAuthenticated",
+  data() {
     return {
-      selectedCustomerId: undefined
-    }
+      selectedCustomerId: undefined,
+    };
   },
   computed: {
     ...mapGetters({
-      customers: 'customers/getCustomers',
-      weekLabel: 'week-dates/currentWeekLabel',
-      currentWeek: 'week-dates/currentWeek',
-      currentWeekRecords: 'user/getTimeRecordsForCurrentWeekInUIFormat',
-      currentWeekTravelRecords: 'user/getTravelAllowanceRecordsForCurrentWeek',
-      customerToAdd: 'customers/getCustomerToAdd',
-      isCurrentWeek: 'week-dates/isNextweekInFuture',
-      weekTotals: 'user/getWeekTotals',
-      lastSavedDate: 'user/getLastSavedDate',
-      selectableCustomers: 'customers/getSelectableCustomers',
-      user: 'user/getUser'
+      customers: "customers/getCustomers",
+      weekLabel: "week-dates/currentWeekLabel",
+      currentWeek: "week-dates/currentWeek",
+      currentWeekRecords: "user/getTimeRecordsForCurrentWeekInUIFormat",
+      currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
+      customerToAdd: "customers/getCustomerToAdd",
+      isCurrentWeek: "week-dates/isNextweekInFuture",
+      weekTotals: "user/getWeekTotals",
+      lastSavedDate: "user/getLastSavedDate",
+      selectableCustomers: "customers/getSelectableCustomers",
+      user: "user/getUser",
     }),
-    canAddRow () {
-      return !!this.customerToAdd.customer
+    canAddRow() {
+      return !!this.customerToAdd.customer;
     },
-    hasCustomersThisWeek () {
-      return this.currentWeekRecords.length > 0
-    }
+    hasCustomersThisWeek() {
+      return this.currentWeekRecords.length > 0;
+    },
   },
-  created () {
-    this.$store.dispatch('customers/getCustomers')
+  created() {
+    this.$store.dispatch("customers/getCustomers");
   },
   methods: {
-    addRow () {
+    addRow() {
       const customer = this.customers.find(
-        customer => customer.id === this.selectedCustomerId
-      )
+        (customer) => customer.id === this.selectedCustomerId
+      );
       const item = {
         customer: customer.name,
         debtor: customer.debtor,
         date: formatISO(this.currentWeek[0].date),
-        hours: 0
-      }
-      this.$store.dispatch('user/addProjectRow', item)
+        hours: 0,
+      };
+      this.$store.dispatch("user/addProjectRow", item);
     },
-    removeRow (project) {
-      this.$store.dispatch('user/removeRecordRow', project)
+    removeRow(project) {
+      this.$store.dispatch("user/removeRecordRow", project);
     },
-    prevWeek () {
-      this.$store.commit('week-dates/prevWeek')
+    prevWeek() {
+      this.$store.commit("week-dates/prevWeek");
     },
-    nextWeek () {
-      this.$store.commit('week-dates/nextWeek')
+    nextWeek() {
+      this.$store.commit("week-dates/nextWeek");
     },
-    changeHours (registerData, customer) {
-      const { hours, date } = registerData
+    changeHours(registerData, customer) {
+      const { hours, date } = registerData;
       const newRecords = {
         customer: customer.customer,
         debtor: customer.debtor,
         date,
-        hours
-      }
-      this.$store.dispatch('user/addHoursRecords', newRecords)
+        hours,
+      };
+      this.$store.dispatch("user/addHoursRecords", newRecords);
     },
-    copyFromPrevWeek () {
-      this.$store.dispatch('user/copyPrevWeekrecords')
+    copyFromPrevWeek() {
+      this.$store.dispatch("user/copyPrevWeekrecords");
     },
-    toCurrentWeek () {
-      this.$store.commit('week-dates/setToday')
+    toCurrentWeek() {
+      this.$store.commit("week-dates/setToday");
     },
-    registerKilometers (registerData) {
-      const { hours, date } = registerData
-      this.$store.dispatch('user/addKilometers', { hours, date })
-    }
-  }
-})
+    registerKilometers(registerData) {
+      const { hours, date } = registerData;
+      this.$store.dispatch("user/addKilometers", { hours, date });
+    },
+  },
+});
 </script>
 
 <style lang="scss">

@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import { format } from 'date-fns'
+import Vue from "vue";
+import { format } from "date-fns";
 
-Vue.filter('formatDate', (value, formatString) => {
+Vue.filter("formatDate", (value, formatString) => {
   if (!value) {
-    return ''
+    return "";
   }
-  formatString = formatString || ''
-  const date = new Date(value)
-  return format(date, formatString)
-})
+  formatString = formatString || "";
+  const date = new Date(value);
+  return format(date, formatString);
+});

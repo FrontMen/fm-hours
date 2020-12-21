@@ -5,9 +5,7 @@
         <b-row :no-gutters="true">
           <b-col>
             <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center>
-                + Add holiday
-              </b-button>
+              <b-button v-b-modal.modal-center> + Add holiday </b-button>
             </div>
           </b-col>
         </b-row>
@@ -27,9 +25,7 @@
             {{ date | formatDate("dd MMMM yyyy") }}
           </b-col>
           <b-col cols-md="4" class="d-flex justify-content-end">
-            <b-button @click="deleteHoliday(date)">
-              Delete
-            </b-button>
+            <b-button @click="deleteHoliday(date)"> Delete </b-button>
           </b-col>
         </b-row>
       </b-container>
@@ -44,55 +40,51 @@
       @hidden="newHolidayValue = ''"
       @ok="addHoliday()"
     >
-      <b-calendar
-        v-model="newHolidayValue"
-        block
-        :date-info-fn="dateClass"
-      />
+      <b-calendar v-model="newHolidayValue" block :date-info-fn="dateClass" />
     </b-modal>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
-import { formatISO, isSameDay } from 'date-fns'
+import Vue from "vue";
+import { mapGetters } from "vuex";
+import { formatISO, isSameDay } from "date-fns";
 
 export default Vue.extend({
-  middleware: 'isAdmin',
-  data () {
+  middleware: "isAdmin",
+  data() {
     return {
-      newHolidayValue: ''
-    }
+      newHolidayValue: "",
+    };
   },
   computed: {
     ...mapGetters({
-      holidays: 'holidays/getHolidayDates'
-    })
+      holidays: "holidays/getHolidayDates",
+    }),
   },
   methods: {
-    addHoliday () {
+    addHoliday() {
       this.$store.dispatch(
-        'holidays/addHoliday',
+        "holidays/addHoliday",
         formatISO(new Date(this.newHolidayValue))
-      )
-      this.newHolidayValue = ''
+      );
+      this.newHolidayValue = "";
     },
-    dateClass (_, date) {
-      return this.holidays.some(holidayDate =>
+    dateClass(_, date) {
+      return this.holidays.some((holidayDate) =>
         isSameDay(new Date(holidayDate), date)
       )
-        ? 'is-holiday'
-        : ''
+        ? "is-holiday"
+        : "";
     },
-    deleteHoliday (date) {
+    deleteHoliday(date) {
       return this.$store.dispatch(
-        'holidays/deleteHoliday',
+        "holidays/deleteHoliday",
         formatISO(new Date(date))
-      )
-    }
-  }
-})
+      );
+    },
+  },
+});
 </script>
 
 <style lang="scss">

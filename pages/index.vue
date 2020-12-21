@@ -1,39 +1,37 @@
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
-    <img src="@/assets/images/logo.png" alt="Frontmen logo">
+    <img src="@/assets/images/logo.png" alt="Frontmen logo" />
     <h1>Login</h1>
     <p>Login to use the hours registration tool</p>
-    <b-button class="login-button" @click="login()">
-      Login
-    </b-button>
+    <b-button class="login-button" @click="login()"> Login </b-button>
   </b-container>
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import Vue from "vue";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
-  layout: 'login',
-  middleware: 'isLoggedIn',
+  layout: "login",
+  middleware: "isLoggedIn",
   computed: {
     ...mapGetters({
-      isLoggedIn: 'user/isUserLoggedIn'
-    })
+      isLoggedIn: "user/isUserLoggedIn",
+    }),
   },
   watch: {
-    isLoggedIn (isLoggedIn) {
+    isLoggedIn(isLoggedIn) {
       if (isLoggedIn) {
-        this.$router.push('/hours')
+        this.$router.push("/hours");
       }
-    }
+    },
   },
   methods: {
-    login () {
-      this.$store.dispatch('user/login')
-    }
-  }
-})
+    login() {
+      this.$store.dispatch("user/login");
+    },
+  },
+});
 </script>
 
 <style>

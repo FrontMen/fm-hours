@@ -1,52 +1,50 @@
 <template>
   <div>
-    <template v-if="lastSavedDate">
-      Last saved {{ lastSavedLabel }}
-    </template>
+    <template v-if="lastSavedDate"> Last saved {{ lastSavedLabel }} </template>
   </div>
 </template>
 
 <script>
-import { formatDistanceToNow } from 'date-fns'
-import { mapGetters } from 'vuex'
+import { formatDistanceToNow } from "date-fns";
+import { mapGetters } from "vuex";
 export default {
-  data () {
+  data() {
     return {
       interval: undefined,
-      lastSavedLabel: undefined
-    }
+      lastSavedLabel: undefined,
+    };
   },
   computed: {
     ...mapGetters({
-      lastSavedDate: 'user/getLastSavedDate'
-    })
+      lastSavedDate: "user/getLastSavedDate",
+    }),
   },
   watch: {
     lastSavedDate: {
       immediate: true,
-      handler (val) {
+      handler(val) {
         if (val) {
-          this.lastSavedLabel = this.updateLastSavedLabel(this.lastSavedDate)
-          this.setInterval()
+          this.lastSavedLabel = this.updateLastSavedLabel(this.lastSavedDate);
+          this.setInterval();
         }
-      }
-    }
+      },
+    },
   },
-  destroyed () {
-    clearInterval(this.interval)
+  destroyed() {
+    clearInterval(this.interval);
   },
   methods: {
-    setInterval () {
+    setInterval() {
       if (this.interval) {
-        clearInterval(this.interval)
+        clearInterval(this.interval);
       }
       this.interval = setInterval(() => {
-        this.lastSavedLabel = this.updateLastSavedLabel(this.lastSavedDate)
-      }, 10000)
+        this.lastSavedLabel = this.updateLastSavedLabel(this.lastSavedDate);
+      }, 10000);
     },
-    updateLastSavedLabel (date) {
-      return formatDistanceToNow(date, { addSuffix: true })
-    }
-  }
-}
+    updateLastSavedLabel(date) {
+      return formatDistanceToNow(date, { addSuffix: true });
+    },
+  },
+};
 </script>

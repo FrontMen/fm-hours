@@ -1,7 +1,7 @@
 :root {
-    --color-primary: #201e33;
-    --color-secondary: #e6e6e6;
-    --color-tertiary: #0cc;
+  --color-primary: #201e33;
+  --color-secondary: #e6e6e6;
+  --color-tertiary: #0cc;
 }
 
 $theme-colors: (
@@ -9,8 +9,7 @@ $theme-colors: (
   "secondary": #201e33,
 );
 
-
 // Bootstrap and its default variables
-@import '../../node_modules/bootstrap/scss/bootstrap';
+@import "../../node_modules/bootstrap/scss/bootstrap";
 // BootstrapVue and its default variables
-@import '../../node_modules/bootstrap-vue/src/index.scss';
+@import "../../node_modules/bootstrap-vue/src/index.scss";

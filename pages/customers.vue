@@ -5,9 +5,7 @@
         <b-row :no-gutters="true">
           <b-col>
             <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center>
-                + New customer
-              </b-button>
+              <b-button v-b-modal.modal-center> + New customer </b-button>
             </div>
           </b-col>
         </b-row>
@@ -43,42 +41,46 @@
       @ok="addCustomer()"
     >
       <b-form-input v-model="newCustomer.name" placeholder="Customer name" />
-      <b-form-input v-model="newCustomer.debtor" placeholder="Debtor of Customer" class="mt-3" />
+      <b-form-input
+        v-model="newCustomer.debtor"
+        placeholder="Debtor of Customer"
+        class="mt-3"
+      />
     </b-modal>
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import Vue from "vue";
+import { mapGetters } from "vuex";
 
 export default Vue.extend({
-  middleware: 'isAdmin',
-  data () {
+  middleware: "isAdmin",
+  data() {
     return {
       newCustomer: {
-        name: '',
-        debtor: ''
-      }
-    }
+        name: "",
+        debtor: "",
+      },
+    };
   },
   computed: {
     ...mapGetters({
-      customers: 'customers/getCustomers'
+      customers: "customers/getCustomers",
     }),
-    canAddCustomer () {
-      return this.newCustomer.name && this.newCustomer.debtor
-    }
+    canAddCustomer() {
+      return this.newCustomer.name && this.newCustomer.debtor;
+    },
   },
-  created () {
-    this.$store.dispatch('customers/getCustomers')
+  created() {
+    this.$store.dispatch("customers/getCustomers");
   },
   methods: {
-    addCustomer () {
-      this.$store.dispatch('customers/addNewCustomer', { ...this.newCustomer })
-      this.newCustomer.name = ''
-      this.newCustomer.debtor = ''
-    }
-  }
-})
+    addCustomer() {
+      this.$store.dispatch("customers/addNewCustomer", { ...this.newCustomer });
+      this.newCustomer.name = "";
+      this.newCustomer.debtor = "";
+    },
+  },
+});
 </script>

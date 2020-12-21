@@ -6,7 +6,11 @@
           <b-row class="py-2" align-v="center">
             <b-col>
               <div class="d-flex align-items-center">
-                <img src="@/assets/images/logo-dark.png" alt="frontmen logo" @click="toPage('/hours')">
+                <img
+                  src="@/assets/images/logo-dark.png"
+                  alt="frontmen logo"
+                  @click="toPage('/hours')"
+                />
                 <div
                   v-if="isAdmin"
                   v-b-toggle.sidebar-1
@@ -22,12 +26,10 @@
                 <b-dropdown right class="user__dropdown">
                   <template #button-content>
                     <div class="user__image flex-shrink-0 mr-1">
-                      <img :src="user.picture" alt="user image">
+                      <img :src="user.picture" alt="user image" />
                     </div>
                   </template>
-                  <b-dropdown-item @click="logout()">
-                    Logout
-                  </b-dropdown-item>
+                  <b-dropdown-item @click="logout()"> Logout </b-dropdown-item>
                 </b-dropdown>
               </div>
             </b-col>
@@ -60,53 +62,53 @@
 </template>
 
 <script>
-import Vue from 'vue'
-import { mapGetters } from 'vuex'
+import Vue from "vue";
+import { mapGetters } from "vuex";
 export default Vue.extend({
-  data () {
+  data() {
     return {
       buttons: [
         {
-          label: 'Manage customers',
-          page: '/customers'
+          label: "Manage customers",
+          page: "/customers",
         },
         {
-          label: 'Manage users',
-          page: '/users'
+          label: "Manage users",
+          page: "/users",
         },
         {
-          label: 'Manage holidays',
-          page: '/holidays'
-        }
-      ]
-    }
+          label: "Manage holidays",
+          page: "/holidays",
+        },
+      ],
+    };
   },
   computed: {
     ...mapGetters({
-      user: 'user/getUser',
-      isAdmin: 'user/isUserAdmin'
-    })
+      user: "user/getUser",
+      isAdmin: "user/isUserAdmin",
+    }),
   },
   methods: {
-    logout () {
-      this.$store.dispatch('user/logout')
+    logout() {
+      this.$store.dispatch("user/logout");
     },
-    toPage (page) {
-      this.$router.push(page)
-    }
-  }
-})
+    toPage(page) {
+      this.$router.push(page);
+    },
+  },
+});
 </script>
 
 <style lang="scss">
 .manage-customers-button {
-    background: transparent !important;
-    border: none;
-    border-radius: 0;
+  background: transparent !important;
+  border: none;
+  border-radius: 0;
 
-    &:hover {
-      border-bottom: 1px solid white;
-    }
+  &:hover {
+    border-bottom: 1px solid white;
+  }
 }
 .hamburger {
   border-top: 2px solid white;
@@ -122,9 +124,9 @@ export default Vue.extend({
   }
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
-    top:50%;
+    top: 50%;
     left: 0;
     transform: translateY(-50%);
     width: 100%;
@@ -142,7 +144,7 @@ export default Vue.extend({
   }
 
   .user__dropdown {
-      button {
+    button {
       padding: 0;
       background-color: transparent !important;
       border: none;
@@ -162,5 +164,4 @@ export default Vue.extend({
     }
   }
 }
-
 </style>
