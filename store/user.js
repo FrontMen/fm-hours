@@ -244,7 +244,7 @@ export const getters = {
       hours: rows,
     };
   },
-  getWeekTotals: (state, getters, _, rootGetters) => {
+  getDayTotals: (state, getters, _, rootGetters) => {
     const currentWeek = rootGetters["week-dates/currentWeek"];
     const currentWeekRecords = getters.getTimeRecordsForCurrentWeek;
     return currentWeek.map((weekDay) => {
@@ -256,6 +256,10 @@ export const getters = {
         return acc + (registeredHours ? curr.hours : 0);
       }, 0);
     });
+  },
+  getWeekTotal: (_, getters) => {
+    const dayTotals = getters.getDayTotals;
+    return dayTotals.reduce((acc, curr) => acc + curr, 0);
   },
   getLastSavedDate: (state) => {
     return state.lastSaved;

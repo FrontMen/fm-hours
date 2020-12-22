@@ -94,12 +94,17 @@
             </template>
             <template #col2>
               <div
-                v-for="(dayTotal, index) in weekTotals"
+                v-for="(dayTotal, index) in dayTotals"
                 :key="index"
                 class="font-weight-bold"
               >
                 {{ dayTotal }}
               </div>
+            </template>
+            <template #col3>
+              <span class="font-weight-bold mr-3">
+                {{ weekTotal }}
+              </span>
             </template>
           </three-col-row>
         </b-container>
@@ -177,7 +182,8 @@ export default Vue.extend({
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       customerToAdd: "customers/getCustomerToAdd",
       isCurrentWeek: "week-dates/isNextweekInFuture",
-      weekTotals: "user/getWeekTotals",
+      dayTotals: "user/getDayTotals",
+      weekTotal: "user/getWeekTotal",
       lastSavedDate: "user/getLastSavedDate",
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
