@@ -164,7 +164,6 @@
 <script>
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { formatISO } from "date-fns";
 
 export default Vue.extend({
   middleware: "isAuthenticated",
@@ -206,7 +205,7 @@ export default Vue.extend({
       const item = {
         customer: customer.name,
         debtor: customer.debtor,
-        date: formatISO(this.currentWeek[0].date),
+        date: this.currentWeek[0].date,
         hours: 0,
       };
       this.$store.dispatch("user/addProjectRow", item);

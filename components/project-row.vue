@@ -47,7 +47,8 @@
 </template>
 
 <script>
-import { formatISO, isSameDay } from "date-fns";
+import { isSameDay } from "date-fns";
+
 export default {
   props: {
     currentWeek: {
@@ -67,7 +68,7 @@ export default {
     weekyHours() {
       return this.currentWeek.map((entry) => {
         const input = this.project.hours.find((input) =>
-          isSameDay(new Date(input.date), entry.date)
+          isSameDay(new Date(input.date), new Date(entry.date))
         );
         return {
           ...entry,
@@ -86,11 +87,7 @@ export default {
       return Math.max(0, parseFloat(roundedValue));
     },
     update(date, hours) {
-      const output = {
-        date: formatISO(date),
-        hours,
-      };
-      this.$emit("on-hours-change", output);
+      this.$emit("on-hours-change", { date, hours });
     },
   },
 };

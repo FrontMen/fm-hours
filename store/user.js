@@ -1,10 +1,5 @@
-import {
-  isWithinInterval,
-  isSameDay,
-  formatISO,
-  addDays,
-  subDays,
-} from "date-fns";
+import { isWithinInterval, isSameDay, subDays } from "date-fns";
+import { formatDate, addDays } from "../helpers/dates.js";
 import { debounce } from "../helpers/debounce";
 
 export const state = () => ({
@@ -107,7 +102,7 @@ export const actions = {
   copyPrevWeekrecords(context) {
     const records = context.getters.getTimeRecords;
     const currentWeek = context.rootGetters["week-dates/currentWeek"];
-    const startDate = subDays(currentWeek[0].date, 7);
+    const startDate = subDays(new Date(currentWeek[0].date), 7);
     const endDate = addDays(startDate, 6);
     const prevWeekRows = GetRecordsForWeekRange(records, startDate, endDate);
     if (prevWeekRows.length === 0) {
@@ -116,7 +111,7 @@ export const actions = {
     const copiedRecords = prevWeekRows.map((entry) => {
       return {
         ...entry,
-        date: formatISO(addDays(new Date(entry.date), 7)),
+        date: formatDate(addDays(entry.date, 7)),
       };
     });
     const newRecords = [...records, ...copiedRecords];
