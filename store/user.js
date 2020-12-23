@@ -223,6 +223,39 @@ export const getters = {
       return acc;
     }, []);
   },
+  getWeeklyTimesheet: (state, getters, _, rootGetters) => {
+    const currentWeek = rootGetters["week-dates/currentWeek"];
+    const records = getters.getTimeRecordsForCurrentWeek;
+
+    const projects = records.reduce((acc, record) => {
+      if (acc.find((r) => r.customer === record.customer)) {
+        return acc;
+      }
+      return [
+        ...acc,
+        {
+          customer: record.customer,
+          debtor: record.debtor,
+        },
+      ];
+    }, []);
+
+    // Add the weekly hours to each project
+    return projects.map((project) => {
+      return {
+        ...project,
+        hours: currentWeek.map((day) => {
+          const record = records.find(
+            (r) => r.customer === project.customer && r.date === day.date
+          );
+          return {
+            date: day.date,
+            hours: record?.hours || 0,
+          };
+        }),
+      };
+    });
+  },
   getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;
     const { startDate, endDate } = rootGetters[
@@ -252,9 +285,12 @@ export const getters = {
       }, 0);
     });
   },
-  getWeekTotal: (_, getters) => {
-    const dayTotals = getters.getDayTotals;
-    return dayTotals.reduce((acc, curr) => acc + curr, 0);
+  getWeeklyTotals: (_, getters) => {
+    const totalsPerDay = getters.getDayTotals;
+    return {
+      perDay: totalsPerDay,
+      week: totalsPerDay.reduce((acc, current) => acc + current, 0),
+    };
   },
   getLastSavedDate: (state) => {
     return state.lastSaved;
