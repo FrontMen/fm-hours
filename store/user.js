@@ -204,25 +204,6 @@ export const getters = {
     ];
     return GetRecordsForWeekRange(records, startDate, endDate);
   },
-  getTimeRecordsForCurrentWeekInUIFormat: (_, getters) => {
-    const records = getters.getTimeRecordsForCurrentWeek;
-    return records.reduce((acc, entry) => {
-      let record = acc.find((a) => a.customer === entry.customer);
-      if (!record) {
-        record = {
-          customer: entry.customer,
-          hours: [],
-          debtor: entry.debtor,
-        };
-        acc.push(record);
-      }
-      record.hours.push({
-        date: entry.date,
-        hours: entry.hours,
-      });
-      return acc;
-    }, []);
-  },
   getWeeklyTimesheet: (state, getters, _, rootGetters) => {
     const currentWeek = rootGetters["week-dates/currentWeek"];
     const records = getters.getTimeRecordsForCurrentWeek;
