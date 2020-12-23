@@ -192,6 +192,8 @@ export default Vue.extend({
       return !!this.customerToAdd.customer;
     },
     hasCustomersThisWeek() {
+      console.log("dssdsd", this.currentWeek);
+      console.log("this.currentWeekRecords", this.currentWeekRecords);
       return this.currentWeekRecords.length > 0;
     },
   },

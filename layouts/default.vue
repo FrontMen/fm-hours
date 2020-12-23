@@ -80,6 +80,10 @@ export default Vue.extend({
           label: "Manage holidays",
           page: "/holidays",
         },
+        {
+          label: "Manage timesheets",
+          page: "/timesheets",
+        },
       ],
     };
   },
