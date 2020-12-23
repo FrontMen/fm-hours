@@ -20,7 +20,6 @@
         <b-form-input
           type="number"
           min="0"
-          max="20"
           no-wheel
           :value="input.hours"
           class="project-row__input"
