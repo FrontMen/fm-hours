@@ -3,14 +3,18 @@
     <div class="table-row header">
       <div class="column d-none d-md-block" />
       <div
-        v-for="date in currentWeek"
+        v-for="date in dates"
         :key="date.weekDay"
         :class="{ column: true, today: date.isToday }"
       >
         <div>
-          <strong>{{ date.weekDay }}</strong>
+          <strong class="d-md-none">{{ date.weekDayShort }}</strong>
+          <strong class="d-none d-md-inline">{{ date.weekDay }}</strong>
         </div>
-        <small>{{ date.monthDay }} {{ date.month }}</small>
+        <small>
+          <span>{{ date.monthDay }}</span>
+          <span class="d-none d-md-inline">{{ date.month }}</span>
+        </small>
       </div>
       <div class="column d-none d-md-block" />
     </div>
@@ -32,8 +36,8 @@
           :key="index"
           :class="{
             column: true,
-            weekend: currentWeek[index].isWeekend,
-            holiday: currentWeek[index].isHoliday,
+            weekend: dates[index].isWeekend,
+            holiday: dates[index].isHoliday,
           }"
         >
           <b-form-input
@@ -59,7 +63,7 @@
           <slot name="emptyRow" />
         </div>
         <div
-          v-for="date in currentWeek"
+          v-for="date in dates"
           :key="date.weekDay"
           :class="{
             column: true,
@@ -101,7 +105,8 @@ export default {
       type: Array,
       default: () => [],
     },
-    currentWeek: {
+    /** The dates of the week the rows are related to */
+    dates: {
       type: Array,
       default: () => [],
     },

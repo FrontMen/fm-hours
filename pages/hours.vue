@@ -23,7 +23,7 @@
     <template v-if="weeklyTimesheet.length">
       <weekly-values-table
         :rows="weeklyTimesheet"
-        :current-week="currentWeek"
+        :dates="currentWeek"
         :totals="weeklyTotals"
         :value-formatter="timesheetFormatter"
         can-remove-row
@@ -53,7 +53,7 @@
     <weekly-values-table
       class="mt-5"
       :rows="weeklyKilometers"
-      :current-week="currentWeek"
+      :dates="currentWeek"
       :value-formatter="kilometerFormatter"
       @value-changed="updateKilometers"
     />
