@@ -1,4 +1,5 @@
-import { isWithinInterval, startOfISOWeek, addDays, isBefore, format, isToday, compareAsc, isWeekend, isSameDay } from 'date-fns'
+import { isWithinInterval, startOfISOWeek, isBefore, format, isToday, compareAsc, isWeekend, isSameDay } from 'date-fns'
+import { addDays } from "../helpers/dates.js";
 import { recordStatus } from '../helpers/record-status';
 
 export const state = () => ({
@@ -16,7 +17,7 @@ const GetRecordsForWeekRange = (records, startDate, endDate) => {
 
 const getWeekRange = (beginDate) => {
   const start = startOfISOWeek(new Date(beginDate));
-  const end = addDays(new Date(start), 6);
+  const end = addDays(start, 6);
   return { start, end }
 }
 
@@ -37,9 +38,9 @@ const getDateLabel = (startDate, endDate) => {
   return label;
 }
 
-const buildWeek = (startDate) => {
+const buildWeek = (startDate, holidays) => {
   return [...Array(7)].map((_, index) => {
-    const newDate = addDays(new Date(startDate), index);
+    const newDate = addDays(startDate, index);
     return {
       date: newDate,
       weekDay: format(newDate, "EEEEEE"),
@@ -48,6 +49,7 @@ const buildWeek = (startDate) => {
       year: format(newDate, "yyyy"),
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
+      isHoliday: holidays.some((date) => isSameDay(new Date(date), new Date(newDate))),
     }
   })
 }
@@ -103,7 +105,9 @@ export const getters = {
   getUsers: (state) => {
     return state.users;
   },
-  getUsersRecordsForApproval: (state, getters) => {
+  getUsersRecordsForApproval: (state, getters, _, rootGetters) => {
+    const holidays = rootGetters["holidays/getHolidayDates"];
+    console.log('holidays', holidays);
     const users = getters.getUsers;
     if (!users) {
       return;
@@ -141,7 +145,6 @@ export const getters = {
     // the startdate will be increased by 1 week after every cycle
     while (isBefore(startDate, endDate)) {
       const { start, end } = getWeekRange(startDate);
-
       const thisWeekTimeRecords = pendingRecords.reduce((acc, user) => {
         const timeRecordsWithinRange = GetRecordsForWeekRange(user.time_records, start, end);
         if (timeRecordsWithinRange.length > 0) {
@@ -151,7 +154,7 @@ export const getters = {
               userId: user.id,
               user: user.name,
               records: timeRecordsWithinRange,
-              week: buildWeek(start)
+              week: buildWeek(start, holidays)
             }
           ];
           return entry

@@ -19,35 +19,13 @@
             <div class="week-records__user-name mb-2 font-weight-bold">
               {{ records.user }}
             </div>
-            <div class="app-table">
-              <b-container class="hours-table__inner" fluid>
-                <three-col-row
-                  class="d-none d-md-block py-2 app-table__top-row"
-                >
-                  <template #col2>
-                    <div
-                      v-for="date in records.week"
-                      :key="date.weekDay"
-                      :class="{ 'is-today': date.isToday }"
-                    >
-                      <span class="font-weight-bold">{{ date.weekDay }}</span>
-                      <div class="date">
-                        {{ date.monthDay }} {{ date.month }}
-                      </div>
-                    </div>
-                  </template>
-                </three-col-row>
-                <template>
-                  <project-row
-                    v-for="customer in transformToUIFormat(records.records)"
-                    :key="customer.project"
-                    :current-week="records.week"
-                    :project="customer"
-                    :canDeleteRow="false"
-                  />
-                </template>
-              </b-container>
-            </div>
+
+            <weekly-values-table
+              class="mt-5"
+              :rows="generateRows(records)"
+              :current-week="records.week"
+              :value-formatter="timesheetFormatter"
+            />
             <b-button class="mt-3" @click="approveHours(records)">
               Approve hours
             </b-button>
@@ -60,7 +38,29 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { transformRecordsToUIFormat } from "../helpers/records-transformation";
+
+function generateValueFormatter(min, max) {
+  return {
+    min,
+    max,
+    formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+  };
+}
+
+function generateWeeklyValuesTableRows(records, week) {
+  return records.map((r) => {
+    return {
+      customer: r.customer,
+      values: week.map((day) => {
+        const result = records.find((r) => r.date === day.date);
+        return {
+          date: day.date,
+          value: result?.hours || 0,
+        };
+      }),
+    };
+  });
+}
 
 export default {
   middleware: "isAdmin",
@@ -68,6 +68,9 @@ export default {
     ...mapGetters({
       usersRecords: "users/getUsersRecordsForApproval",
     }),
+    timesheetFormatter() {
+      return generateValueFormatter(0, 24);
+    },
   },
   created() {
     this.$store.dispatch("users/getUserList");
@@ -76,8 +79,9 @@ export default {
     approveHours(records) {
       this.$store.dispatch("users/approveRecords", records);
     },
-    transformToUIFormat(records) {
-      return transformRecordsToUIFormat(records);
+    generateRows(rowData) {
+      const { records, week } = rowData;
+      return generateWeeklyValuesTableRows(records, week);
     },
   },
 };
