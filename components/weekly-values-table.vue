@@ -1,6 +1,6 @@
 <template>
-  <div class="timesheet">
-    <div class="timesheet__row header">
+  <div :class="{ 'values-table': true, 'has-totals': totals }">
+    <div class="table-row header">
       <div class="column d-none d-md-block" />
       <div
         v-for="date in currentWeek"
@@ -15,24 +15,20 @@
       <div class="column d-none d-md-block" />
     </div>
 
-    <template v-if="timesheet.length">
-      <div
-        v-for="project in timesheet"
-        :key="project.customer"
-        class="timesheet__row project"
-      >
+    <template v-if="rows.length">
+      <div v-for="row in rows" :key="row.customer" class="table-row value-row">
         <div class="column">
-          <b-button class="remove-button" @click="$emit('on-remove', project)">
-            <b-icon icon="x-square" />
-          </b-button>
-          <strong>{{ project.customer }}</strong>
-          <span class="d-md-none">
-            ({{ getTotalProjectHours(project) }} hours)
-          </span>
+          <template v-if="canRemoveRow">
+            <b-button class="remove-button" @click="$emit('remove-row', row)">
+              <b-icon icon="x-square" />
+            </b-button>
+          </template>
+          <strong>{{ row.customer }}</strong>
+          <span class="d-md-none">({{ calculateRowTotal(row) }})</span>
         </div>
 
         <div
-          v-for="(input, index) in project.hours"
+          v-for="(value, index) in row.values"
           :key="index"
           :class="{
             column: true,
@@ -41,92 +37,107 @@
           }"
         >
           <b-form-input
-            :value="input.hours"
-            :formatter="formatter"
-            class="hour-input"
+            :value="value.value"
+            :formatter="valueFormatter.formatter"
+            class="value-input"
             type="number"
-            min="0"
-            max="24"
-            @update="updateHours($event, input.date, project)"
+            :min="valueFormatter.min"
+            :max="valueFormatter.max"
+            @update="updateValue($event, value.date, row)"
           />
         </div>
 
         <div class="column d-none d-md-block">
-          {{ getTotalProjectHours(project) }}
+          {{ calculateRowTotal(row) }}
         </div>
       </div>
     </template>
 
-    <div class="timesheet__row add-project">
-      <div class="column">
-        <b-button v-b-modal.modal-center variant="outline-primary">
-          + Add project
-        </b-button>
+    <template v-if="$slots.addRow">
+      <div class="table-row add-row">
+        <div class="column">
+          <slot name="addRow" />
+        </div>
+        <div
+          v-for="date in currentWeek"
+          :key="date.weekDay"
+          :class="{
+            column: true,
+            weekend: date.isWeekend,
+            holiday: date.isHoliday,
+          }"
+        />
+        <div class="column" />
       </div>
-      <div
-        v-for="date in currentWeek"
-        :key="date.weekDay"
-        :class="{
-          column: true,
-          weekend: date.isWeekend,
-          holiday: date.isHoliday,
-        }"
-      />
-      <div class="column" />
-    </div>
+    </template>
 
-    <div class="timesheet__row footer">
-      <div class="column">
-        <span>Total</span>
-        <span class="d-md-none">({{ totals.week }} hours)</span>
-      </div>
+    <template v-if="totals">
+      <div class="table-row footer">
+        <div class="column">
+          <span>Total</span>
+          <span class="d-md-none">({{ totals.week }})</span>
+        </div>
 
-      <div v-for="(hours, index) in totals.perDay" :key="index" class="column">
-        {{ hours }}
-      </div>
+        <div
+          v-for="(value, index) in totals.perDay"
+          :key="index"
+          class="column"
+        >
+          {{ value }}
+        </div>
 
-      <div class="column d-none d-md-block">
-        {{ totals.week }}
+        <div class="column d-none d-md-block">
+          {{ totals.week }}
+        </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
 <script>
 export default {
   props: {
-    timesheet: {
+    rows: {
       type: Array,
       default: () => [],
-    },
-    totals: {
-      type: Object,
-      default: () => ({}),
     },
     currentWeek: {
       type: Array,
       default: () => [],
     },
+    totals: {
+      type: Object,
+      default: () => {},
+    },
+    canRemoveRow: {
+      type: Boolean,
+      default: false,
+    },
+    valueFormatter: {
+      type: Object,
+      default: () => {},
+    },
   },
   methods: {
-    getTotalProjectHours(project) {
-      return project.hours.reduce((acc, { hours }) => acc + hours, 0);
+    calculateRowTotal(row) {
+      return row.values.reduce((acc, { value }) => acc + value, 0);
     },
-    formatter(value) {
-      return Math.min(Math.max(Number(value) || 0, 0), 24);
-    },
-    updateHours(hours, date, customer) {
-      this.$emit("on-hours-change", { customer, date, hours });
+    updateValue(value, date, row) {
+      this.$emit("value-changed", { value, date, row });
     },
   },
 };
 </script>
 
-<style lang="scss">
-.timesheet {
+<style lang="scss" scoped>
+.values-table {
   background-color: #fff;
 
-  .timesheet__row {
+  &:not(.has-totals) {
+    border-bottom: 8px solid var(--color-tertiary);
+  }
+
+  .table-row {
     display: flex;
     flex-wrap: wrap;
 
@@ -139,7 +150,7 @@ export default {
       background-color: var(--color-tertiary);
     }
 
-    &.project .column {
+    &.value-row .column {
       padding: 12px 4px;
 
       &:first-child,
@@ -153,7 +164,7 @@ export default {
       }
     }
 
-    &.add-project .column:not(:first-of-type) {
+    &.add-row .column:not(:first-of-type) {
       display: none;
 
       @media (min-width: 768px) {
@@ -220,13 +231,17 @@ export default {
   border: 0;
 }
 
-.hour-input {
+.value-input {
   text-align: center;
   border: 1px solid #00cccc7a;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     display: none;
+  }
+
+  @media (min-width: 768px) {
+    width: 56px;
   }
 }
 </style>

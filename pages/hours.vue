@@ -21,59 +21,45 @@
     </div>
 
     <template v-if="weeklyTimesheet.length">
-      <weekly-timesheet
-        :timesheet="weeklyTimesheet"
-        :totals="weeklyTotals"
+      <weekly-values-table
+        :rows="weeklyTimesheet"
         :current-week="currentWeek"
-        @on-hours-change="updateHours"
-        @on-remove="removeProject"
-      />
-      <div class="last-saved">
-        <last-saved />
-      </div>
+        :totals="weeklyTotals"
+        :value-formatter="timesheetFormatter"
+        can-remove-row
+        @value-changed="updateHours"
+        @remove-row="removeProject"
+      >
+        <template #addRow>
+          <b-button v-b-modal.modal-add-project variant="outline-primary">
+            + Add project
+          </b-button>
+        </template>
+      </weekly-values-table>
     </template>
-
     <template v-else>
-      <div class="no-projects-card">
+      <div class="no-projects-card mb-5">
         <p>There are no hours registered for this week.</p>
-        <b-button v-b-modal.modal-center> Add hours </b-button>
+        <b-button v-b-modal.modal-add-project> Add hours </b-button>
         <span class="d-none d-sm-inline mx-2"> or </span>
         <b-button @click="copyPreviousWeek()"> Copy previous week </b-button>
       </div>
     </template>
 
-    <div v-if="user.travelAllowance" class="travel-allowance-registering mt-5">
-      <div class="travel-allowance-registering__title mb-2 font-weight-bold">
-        Travel allowance
-      </div>
-      <div class="app-table">
-        <b-container class="hours-table__inner" fluid>
-          <three-col-row class="d-none d-md-block py-2 app-table__top-row">
-            <template #col2>
-              <div
-                v-for="date in currentWeek"
-                :key="date.weekDay"
-                :class="{ 'is-today': date.isToday }"
-              >
-                <span class="font-weight-bold">{{ date.weekDay }}</span>
-                <div class="date">{{ date.monthDay }} {{ date.month }}</div>
-              </div>
-            </template>
-          </three-col-row>
-          <project-row
-            v-if="user.travelAllowance"
-            :project="currentWeekTravelRecords"
-            :can-delete-row="false"
-            :current-week="currentWeek"
-            @on-hours-change="registerKilometers($event)"
-          />
-          <three-col-row class="app-table__bottom-row" />
-        </b-container>
-      </div>
+    <weekly-values-table
+      class="mt-5"
+      :rows="weeklyKilometers"
+      :current-week="currentWeek"
+      :value-formatter="kilometerFormatter"
+      @value-changed="updateKilometers"
+    />
+
+    <div class="last-saved mt-2">
+      <last-saved />
     </div>
 
     <b-modal
-      id="modal-center"
+      id="modal-add-project"
       centered
       title="Add a row"
       cancel-variant="danger"
@@ -92,10 +78,10 @@
 <script>
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import WeeklyTimesheet from "../components/weekly-timesheet.vue";
+import WeeklyValuesTable from "../components/weekly-values-table.vue";
 
 export default Vue.extend({
-  components: { WeeklyTimesheet },
+  components: { WeeklyValuesTable },
   middleware: "isAuthenticated",
   data() {
     return {
@@ -108,6 +94,7 @@ export default Vue.extend({
       weekLabel: "week-dates/currentWeekLabel",
       currentWeek: "week-dates/currentWeek",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
+      weeklyKilometers: "user/getWeeklyKilometers",
       isCurrentWeek: "week-dates/isNextweekInFuture",
       weeklyTimesheet: "user/getWeeklyTimesheet",
       weeklyTotals: "user/getWeeklyTotals",
@@ -115,6 +102,24 @@ export default Vue.extend({
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
     }),
+    timesheetFormatter() {
+      const min = 0;
+      const max = 24;
+      return {
+        min,
+        max,
+        formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+      };
+    },
+    kilometerFormatter() {
+      const min = 0;
+      const max = 9999;
+      return {
+        min,
+        max,
+        formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+      };
+    },
   },
   created() {
     this.$store.dispatch("customers/getCustomers");
@@ -144,22 +149,20 @@ export default Vue.extend({
     removeProject(project) {
       this.$store.dispatch("user/removeRecordRow", project);
     },
-    updateHours(registerData) {
-      const { hours, date, customer } = registerData;
-      const newRecords = {
-        customer: customer.customer,
-        debtor: customer.debtor,
-        date,
-        hours,
-      };
-      this.$store.dispatch("user/addHoursRecords", newRecords);
-    },
     copyPreviousWeek() {
       this.$store.dispatch("user/copyPrevWeekrecords");
     },
-    registerKilometers(registerData) {
-      const { hours, date } = registerData;
-      this.$store.dispatch("user/addKilometers", { hours, date });
+    updateHours({ value, date, row }) {
+      const newRecords = {
+        customer: row.customer,
+        debtor: row.debtor,
+        hours: value,
+        date,
+      };
+      this.$store.dispatch("user/addHoursRecords", newRecords);
+    },
+    updateKilometers({ value, date }) {
+      this.$store.dispatch("user/addKilometers", { hours: value, date });
     },
   },
 });
@@ -243,10 +246,5 @@ export default Vue.extend({
       margin-top: 0;
     }
   }
-}
-
-.last-saved {
-  margin: 8px 0;
-  min-height: 1.5em;
 }
 </style>

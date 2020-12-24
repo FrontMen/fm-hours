@@ -84,7 +84,7 @@ export const actions = {
     const allRecords = context.getters.getTimeRecords;
     const newRecords = allRecords.filter(
       (record) =>
-        !payload.hours.some(
+        !payload.values.some(
           (entry) =>
             isSameDay(new Date(entry.date), new Date(record.date)) &&
             record.customer === payload.customer
@@ -225,17 +225,44 @@ export const getters = {
     return projects.map((project) => {
       return {
         ...project,
-        hours: currentWeek.map((day) => {
+        values: currentWeek.map((day) => {
           const record = records.find(
             (r) => r.customer === project.customer && r.date === day.date
           );
           return {
             date: day.date,
-            hours: record?.hours || 0,
+            value: record?.hours || 0,
           };
         }),
       };
     });
+  },
+  getWeeklyKilometers: (state, getters, _, rootGetters) => {
+    const records = getters.getTravelAllowanceRecords;
+    const currentWeek = rootGetters["week-dates/currentWeek"];
+    const { startDate, endDate } = rootGetters[
+      "week-dates/getcurrentWeekRange"
+    ];
+
+    const rows = records.filter((entry) =>
+      isWithinInterval(new Date(entry.date), {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      })
+    );
+
+    return [
+      {
+        customer: "Kilometers",
+        values: currentWeek.map((day) => {
+          const result = rows.find((r) => r.date === day.date);
+          return {
+            date: day.date,
+            value: result?.hours || 0,
+          };
+        }),
+      },
+    ];
   },
   getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;
