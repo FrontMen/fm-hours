@@ -53,10 +53,10 @@
       </div>
     </template>
 
-    <template v-if="$slots.addRow">
+    <template v-if="$slots.emptyRow">
       <div class="table-row add-row">
         <div class="column">
-          <slot name="addRow" />
+          <slot name="emptyRow" />
         </div>
         <div
           v-for="date in currentWeek"

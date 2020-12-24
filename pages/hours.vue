@@ -30,9 +30,13 @@
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
-        <template #addRow>
-          <b-button v-b-modal.modal-add-project variant="outline-primary">
-            + Add project
+        <template #emptyRow>
+          <b-button
+            v-b-modal.modal-add-project
+            variant="outline-primary"
+            class="ml-2"
+          >
+            Add project
           </b-button>
         </template>
       </weekly-values-table>
@@ -80,6 +84,14 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import WeeklyValuesTable from "../components/weekly-values-table.vue";
 
+function generateValueFormatter(min, max) {
+  return {
+    min,
+    max,
+    formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+  };
+}
+
 export default Vue.extend({
   components: { WeeklyValuesTable },
   middleware: "isAuthenticated",
@@ -103,22 +115,10 @@ export default Vue.extend({
       user: "user/getUser",
     }),
     timesheetFormatter() {
-      const min = 0;
-      const max = 24;
-      return {
-        min,
-        max,
-        formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
-      };
+      return generateValueFormatter(0, 24);
     },
     kilometerFormatter() {
-      const min = 0;
-      const max = 9999;
-      return {
-        min,
-        max,
-        formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
-      };
+      return generateValueFormatter(0, 9999);
     },
   },
   created() {
