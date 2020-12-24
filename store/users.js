@@ -1,4 +1,5 @@
-import { isWithinInterval, startOfISOWeek, addDays, isBefore, format, isToday, compareAsc, isWeekend } from 'date-fns'
+import { isWithinInterval, startOfISOWeek, addDays, isBefore, format, isToday, compareAsc, isWeekend, isSameDay } from 'date-fns'
+import { recordStatus } from '../helpers/record-status';
 
 export const state = () => ({
   users: undefined,
@@ -19,23 +20,21 @@ const getWeekRange = (beginDate) => {
   return { start, end }
 }
 
-const transformToUIFormat = (records) => {
-  return records.reduce((acc, entry) => {
-    let record = acc.find((a) => a.customer === entry.customer);
-    if (!record) {
-      record = {
-        customer: entry.customer,
-        hours: [],
-        debtor: entry.debtor,
-      };
-      acc.push(record);
+const isSameRecord = (record, recordToCompare) => {
+  return isSameDay(new Date(record.date), new Date(recordToCompare.date)) && record.customer === recordToCompare.customer
+}
+
+const getDateLabel = (startDate, endDate) => {
+  let label = format(startDate, "dd");
+  if (startDate.getMonth() !== endDate.getMonth()) {
+    label += ` ${format(startDate, "MMM")}`;
+
+    if (startDate.getFullYear() !== endDate.getFullYear()) {
+      label += ` ${format(startDate, "yyyy")}`;
     }
-    record.hours.push({
-      date: entry.date,
-      hours: entry.hours,
-    });
-    return acc;
-  }, [])
+  }
+  label += ` - ${format(endDate, "dd MMM yyyy")}`;
+  return label;
 }
 
 const buildWeek = (startDate) => {
@@ -74,6 +73,18 @@ export const actions = {
     );
     context.commit("updateUser", newUser);
   },
+  approveRecords(context, payload) {
+    const users = [...context.getters.getUsers];
+    const currentUser = users.find((x) => x.id === payload.userId);
+    const newrecs = currentUser.time_records.map(record => {
+      const isApproved = payload.records.some(approvedRecord => isSameRecord(record, approvedRecord));
+      return {
+        ...record,
+        status: isApproved ? recordStatus.APPROVED : record.status
+      };
+    });
+    context.commit("updateUser", { ...currentUser, time_records: newrecs });
+  },
 };
 
 export const mutations = {
@@ -98,9 +109,9 @@ export const getters = {
       return;
     }
 
-    // return users when there they have records with the status of pending. If so, return only the records with that status
+    // return users when they have records with the status of pending. If so, return only the records with that status
     const pendingRecords = users.reduce((acc, curr) => {
-      const recordsForApproval = curr.time_records.filter(record => record.status === 'pending');
+      const recordsForApproval = curr.time_records.filter(record => record.status === recordStatus.PENDING);
       if (recordsForApproval.length > 0) {
         return [
           ...acc,
@@ -127,18 +138,19 @@ export const getters = {
     let { start: startDate } = getWeekRange(dateRange[0]);
     const { end: endDate } = getWeekRange(dateRange[dateRange.length - 1]);
     // build the weeks based on the dateRange. Loop as long as the startdate is before the last date.
-    // the startdate will be increased by 1 week after every build
+    // the startdate will be increased by 1 week after every cycle
     while (isBefore(startDate, endDate)) {
       const { start, end } = getWeekRange(startDate);
 
-      const timeRecords = pendingRecords.reduce((acc, user) => {
+      const thisWeekTimeRecords = pendingRecords.reduce((acc, user) => {
         const timeRecordsWithinRange = GetRecordsForWeekRange(user.time_records, start, end);
         if (timeRecordsWithinRange.length > 0) {
           const entry = [
             ...acc,
             {
+              userId: user.id,
               user: user.name,
-              records: transformToUIFormat(timeRecordsWithinRange),
+              records: timeRecordsWithinRange,
               week: buildWeek(start)
             }
           ];
@@ -147,13 +159,14 @@ export const getters = {
           return acc
         }
       }, []);
-      if (timeRecords.length > 0) {
+      if (thisWeekTimeRecords.length > 0) {
         const weekRecords = {
           beginDate: start,
           endDate: end,
-          timeRecords
+          dateLabel: getDateLabel(start, end),
+          recordsForApproval: thisWeekTimeRecords
         }
-        weeks.push(weekRecords);
+        weeks = [...weeks, weekRecords];
       }
       startDate = addDays(startDate, 8)
     }
