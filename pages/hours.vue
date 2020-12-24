@@ -31,11 +31,7 @@
         @remove-row="removeProject"
       >
         <template #emptyRow>
-          <b-button
-            v-b-modal.modal-add-project
-            variant="outline-primary"
-            class="ml-2"
-          >
+          <b-button v-b-modal.modal-add-project variant="outline-primary">
             Add project
           </b-button>
         </template>
@@ -189,7 +185,7 @@ export default Vue.extend({
       font-size: 18px;
       font-weight: bold;
 
-      @media (min-width: 768px) {
+      @media (min-width: 576px) {
         font-size: 24px;
       }
     }
@@ -200,7 +196,7 @@ export default Vue.extend({
   padding: 40px 8px;
   text-align: center;
   background-color: #fff;
-  border-top: 8px solid var(--color-tertiary);
+  border-top: 8px solid #85cac9;
 
   p {
     margin-bottom: 32px;

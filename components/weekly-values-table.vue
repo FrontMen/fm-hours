@@ -1,6 +1,6 @@
 <template>
-  <div :class="{ 'values-table': true, 'has-totals': showTotals }">
-    <div class="table-row header">
+  <div :class="{ 'weekly-values-table': true, 'show-totals': showTotals }">
+    <div class="table-row table-row--header">
       <div class="column d-none d-md-block" />
       <div
         v-for="date in dates"
@@ -20,15 +20,21 @@
     </div>
 
     <template v-if="rows.length">
-      <div v-for="row in rows" :key="row.customer" class="table-row value-row">
+      <div
+        v-for="(row, rowIndex) in rows"
+        :key="row.customer"
+        class="table-row table-row--values"
+      >
         <div class="column">
           <template v-if="canRemoveRow">
             <b-button class="remove-button" @click="$emit('remove-row', row)">
               <b-icon icon="x-square" />
             </b-button>
           </template>
-          <strong>{{ row.customer }}</strong>
-          <span class="d-md-none">({{ totals.perRow[rowIndex] }})</span>
+          <span>
+            <strong>{{ row.customer }}</strong>
+            <span class="d-md-none">({{ totals.perRow[rowIndex] }})</span>
+          </span>
         </div>
 
         <div
@@ -43,43 +49,45 @@
           <b-form-input
             :value="value.value"
             :formatter="valueFormatter.formatter"
-            class="value-input"
-            type="number"
             :min="valueFormatter.min"
             :max="valueFormatter.max"
+            class="value-input"
+            type="number"
             @update="updateValue($event, value.date, row)"
           />
         </div>
 
-        <div class="column d-none d-md-block">
+        <div class="column d-none d-md-flex">
           {{ totals.perRow[rowIndex] }}
         </div>
       </div>
     </template>
 
     <template v-if="$slots.emptyRow">
-      <div class="table-row add-row">
+      <div class="table-row table-row--values">
         <div class="column">
           <slot name="emptyRow" />
         </div>
         <div
           v-for="date in dates"
           :key="date.weekDay"
+          class="d-none d-md-flex"
           :class="{
             column: true,
             weekend: date.isWeekend,
             holiday: date.isHoliday,
           }"
         />
-        <div class="column" />
+        <div class="column d-none d-md-flex" />
       </div>
     </template>
 
     <template v-if="showTotals">
-      <div class="table-row footer">
+      <div class="table-row table-row--footer">
         <div class="column">
-          <span>Total</span>
-          <span class="d-md-none">({{ totals.week }})</span>
+          <span>
+            Total <span class="d-md-none">({{ totals.week }})</span>
+          </span>
         </div>
 
         <div
@@ -87,10 +95,10 @@
           :key="index"
           class="column"
         >
-          {{ value }}
+          <span>{{ value }}</span>
         </div>
 
-        <div class="column d-none d-md-block">
+        <div class="column d-none d-md-flex">
           {{ totals.week }}
         </div>
       </div>
@@ -122,6 +130,7 @@ function calculateTotals(rows) {
 
 export default {
   props: {
+    /** Rows containing the main content for the table */
     rows: {
       type: Array,
       default: () => [],
@@ -131,6 +140,12 @@ export default {
       type: Array,
       default: () => [],
     },
+    /** Formatter logic for the value input fields */
+    valueFormatter: {
+      type: Object,
+      default: () => {},
+    },
+    /** Whether the user can remove a row from the table */
     canRemoveRow: {
       type: Boolean,
       default: false,
@@ -139,10 +154,6 @@ export default {
     showTotals: {
       type: Boolean,
       default: false,
-    },
-    valueFormatter: {
-      type: Object,
-      default: () => {},
     },
   },
   data() {
@@ -164,101 +175,119 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.values-table {
-  background-color: #fff;
+.weekly-values-table {
+  background-color: #84cac9;
+  border-radius: 8px;
 
-  &:not(.has-totals) {
-    border-bottom: 8px solid var(--color-tertiary);
-  }
-
-  .table-row {
-    display: flex;
-    flex-wrap: wrap;
-
-    &.header .column {
-      background-color: var(--color-tertiary);
-    }
-
-    &.footer .column {
-      font-weight: bold;
-      background-color: var(--color-tertiary);
-    }
-
-    &.value-row .column {
-      padding: 12px 4px;
-
-      &:first-child,
-      &:last-child {
-        padding-top: 20px;
-        padding-bottom: 8px;
-
-        @media (min-width: 768px) {
-          padding-bottom: 20px;
-        }
-      }
-    }
-
-    &.add-row .column:not(:first-of-type) {
-      display: none;
-
-      @media (min-width: 768px) {
-        display: block;
-        padding: 12px 4px;
-      }
-    }
-
-    .column {
-      position: relative;
-      flex: 1 1 0;
-      padding: 8px 4px;
-      text-align: center;
-
-      &:first-child {
-        flex: 1 1 100%;
-        padding-left: 8px;
-        text-align: left;
-      }
-
-      &:last-child {
-        padding-right: 16px;
-        text-align: left;
-
-        @media (min-width: 768px) {
-          text-align: right;
-          min-width: 64px;
-        }
-      }
-
-      &.holiday,
-      &.weekend {
-        background-color: #ddd;
-      }
-
-      &.today::after {
-        content: "";
-        position: absolute;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        height: 4px;
-        background-color: var(--color-primary);
-      }
-    }
-
-    @media (min-width: 768px) {
-      display: contents;
-    }
+  &:not(.show-totals) {
+    border-bottom: 8px solid #84cac9;
   }
 
   @media (min-width: 768px) {
     display: grid;
     grid-template-columns: auto repeat(8, max-content);
   }
+
+  .table-row {
+    display: flex;
+    flex-wrap: wrap;
+
+    @media (min-width: 768px) {
+      display: contents;
+    }
+  }
+
+  .column {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    padding: 8px 4px;
+    text-align: center;
+  }
+
+  /* Overrides for the header row */
+
+  .table-row--header .column {
+    position: relative;
+    flex-direction: column;
+
+    &.today::after {
+      content: "TODAY";
+      position: absolute;
+      top: -17px;
+      right: 0;
+      left: 0;
+      height: 17px;
+      padding-top: 2px;
+      font-size: 12px;
+      background-color: #85cac9;
+      border-radius: 4px 4px 0 0;
+    }
+  }
+
+  /* Overrides for the value rows */
+
+  .table-row--values .column {
+    background-color: #fff;
+
+    &.holiday,
+    &.weekend {
+      background-color: #e4e4e4;
+    }
+
+    &:first-child,
+    &:last-child {
+      padding-right: 16px;
+      padding-left: 16px;
+    }
+
+    &:first-child {
+      flex: 1 1 100%;
+    }
+
+    &:last-child {
+      justify-content: center;
+      min-width: 62px;
+    }
+  }
+
+  /* Overrides for the footer row */
+
+  .table-row--footer .column {
+    align-items: center;
+    flex-direction: column;
+
+    &:first-child,
+    &:last-child {
+      padding-right: 16px;
+      padding-left: 16px;
+      align-items: flex-start;
+      font-weight: bold;
+    }
+
+    &:first-child {
+      flex: 1 1 100%;
+      order: 1;
+
+      @media (min-width: 768px) {
+        order: 0;
+      }
+    }
+
+    &:last-child {
+      justify-content: center;
+
+      @media (min-width: 768px) {
+        align-items: center;
+      }
+    }
+  }
 }
 
 .remove-button {
   display: inline-flex;
   align-items: center;
+  margin: 0 8px 0 -6px;
   padding: 0.375rem;
   color: var(--color-primary);
   background-color: transparent;
@@ -267,7 +296,7 @@ export default {
 
 .value-input {
   text-align: center;
-  border: 1px solid #00cccc7a;
+  border: 1px solid #85cac9;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
