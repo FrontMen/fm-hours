@@ -1,156 +1,74 @@
 <template>
-  <div class="page-wrapper">
-    <b-container fluid class="d-md-none py-2 mobile-date-bar">
-      <b-row :no-gutters="true">
-        <b-col class="d-flex align-items-center">
-          <span class="d-md-none">
-            <span class="font-weight-bold mobile-week-label">{{
-              weekLabel
-            }}</span>
-            <last-saved class="last-saved" />
-          </span>
-        </b-col>
-        <b-col cols="2" class="d-flex justify-content-end">
-          <b-button v-b-modal.modal-center class="d-md-none p-1"> + </b-button>
-        </b-col>
-      </b-row>
-    </b-container>
-
-    <div class="hours-table__container content-wrapper">
-      <b-container class="mb-3 mx-0 px-0" fluid>
-        <b-row :no-gutters="true">
-          <b-col>
-            <div class="date-nav justify-content-between">
-              <div class="d-flex align-items-center">
-                <div class="date-nav__buttons mr-md-3">
-                  <b-button class="mr-2 mr-md-0" @click="prevWeek()">
-                    <b-icon icon="arrow-left" />
-                  </b-button>
-                  <b-button :disabled="isCurrentWeek" @click="nextWeek()">
-                    <b-icon icon="arrow-right" />
-                  </b-button>
-                </div>
-                <span class="d-none d-md-block font-weight-bold">
-                  {{ weekLabel }}
-                </span>
-              </div>
-              <div class="d-flex">
-                <b-button v-if="!isCurrentWeek" @click="toCurrentWeek()">
-                  To current week
-                </b-button>
-                <b-button v-b-modal.modal-center class="d-none d-md-block ml-3">
-                  + New row
-                </b-button>
-              </div>
-            </div>
-          </b-col>
-        </b-row>
-      </b-container>
-
-      <div class="app-table">
-        <b-container class="hours-table__inner" fluid>
-          <three-col-row class="d-none d-md-block py-2 app-table__top-row">
-            <template v-if="hasCustomersThisWeek" #col2>
-              <div
-                v-for="date in currentWeek"
-                :key="date.weekDay"
-                :class="{ 'is-today': date.isToday }"
-              >
-                <span class="font-weight-bold">{{ date.weekDay }}</span>
-                <div class="date">{{ date.monthDay }} {{ date.month }}</div>
-              </div>
-            </template>
-          </three-col-row>
-          <template v-if="hasCustomersThisWeek">
-            <project-row
-              v-for="customer in currentWeekRecords"
-              :key="customer.project"
-              :current-week="currentWeek"
-              :project="customer"
-              @on-remove="removeRow(customer)"
-              @on-hours-change="changeHours($event, customer)"
-            />
-          </template>
-          <template v-else>
-            <b-row>
-              <b-col>
-                <div class="d-flex flex-column d-md-block text-center py-5">
-                  <p>There are no projects registered this week.</p>
-                  <b-button v-b-modal.modal-center> Add a project </b-button>
-                  <span class="mx-2"> or </span>
-                  <b-button @click="copyFromPrevWeek()">
-                    Copy from previous week
-                  </b-button>
-                </div>
-              </b-col>
-            </b-row>
-          </template>
-          <three-col-row
-            v-if="hasCustomersThisWeek"
-            class="app-table__bottom-row"
-          >
-            <template #col1>
-              <last-saved class="d-none d-md-block last-saved" />
-            </template>
-            <template #col2>
-              <div
-                v-for="(dayTotal, index) in dayTotals"
-                :key="index"
-                class="font-weight-bold"
-              >
-                {{ dayTotal }}
-              </div>
-            </template>
-            <template #col3>
-              <span class="font-weight-bold mr-3">
-                {{ weekTotal }}
-              </span>
-            </template>
-          </three-col-row>
-        </b-container>
+  <div class="content-wrapper mt-5">
+    <div class="timesheet-header">
+      <div class="navigation">
+        <b-button class="navigation-button" @click="goToPreviousWeek()">
+          <b-icon icon="arrow-left" />
+        </b-button>
+        <b-button
+          class="navigation-button"
+          :disabled="isCurrentWeek"
+          @click="goToNextWeek()"
+        >
+          <b-icon icon="arrow-right" />
+        </b-button>
+        <span class="selected-date">{{ weekLabel }}</span>
       </div>
+      <b-button v-if="!isCurrentWeek" @click="goToCurrentWeek()">
+        <b-icon icon="calendar2-date" />
+        <span class="ml-2 d-none d-sm-inline">To current week</span>
+      </b-button>
+    </div>
 
-      <div
-        v-if="user.travelAllowance"
-        class="travel-allowance-registering mt-5"
+    <template v-if="weeklyTimesheet.length">
+      <weekly-values-table
+        :rows="weeklyTimesheet"
+        :current-week="currentWeek"
+        :totals="weeklyTotals"
+        :value-formatter="timesheetFormatter"
+        can-remove-row
+        @value-changed="updateHours"
+        @remove-row="removeProject"
       >
-        <div class="travel-allowance-registering__title mb-2 font-weight-bold">
-          Travel allowance
-        </div>
-        <div class="app-table">
-          <b-container class="hours-table__inner" fluid>
-            <three-col-row class="d-none d-md-block py-2 app-table__top-row">
-              <template #col2>
-                <div
-                  v-for="date in currentWeek"
-                  :key="date.weekDay"
-                  :class="{ 'is-today': date.isToday }"
-                >
-                  <span class="font-weight-bold">{{ date.weekDay }}</span>
-                  <div class="date">{{ date.monthDay }} {{ date.month }}</div>
-                </div>
-              </template>
-            </three-col-row>
-            <project-row
-              v-if="user.travelAllowance"
-              :project="currentWeekTravelRecords"
-              :can-delete-row="false"
-              :current-week="currentWeek"
-              @on-hours-change="registerKilometers($event)"
-            />
-            <three-col-row class="app-table__bottom-row" />
-          </b-container>
-        </div>
+        <template #emptyRow>
+          <b-button
+            v-b-modal.modal-add-project
+            variant="outline-primary"
+            class="ml-2"
+          >
+            Add project
+          </b-button>
+        </template>
+      </weekly-values-table>
+    </template>
+    <template v-else>
+      <div class="no-projects-card mb-5">
+        <p>There are no hours registered for this week.</p>
+        <b-button v-b-modal.modal-add-project> Add hours </b-button>
+        <span class="d-none d-sm-inline mx-2"> or </span>
+        <b-button @click="copyPreviousWeek()"> Copy previous week </b-button>
       </div>
+    </template>
+
+    <weekly-values-table
+      class="mt-5"
+      :rows="weeklyKilometers"
+      :current-week="currentWeek"
+      :value-formatter="kilometerFormatter"
+      @value-changed="updateKilometers"
+    />
+
+    <div class="last-saved mt-2">
+      <last-saved />
     </div>
 
     <b-modal
-      id="modal-center"
+      id="modal-add-project"
       centered
       title="Add a row"
       cancel-variant="danger"
       :ok-disabled="!selectedCustomerId"
-      @ok="addRow()"
+      @ok="addProject()"
       @hidden="selectedCustomerId = undefined"
     >
       <select-project
@@ -164,9 +82,18 @@
 <script>
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import { formatISO } from "date-fns";
+import WeeklyValuesTable from "../components/weekly-values-table.vue";
+
+function generateValueFormatter(min, max) {
+  return {
+    min,
+    max,
+    formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+  };
+}
 
 export default Vue.extend({
+  components: { WeeklyValuesTable },
   middleware: "isAuthenticated",
   data() {
     return {
@@ -178,143 +105,116 @@ export default Vue.extend({
       customers: "customers/getCustomers",
       weekLabel: "week-dates/currentWeekLabel",
       currentWeek: "week-dates/currentWeek",
-      currentWeekRecords: "user/getTimeRecordsForCurrentWeekInUIFormat",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
-      customerToAdd: "customers/getCustomerToAdd",
+      weeklyKilometers: "user/getWeeklyKilometers",
       isCurrentWeek: "week-dates/isNextweekInFuture",
-      dayTotals: "user/getDayTotals",
-      weekTotal: "user/getWeekTotal",
+      weeklyTimesheet: "user/getWeeklyTimesheet",
+      weeklyTotals: "user/getWeeklyTotals",
       lastSavedDate: "user/getLastSavedDate",
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
     }),
-    canAddRow() {
-      return !!this.customerToAdd.customer;
+    timesheetFormatter() {
+      return generateValueFormatter(0, 24);
     },
-    hasCustomersThisWeek() {
-      console.log("dssdsd", this.currentWeek);
-      console.log("this.currentWeekRecords", this.currentWeekRecords);
-      return this.currentWeekRecords.length > 0;
+    kilometerFormatter() {
+      return generateValueFormatter(0, 9999);
     },
   },
   created() {
     this.$store.dispatch("customers/getCustomers");
   },
   methods: {
-    addRow() {
+    goToPreviousWeek() {
+      this.$store.commit("week-dates/prevWeek");
+    },
+    goToNextWeek() {
+      this.$store.commit("week-dates/nextWeek");
+    },
+    goToCurrentWeek() {
+      this.$store.commit("week-dates/setToday");
+    },
+    addProject() {
       const customer = this.customers.find(
         (customer) => customer.id === this.selectedCustomerId
       );
       const item = {
         customer: customer.name,
         debtor: customer.debtor,
-        date: formatISO(this.currentWeek[0].date),
+        date: this.currentWeek[0].date,
         hours: 0,
       };
       this.$store.dispatch("user/addProjectRow", item);
     },
-    removeRow(project) {
+    removeProject(project) {
       this.$store.dispatch("user/removeRecordRow", project);
     },
-    prevWeek() {
-      this.$store.commit("week-dates/prevWeek");
+    copyPreviousWeek() {
+      this.$store.dispatch("user/copyPrevWeekrecords");
     },
-    nextWeek() {
-      this.$store.commit("week-dates/nextWeek");
-    },
-    changeHours(registerData, customer) {
-      const { hours, date } = registerData;
+    updateHours({ value, date, row }) {
       const newRecords = {
-        customer: customer.customer,
-        debtor: customer.debtor,
+        customer: row.customer,
+        debtor: row.debtor,
+        hours: value,
         date,
-        hours,
       };
       this.$store.dispatch("user/addHoursRecords", newRecords);
     },
-    copyFromPrevWeek() {
-      this.$store.dispatch("user/copyPrevWeekrecords");
-    },
-    toCurrentWeek() {
-      this.$store.commit("week-dates/setToday");
-    },
-    registerKilometers(registerData) {
-      const { hours, date } = registerData;
-      this.$store.dispatch("user/addKilometers", { hours, date });
+    updateKilometers({ value, date }) {
+      this.$store.dispatch("user/addKilometers", { hours: value, date });
     },
   },
 });
 </script>
 
 <style lang="scss">
-.last-saved {
-  font-size: 13px;
-}
-
-.week-label {
-  font-size: 22px;
-  color: white;
-}
-.date {
-  font-size: 12px;
-}
-
-.is-today {
-  position: relative;
-  &:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -8px;
-    background: var(--color-primary);
-    width: 100%;
-    height: 4px;
-  }
-}
-
-.mobile-week-label {
-  font-size: 20px;
-}
-
-.date-nav {
-  font-size: 24px;
+.timesheet-header {
   display: flex;
-  margin-top: 50px;
-  align-items: center;
-}
+  justify-content: space-between;
+  margin-bottom: 24px;
 
-.mobile-date-bar {
-  background: var(--color-tertiary);
+  .navigation {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
 
-  button {
-    font-size: 22px;
-    width: 45px;
-  }
-}
+    .navigation-button {
+      flex: 0 0 auto;
+      margin-right: 8px;
+    }
 
-.travel-allowance-registering {
-  &__title {
-    font-size: 24px;
-  }
-}
+    .selected-date {
+      flex: 1 1 auto;
+      margin-left: 8px;
+      font-size: 18px;
+      font-weight: bold;
 
-@media screen and (max-width: 767px) {
-  .hours-table__inner {
-    border-top: 30px solid var(--color-tertiary);
-    border-radius: 10px;
-  }
-  .page-wrapper {
-    .hours-table__container {
-      padding-bottom: 10px;
+      @media (min-width: 768px) {
+        font-size: 24px;
+      }
     }
   }
-  .date-nav__buttons {
-    display: flex;
-    width: 100%;
-    justify-content: center;
+}
+
+.no-projects-card {
+  padding: 40px 8px;
+  text-align: center;
+  background-color: #fff;
+  border-top: 8px solid var(--color-tertiary);
+
+  p {
+    margin-bottom: 32px;
   }
-  .last-saved {
-    margin-top: -2px;
+
+  button {
+    width: 100%;
+    margin-top: 16px;
+
+    @media (min-width: 576px) {
+      width: auto;
+      margin-top: 0;
+    }
   }
 }
 </style>

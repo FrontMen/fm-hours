@@ -1,10 +1,5 @@
-import {
-  isWithinInterval,
-  isSameDay,
-  formatISO,
-  addDays,
-  subDays,
-} from "date-fns";
+import { isWithinInterval, isSameDay, subDays } from "date-fns";
+import { formatDate, addDays } from "../helpers/dates.js";
 import { debounce } from "../helpers/debounce";
 
 export const state = () => ({
@@ -89,7 +84,7 @@ export const actions = {
     const allRecords = context.getters.getTimeRecords;
     const newRecords = allRecords.filter(
       (record) =>
-        !payload.hours.some(
+        !payload.values.some(
           (entry) =>
             isSameDay(new Date(entry.date), new Date(record.date)) &&
             record.customer === payload.customer
@@ -107,7 +102,7 @@ export const actions = {
   copyPrevWeekrecords(context) {
     const records = context.getters.getTimeRecords;
     const currentWeek = context.rootGetters["week-dates/currentWeek"];
-    const startDate = subDays(currentWeek[0].date, 7);
+    const startDate = subDays(new Date(currentWeek[0].date), 7);
     const endDate = addDays(startDate, 6);
     const prevWeekRows = GetRecordsForWeekRange(records, startDate, endDate);
     if (prevWeekRows.length === 0) {
@@ -116,7 +111,7 @@ export const actions = {
     const copiedRecords = prevWeekRows.map((entry) => {
       return {
         ...entry,
-        date: formatISO(addDays(new Date(entry.date), 7)),
+        date: formatDate(addDays(entry.date, 7)),
       };
     });
     const newRecords = [...records, ...copiedRecords];
@@ -209,24 +204,65 @@ export const getters = {
     ];
     return GetRecordsForWeekRange(records, startDate, endDate);
   },
-  getTimeRecordsForCurrentWeekInUIFormat: (_, getters) => {
+  getWeeklyTimesheet: (state, getters, _, rootGetters) => {
+    const currentWeek = rootGetters["week-dates/currentWeek"];
     const records = getters.getTimeRecordsForCurrentWeek;
-    return records.reduce((acc, entry) => {
-      let record = acc.find((a) => a.customer === entry.customer);
-      if (!record) {
-        record = {
-          customer: entry.customer,
-          hours: [],
-          debtor: entry.debtor,
-        };
-        acc.push(record);
+
+    const projects = records.reduce((acc, record) => {
+      if (acc.find((r) => r.customer === record.customer)) {
+        return acc;
       }
-      record.hours.push({
-        date: entry.date,
-        hours: entry.hours,
-      });
-      return acc;
+      return [
+        ...acc,
+        {
+          customer: record.customer,
+          debtor: record.debtor,
+        },
+      ];
     }, []);
+
+    // Add the weekly hours to each project
+    return projects.map((project) => {
+      return {
+        ...project,
+        values: currentWeek.map((day) => {
+          const record = records.find(
+            (r) => r.customer === project.customer && r.date === day.date
+          );
+          return {
+            date: day.date,
+            value: record?.hours || 0,
+          };
+        }),
+      };
+    });
+  },
+  getWeeklyKilometers: (state, getters, _, rootGetters) => {
+    const records = getters.getTravelAllowanceRecords;
+    const currentWeek = rootGetters["week-dates/currentWeek"];
+    const { startDate, endDate } = rootGetters[
+      "week-dates/getcurrentWeekRange"
+    ];
+
+    const rows = records.filter((entry) =>
+      isWithinInterval(new Date(entry.date), {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      })
+    );
+
+    return [
+      {
+        customer: "Kilometers",
+        values: currentWeek.map((day) => {
+          const result = rows.find((r) => r.date === day.date);
+          return {
+            date: day.date,
+            value: result?.hours || 0,
+          };
+        }),
+      },
+    ];
   },
   getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;
@@ -257,9 +293,12 @@ export const getters = {
       }, 0);
     });
   },
-  getWeekTotal: (_, getters) => {
-    const dayTotals = getters.getDayTotals;
-    return dayTotals.reduce((acc, curr) => acc + curr, 0);
+  getWeeklyTotals: (_, getters) => {
+    const totalsPerDay = getters.getDayTotals;
+    return {
+      perDay: totalsPerDay,
+      week: totalsPerDay.reduce((acc, current) => acc + current, 0),
+    };
   },
   getLastSavedDate: (state) => {
     return state.lastSaved;

@@ -1,5 +1,4 @@
 import {
-  addDays,
   subDays,
   startOfISOWeek,
   format,
@@ -9,6 +8,7 @@ import {
   isToday,
   compareAsc,
 } from "date-fns";
+import { addDays, formatDate } from "../helpers/dates.js";
 
 export const state = () => ({
   currentDate: new Date(),
@@ -34,7 +34,7 @@ export const mutations = {
   },
   nextWeek(state) {
     const startDate = startOfISOWeek(new Date(state.currentDate));
-    state.currentDate = addDays(new Date(startDate), 7);
+    state.currentDate = addDays(startDate, 7);
   },
   prevWeek(state) {
     const startDate = startOfISOWeek(new Date(state.currentDate));
@@ -47,15 +47,15 @@ export const getters = {
     const currentWeek = getters.currentWeek;
     const firstDay = currentWeek[0];
     const lastDay = currentWeek[6];
-    let label = format(firstDay.date, "dd");
+    let label = format(new Date(firstDay.date), "dd");
     if (firstDay.month !== lastDay.month) {
-      label += ` ${format(firstDay.date, "MMM")}`;
+      label += ` ${format(new Date(firstDay.date), "MMM")}`;
 
       if (firstDay.year !== lastDay.year) {
-        label += ` ${format(firstDay.date, "yyyy")}`;
+        label += ` ${format(new Date(firstDay.date), "yyyy")}`;
       }
     }
-    label += ` - ${format(lastDay.date, "dd MMM yyyy")}`;
+    label += ` - ${format(new Date(lastDay.date), "dd MMM yyyy")}`;
     return label;
   },
   /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -63,10 +63,10 @@ export const getters = {
     const startDate = startOfISOWeek(new Date(state.currentDate));
     const holidays = rootGetters["holidays/getHolidayDates"];
     return [...Array(7)].map((_, index) => {
-      const newDate = addDays(new Date(startDate), index);
+      const newDate = addDays(startDate, index);
       return {
-        date: newDate,
-        weekDay: format(newDate, "EEEEEE"),
+        date: formatDate(newDate),
+        weekDay: format(newDate, "E"),
         monthDay: format(newDate, "dd"),
         month: format(newDate, "MMM"),
         year: format(newDate, "yyyy"),
@@ -79,7 +79,9 @@ export const getters = {
   isNextweekInFuture: (_, getters) => {
     const { endDate } = getters.getcurrentWeekRange;
     const today = new Date();
-    return isAfter(endDate, today) || isSameDay(endDate, today);
+    return (
+      isAfter(new Date(endDate), today) || isSameDay(new Date(endDate), today)
+    );
   },
   getcurrentWeekRange: (_, getters) => {
     const currWeek = getters.currentWeek;
