@@ -169,36 +169,6 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.date {
-  font-size: 12px;
-}
-
-.is-today {
-  position: relative;
-  &:after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -8px;
-    background: var(--color-primary);
-    width: 100%;
-    height: 4px;
-  }
-}
-
-.travel-allowance-registering {
-  &__title {
-    font-size: 24px;
-  }
-}
-
-@media screen and (max-width: 767px) {
-  .hours-table__inner {
-    border-top: 30px solid var(--color-tertiary);
-    border-radius: 10px;
-  }
-}
-
 .timesheet-header {
   display: flex;
   justify-content: space-between;
