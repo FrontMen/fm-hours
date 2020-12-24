@@ -24,9 +24,9 @@
       <weekly-values-table
         :rows="weeklyTimesheet"
         :dates="currentWeek"
-        :totals="weeklyTotals"
         :value-formatter="timesheetFormatter"
         can-remove-row
+        show-totals
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
@@ -109,7 +109,6 @@ export default Vue.extend({
       weeklyKilometers: "user/getWeeklyKilometers",
       isCurrentWeek: "week-dates/isNextweekInFuture",
       weeklyTimesheet: "user/getWeeklyTimesheet",
-      weeklyTotals: "user/getWeeklyTotals",
       lastSavedDate: "user/getLastSavedDate",
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",

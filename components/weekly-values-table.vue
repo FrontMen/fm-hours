@@ -1,5 +1,5 @@
 <template>
-  <div :class="{ 'values-table': true, 'has-totals': totals }">
+  <div :class="{ 'values-table': true, 'has-totals': showTotals }">
     <div class="table-row header">
       <div class="column d-none d-md-block" />
       <div
@@ -28,7 +28,7 @@
             </b-button>
           </template>
           <strong>{{ row.customer }}</strong>
-          <span class="d-md-none">({{ calculateRowTotal(row) }})</span>
+          <span class="d-md-none">({{ totals.perRow[rowIndex] }})</span>
         </div>
 
         <div
@@ -52,7 +52,7 @@
         </div>
 
         <div class="column d-none d-md-block">
-          {{ calculateRowTotal(row) }}
+          {{ totals.perRow[rowIndex] }}
         </div>
       </div>
     </template>
@@ -75,7 +75,7 @@
       </div>
     </template>
 
-    <template v-if="totals">
+    <template v-if="showTotals">
       <div class="table-row footer">
         <div class="column">
           <span>Total</span>
@@ -99,6 +99,27 @@
 </template>
 
 <script>
+const totalsTemplate = {
+  perRow: [],
+  perDay: new Array(7).fill(0),
+  week: 0,
+};
+
+function calculateTotals(rows) {
+  return rows
+    .map(({ values }) => ({
+      rowValues: values,
+      rowTotal: values.reduce((acc, { value }) => acc + value, 0),
+    }))
+    .reduce((acc, { rowValues, rowTotal }) => {
+      return {
+        perRow: [...acc.perRow, rowTotal],
+        perDay: acc.perDay.map((value, i) => value + rowValues[i].value),
+        week: acc.week + rowTotal,
+      };
+    }, totalsTemplate);
+}
+
 export default {
   props: {
     rows: {
@@ -110,11 +131,12 @@ export default {
       type: Array,
       default: () => [],
     },
-    totals: {
-      type: Object,
-      default: () => {},
-    },
     canRemoveRow: {
+      type: Boolean,
+      default: false,
+    },
+    /** Whether to show totals at the bottom of the table */
+    showTotals: {
       type: Boolean,
       default: false,
     },
@@ -123,10 +145,17 @@ export default {
       default: () => {},
     },
   },
-  methods: {
-    calculateRowTotal(row) {
-      return row.values.reduce((acc, { value }) => acc + value, 0);
+  data() {
+    return {
+      totals: totalsTemplate,
+    };
+  },
+  watch: {
+    rows(rows) {
+      this.totals = calculateTotals(rows);
     },
+  },
+  methods: {
     updateValue(value, date, row) {
       this.$emit("value-changed", { value, date, row });
     },
