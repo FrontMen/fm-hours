@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper mt-5">
-    <div class="timesheet-header">
+    <div class="timesheet-header mb-4">
       <div class="navigation">
         <b-button class="navigation-button" @click="goToPreviousWeek()">
           <b-icon icon="arrow-left" />
@@ -12,7 +12,9 @@
         >
           <b-icon icon="arrow-right" />
         </b-button>
-        <span class="selected-date">{{ weekLabel }}</span>
+        <h2 class="selected-date">
+          {{ weekLabel }}
+        </h2>
       </div>
       <b-button v-if="!isCurrentWeek" @click="goToCurrentWeek()">
         <b-icon icon="calendar2-date" />
@@ -46,13 +48,16 @@
       </div>
     </template>
 
-    <weekly-values-table
-      class="mt-5"
-      :rows="weeklyKilometers"
-      :dates="currentWeek"
-      :value-formatter="kilometerFormatter"
-      @value-changed="updateKilometers"
-    />
+    <template v-if="user.travelAllowance">
+      <h3 class="mt-5">Travel allowance</h3>
+      <weekly-values-table
+        class="mt-4"
+        :rows="weeklyKilometers"
+        :dates="currentWeek"
+        :value-formatter="kilometerFormatter"
+        @value-changed="updateKilometers"
+      />
+    </template>
 
     <div class="last-saved mt-2">
       <last-saved />
@@ -167,7 +172,6 @@ export default Vue.extend({
 .timesheet-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 24px;
 
   .navigation {
     flex: 0 0 auto;
@@ -181,7 +185,7 @@ export default Vue.extend({
 
     .selected-date {
       flex: 1 1 auto;
-      margin-left: 8px;
+      margin: 0 0 0 8px;
       font-size: 18px;
       font-weight: bold;
 
@@ -197,6 +201,7 @@ export default Vue.extend({
   text-align: center;
   background-color: #fff;
   border-top: 8px solid #85cac9;
+  border-radius: 8px;
 
   p {
     margin-bottom: 32px;

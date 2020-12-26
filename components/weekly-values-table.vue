@@ -27,7 +27,11 @@
       >
         <div class="column">
           <template v-if="canRemoveRow">
-            <b-button class="remove-button" @click="$emit('remove-row', row)">
+            <b-button
+              class="remove-button"
+              variant="outline-primary"
+              @click="$emit('remove-row', row)"
+            >
               <b-icon icon="x-square" />
             </b-button>
           </template>
@@ -86,7 +90,7 @@
       <div class="table-row table-row--footer">
         <div class="column">
           <span>
-            Total <span class="d-md-none">({{ totals.week }})</span>
+            Total<span class="d-md-none">: {{ totals.week }}</span>
           </span>
         </div>
 
@@ -176,6 +180,8 @@ export default {
 
 <style lang="scss" scoped>
 .weekly-values-table {
+  margin: 0 calc(var(--viewport-spacing-horizontal) * -1);
+  font-variant-numeric: tabular-nums;
   background-color: #84cac9;
   border-radius: 8px;
 
@@ -185,7 +191,8 @@ export default {
 
   @media (min-width: 768px) {
     display: grid;
-    grid-template-columns: auto repeat(8, max-content);
+    grid-template-columns: minmax(auto, 40%) repeat(8, 1fr);
+    margin: 0;
   }
 
   .table-row {
@@ -247,7 +254,7 @@ export default {
 
     &:last-child {
       justify-content: center;
-      min-width: 62px;
+      color: #666;
     }
   }
 
@@ -289,22 +296,18 @@ export default {
   align-items: center;
   margin: 0 8px 0 -6px;
   padding: 0.375rem;
-  color: var(--color-primary);
-  background-color: transparent;
   border: 0;
 }
 
 .value-input {
+  padding-right: 0;
+  padding-left: 0;
   text-align: center;
   border: 1px solid #85cac9;
 
   &::-webkit-outer-spin-button,
   &::-webkit-inner-spin-button {
     display: none;
-  }
-
-  @media (min-width: 768px) {
-    width: 56px;
   }
 }
 </style>

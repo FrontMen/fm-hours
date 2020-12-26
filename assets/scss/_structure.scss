@@ -8,12 +8,11 @@ html {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   box-sizing: border-box;
-}
+  --viewport-spacing-horizontal: 16px;
 
-.content-wrapper {
-  max-width: 1060px;
-  margin: 0 auto;
-  padding: 0 20px;
+  @media (min-width: 768px) {
+    --viewport-spacing-horizontal: 24px;
+  }
 }
 
 body {
@@ -24,15 +23,8 @@ img {
   max-width: 100%;
 }
 
-@media (max-width: 998px) {
-  // body {
-  //   overflow: hidden;
-  // }
-}
-
-@media screen and (max-width: 767px) {
-  .content-wrapper {
-    padding-left: 10px;
-    padding-right: 10px;
-  }
+.content-wrapper {
+  max-width: 1060px;
+  margin: 0 auto;
+  padding: 0 var(--viewport-spacing-horizontal);
 }
