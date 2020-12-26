@@ -55,6 +55,7 @@
             :formatter="valueFormatter.formatter"
             :min="valueFormatter.min"
             :max="valueFormatter.max"
+            :readonly="readOnly"
             class="value-input"
             type="number"
             @update="updateValue($event, value.date, row)"
@@ -159,6 +160,11 @@ export default {
       type: Boolean,
       default: false,
     },
+    /** Whether the user can update any data */
+    readOnly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -172,7 +178,9 @@ export default {
   },
   methods: {
     updateValue(value, date, row) {
-      this.$emit("value-changed", { value, date, row });
+      if (!this.readOnly) {
+        this.$emit("value-changed", { value, date, row });
+      }
     },
   },
 };
