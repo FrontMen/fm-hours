@@ -14,20 +14,6 @@ export const state = () => ({
   currentDate: new Date(),
 });
 
-export const actions = {
-  async addHoliday(context, payload) {
-    const allDates = context.getters.getHolidayDates;
-    const newDates = [...allDates, payload].sort((accDate, currDate) =>
-      compareAsc(new Date(accDate), new Date(currDate))
-    );
-    const ref = this.$fire.firestore
-      .collection("holidays")
-      .doc("6WuBEKz07eGilq2B8A3l");
-    await ref.set({ dates: newDates });
-    context.commit("setHolidays", newDates);
-  },
-};
-
 export const mutations = {
   setToday(state) {
     state.currentDate = new Date();
