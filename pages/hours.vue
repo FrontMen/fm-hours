@@ -87,6 +87,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import WeeklyValuesTable from "../components/weekly-values-table.vue";
 import { generateValueFormatter } from "../helpers/records.js";
+import { recordStatus } from "../helpers/record-status.js";
 
 export default Vue.extend({
   components: { WeeklyValuesTable },
