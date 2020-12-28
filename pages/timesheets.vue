@@ -21,10 +21,11 @@
             </div>
 
             <weekly-values-table
-              class="mt-5"
+              class="mt-3"
               :rows="generateRows(records)"
               :dates="records.week"
               :value-formatter="timesheetFormatter"
+              readOnly
             />
             <b-button class="mt-3" @click="approveHours(records)">
               Approve hours
@@ -38,22 +39,10 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { generateValueFormatter } from "../helpers/records.js";
-
-function generateWeeklyValuesTableRows(records, week) {
-  return records.map((r) => {
-    return {
-      customer: r.customer,
-      values: week.map((day) => {
-        const result = records.find((r) => r.date === day.date);
-        return {
-          date: day.date,
-          value: result?.hours || 0,
-        };
-      }),
-    };
-  });
-}
+import {
+  generateValueFormatter,
+  generateWeeklyValuesForTable,
+} from "../helpers/records.js";
 
 export default {
   middleware: "isAdmin",
@@ -74,7 +63,7 @@ export default {
     },
     generateRows(rowData) {
       const { records, week } = rowData;
-      return generateWeeklyValuesTableRows(records, week);
+      return generateWeeklyValuesForTable(records, week);
     },
   },
 };

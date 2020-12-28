@@ -44,7 +44,7 @@ export function buildWeek(startDate, holidays) {
   })
 }
 
-// Based on a date, return the begin and end date of the week
+// Based on a date, return the begindate of that week and the enddate of that week
 export function getWeekRange(beginDate) {
   const start = startOfISOWeek(new Date(beginDate));
   const end = addDays(start, 6);
