@@ -38,6 +38,8 @@
           </b-button>
         </template>
       </weekly-values-table>
+
+      <b-button></b-button>
     </template>
     <template v-else>
       <div class="no-projects-card mb-5">
@@ -108,7 +110,6 @@ export default Vue.extend({
       user: "user/getUser",
     }),
     timesheetFormatter() {
-      console.log("weeklyTimesheet", this.weeklyTimesheet);
       return generateValueFormatter(0, 24);
     },
     kilometerFormatter() {
@@ -152,6 +153,7 @@ export default Vue.extend({
         debtor: row.debtor,
         hours: value,
         date,
+        status: recordStatus.NEW,
       };
       this.$store.dispatch("user/addHoursRecords", newRecords);
     },

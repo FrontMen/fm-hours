@@ -124,7 +124,6 @@ export const getters = {
       }
       startDate = addDays(startDate, 8)
     }
-    console.log('weeks', weeks);
     return weeks
   },
 };
