@@ -1,45 +1,11 @@
-import { isWithinInterval, startOfISOWeek, isBefore, format, isToday, compareAsc, isWeekend, isSameDay } from 'date-fns'
-import { addDays, getDateLabel } from "../helpers/dates.js";
+import { isBefore, compareAsc } from 'date-fns'
+import { addDays, getDateLabel, buildWeek, getWeekRange } from "../helpers/dates.js";
+import { isSameRecord, getRecordsForWeekRange } from "../helpers/records.js";
 import { recordStatus } from '../helpers/record-status';
 
 export const state = () => ({
   users: undefined,
 });
-
-const GetRecordsForWeekRange = (records, startDate, endDate) => {
-  return records.filter((entry) =>
-    isWithinInterval(new Date(entry.date), {
-      start: new Date(startDate),
-      end: new Date(endDate),
-    })
-  );
-};
-
-const getWeekRange = (beginDate) => {
-  const start = startOfISOWeek(new Date(beginDate));
-  const end = addDays(start, 6);
-  return { start, end }
-}
-
-const isSameRecord = (record, recordToCompare) => {
-  return isSameDay(new Date(record.date), new Date(recordToCompare.date)) && record.customer === recordToCompare.customer
-}
-
-const buildWeek = (startDate, holidays) => {
-  return [...Array(7)].map((_, index) => {
-    const newDate = addDays(startDate, index);
-    return {
-      date: newDate,
-      weekDay: format(newDate, "EEEEEE"),
-      monthDay: format(newDate, "dd"),
-      month: format(newDate, "MMM"),
-      year: format(newDate, "yyyy"),
-      isWeekend: isWeekend(newDate),
-      isToday: isToday(newDate),
-      isHoliday: holidays.some((date) => isSameDay(new Date(date), new Date(newDate))),
-    }
-  })
-}
 
 export const actions = {
   async getUserList(context) {
@@ -87,7 +53,6 @@ export const mutations = {
   },
 };
 
-
 export const getters = {
   getUsers: (state) => {
     return state.users;
@@ -132,7 +97,7 @@ export const getters = {
     while (isBefore(startDate, endDate)) {
       const { start, end } = getWeekRange(startDate);
       const thisWeekTimeRecords = pendingRecords.reduce((acc, user) => {
-        const timeRecordsWithinRange = GetRecordsForWeekRange(user.time_records, start, end);
+        const timeRecordsWithinRange = getRecordsForWeekRange(user.time_records, start, end);
         if (timeRecordsWithinRange.length > 0) {
           const entry = [
             ...acc,
@@ -150,9 +115,7 @@ export const getters = {
       }, []);
       if (thisWeekTimeRecords.length > 0) {
         const weekRecords = {
-          beginDate: start,
-          endDate: end,
-          dateLabel: getDateLabel(start, end, format),
+          dateLabel: getDateLabel(start, end),
           recordsForApproval: thisWeekTimeRecords
         }
         weeks = [...weeks, weekRecords];

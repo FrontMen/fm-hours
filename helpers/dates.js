@@ -1,3 +1,5 @@
+import { format, isToday, isWeekend, isSameDay, startOfISOWeek } from 'date-fns'
+
 export function formatDate(dirtyDate) {
   const date = new Date(dirtyDate);
   const yyyy = String(date.getFullYear());
@@ -12,7 +14,7 @@ export function addDays(dirtyDate, days) {
   return date;
 }
 
-export function getDateLabel(startDate, endDate, format) {
+export function getDateLabel(startDate, endDate) {
   let label = format(startDate, "dd");
   if (startDate.getMonth() !== endDate.getMonth()) {
     label += ` ${format(startDate, "MMM")}`;
@@ -23,4 +25,28 @@ export function getDateLabel(startDate, endDate, format) {
   }
   label += ` - ${format(endDate, "dd MMM yyyy")}`;
   return label;
+}
+
+export function buildWeek(startDate, holidays) {
+  return [...Array(7)].map((_, index) => {
+    const newDate = addDays(startDate, index);
+    return {
+      date: formatDate(newDate),
+      weekDay: format(newDate, "E"),
+      weekDayShort: format(newDate, "EEEEEE"),
+      monthDay: format(newDate, "dd"),
+      month: format(newDate, "MMM"),
+      year: format(newDate, "yyyy"),
+      isWeekend: isWeekend(newDate),
+      isToday: isToday(newDate),
+      isHoliday: holidays.some((date) => isSameDay(new Date(date), newDate)),
+    }
+  })
+}
+
+// Based on a date, return the begin and end date of the week
+export function getWeekRange(beginDate) {
+  const start = startOfISOWeek(new Date(beginDate));
+  const end = addDays(start, 6);
+  return { start, end }
 }

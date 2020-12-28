@@ -115,6 +115,7 @@ export default Vue.extend({
       user: "user/getUser",
     }),
     timesheetFormatter() {
+      console.log("weeklyTimesheet", this.weeklyTimesheet);
       return generateValueFormatter(0, 24);
     },
     kilometerFormatter() {

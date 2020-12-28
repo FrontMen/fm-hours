@@ -23,7 +23,7 @@
             <weekly-values-table
               class="mt-5"
               :rows="generateRows(records)"
-              :current-week="records.week"
+              :dates="records.week"
               :value-formatter="timesheetFormatter"
             />
             <b-button class="mt-3" @click="approveHours(records)">
