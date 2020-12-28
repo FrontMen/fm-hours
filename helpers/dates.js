@@ -11,3 +11,16 @@ export function addDays(dirtyDate, days) {
   date.setDate(date.getDate() + days);
   return date;
 }
+
+export function getDateLabel(startDate, endDate, format) {
+  let label = format(startDate, "dd");
+  if (startDate.getMonth() !== endDate.getMonth()) {
+    label += ` ${format(startDate, "MMM")}`;
+
+    if (startDate.getFullYear() !== endDate.getFullYear()) {
+      label += ` ${format(startDate, "yyyy")}`;
+    }
+  }
+  label += ` - ${format(endDate, "dd MMM yyyy")}`;
+  return label;
+}

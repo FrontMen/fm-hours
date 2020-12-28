@@ -1,5 +1,5 @@
 import { isWithinInterval, startOfISOWeek, isBefore, format, isToday, compareAsc, isWeekend, isSameDay } from 'date-fns'
-import { addDays } from "../helpers/dates.js";
+import { addDays, getDateLabel } from "../helpers/dates.js";
 import { recordStatus } from '../helpers/record-status';
 
 export const state = () => ({
@@ -23,19 +23,6 @@ const getWeekRange = (beginDate) => {
 
 const isSameRecord = (record, recordToCompare) => {
   return isSameDay(new Date(record.date), new Date(recordToCompare.date)) && record.customer === recordToCompare.customer
-}
-
-const getDateLabel = (startDate, endDate) => {
-  let label = format(startDate, "dd");
-  if (startDate.getMonth() !== endDate.getMonth()) {
-    label += ` ${format(startDate, "MMM")}`;
-
-    if (startDate.getFullYear() !== endDate.getFullYear()) {
-      label += ` ${format(startDate, "yyyy")}`;
-    }
-  }
-  label += ` - ${format(endDate, "dd MMM yyyy")}`;
-  return label;
 }
 
 const buildWeek = (startDate, holidays) => {
@@ -107,7 +94,6 @@ export const getters = {
   },
   getUsersRecordsForApproval: (state, getters, _, rootGetters) => {
     const holidays = rootGetters["holidays/getHolidayDates"];
-    console.log('holidays', holidays);
     const users = getters.getUsers;
     if (!users) {
       return;
@@ -166,7 +152,7 @@ export const getters = {
         const weekRecords = {
           beginDate: start,
           endDate: end,
-          dateLabel: getDateLabel(start, end),
+          dateLabel: getDateLabel(start, end, format),
           recordsForApproval: thisWeekTimeRecords
         }
         weeks = [...weeks, weekRecords];
