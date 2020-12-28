@@ -7,7 +7,7 @@
         </b-button>
         <b-button
           class="navigation-button"
-          :disabled="isCurrentWeek"
+          :disabled="position.weekDifference > 3"
           @click="goToNextWeek()"
         >
           <b-icon icon="arrow-right" />
@@ -16,7 +16,7 @@
           {{ weekLabel }}
         </h2>
       </div>
-      <b-button v-if="!isCurrentWeek" @click="goToCurrentWeek()">
+      <b-button v-if="position.weekDifference !== 0" @click="goToCurrentWeek()">
         <b-icon icon="calendar2-date" />
         <span class="ml-2 d-none d-sm-inline">To current week</span>
       </b-button>
@@ -108,7 +108,7 @@ export default Vue.extend({
       currentWeek: "week-dates/currentWeek",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       weeklyKilometers: "user/getWeeklyKilometers",
-      isCurrentWeek: "week-dates/isNextweekInFuture",
+      position: "week-dates/getRelativePosition",
       weeklyTimesheet: "user/getWeeklyTimesheet",
       lastSavedDate: "user/getLastSavedDate",
       selectableCustomers: "customers/getSelectableCustomers",
