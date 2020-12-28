@@ -14,6 +14,7 @@ export function addDays(dirtyDate, days) {
   return date;
 }
 
+// based on a date, create a label with the begin and enddate of that week
 export function getDateLabel(startDate, endDate) {
   let label = format(startDate, "dd");
   if (startDate.getMonth() !== endDate.getMonth()) {
@@ -27,6 +28,7 @@ export function getDateLabel(startDate, endDate) {
   return label;
 }
 
+// Build a week based on a startDate.
 export function buildWeek(startDate, holidays) {
   return [...Array(7)].map((_, index) => {
     const newDate = addDays(startDate, index);
@@ -45,8 +47,10 @@ export function buildWeek(startDate, holidays) {
 }
 
 // Based on a date, return the begindate of that week and the enddate of that week
+// return in this format so its usable for date-fns, which need the js new Date object.
+// wrap it in the format function to get rid of the hours
 export function getWeekRange(beginDate) {
   const start = startOfISOWeek(new Date(beginDate));
   const end = addDays(start, 6);
-  return { start, end }
+  return { start: new Date(formatDate(start)), end: new Date(formatDate(end)) }
 }
