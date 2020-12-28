@@ -67,6 +67,7 @@ export const getters = {
       return {
         date: formatDate(newDate),
         weekDay: format(newDate, "E"),
+        weekDayShort: format(newDate, "EEEEEE"),
         monthDay: format(newDate, "dd"),
         month: format(newDate, "MMM"),
         year: format(newDate, "yyyy"),

@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper mt-5">
-    <div class="timesheet-header">
+    <div class="timesheet-header mb-4">
       <div class="navigation">
         <b-button class="navigation-button" @click="goToPreviousWeek()">
           <b-icon icon="arrow-left" />
@@ -12,7 +12,9 @@
         >
           <b-icon icon="arrow-right" />
         </b-button>
-        <span class="selected-date">{{ weekLabel }}</span>
+        <h2 class="selected-date">
+          {{ weekLabel }}
+        </h2>
       </div>
       <b-button v-if="!isCurrentWeek" @click="goToCurrentWeek()">
         <b-icon icon="calendar2-date" />
@@ -23,19 +25,15 @@
     <template v-if="weeklyTimesheet.length">
       <weekly-values-table
         :rows="weeklyTimesheet"
-        :current-week="currentWeek"
-        :totals="weeklyTotals"
+        :dates="currentWeek"
         :value-formatter="timesheetFormatter"
         can-remove-row
+        show-totals
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
         <template #emptyRow>
-          <b-button
-            v-b-modal.modal-add-project
-            variant="outline-primary"
-            class="ml-2"
-          >
+          <b-button v-b-modal.modal-add-project variant="outline-primary">
             Add project
           </b-button>
         </template>
@@ -50,13 +48,16 @@
       </div>
     </template>
 
-    <weekly-values-table
-      class="mt-5"
-      :rows="weeklyKilometers"
-      :current-week="currentWeek"
-      :value-formatter="kilometerFormatter"
-      @value-changed="updateKilometers"
-    />
+    <template v-if="user.travelAllowance">
+      <h3 class="mt-5">Travel allowance</h3>
+      <weekly-values-table
+        class="mt-4"
+        :rows="weeklyKilometers"
+        :dates="currentWeek"
+        :value-formatter="kilometerFormatter"
+        @value-changed="updateKilometers"
+      />
+    </template>
 
     <div class="last-saved mt-2">
       <last-saved />
@@ -109,7 +110,6 @@ export default Vue.extend({
       weeklyKilometers: "user/getWeeklyKilometers",
       isCurrentWeek: "week-dates/isNextweekInFuture",
       weeklyTimesheet: "user/getWeeklyTimesheet",
-      weeklyTotals: "user/getWeeklyTotals",
       lastSavedDate: "user/getLastSavedDate",
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
@@ -172,7 +172,6 @@ export default Vue.extend({
 .timesheet-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 24px;
 
   .navigation {
     flex: 0 0 auto;
@@ -186,11 +185,11 @@ export default Vue.extend({
 
     .selected-date {
       flex: 1 1 auto;
-      margin-left: 8px;
+      margin: 0 0 0 8px;
       font-size: 18px;
       font-weight: bold;
 
-      @media (min-width: 768px) {
+      @media (min-width: 576px) {
         font-size: 24px;
       }
     }
@@ -201,7 +200,8 @@ export default Vue.extend({
   padding: 40px 8px;
   text-align: center;
   background-color: #fff;
-  border-top: 8px solid var(--color-tertiary);
+  border-top: 8px solid #85cac9;
+  border-radius: 8px;
 
   p {
     margin-bottom: 32px;

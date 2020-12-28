@@ -280,26 +280,6 @@ export const getters = {
       hours: rows,
     };
   },
-  getDayTotals: (state, getters, _, rootGetters) => {
-    const currentWeek = rootGetters["week-dates/currentWeek"];
-    const currentWeekRecords = getters.getTimeRecordsForCurrentWeek;
-    return currentWeek.map((weekDay) => {
-      return currentWeekRecords.reduce((acc, curr) => {
-        const registeredHours = isSameDay(
-          new Date(weekDay.date),
-          new Date(curr.date)
-        );
-        return acc + (registeredHours ? curr.hours : 0);
-      }, 0);
-    });
-  },
-  getWeeklyTotals: (_, getters) => {
-    const totalsPerDay = getters.getDayTotals;
-    return {
-      perDay: totalsPerDay,
-      week: totalsPerDay.reduce((acc, current) => acc + current, 0),
-    };
-  },
   getLastSavedDate: (state) => {
     return state.lastSaved;
   },
