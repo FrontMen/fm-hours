@@ -172,8 +172,11 @@ export default {
     };
   },
   watch: {
-    rows(rows) {
-      this.totals = calculateTotals(rows);
+    rows: {
+      immediate: true,
+      handler(rows) {
+        this.totals = calculateTotals(rows);
+      },
     },
   },
   methods: {
