@@ -84,14 +84,7 @@
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import WeeklyValuesTable from "../components/weekly-values-table.vue";
-
-function generateValueFormatter(min, max) {
-  return {
-    min,
-    max,
-    formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
-  };
-}
+import { generateValueFormatter } from "../helpers/records.js";
 
 export default Vue.extend({
   components: { WeeklyValuesTable },

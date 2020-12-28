@@ -38,14 +38,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-
-function generateValueFormatter(min, max) {
-  return {
-    min,
-    max,
-    formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
-  };
-}
+import { generateValueFormatter } from "../helpers/records.js";
 
 function generateWeeklyValuesTableRows(records, week) {
   return records.map((r) => {

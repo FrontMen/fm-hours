@@ -28,16 +28,18 @@ export const actions = {
     );
     context.commit("updateUser", newUser);
   },
-  approveRecords(context, payload) {
+  async approveRecords(context, payload) {
     const users = [...context.getters.getUsers];
-    const currentUser = users.find((x) => x.id === payload.userId);
+    const currentUser = users.find((u) => u.id === payload.userId);
     const newrecs = currentUser.time_records.map(record => {
       const isApproved = payload.records.some(approvedRecord => isSameRecord(record, approvedRecord));
-      return {
-        ...record,
-        status: isApproved ? recordStatus.APPROVED : record.status
-      };
+      const newStatus = isApproved ? recordStatus.APPROVED : record.status;
+      return newStatus ? { ...record, status: newStatus } : record
     });
+    await this.$fire.firestore.collection("users").doc(currentUser.id).set(
+      { time_records: newrecs },
+      { merge: true }
+    );
     context.commit("updateUser", { ...currentUser, time_records: newrecs });
   },
 };

@@ -12,3 +12,11 @@ export function getRecordsForWeekRange(records, startDate, endDate) {
         })
     );
 };
+
+export function generateValueFormatter(min, max) {
+    return {
+        min,
+        max,
+        formatter: (value) => Math.min(Math.max(Number(value) || 0, min), max),
+    };
+}
