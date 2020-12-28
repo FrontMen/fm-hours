@@ -1,5 +1,6 @@
 import { isWithinInterval, isSameDay, subDays } from "date-fns";
 import { formatDate, addDays } from "../helpers/dates.js";
+import { recordStatus } from "../helpers/record-status.js";
 import { debounce } from "../helpers/debounce";
 
 export const state = () => ({
@@ -96,6 +97,18 @@ export const actions = {
     });
     context.commit("updateTimeRecords", newRecords);
   },
+  submitRecordsForApproval(context) {
+    const allRecords = context.getters.getTimeRecords;
+    const { startDate, endDate } = context.rootGetters["week-dates/getCurrentWeekRange"];
+    const newRecords = allRecords.map((record) => {
+      const isInCurrentWeek = isWithinInterval(new Date(record.date), {
+        start: new Date(startDate),
+        end: new Date(endDate),
+      })
+      return isInCurrentWeek ? { ...record, status: recordStatus.PENDING } : record
+    });
+    context.commit("updateTimeRecords", newRecords);
+  },
   addProjectRow(context, payload) {
     context.commit("addProjectRow", payload);
   },
@@ -112,6 +125,7 @@ export const actions = {
       return {
         ...entry,
         date: formatDate(addDays(entry.date, 7)),
+        status: recordStatus.NEW
       };
     });
     const newRecords = [...records, ...copiedRecords];
@@ -236,6 +250,10 @@ export const getters = {
         }),
       };
     });
+  },
+  currentWeekIsPending: (_, getters) => {
+    const records = getters.getTimeRecordsForCurrentWeek;
+    return records.some(r => r.status === recordStatus.PENDING);
   },
   getWeeklyKilometers: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;

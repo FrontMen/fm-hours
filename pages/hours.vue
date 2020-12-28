@@ -39,7 +39,7 @@
         </template>
       </weekly-values-table>
 
-      <b-button></b-button>
+      <b-button @click="submitForApproval()">Submit for approval</b-button>
     </template>
     <template v-else>
       <div class="no-projects-card mb-5">
@@ -87,6 +87,7 @@ import Vue from "vue";
 import { mapGetters } from "vuex";
 import WeeklyValuesTable from "../components/weekly-values-table.vue";
 import { generateValueFormatter } from "../helpers/records.js";
+import { recordStatus } from "../helpers/record-status.js";
 
 export default Vue.extend({
   components: { WeeklyValuesTable },
@@ -103,6 +104,7 @@ export default Vue.extend({
       currentWeek: "week-dates/currentWeek",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       weeklyKilometers: "user/getWeeklyKilometers",
+      currentWeekStatus: "user/currentWeekIsPending",
       position: "week-dates/getRelativePosition",
       weeklyTimesheet: "user/getWeeklyTimesheet",
       lastSavedDate: "user/getLastSavedDate",
@@ -113,6 +115,9 @@ export default Vue.extend({
       return generateValueFormatter(0, 24);
     },
     kilometerFormatter() {
+      return generateValueFormatter(0, 9999);
+    },
+    isSubmittedForPending() {
       return generateValueFormatter(0, 9999);
     },
   },
@@ -159,6 +164,9 @@ export default Vue.extend({
     },
     updateKilometers({ value, date }) {
       this.$store.dispatch("user/addKilometers", { hours: value, date });
+    },
+    submitForApproval() {
+      this.$store.dispatch("user/submitRecordsForApproval");
     },
   },
 });
