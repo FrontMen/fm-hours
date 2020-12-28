@@ -2,11 +2,12 @@ import {
   subDays,
   startOfISOWeek,
   format,
-  isAfter,
   isSameDay,
   isWeekend,
   isToday,
   compareAsc,
+  differenceInCalendarWeeks,
+  differenceInCalendarMonths,
 } from "date-fns";
 import { addDays, formatDate } from "../helpers/dates.js";
 
@@ -63,14 +64,16 @@ export const getters = {
       };
     });
   },
-  isNextweekInFuture: (_, getters) => {
-    const { endDate } = getters.getcurrentWeekRange;
+  // Get date values relative to today.
+  getRelativePosition(_, getters) {
+    const startDate = new Date(getters.getCurrentWeekRange.startDate);
     const today = new Date();
-    return (
-      isAfter(new Date(endDate), today) || isSameDay(new Date(endDate), today)
-    );
+    return {
+      weekDifference: differenceInCalendarWeeks(startDate, today, { weekStartsOn: 1 }),
+      monthDifference: differenceInCalendarMonths(startDate, today),
+    };
   },
-  getcurrentWeekRange: (_, getters) => {
+  getCurrentWeekRange: (_, getters) => {
     const currWeek = getters.currentWeek;
     return { startDate: currWeek[0].date, endDate: currWeek[6].date };
   },

@@ -1,22 +1,22 @@
 <template>
   <div :class="{ 'weekly-values-table': true, 'show-totals': showTotals }">
     <div class="table-row table-row--header">
-      <div class="column d-none d-md-block" />
+      <div class="column d-none d-sm-block" />
       <div
         v-for="date in dates"
         :key="date.weekDay"
         :class="{ column: true, today: date.isToday }"
       >
-        <div>
-          <strong class="d-md-none">{{ date.weekDayShort }}</strong>
-          <strong class="d-none d-md-inline">{{ date.weekDay }}</strong>
-        </div>
+        <strong>
+          <span class="d-md-none">{{ date.weekDayShort }}</span>
+          <span class="d-none d-md-inline">{{ date.weekDay }}</span>
+        </strong>
         <small>
           <span>{{ date.monthDay }}</span>
           <span class="d-none d-md-inline">{{ date.month }}</span>
         </small>
       </div>
-      <div class="column d-none d-md-block" />
+      <div class="column d-none d-sm-block" />
     </div>
 
     <template v-if="rows.length">
@@ -37,7 +37,7 @@
           </template>
           <span>
             <strong>{{ row.customer }}</strong>
-            <span class="d-md-none">({{ totals.perRow[rowIndex] }})</span>
+            <span class="d-sm-none">({{ totals.perRow[rowIndex] }})</span>
           </span>
         </div>
 
@@ -62,7 +62,7 @@
           />
         </div>
 
-        <div class="column d-none d-md-flex">
+        <div class="column d-none d-sm-flex">
           {{ totals.perRow[rowIndex] }}
         </div>
       </div>
@@ -76,14 +76,14 @@
         <div
           v-for="date in dates"
           :key="date.weekDay"
-          class="d-none d-md-flex"
+          class="d-none d-sm-flex"
           :class="{
             column: true,
             weekend: date.isWeekend,
             holiday: date.isHoliday,
           }"
         />
-        <div class="column d-none d-md-flex" />
+        <div class="column d-none d-sm-flex" />
       </div>
     </template>
 
@@ -91,7 +91,7 @@
       <div class="table-row table-row--footer">
         <div class="column">
           <span>
-            Total<span class="d-md-none">: {{ totals.week }}</span>
+            Total<span class="d-sm-none">: {{ totals.week }}</span>
           </span>
         </div>
 
@@ -103,7 +103,7 @@
           <span>{{ value }}</span>
         </div>
 
-        <div class="column d-none d-md-flex">
+        <div class="column d-none d-sm-flex">
           {{ totals.week }}
         </div>
       </div>
@@ -172,8 +172,11 @@ export default {
     };
   },
   watch: {
-    rows(rows) {
-      this.totals = calculateTotals(rows);
+    rows: {
+      immediate: true,
+      handler(rows) {
+        this.totals = calculateTotals(rows);
+      },
     },
   },
   methods: {
@@ -191,23 +194,23 @@ export default {
   margin: 0 calc(var(--viewport-spacing-horizontal) * -1);
   font-variant-numeric: tabular-nums;
   background-color: #84cac9;
-  border-radius: 8px;
 
   &:not(.show-totals) {
     border-bottom: 8px solid #84cac9;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 576px) {
     display: grid;
     grid-template-columns: minmax(auto, 40%) repeat(8, 1fr);
     margin: 0;
+    border-radius: 8px;
   }
 
   .table-row {
     display: flex;
     flex-wrap: wrap;
 
-    @media (min-width: 768px) {
+    @media (min-width: 576px) {
       display: contents;
     }
   }
@@ -284,7 +287,7 @@ export default {
       flex: 1 1 100%;
       order: 1;
 
-      @media (min-width: 768px) {
+      @media (min-width: 576px) {
         order: 0;
       }
     }
@@ -292,7 +295,7 @@ export default {
     &:last-child {
       justify-content: center;
 
-      @media (min-width: 768px) {
+      @media (min-width: 576px) {
         align-items: center;
       }
     }

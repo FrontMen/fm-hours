@@ -200,7 +200,7 @@ export const getters = {
   getTimeRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
     const records = getters.getTimeRecords;
     const { startDate, endDate } = rootGetters[
-      "week-dates/getcurrentWeekRange"
+      "week-dates/getCurrentWeekRange"
     ];
     return GetRecordsForWeekRange(records, startDate, endDate);
   },
@@ -241,7 +241,7 @@ export const getters = {
     const records = getters.getTravelAllowanceRecords;
     const currentWeek = rootGetters["week-dates/currentWeek"];
     const { startDate, endDate } = rootGetters[
-      "week-dates/getcurrentWeekRange"
+      "week-dates/getCurrentWeekRange"
     ];
 
     const rows = records.filter((entry) =>
@@ -267,7 +267,7 @@ export const getters = {
   getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;
     const { startDate, endDate } = rootGetters[
-      "week-dates/getcurrentWeekRange"
+      "week-dates/getCurrentWeekRange"
     ];
     const rows = records.filter((entry) =>
       isWithinInterval(new Date(entry.date), {
