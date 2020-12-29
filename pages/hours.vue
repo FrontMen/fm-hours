@@ -42,15 +42,6 @@
           </b-button>
         </template>
       </weekly-values-table>
-
-      <b-button v-if="!currentWeekIsReadOnly" @click="submitForApproval()">
-        Submit for approval
-      </b-button>
-      <template v-else>
-        <p class="my-3">
-          This week is submitted for approval and can not be changed
-        </p>
-      </template>
     </template>
     <template v-else>
       <div class="no-projects-card mb-5">
@@ -67,9 +58,23 @@
         class="mt-4"
         :rows="weeklyKilometers"
         :dates="currentWeek"
+        :read-only="currentWeekIsReadOnly"
         :value-formatter="kilometerFormatter"
         @value-changed="updateKilometers"
       />
+    </template>
+
+    <b-button
+      v-if="!currentWeekIsReadOnly"
+      class="mt-3"
+      @click="submitForApproval()"
+    >
+      Submit for approval
+    </b-button>
+    <template v-else>
+      <p class="my-3">
+        This week is submitted for approval and can not be changed
+      </p>
     </template>
 
     <div class="last-saved mt-2">

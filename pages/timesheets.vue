@@ -1,38 +1,52 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper week-records">
-      <div
-        v-for="(week, index) in usersRecords"
-        :key="index"
-        class="week-records__week"
-      >
-        <div class="week-records__date font-weight-bold">
-          {{ week.dateLabel }}
-        </div>
-
-        <div class="week-records__inner">
-          <div
-            v-for="(records, recordindex) in week.recordsForApproval"
-            :key="recordindex"
-            class="week-records__user"
+      <template v-if="usersRecords && usersRecords.length > 0">
+        <div
+          v-for="(week, index) in usersRecords"
+          :key="index"
+          class="week-records__week"
+          :class="{ 'is-in-future': week.isInFuture }"
+        >
+          <p
+            class="week-records__future-label font-weight-bold pl-3"
+            v-if="index === firstWeekInFuture"
           >
-            <div class="week-records__user-name mb-2 font-weight-bold">
-              {{ records.user }}
-            </div>
+            Timesheets in the future:
+          </p>
+          <div class="week-records__date font-weight-bold">
+            {{ week.dateLabel }}
+          </div>
 
-            <weekly-values-table
-              class="mt-3"
-              :rows="generateRows(records)"
-              :dates="records.week"
-              :value-formatter="timesheetFormatter"
-              readOnly
-            />
-            <b-button class="mt-3" @click="approveHours(records)">
-              Approve hours
-            </b-button>
+          <div class="week-records__inner">
+            <div
+              v-for="(records, recordindex) in week.recordsForApproval"
+              :key="recordindex"
+              class="week-records__user"
+            >
+              <div class="week-records__user-name mb-2 font-weight-bold">
+                {{ records.user }}
+              </div>
+
+              <weekly-values-table
+                class="mt-3"
+                :rows="generateRows(records)"
+                :dates="records.week"
+                :value-formatter="timesheetFormatter"
+                read-only
+              />
+              <b-button class="mt-3" @click="approveHours(records)">
+                Approve hours
+              </b-button>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
+      <template v-else>
+        <p class="no-records text-center mt-5">
+          The are no records for approval
+        </p>
+      </template>
     </div>
   </div>
 </template>
@@ -49,6 +63,7 @@ export default {
   computed: {
     ...mapGetters({
       usersRecords: "users/getUsersRecordsForApproval",
+      firstWeekInFuture: "users/getIndexOfFirstWeekInFuture",
     }),
     timesheetFormatter() {
       return generateValueFormatter(0, 24);
@@ -70,6 +85,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.no-records {
+  font-size: 20px;
+}
+
 .week-records {
   margin-top: 20px;
   &__date {
@@ -84,8 +103,16 @@ export default {
     background: var(--color-secondary);
   }
 
+  &__future-label {
+    font-size: 34px;
+  }
+
   &__week {
     margin-bottom: 50px;
+
+    &.is-in-future:first-of-type {
+      margin-top: 200px;
+    }
   }
 
   &__user + .week-records__user {

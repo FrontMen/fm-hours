@@ -1,7 +1,7 @@
 import { isBefore, compareAsc } from 'date-fns'
 import { addDays, getDateLabel, buildWeek, getWeekRange } from "../helpers/dates.js";
 import { isSameRecord, getRecordsForWeekRange } from "../helpers/records.js";
-import { recordStatus } from '../helpers/record-status';
+import { recordStatus } from "../helpers/record-status";
 
 export const state = () => ({
   users: undefined,
@@ -118,12 +118,21 @@ export const getters = {
       if (thisWeekTimeRecords.length > 0) {
         const weekRecords = {
           dateLabel: getDateLabel(start, end),
-          recordsForApproval: thisWeekTimeRecords
-        }
+          startDate: start,
+          recordsForApproval: thisWeekTimeRecords,
+        };
         weeks = [...weeks, weekRecords];
       }
       startDate = addDays(startDate, 8)
     }
     return weeks
   },
+  // used for displaying a divider between the normal weeks and the future ones
+  getIndexOfFirstWeekInFuture: (_, getters) => {
+    const weeks = getters.getUsersRecordsForApproval;
+    if (!weeks) {
+      return;
+    }
+    return weeks.findIndex((weeks) => isBefore(new Date(), weeks.startDate))
+  }
 };
