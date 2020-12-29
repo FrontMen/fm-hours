@@ -32,7 +32,7 @@
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
-        <template #emptyRow>
+        <template v-if="hasSelectableCustomers" #emptyRow>
           <b-button v-b-modal.modal-add-project variant="outline-primary">
             Add project
           </b-button>
@@ -96,6 +96,9 @@ export default Vue.extend({
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
     }),
+    hasSelectableCustomers() {
+      return !!this.selectableCustomers.filter(c => c.value && !c.disabled).length;
+    },
     timesheetFormatter() {
       return generateValueFormatter(0, 24);
     },
