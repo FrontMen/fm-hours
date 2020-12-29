@@ -26,7 +26,7 @@
         class="table-row table-row--values"
       >
         <div class="column">
-          <template v-if="canRemoveRow">
+          <template v-if="canRemoveRow && !readOnly">
             <b-button
               class="remove-button"
               variant="outline-primary"
