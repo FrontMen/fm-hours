@@ -29,13 +29,13 @@
         :value-formatter="timesheetFormatter"
         can-remove-row
         show-totals
-        :read-only="currentWeekIsPending"
+        :read-only="currentWeekIsReadOnly"
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
         <template #emptyRow>
           <b-button
-            v-if="!currentWeekIsPending"
+            v-if="!currentWeekIsReadOnly"
             v-b-modal.modal-add-project
             variant="outline-primary"
           >
@@ -44,7 +44,7 @@
         </template>
       </weekly-values-table>
 
-      <b-button v-if="!currentWeekIsPending" @click="submitForApproval()">
+      <b-button v-if="!currentWeekIsReadOnly" @click="submitForApproval()">
         Submit for approval
       </b-button>
       <template v-else>
@@ -116,7 +116,7 @@ export default Vue.extend({
       currentWeek: "week-dates/currentWeek",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       weeklyKilometers: "user/getWeeklyKilometers",
-      currentWeekIsPending: "user/currentWeekIsPending",
+      currentWeekIsReadOnly: "user/currentWeekIsReadOnly",
       position: "week-dates/getRelativePosition",
       weeklyTimesheet: "user/getWeeklyTimesheet",
       lastSavedDate: "user/getLastSavedDate",

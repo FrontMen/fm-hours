@@ -107,6 +107,11 @@ export const actions = {
       })
       return isInCurrentWeek ? { ...record, status: recordStatus.PENDING } : record
     });
+
+    context.dispatch("saveToFirestore", {
+      dataToSave: { time_records: newRecords },
+      debounce: false,
+    });
     context.commit("updateTimeRecords", newRecords);
   },
   addProjectRow(context, payload) {
@@ -251,9 +256,9 @@ export const getters = {
       };
     });
   },
-  currentWeekIsPending: (_, getters) => {
+  currentWeekIsReadOnly: (_, getters) => {
     const records = getters.getTimeRecordsForCurrentWeek;
-    return records.some(r => r.status === recordStatus.PENDING);
+    return records.some(r => r.status === recordStatus.PENDING || r.status === recordStatus.APPROVED);
   },
   getWeeklyKilometers: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;
