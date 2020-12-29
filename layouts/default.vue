@@ -26,7 +26,11 @@
                 <b-dropdown right class="user__dropdown">
                   <template #button-content>
                     <div class="user__image flex-shrink-0 mr-1">
-                      <img :src="user.picture" alt="user image" />
+                      <img
+                        :src="user.picture"
+                        alt="user image"
+                        referrerpolicy="no-referrer"
+                      />
                     </div>
                   </template>
                   <b-dropdown-item @click="logout()"> Logout </b-dropdown-item>
