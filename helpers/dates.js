@@ -1,4 +1,10 @@
-import { format, isToday, isWeekend, isSameDay, startOfISOWeek } from 'date-fns'
+import {
+  format,
+  isToday,
+  isWeekend,
+  isSameDay,
+  startOfISOWeek,
+} from "date-fns";
 
 export function formatDate(dirtyDate) {
   const date = new Date(dirtyDate);
@@ -42,8 +48,8 @@ export function buildWeek(startDate, holidays) {
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
       isHoliday: holidays.some((date) => isSameDay(new Date(date), newDate)),
-    }
-  })
+    };
+  });
 }
 
 // Based on a date, return the begindate of that week and the enddate of that week
@@ -52,5 +58,5 @@ export function buildWeek(startDate, holidays) {
 export function getWeekRange(beginDate) {
   const start = startOfISOWeek(new Date(beginDate));
   const end = addDays(start, 6);
-  return { start: new Date(formatDate(start)), end: new Date(formatDate(end)) }
+  return { start: new Date(formatDate(start)), end: new Date(formatDate(end)) };
 }

@@ -25,7 +25,7 @@
               :rows="generateRows(records)"
               :dates="records.week"
               :value-formatter="timesheetFormatter"
-              readOnly
+              read-only
             />
             <b-button class="mt-3" @click="approveHours(records)">
               Approve hours

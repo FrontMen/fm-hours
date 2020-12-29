@@ -5,7 +5,6 @@ import {
   isSameDay,
   isWeekend,
   isToday,
-  compareAsc,
   differenceInCalendarWeeks,
   differenceInCalendarMonths,
 } from "date-fns";
@@ -69,7 +68,9 @@ export const getters = {
     const startDate = new Date(getters.getCurrentWeekRange.startDate);
     const today = new Date();
     return {
-      weekDifference: differenceInCalendarWeeks(startDate, today, { weekStartsOn: 1 }),
+      weekDifference: differenceInCalendarWeeks(startDate, today, {
+        weekStartsOn: 1,
+      }),
       monthDifference: differenceInCalendarMonths(startDate, today),
     };
   },
