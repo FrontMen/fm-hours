@@ -190,6 +190,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+/**
+ * Mobile-first grid. Verify any changes on all viewports.
+ */
 .weekly-values-table {
   margin: 0 calc(var(--viewport-spacing-horizontal) * -1);
   font-variant-numeric: tabular-nums;
