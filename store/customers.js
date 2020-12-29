@@ -1,7 +1,4 @@
-import {
-  CreateSingleSelectOption,
-  CreateDefaultSelectOption,
-} from "../helpers/create-select-options";
+/* eslint-disable @typescript-eslint/no-unused-vars */
 
 export const state = () => ({
   customers: [],
@@ -41,18 +38,16 @@ export const getters = {
   getCustomers: (state) => {
     return state.customers;
   },
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   getSelectableCustomers: (state, getters, rootState, rootGetters) => {
-    const currentRows = rootGetters["user/getTimeRecordsForCurrentWeek"];
-    const customerList = getters.getCustomers;
-    const defaultSelectOption = CreateDefaultSelectOption("Select a customer");
-    const newOptions = customerList.map((entry) =>
-      CreateSingleSelectOption(
-        entry.id,
-        entry.name,
-        currentRows.some((row) => row.customer === entry.name)
-      )
-    );
-    return [defaultSelectOption, ...newOptions];
+    const customers = getters.getCustomers;
+    const records = rootGetters["user/getTimeRecordsForCurrentWeek"];
+    const selectedCustomers = [...new Set(records.map((c) => c.customer))];
+
+    const defaultOption = { text: "Choose project", disabled: true };
+    const options = customers
+      .filter((entry) => !selectedCustomers.includes(entry.name))
+      .map((entry) => ({ value: entry.id, text: entry.name }));
+
+    return [defaultOption, ...options];
   },
 };

@@ -33,12 +33,11 @@
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
-        <template #emptyRow>
-          <b-button
-            v-if="!currentWeekIsReadOnly"
-            v-b-modal.modal-add-project
-            variant="outline-primary"
-          >
+        <template
+          v-if="hasSelectableCustomers && !currentWeekIsReadOnly"
+          #emptyRow
+        >
+          <b-button v-b-modal.modal-add-project variant="outline-primary">
             Add project
           </b-button>
         </template>
@@ -77,38 +76,24 @@
       <last-saved />
     </div>
 
-    <b-modal
-      id="modal-add-project"
-      centered
-      title="Add a project"
-      cancel-variant="danger"
-      :ok-disabled="!selectedCustomerId"
-      @ok="addProject()"
-      @hidden="selectedCustomerId = undefined"
-    >
-      <select-project
-        :customers="selectableCustomers"
-        @on-customer-select="selectedCustomerId = $event"
-      />
-    </b-modal>
+    <select-project-dialog
+      :projects="selectableCustomers"
+      @project-selected="addProject"
+    />
   </div>
 </template>
 
 <script>
 import Vue from "vue";
 import { mapGetters } from "vuex";
+import SelectProjectDialog from "../components/select-project-dialog.vue";
 import WeeklyValuesTable from "../components/weekly-values-table.vue";
 import { generateValueFormatter } from "../helpers/records.js";
 import { recordStatus } from "../helpers/record-status.js";
 
 export default Vue.extend({
-  components: { WeeklyValuesTable },
+  components: { SelectProjectDialog, WeeklyValuesTable },
   middleware: "isAuthenticated",
-  data() {
-    return {
-      selectedCustomerId: undefined,
-    };
-  },
   computed: {
     ...mapGetters({
       customers: "customers/getCustomers",
@@ -122,6 +107,10 @@ export default Vue.extend({
       selectableCustomers: "customers/getSelectableCustomers",
       user: "user/getUser",
     }),
+    hasSelectableCustomers() {
+      return !!this.selectableCustomers.filter((c) => c.value && !c.disabled)
+        .length;
+    },
     timesheetFormatter() {
       return generateValueFormatter(0, 24);
     },
@@ -145,17 +134,17 @@ export default Vue.extend({
     goToCurrentWeek() {
       this.$store.commit("week-dates/setToday");
     },
-    addProject() {
-      const customer = this.customers.find(
-        (customer) => customer.id === this.selectedCustomerId
-      );
-      const item = {
-        customer: customer.name,
-        debtor: customer.debtor,
-        date: this.currentWeek[0].date,
-        hours: 0,
-      };
-      this.$store.dispatch("user/addProjectRow", item);
+    addProject(id) {
+      if (id) {
+        const customer = this.customers.find((customer) => customer.id === id);
+        const item = {
+          customer: customer.name,
+          debtor: customer.debtor,
+          date: this.currentWeek[0].date,
+          hours: 0,
+        };
+        this.$store.dispatch("user/addProjectRow", item);
+      }
     },
     removeProject(project) {
       this.$store.dispatch("user/removeRecordRow", project);
