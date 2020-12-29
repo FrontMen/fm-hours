@@ -22,7 +22,12 @@ const AddRecord = (allRecords, newRecord, findCondition) => {
   const newRecords = [...allRecords];
   const recordIndex = newRecords.findIndex(findCondition);
   if (recordIndex > -1) {
-    newRecords[recordIndex] = newRecord;
+    // if record exist but is now 0, remove from array
+    if (newRecord.hours === 0) {
+      newRecords.splice(recordIndex, 1);
+    } else {
+      newRecords[recordIndex] = newRecord;
+    }
   } else {
     newRecords.push(newRecord);
   }

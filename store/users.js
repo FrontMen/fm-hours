@@ -74,7 +74,7 @@ export const getters = {
       return;
     }
 
-    // return users when they have records with the status of pending. If so, return only the records with that status
+    // return only users when they have records with the status of pending. If so, return only the records with that status
     const pendingRecords = users.reduce((acc, curr) => {
       const recordsForApproval = curr.time_records.filter(
         (record) => record.status === recordStatus.PENDING
@@ -92,7 +92,8 @@ export const getters = {
       }
     }, []);
 
-    // Based on the pending record list, get the first and last date
+    // Based on the pending record list, get the first and last date.
+    // We need the first date so we know where to begin with building the weeks to approve
     const dateRange = pendingRecords
       .reduce((acc, curr) => {
         return [
