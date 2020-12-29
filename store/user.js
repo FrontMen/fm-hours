@@ -2,6 +2,7 @@ import { isWithinInterval, isSameDay, subDays } from "date-fns";
 import { formatDate, addDays } from "../helpers/dates.js";
 import { recordStatus } from "../helpers/record-status.js";
 import { debounce } from "../helpers/debounce";
+import { isSameRecord, getRecordsForWeekRange, generateWeeklyValuesForTable } from "../helpers/records.js";
 
 export const state = () => ({
   isLoggedin: undefined,
@@ -13,14 +14,6 @@ export const state = () => ({
 });
 
 const debouncer = debounce((fn) => fn(), 2000);
-const GetRecordsForWeekRange = (records, startDate, endDate) => {
-  return records.filter((entry) =>
-    isWithinInterval(new Date(entry.date), {
-      start: new Date(startDate),
-      end: new Date(endDate),
-    })
-  );
-};
 const AddRecord = (allRecords, newRecord, findCondition) => {
   const newRecords = [...allRecords];
   const recordIndex = newRecords.findIndex(findCondition);
@@ -71,9 +64,7 @@ export const actions = {
     const newRecords = AddRecord(
       records,
       payload,
-      (entry) =>
-        isSameDay(new Date(payload.date), new Date(entry.date)) &&
-        entry.customer === payload.customer
+      (entry) => isSameRecord(entry, payload)
     );
     context.dispatch("saveToFirestore", {
       dataToSave: { time_records: newRecords },
@@ -122,7 +113,7 @@ export const actions = {
     const currentWeek = context.rootGetters["week-dates/currentWeek"];
     const startDate = subDays(new Date(currentWeek[0].date), 7);
     const endDate = addDays(startDate, 6);
-    const prevWeekRows = GetRecordsForWeekRange(records, startDate, endDate);
+    const prevWeekRows = getRecordsForWeekRange(records, startDate, endDate);
     if (prevWeekRows.length === 0) {
       return;
     }
@@ -221,40 +212,12 @@ export const getters = {
     const { startDate, endDate } = rootGetters[
       "week-dates/getCurrentWeekRange"
     ];
-    return GetRecordsForWeekRange(records, startDate, endDate);
+    return getRecordsForWeekRange(records, startDate, endDate);
   },
   getWeeklyTimesheet: (state, getters, _, rootGetters) => {
     const currentWeek = rootGetters["week-dates/currentWeek"];
     const records = getters.getTimeRecordsForCurrentWeek;
-
-    const projects = records.reduce((acc, record) => {
-      if (acc.find((r) => r.customer === record.customer)) {
-        return acc;
-      }
-      return [
-        ...acc,
-        {
-          customer: record.customer,
-          debtor: record.debtor,
-        },
-      ];
-    }, []);
-
-    // Add the weekly hours to each project
-    return projects.map((project) => {
-      return {
-        ...project,
-        values: currentWeek.map((day) => {
-          const record = records.find(
-            (r) => r.customer === project.customer && r.date === day.date
-          );
-          return {
-            date: day.date,
-            value: record?.hours || 0,
-          };
-        }),
-      };
-    });
+    return generateWeeklyValuesForTable(records, currentWeek);
   },
   currentWeekIsReadOnly: (_, getters) => {
     const records = getters.getTimeRecordsForCurrentWeek;
@@ -267,13 +230,7 @@ export const getters = {
       "week-dates/getCurrentWeekRange"
     ];
 
-    const rows = records.filter((entry) =>
-      isWithinInterval(new Date(entry.date), {
-        start: new Date(startDate),
-        end: new Date(endDate),
-      })
-    );
-
+    const rows = getRecordsForWeekRange(records, startDate, endDate);
     return [
       {
         customer: "Kilometers",
@@ -286,22 +243,6 @@ export const getters = {
         }),
       },
     ];
-  },
-  getTravelAllowanceRecordsForCurrentWeek: (state, getters, _, rootGetters) => {
-    const records = getters.getTravelAllowanceRecords;
-    const { startDate, endDate } = rootGetters[
-      "week-dates/getCurrentWeekRange"
-    ];
-    const rows = records.filter((entry) =>
-      isWithinInterval(new Date(entry.date), {
-        start: new Date(startDate),
-        end: new Date(endDate),
-      })
-    );
-    return {
-      customer: "Kilometers",
-      hours: rows,
-    };
   },
   getLastSavedDate: (state) => {
     return state.lastSaved;

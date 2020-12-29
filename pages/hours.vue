@@ -114,7 +114,6 @@ export default Vue.extend({
       customers: "customers/getCustomers",
       weekLabel: "week-dates/currentWeekLabel",
       currentWeek: "week-dates/currentWeek",
-      currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       weeklyKilometers: "user/getWeeklyKilometers",
       currentWeekIsReadOnly: "user/currentWeekIsReadOnly",
       position: "week-dates/getRelativePosition",
