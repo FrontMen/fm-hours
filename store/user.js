@@ -2,7 +2,11 @@ import { isWithinInterval, isSameDay, subDays } from "date-fns";
 import { formatDate, addDays } from "../helpers/dates.js";
 import { recordStatus } from "../helpers/record-status.js";
 import { debounce } from "../helpers/debounce";
-import { isSameRecord, getRecordsForWeekRange, generateWeeklyValuesForTable } from "../helpers/records.js";
+import {
+  isSameRecord,
+  getRecordsForWeekRange,
+  generateWeeklyValuesForTable,
+} from "../helpers/records.js";
 
 export const state = () => ({
   isLoggedin: undefined,
@@ -61,10 +65,8 @@ export const actions = {
   },
   addHoursRecords(context, payload) {
     const records = context.getters.getTimeRecords;
-    const newRecords = AddRecord(
-      records,
-      payload,
-      (entry) => isSameRecord(entry, payload)
+    const newRecords = AddRecord(records, payload, (entry) =>
+      isSameRecord(entry, payload)
     );
     context.dispatch("saveToFirestore", {
       dataToSave: { time_records: newRecords },
@@ -90,13 +92,17 @@ export const actions = {
   },
   submitRecordsForApproval(context) {
     const allRecords = context.getters.getTimeRecords;
-    const { startDate, endDate } = context.rootGetters["week-dates/getCurrentWeekRange"];
+    const { startDate, endDate } = context.rootGetters[
+      "week-dates/getCurrentWeekRange"
+    ];
     const newRecords = allRecords.map((record) => {
       const isInCurrentWeek = isWithinInterval(new Date(record.date), {
         start: new Date(startDate),
         end: new Date(endDate),
-      })
-      return isInCurrentWeek ? { ...record, status: recordStatus.PENDING } : record
+      });
+      return isInCurrentWeek
+        ? { ...record, status: recordStatus.PENDING }
+        : record;
     });
 
     context.dispatch("saveToFirestore", {
@@ -121,7 +127,7 @@ export const actions = {
       return {
         ...entry,
         date: formatDate(addDays(entry.date, 7)),
-        status: recordStatus.NEW
+        status: recordStatus.NEW,
       };
     });
     const newRecords = [...records, ...copiedRecords];
@@ -221,7 +227,10 @@ export const getters = {
   },
   currentWeekIsReadOnly: (_, getters) => {
     const records = getters.getTimeRecordsForCurrentWeek;
-    return records.some(r => r.status === recordStatus.PENDING || r.status === recordStatus.APPROVED);
+    return records.some(
+      (r) =>
+        r.status === recordStatus.PENDING || r.status === recordStatus.APPROVED
+    );
   },
   getWeeklyKilometers: (state, getters, _, rootGetters) => {
     const records = getters.getTravelAllowanceRecords;

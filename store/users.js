@@ -1,5 +1,10 @@
-import { isBefore, compareAsc } from 'date-fns'
-import { addDays, getDateLabel, buildWeek, getWeekRange } from "../helpers/dates.js";
+import { isBefore, compareAsc } from "date-fns";
+import {
+  addDays,
+  getDateLabel,
+  buildWeek,
+  getWeekRange,
+} from "../helpers/dates.js";
 import { isSameRecord, getRecordsForWeekRange } from "../helpers/records.js";
 import { recordStatus } from "../helpers/record-status";
 
@@ -31,15 +36,17 @@ export const actions = {
   async approveRecords(context, payload) {
     const users = [...context.getters.getUsers];
     const currentUser = users.find((u) => u.id === payload.userId);
-    const newrecs = currentUser.time_records.map(record => {
-      const isApproved = payload.records.some(approvedRecord => isSameRecord(record, approvedRecord));
+    const newrecs = currentUser.time_records.map((record) => {
+      const isApproved = payload.records.some((approvedRecord) =>
+        isSameRecord(record, approvedRecord)
+      );
       const newStatus = isApproved ? recordStatus.APPROVED : record.status;
-      return newStatus ? { ...record, status: newStatus } : record
+      return newStatus ? { ...record, status: newStatus } : record;
     });
-    await this.$fire.firestore.collection("users").doc(currentUser.id).set(
-      { time_records: newrecs },
-      { merge: true }
-    );
+    await this.$fire.firestore
+      .collection("users")
+      .doc(currentUser.id)
+      .set({ time_records: newrecs }, { merge: true });
     context.commit("updateUser", { ...currentUser, time_records: newrecs });
   },
 };
@@ -59,6 +66,7 @@ export const getters = {
   getUsers: (state) => {
     return state.users;
   },
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   getUsersRecordsForApproval: (state, getters, _, rootGetters) => {
     const holidays = rootGetters["holidays/getHolidayDates"];
     const users = getters.getUsers;
@@ -68,27 +76,31 @@ export const getters = {
 
     // return users when they have records with the status of pending. If so, return only the records with that status
     const pendingRecords = users.reduce((acc, curr) => {
-      const recordsForApproval = curr.time_records.filter(record => record.status === recordStatus.PENDING);
+      const recordsForApproval = curr.time_records.filter(
+        (record) => record.status === recordStatus.PENDING
+      );
       if (recordsForApproval.length > 0) {
         return [
           ...acc,
           {
             ...curr,
-            time_records: recordsForApproval
-          }
-        ]
+            time_records: recordsForApproval,
+          },
+        ];
       } else {
         return acc;
       }
     }, []);
 
     // Based on the pending record list, get the first and last date
-    const dateRange = pendingRecords.reduce((acc, curr) => {
-      return [
-        ...curr.time_records.map((entry) => new Date(entry.date)),
-        ...acc
-      ]
-    }, []).sort(compareAsc);
+    const dateRange = pendingRecords
+      .reduce((acc, curr) => {
+        return [
+          ...curr.time_records.map((entry) => new Date(entry.date)),
+          ...acc,
+        ];
+      }, [])
+      .sort(compareAsc);
 
     let weeks = [];
     // get the startdate of the week based on the given date
@@ -99,7 +111,11 @@ export const getters = {
     while (isBefore(startDate, endDate)) {
       const { start, end } = getWeekRange(startDate);
       const thisWeekTimeRecords = pendingRecords.reduce((acc, user) => {
-        const timeRecordsWithinRange = getRecordsForWeekRange(user.time_records, start, end);
+        const timeRecordsWithinRange = getRecordsForWeekRange(
+          user.time_records,
+          start,
+          end
+        );
         if (timeRecordsWithinRange.length > 0) {
           const entry = [
             ...acc,
@@ -107,12 +123,12 @@ export const getters = {
               userId: user.id,
               user: user.name,
               records: timeRecordsWithinRange,
-              week: buildWeek(start, holidays)
-            }
+              week: buildWeek(start, holidays),
+            },
           ];
-          return entry
+          return entry;
         } else {
-          return acc
+          return acc;
         }
       }, []);
       if (thisWeekTimeRecords.length > 0) {
@@ -123,9 +139,9 @@ export const getters = {
         };
         weeks = [...weeks, weekRecords];
       }
-      startDate = addDays(startDate, 8)
+      startDate = addDays(startDate, 8);
     }
-    return weeks
+    return weeks;
   },
   // used for displaying a divider between the normal weeks and the future ones
   getIndexOfFirstWeekInFuture: (_, getters) => {
