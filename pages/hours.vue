@@ -29,22 +29,34 @@
         :value-formatter="timesheetFormatter"
         can-remove-row
         show-totals
+        :read-only="currentWeekIsPending"
         @value-changed="updateHours"
         @remove-row="removeProject"
       >
         <template #emptyRow>
-          <b-button v-b-modal.modal-add-project variant="outline-primary">
+          <b-button
+            v-if="!currentWeekIsPending"
+            v-b-modal.modal-add-project
+            variant="outline-primary"
+          >
             Add project
           </b-button>
         </template>
       </weekly-values-table>
 
-      <b-button @click="submitForApproval()">Submit for approval</b-button>
+      <b-button v-if="!currentWeekIsPending" @click="submitForApproval()">
+        Submit for approval
+      </b-button>
+      <template v-else>
+        <p class="my-3">
+          This week is submitted for approval and can not be changed
+        </p>
+      </template>
     </template>
     <template v-else>
       <div class="no-projects-card mb-5">
         <p>There are no hours registered for this week.</p>
-        <b-button v-b-modal.modal-add-project> Add hours </b-button>
+        <b-button v-b-modal.modal-add-project> Add a project </b-button>
         <span class="d-none d-sm-inline mx-2"> or </span>
         <b-button @click="copyPreviousWeek()"> Copy previous week </b-button>
       </div>
@@ -68,7 +80,7 @@
     <b-modal
       id="modal-add-project"
       centered
-      title="Add a row"
+      title="Add a project"
       cancel-variant="danger"
       :ok-disabled="!selectedCustomerId"
       @ok="addProject()"
@@ -104,7 +116,7 @@ export default Vue.extend({
       currentWeek: "week-dates/currentWeek",
       currentWeekTravelRecords: "user/getTravelAllowanceRecordsForCurrentWeek",
       weeklyKilometers: "user/getWeeklyKilometers",
-      currentWeekStatus: "user/currentWeekIsPending",
+      currentWeekIsPending: "user/currentWeekIsPending",
       position: "week-dates/getRelativePosition",
       weeklyTimesheet: "user/getWeeklyTimesheet",
       lastSavedDate: "user/getLastSavedDate",
