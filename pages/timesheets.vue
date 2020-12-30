@@ -9,8 +9,8 @@
           :class="{ 'is-in-future': week.isInFuture }"
         >
           <p
-            class="week-records__future-label font-weight-bold pl-3"
             v-if="index === firstWeekInFuture"
+            class="week-records__future-label font-weight-bold"
           >
             Timesheets in the future:
           </p>
@@ -33,6 +33,7 @@
                 :rows="generateRows(records)"
                 :dates="records.week"
                 :value-formatter="timesheetFormatter"
+                show-totals
                 read-only
               />
               <b-button class="mt-3" @click="approveHours(records)">
@@ -91,16 +92,22 @@ export default {
 
 .week-records {
   margin-top: 20px;
+
   &__date {
     font-size: 24px;
-    padding-left: 20px;
     margin-bottom: 10px;
   }
 
   &__inner {
-    padding: 20px;
-    border-radius: 20px;
-    background: var(--color-secondary);
+    margin: 0 calc(var(--viewport-spacing-horizontal) * -1);
+    padding: 16px var(--viewport-spacing-horizontal);
+    background: #c1e4e3;
+
+    @media (min-width: 576px) {
+      margin: 0;
+      padding: 24px;
+      border-radius: 20px;
+    }
   }
 
   &__future-label {
