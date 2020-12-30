@@ -6,6 +6,7 @@ import {
   isSameRecord,
   getRecordsForWeekRange,
   generateWeeklyValuesForTable,
+  changeStatusOfRecords
 } from "../helpers/records.js";
 
 export const state = () => ({
@@ -97,19 +98,8 @@ export const actions = {
   },
   submitRecordsForApproval(context) {
     const allRecords = context.getters.getTimeRecords;
-    const { startDate, endDate } = context.rootGetters[
-      "week-dates/getCurrentWeekRange"
-    ];
-    const newRecords = allRecords.map((record) => {
-      const isInCurrentWeek = isWithinInterval(new Date(record.date), {
-        start: new Date(startDate),
-        end: new Date(endDate),
-      });
-      return isInCurrentWeek
-        ? { ...record, status: recordStatus.PENDING }
-        : record;
-    });
-
+    const recordsToUpdate = context.getters.getTimeRecordsForCurrentWeek;
+    const newRecords = changeStatusOfRecords(allRecords, recordsToUpdate, recordStatus.PENDING);
     context.dispatch("saveToFirestore", {
       dataToSave: { time_records: newRecords },
       debounce: false,

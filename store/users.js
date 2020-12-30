@@ -5,7 +5,7 @@ import {
   buildWeek,
   getWeekRange,
 } from "../helpers/dates.js";
-import { isSameRecord, getRecordsForWeekRange } from "../helpers/records.js";
+import { isSameRecord, getRecordsForWeekRange, changeStatusOfRecords } from "../helpers/records.js";
 import { recordStatus } from "../helpers/record-status";
 
 export const state = () => ({
@@ -34,20 +34,15 @@ export const actions = {
     context.commit("updateUser", newUser);
   },
   async approveRecords(context, payload) {
+    const { userId, records: recordsToUpdate } = payload;
     const users = [...context.getters.getUsers];
-    const currentUser = users.find((u) => u.id === payload.userId);
-    const newrecs = currentUser.time_records.map((record) => {
-      const isApproved = payload.records.some((approvedRecord) =>
-        isSameRecord(record, approvedRecord)
-      );
-      const newStatus = isApproved ? recordStatus.APPROVED : record.status;
-      return newStatus ? { ...record, status: newStatus } : record;
-    });
+    const currentUser = users.find((u) => u.id === userId);
+    const newRecords = changeStatusOfRecords(currentUser.time_records, recordsToUpdate, recordStatus.APPROVED);
     await this.$fire.firestore
       .collection("users")
       .doc(currentUser.id)
-      .set({ time_records: newrecs }, { merge: true });
-    context.commit("updateUser", { ...currentUser, time_records: newrecs });
+      .set({ time_records: newRecords }, { merge: true });
+    context.commit("updateUser", { ...currentUser, time_records: newRecords });
   },
 };
 

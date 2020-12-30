@@ -50,6 +50,22 @@ export function generateWeeklyValuesForTable(records, week) {
   });
 }
 
+// loop trough all records and return a new record list where the status of declared records are updated
+export function changeStatusOfRecords(allRecords, recordsToUpdate, status) {
+  // filter records away if they have 0 hours
+  const newRecords = allRecords.filter(r => r.hours);
+  return newRecords.map((record) => {
+    const isRecordToUpdate = recordsToUpdate.some((r) =>
+      isSameRecord(record, r)
+    );
+    const newStatus = isRecordToUpdate ? status : record.status
+    return {
+      ...record,
+      status: newStatus
+    }
+  });
+}
+
 // formatter for the record registration
 export function generateValueFormatter(min, max) {
   return {
