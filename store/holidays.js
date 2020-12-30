@@ -1,4 +1,5 @@
 import { compareAsc, isSameDay } from "date-fns";
+import { formatDate } from "~/helpers/dates";
 
 export const state = () => ({
   holidays: [],
@@ -15,7 +16,7 @@ export const actions = {
   async addHoliday(context, payload) {
     const allDates = context.getters.getHolidayDates;
     const docId = context.getters.getHolidayDocId;
-    const newDates = [...allDates, payload].sort((accDate, currDate) =>
+    const newDates = [...allDates, formatDate(payload)].sort((accDate, currDate) =>
       compareAsc(new Date(accDate), new Date(currDate))
     );
     const ref = this.$fire.firestore.collection("holidays").doc(docId);
