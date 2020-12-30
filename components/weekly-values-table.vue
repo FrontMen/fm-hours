@@ -30,7 +30,7 @@
             <b-button
               class="remove-button"
               variant="outline-primary"
-              @click="$emit('remove-row', row)"
+              @click="removeRow(row)"
             >
               <b-icon icon="x-square" />
             </b-button>
@@ -183,6 +183,11 @@ export default {
     updateValue(value, date, row) {
       if (!this.readOnly) {
         this.$emit("value-changed", { value, date, row });
+      }
+    },
+    removeRow(row) {
+      if (!this.readOnly) {
+        this.$emit("remove-row", row);
       }
     },
   },
