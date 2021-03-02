@@ -16,7 +16,7 @@
     "format": "npm run format:eslint && npm run format:prettier"
   },
   "lint-staged": {
-    "*.{js,vue}": [
+    "*.{js,ts,vue}": [
       "eslint --fix",
       "prettier --write"
     ]
@@ -31,7 +31,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "lint-staged"
+      "pre-commit": "tsc --noEmit && lint-staged"
     }
   },
   "dependencies": {
