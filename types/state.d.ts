@@ -1,0 +1,3 @@
+interface RootStoreState {
+  customers: CustomersStoreState
+}
