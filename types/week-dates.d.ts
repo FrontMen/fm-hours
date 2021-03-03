@@ -1,0 +1,3 @@
+interface WeekDatesStoreState {
+  currentDate: Date;
+}
