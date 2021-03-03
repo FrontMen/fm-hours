@@ -50,37 +50,47 @@
   </div>
 </template>
 
-<script>
-import Vue from "vue";
-import { mapGetters } from "vuex";
+<script lang="ts">
+import {
+  computed,
+  defineComponent,
+  ref,
+  useStore,
+} from "@nuxtjs/composition-api";
 
-export default Vue.extend({
-  middleware: "isAdmin",
-  data() {
-    return {
-      newCustomer: {
-        name: "",
-        debtor: "",
-      },
+export default defineComponent({
+  middleware: ["isAdmin"],
+  setup() {
+    // FIXME: would be nice it can access customer store directly
+    const store = useStore<RootStoreState>();
+    const customers = computed(() => store.state.customers.customers);
+    store.dispatch("customers/getCustomers");
+
+    const newCustomer = ref({
+      name: "",
+      debtor: "",
+    });
+
+    const canAddCustomer = computed(() => {
+      const { name, debtor } = newCustomer.value;
+      return name && debtor;
+    });
+
+    const addCustomer = () => {
+      store.dispatch("customers/addNewCustomer", {
+        ...newCustomer.value,
+      });
+
+      newCustomer.value.name = "";
+      newCustomer.value.debtor = "";
     };
-  },
-  computed: {
-    ...mapGetters({
-      customers: "customers/getCustomers",
-    }),
-    canAddCustomer() {
-      return this.newCustomer.name && this.newCustomer.debtor;
-    },
-  },
-  created() {
-    this.$store.dispatch("customers/getCustomers");
-  },
-  methods: {
-    addCustomer() {
-      this.$store.dispatch("customers/addNewCustomer", { ...this.newCustomer });
-      this.newCustomer.name = "";
-      this.newCustomer.debtor = "";
-    },
+
+    return {
+      customers,
+      newCustomer,
+      canAddCustomer,
+      addCustomer,
+    };
   },
 });
 </script>
