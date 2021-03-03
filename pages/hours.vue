@@ -131,13 +131,13 @@ export default Vue.extend({
   },
   methods: {
     goToPreviousWeek() {
-      this.$store.commit("week-dates/prevWeek");
+      this.$store.dispatch("week-dates/prevWeek");
     },
     goToNextWeek() {
-      this.$store.commit("week-dates/nextWeek");
+      this.$store.dispatch("week-dates/nextWeek");
     },
     goToCurrentWeek() {
-      this.$store.commit("week-dates/setToday");
+      this.$store.dispatch("week-dates/setToday");
     },
     addProject(id) {
       if (id) {
