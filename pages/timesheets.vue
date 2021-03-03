@@ -52,37 +52,44 @@
   </div>
 </template>
 
-<script>
-import { mapGetters } from "vuex";
-import {
-  generateValueFormatter,
-  generateWeeklyValuesForTable,
-} from "../helpers/records.js";
+<script lang="ts">
+import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
+import { generateWeeklyValuesForTable } from "~/helpers/records";
 
-export default {
-  middleware: "isAdmin",
-  computed: {
-    ...mapGetters({
-      usersRecords: "users/getUsersRecordsForApproval",
-      firstWeekInFuture: "users/getIndexOfFirstWeekInFuture",
-    }),
-    timesheetFormatter() {
-      return generateValueFormatter(0, 24);
-    },
-  },
-  created() {
-    this.$store.dispatch("users/getUserList");
-  },
-  methods: {
-    approveHours(records) {
-      this.$store.dispatch("users/approveRecords", records);
-    },
-    generateRows(rowData) {
+export default defineComponent({
+  middleware: ["isAdmin"],
+  setup() {
+    // FIXME: would be nice it can access stores directly
+    const store = useStore<RootStoreState>();
+    store.dispatch("users/getUserList");
+
+    const userRecords = computed(() =>
+      store.getters.users.getUsersRecordsForApproval()
+    );
+
+    const firstWeekInfutre = computed(() =>
+      store.getters.users.getIndexOfFirstWeekInFuture()
+    );
+
+    // FIXME: use typing for `records`
+    const approveHours = (records: any) => {
+      store.dispatch("users/approveRecords", records);
+    };
+
+    // FIXME: use typing for `rowData`
+    const generateRows = (rowData: any) => {
       const { records, week } = rowData;
       return generateWeeklyValuesForTable(records, week);
-    },
+    };
+
+    return {
+      userRecords,
+      firstWeekInfutre,
+      approveHours,
+      generateRows,
+    };
   },
-};
+});
 </script>
 
 <style lang="scss" scoped>
