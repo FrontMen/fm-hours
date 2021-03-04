@@ -91,14 +91,16 @@
 <script>
 import Vue from "vue";
 import { mapGetters } from "vuex";
-import SelectProjectDialog from "../components/select-project-dialog.vue";
-import WeeklyValuesTable from "../components/weekly-values-table.vue";
-import { generateValueFormatter } from "../helpers/records.js";
-import { recordStatus } from "../helpers/record-status.js";
+
+import { generateValueFormatter } from "~/helpers/records";
+import { recordStatus } from "~/helpers/record-status";
+
+import SelectProjectDialog from "~/components/select-project-dialog.vue";
+import WeeklyValuesTable from "~/components/weekly-values-table.vue";
 
 export default Vue.extend({
   components: { SelectProjectDialog, WeeklyValuesTable },
-  middleware: "isAuthenticated",
+  middleware: ["isAuthenticated"],
   computed: {
     ...mapGetters({
       customers: "customers/getCustomers",

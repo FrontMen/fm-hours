@@ -4,9 +4,12 @@ import {
   getDateLabel,
   buildWeek,
   getWeekRange,
-} from "../helpers/dates.js";
-import { isSameRecord, getRecordsForWeekRange, changeStatusOfRecords } from "../helpers/records.js";
-import { recordStatus } from "../helpers/record-status";
+} from "~/helpers/dates";
+import {
+  getRecordsForWeekRange,
+  changeStatusOfRecords,
+} from "~/helpers/records";
+import { recordStatus } from "~/helpers/record-status";
 
 export const state = () => ({
   users: undefined,
@@ -37,7 +40,11 @@ export const actions = {
     const { userId, records: recordsToUpdate } = payload;
     const users = [...context.getters.getUsers];
     const currentUser = users.find((u) => u.id === userId);
-    const newRecords = changeStatusOfRecords(currentUser.time_records, recordsToUpdate, recordStatus.APPROVED);
+    const newRecords = changeStatusOfRecords(
+      currentUser.time_records,
+      recordsToUpdate,
+      recordStatus.APPROVED
+    );
     await this.$fire.firestore
       .collection("users")
       .doc(currentUser.id)
@@ -145,6 +152,6 @@ export const getters = {
     if (!weeks) {
       return;
     }
-    return weeks.findIndex((weeks) => isBefore(new Date(), weeks.startDate))
-  }
+    return weeks.findIndex((weeks) => isBefore(new Date(), weeks.startDate));
+  },
 };

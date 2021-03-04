@@ -1,13 +1,15 @@
-import { isWithinInterval, isSameDay, subDays } from "date-fns";
-import { formatDate, addDays } from "../helpers/dates.js";
-import { recordStatus } from "../helpers/record-status.js";
-import { debounce } from "../helpers/debounce";
+import { isSameDay, subDays } from "date-fns";
+
+import { formatDate, addDays } from "~/helpers/dates";
+import { debounce } from "~/helpers/debounce";
+
+import { recordStatus } from "~/helpers/record-status";
 import {
   isSameRecord,
   getRecordsForWeekRange,
   generateWeeklyValuesForTable,
-  changeStatusOfRecords
-} from "../helpers/records.js";
+  changeStatusOfRecords,
+} from "~/helpers/records";
 
 export const state = () => ({
   isLoggedin: undefined,
@@ -99,7 +101,11 @@ export const actions = {
   submitRecordsForApproval(context) {
     const allRecords = context.getters.getTimeRecords;
     const recordsToUpdate = context.getters.getTimeRecordsForCurrentWeek;
-    const newRecords = changeStatusOfRecords(allRecords, recordsToUpdate, recordStatus.PENDING);
+    const newRecords = changeStatusOfRecords(
+      allRecords,
+      recordsToUpdate,
+      recordStatus.PENDING
+    );
     context.dispatch("saveToFirestore", {
       dataToSave: { time_records: newRecords },
       debounce: false,

@@ -10,7 +10,7 @@
                   src="@/assets/images/logo-dark.png"
                   alt="frontmen logo"
                   @click="toPage('/hours')"
-                >
+                />
 
                 <div
                   v-if="isAdmin"
@@ -32,7 +32,7 @@
                         :src="user.picture"
                         alt="user image"
                         referrerpolicy="no-referrer"
-                      >
+                      />
                     </div>
                   </template>
 
@@ -70,25 +70,31 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, useRouter, useStore } from '@nuxtjs/composition-api'
+import {
+  computed,
+  defineComponent,
+  useRouter,
+  useStore,
+} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   setup() {
-    const router = useRouter()
+    const router = useRouter();
     // FIXME: would be nice it can access user store directly
     const store = useStore<RootStoreState>();
-    // @ts-ignore FIXME: user state is not defined yet
+    const user = computed(() => store.state.user.user);
     const isAdmin = computed(() => store.state.user.isAdmin);
 
     const logout = () => {
-      store.dispatch("user/logout")
-    }
+      store.dispatch("user/logout");
+    };
 
     const toPage = (page: string) => {
-      router.push(page)
-    }
+      router.push(page);
+    };
 
     return {
+      user,
       isAdmin,
       logout,
       toPage,
@@ -109,10 +115,10 @@ export default defineComponent({
           label: "Manage timesheets",
           page: "/timesheets",
         },
-      ]
-    }
-  }
-})
+      ],
+    };
+  },
+});
 </script>
 
 <style lang="scss">
