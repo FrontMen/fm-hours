@@ -111,87 +111,83 @@
   </div>
 </template>
 
-<script>
-const totalsTemplate = {
-  perRow: [],
-  perDay: new Array(7).fill(0),
-  week: 0,
-};
+<script lang="ts">
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 
-function calculateTotals(rows) {
-  return rows
-    .map(({ values }) => ({
-      rowValues: values,
-      rowTotal: values.reduce((acc, { value }) => acc + value, 0),
-    }))
-    .reduce((acc, { rowValues, rowTotal }) => {
-      return {
-        perRow: [...acc.perRow, rowTotal],
-        perDay: acc.perDay.map((value, i) => value + rowValues[i].value),
-        week: acc.week + rowTotal,
-      };
-    }, totalsTemplate);
+// FIXME: should by general type
+interface Row {
+  customer: string;
+  debtor: string;
+  values: { date: string; value: number }[];
 }
 
-export default {
+export default defineComponent({
+  emits: ["value-changed", "remove-row"],
   props: {
-    /** Rows containing the main content for the table */
     rows: {
-      type: Array,
+      type: Array as PropType<Row[]>,
       default: () => [],
     },
-    /** The dates of the week the rows are related to */
     dates: {
       type: Array,
       default: () => [],
     },
-    /** Formatter logic for the value input fields */
     valueFormatter: {
       type: Object,
       default: () => {},
     },
-    /** Whether the user can remove a row from the table */
     canRemoveRow: {
       type: Boolean,
-      default: false,
     },
-    /** Whether to show totals at the bottom of the table */
     showTotals: {
       type: Boolean,
-      default: false,
     },
-    /** Whether the user can update any data */
     readOnly: {
       type: Boolean,
-      default: false,
     },
   },
-  data() {
+  setup(props, { emit }) {
+    const totals = computed(() => {
+      const days = new Array(7).fill(0);
+
+      const rowSummaries = props.rows.map(({ values }) => ({
+        rowValues: values,
+        rowTotal: values.reduce((acc, { value }) => acc + value, 0),
+      }));
+
+      return {
+        perRow: rowSummaries.map((summary) => summary.rowTotal),
+        perDay: days.map((value, index) =>
+          Number.parseInt(
+            value +
+              rowSummaries.map((summary) => summary.rowValues[index].value).reduce((acc, x) => acc + x)
+          )
+        ),
+        week: rowSummaries
+          .map((x) => x.rowTotal)
+          .reduce((previousValue, rowTotal) => previousValue + rowTotal),
+      };
+    });
+
+    const updateValue = (value: number, date: string, row: number) => {
+      if (!props.readOnly) {
+        emit("value-changed", { value, date, row });
+      }
+    };
+
+    const removeRow = (row: number) => {
+      if (!props.readOnly) {
+        emit("remove-row", row);
+      }
+    };
+
     return {
-      totals: totalsTemplate,
+      totals,
+      updateValue,
+      removeRow,
     };
   },
-  watch: {
-    rows: {
-      immediate: true,
-      handler(rows) {
-        this.totals = calculateTotals(rows);
-      },
-    },
-  },
-  methods: {
-    updateValue(value, date, row) {
-      if (!this.readOnly) {
-        this.$emit("value-changed", { value, date, row });
-      }
-    },
-    removeRow(row) {
-      if (!this.readOnly) {
-        this.$emit("remove-row", row);
-      }
-    },
-  },
-};
+});
 </script>
 
 <style lang="scss" scoped>

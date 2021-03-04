@@ -1,6 +1,7 @@
 <template>
   <b-modal
     id="modal-add-project"
+    ref="modal"
     title="Add project"
     cancel-variant="outline-primary"
     centered
@@ -27,42 +28,61 @@
   </b-modal>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import {
+  defineComponent,
+  nextTick,
+  PropType,
+  ref,
+} from "@nuxtjs/composition-api";
+
+export default defineComponent({
+  emits: ["project-selected"],
   props: {
     projects: {
-      type: Array,
+      // FIXME: use typing for `projects` array
+      type: Array as PropType<any[]>,
       default: () => [],
     },
   },
-  data() {
+  setup(_, { emit, refs }) {
+    const selectState = ref(null);
+    const selectedProject = ref(null);
+
+    const reset = () => {
+      selectState.value = null;
+      selectedProject.value = null;
+    };
+
+    const checkFormValidity = () => {
+      // @ts-ignore (BFormGroup does not have proper typing)
+      return refs.form.checkValidity();
+    };
+
+    const handleSubmit = () => {
+      if (checkFormValidity()) {
+        emit("project-selected", selectedProject.value);
+
+        nextTick(() => {
+          // @ts-ignore (BModal does not have proper typing)
+          refs.modal.hide("modal-add-project");
+        });
+      }
+    };
+
+    const handleOk = (event: Event) => {
+      event.preventDefault();
+      handleSubmit();
+    };
+
     return {
-      selectState: null,
-      selectedProject: null,
+      selectState,
+      selectedProject,
+      reset,
+      checkFormValidity,
+      handleSubmit,
+      handleOk,
     };
   },
-  methods: {
-    reset() {
-      this.selectState = null;
-      this.selectedProject = null;
-    },
-    checkFormValidity() {
-      this.selectState = this.$refs.form.checkValidity();
-      return this.selectState;
-    },
-    handleOk(event) {
-      event.preventDefault();
-      this.handleSubmit();
-    },
-    handleSubmit() {
-      if (!this.checkFormValidity()) {
-        return;
-      }
-      this.$emit("project-selected", this.selectedProject);
-      this.$nextTick(() => {
-        this.$bvModal.hide("modal-add-project");
-      });
-    },
-  },
-};
+});
 </script>
