@@ -10,7 +10,8 @@
                   src="@/assets/images/logo-dark.png"
                   alt="frontmen logo"
                   @click="toPage('/hours')"
-                />
+                >
+
                 <div
                   v-if="isAdmin"
                   v-b-toggle.sidebar-1
@@ -18,6 +19,7 @@
                 />
               </div>
             </b-col>
+
             <b-col>
               <div class="user d-flex align-items-center justify-content-end">
                 <div class="d-none d-md-block user__name mr-3">
@@ -30,9 +32,10 @@
                         :src="user.picture"
                         alt="user image"
                         referrerpolicy="no-referrer"
-                      />
+                      >
                     </div>
                   </template>
+
                   <b-dropdown-item @click="logout()"> Logout </b-dropdown-item>
                 </b-dropdown>
               </div>
@@ -41,6 +44,7 @@
         </b-container>
       </div>
     </div>
+
     <b-sidebar
       v-if="isAdmin"
       id="sidebar-1"
@@ -65,12 +69,29 @@
   </div>
 </template>
 
-<script>
-import Vue from "vue";
-import { mapGetters } from "vuex";
-export default Vue.extend({
-  data() {
+<script lang="ts">
+import { computed, defineComponent, useRouter, useStore } from '@nuxtjs/composition-api'
+
+export default defineComponent({
+  setup() {
+    const router = useRouter()
+    // FIXME: would be nice it can access user store directly
+    const store = useStore<RootStoreState>();
+    // @ts-ignore FIXME: user state is not defined yet
+    const isAdmin = computed(() => store.state.user.isAdmin);
+
+    const logout = () => {
+      store.dispatch("user/logout")
+    }
+
+    const toPage = (page: string) => {
+      router.push(page)
+    }
+
     return {
+      isAdmin,
+      logout,
+      toPage,
       buttons: [
         {
           label: "Manage customers",
@@ -88,24 +109,10 @@ export default Vue.extend({
           label: "Manage timesheets",
           page: "/timesheets",
         },
-      ],
-    };
-  },
-  computed: {
-    ...mapGetters({
-      user: "user/getUser",
-      isAdmin: "user/isUserAdmin",
-    }),
-  },
-  methods: {
-    logout() {
-      this.$store.dispatch("user/logout");
-    },
-    toPage(page) {
-      this.$router.push(page);
-    },
-  },
-});
+      ]
+    }
+  }
+})
 </script>
 
 <style lang="scss">
