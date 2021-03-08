@@ -43,7 +43,7 @@ export function getDateLabel(startDate: Date, endDate: Date) {
 export function buildWeek(
   startDate: string | number | Date,
   holidays: string[]
-) {
+): WeekDate[] {
   return [...Array(7)].map((_, index) => {
     const newDate = addDays(startDate, index);
 
