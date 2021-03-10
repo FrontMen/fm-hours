@@ -113,6 +113,7 @@ export default defineComponent({
     watch(() => [
       recordsState.value.timeRecords,
       recordsState.value.travelRecords,
+      recordsState.value.selectedWeek,
     ],
       () => {
         timesheet.value = createWeeklyTimesheet({
@@ -121,16 +122,15 @@ export default defineComponent({
           travelRecords: recordsState.value.travelRecords,
         });
       },
-      { immediate: true }
+      { immediate: false }
     );
 
-    watch(timesheet, () => {
-      console.log({
-        projectValues: timesheet.value.projects.map(
-          (project) => project.values
-        ),
-      });
-    });
+    watch(() => timesheet.value, () => {
+      store.dispatch('records/saveTimesheet', {
+        week: recordsState.value.selectedWeek,
+        timesheet: timesheet.value
+      })
+    }, { deep: true });
 
     return {
       user,
