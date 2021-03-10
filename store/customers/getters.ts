@@ -18,7 +18,8 @@ const getters: GetterTree<CustomersStoreState, RootStoreState> = {
       .map((entry) => ({ value: entry.id, text: entry.name }));
 
     return [defaultOption, ...options];
-  }
+  },
+
 };
 
 export default getters

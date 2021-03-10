@@ -1,14 +1,14 @@
 <template>
   <div class="weekly-timesheet">
     <b-container fluid>
-      <b-row cols="13">
+      <b-row cols="14">
         <!-- TODO: could be auto? -->
-        <b-col cols="5" />
+        <b-col cols="4" />
 
-        <!-- TODO: add today class -->
         <b-col
           v-for="date in selectedWeek"
           :key="date.weekDay"
+          cols="1"
           class="weekly-timesheet__date-column"
           :class="{ today: date.isToday }"
         >
@@ -44,7 +44,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .weekly-timesheet {
   background-color: #84cac9;
   border-right: 1px solid #84cac9;
@@ -54,7 +54,7 @@ export default defineComponent({
 
   &__date-column {
     text-align: center;
-    padding: 8px 0 0 0;
+    padding: 8px;
 
     &.today::after {
       content: "TODAY";
