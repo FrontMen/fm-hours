@@ -16,7 +16,11 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const result = {
       time_records: [],
-      travel_records: [],
+      travel_records: [{
+        date: '03-10-2021',
+        kilometers: 8,
+        status: 'NEW'
+      }],
     };
 
     commit("setLoading", { isLoading: false })

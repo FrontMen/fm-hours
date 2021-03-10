@@ -110,13 +110,19 @@ export default defineComponent({
       });
     };
 
-    watch(selectedWeek, () => {
-      timesheet.value = createWeeklyTimesheet({
-        week: recordsState.value.selectedWeek,
-        timeRecords: recordsState.value.timeRecords,
-        travelRecords: recordsState.value.travelRecords,
-      });
-    }, { immediate: true });
+    watch(() => [
+      recordsState.value.timeRecords,
+      recordsState.value.travelRecords,
+    ],
+      () => {
+        timesheet.value = createWeeklyTimesheet({
+          week: recordsState.value.selectedWeek,
+          timeRecords: recordsState.value.timeRecords,
+          travelRecords: recordsState.value.travelRecords,
+        });
+      },
+      { immediate: true }
+    );
 
     watch(timesheet, () => {
       console.log({
