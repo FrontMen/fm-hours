@@ -1,4 +1,4 @@
-import { isWithinInterval } from "date-fns";
+import { isSameDay, isWithinInterval } from "date-fns";
 import { recordStatus } from "./record-status";
 
 export const createWeeklyTimesheet = (params: {
@@ -44,12 +44,14 @@ const createTimesheetProjects = (
       (x) => x.customer.id === customer.id
     );
 
+    const values = week.map((weekDay) => {
+      const record = findRecordByDate(weekDay, projectRecords) as TimeRecord;
+      return record?.hours || 0;
+    });
+
     return {
       customer,
-      values: week.map(
-        (weekDate) =>
-          projectRecords.find((x) => x.date === weekDate.date)?.hours || 0
-      ),
+      values,
     };
   });
 };
@@ -58,17 +60,31 @@ const createTravelProject = (
   week: WeekDate[],
   travelRecords: TravelRecord[]
 ): TimesheetProject => {
+  const values = week.map((weekDay) => {
+    const record = findRecordByDate(weekDay, travelRecords) as TravelRecord;
+    return record?.kilometers || 0;
+  });
+
   return {
     customer: {
       id: "travelProjectId",
       name: "Kilometers",
       debtor: "Frontmen",
     },
-    values: week.map(
-      (weekDate) =>
-        travelRecords.find((x) => x.date === weekDate.date)?.kilometers || 0
-    ),
+    values,
   };
+};
+
+const findRecordByDate = (
+  weekDay: WeekDate,
+  records: Array<TimeRecord | TravelRecord>
+) => {
+  return records.find((record) => {
+    const weekDate = new Date(weekDay.date);
+    const recordDate = new Date(record.date);
+
+    return isSameDay(weekDate, recordDate);
+  });
 };
 
 const isPending = (record: TimeRecord | TravelRecord) =>
