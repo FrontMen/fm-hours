@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper mt-5">
     <navigation-buttons
-      class="mb-4"
+      class="mb-5"
       :selected-week="recordsState.selectedWeek"
       @previous="goToPreviousWeek()"
       @next="goToNextWeek()"
@@ -9,35 +9,81 @@
     />
 
     <empty-timesheet
-      v-if="!recordsState.timeRecords.length"
+      v-if="!timesheet.projects.length"
       @copy-previous-week="() => console.log('test')"
     />
 
-    <weekly-timesheet v-else :selected-week="recordsState.selectedWeek" />
+    <weekly-timesheet v-else :selected-week="recordsState.selectedWeek">
+      <template #rows>
+        <!-- disable inputs while saving? -->
+        <weekly-timesheet-row
+          v-for="(project, index) in timesheet.projects"
+          :key="project.customer.id"
+          :project="timesheet.projects[index]"
+          :readonly="timesheet.isReadonly"
+          :selected-week="recordsState.selectedWeek"
+          :value-formatter="timesheetFormatter"
+          @update="timesheet.projects[index] = $event"
+        />
 
-    <!-- render rows inside rows template (v-model per timesheet row) -->
-    <!-- render totals inside totals template -->
+        <weekly-timesheet-totals-row
+          :projects="timesheet.projects"
+          :selected-week="recordsState.selectedWeek"
+          :show-add-project-button="
+            !timesheet.isReadonly && selectableCustomers.length > 0
+          "
+        />
+      </template>
+    </weekly-timesheet>
 
-    <!-- render timesheet on v-if travelAllowence -->
-    <!-- render row inside rows template v-model on timesheet.travelRecords -->
+    <template v-if="user.travelAllowance && timesheet.travelProject">
+      <h3 class="my-5">Travel allowance</h3>
 
-    <!-- <select-project-dialog
+      <weekly-timesheet :selected-week="recordsState.selectedWeek">
+        <template #rows>
+          <!-- disable inputs while saving? -->
+          <weekly-timesheet-row
+            :project="timesheet.travelProject"
+            :readonly="timesheet.isReadonly"
+            :selected-week="recordsState.selectedWeek"
+            :value-formatter="kilometerFormatter"
+            @update="timesheet.travelProject = $event"
+          />
+        </template>
+      </weekly-timesheet>
+    </template>
+
+    <select-project-dialog
       :projects="selectableCustomers"
       @project-selected="addProject"
-    /> -->
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  reactive,
+  ref,
+  useStore,
+  watch,
+} from "@nuxtjs/composition-api";
+
 import emptyTimesheet from "~/components/records/empty-timesheet.vue";
+import navigationButtons from "~/components/records/navigation-buttons.vue";
+import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 
 import { generateValueFormatter } from "~/helpers/records";
+import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
 export default defineComponent({
-  components: { emptyTimesheet },
+  components: { emptyTimesheet, navigationButtons, WeeklyTimesheetRow },
   setup() {
     const store = useStore<RootStoreState>();
+    const user = computed(() => store.state.user.user);
+    const recordsState = computed(() => store.state.records);
+    const selectedWeek = reactive(recordsState.value.selectedWeek);
 
     store.dispatch("customers/getCustomers");
     store.dispatch("records/getRecords", {
@@ -48,17 +94,46 @@ export default defineComponent({
       () => store.getters["customers/getSelectableCustomers"]
     );
 
-    // TODO: grab timesheet from recordsState
-    // TODO: watch this and convert to local value
-    // TODO: watch local value and watch on debounce to save
-    // TODO: disable local inputs while saving
+    const timesheet = ref<WeeklyTimesheet>({
+      isReadonly: false,
+      projects: [],
+      travelProject: null,
+    });
 
-    const timesheetFormatter = () => generateValueFormatter(0, 24);
+    const addProject = (id: string) => {
+      const allCustomers = store.state.customers.customers;
+      const customer = allCustomers.find((x) => x.id === id) as Customer;
+
+      timesheet.value.projects.push({
+        customer,
+        values: Array.from(Array(7), () => 0),
+      });
+    };
+
+    watch(selectedWeek, () => {
+      timesheet.value = createWeeklyTimesheet({
+        week: recordsState.value.selectedWeek,
+        timeRecords: recordsState.value.timeRecords,
+        travelRecords: recordsState.value.travelRecords,
+      });
+    }, { immediate: true });
+
+    watch(timesheet, () => {
+      console.log({
+        projectValues: timesheet.value.projects.map(
+          (project) => project.values
+        ),
+      });
+    });
 
     return {
+      user,
+      addProject,
       selectableCustomers,
-      recordsState: computed(() => store.state.records),
-      timesheetFormatter,
+      recordsState,
+      timesheet,
+      timesheetFormatter: generateValueFormatter(0, 24),
+      kilometerFormatter: generateValueFormatter(0, 9999),
     };
   },
 });

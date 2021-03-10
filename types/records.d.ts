@@ -15,22 +15,23 @@ interface TimeRecord {
 interface TravelRecord {
   date: string;
   kilometers: number;
+  status: RecordStatus;
 }
 
-interface TimesheetProjectValue {
-  date: string
-  value: number
-}
+// interface TimesheetProjectValue {
+//   date: string
+//   value: number
+// }
 
 interface TimesheetProject {
   customer: Customer
-  values: TimesheetProjectValue[]
+  values: number[]
 }
 
 interface WeeklyTimesheet {
   isReadonly: boolean
   projects: TimesheetProject[]
-  travelRecords: TravelRecord[]
+  travelProject: TimesheetProject | null
 }
 
 interface RecordsStoreState {
