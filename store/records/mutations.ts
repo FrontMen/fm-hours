@@ -24,6 +24,10 @@ const mutations: MutationTree<RecordsStoreState> = {
     state.travelRecords = payload.travelRecords;
     state.selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
   },
+
+  setTimeRecords(state, payload: { timeRecords: TimeRecord[] }) {
+    state.timeRecords = payload.timeRecords;
+  }
 };
 
 export default mutations;
