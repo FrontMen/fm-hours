@@ -6,7 +6,7 @@
         v-b-modal.modal-add-project
         variant="primary"
       >
-        Add project
+        <b-icon icon="plus-square-fill" class="mr-1" /> Project
       </b-button>
     </b-col>
 
@@ -17,7 +17,7 @@
       class="weekly-timesheet-totals-row__column"
       :class="{
         exceeded: value > dayTheoreticalHours[index],
-        valid: value === dayTheoreticalHours[index]
+        valid: value === dayTheoreticalHours[index],
       }"
     >
       <span>{{ value }}/{{ dayTheoreticalHours[index] }}</span>
@@ -29,9 +29,7 @@
       :class="{ exceeded: weekTotal > weekTheoreticalTotal }"
     >
       <span>
-        <strong>
-          {{ weekTotal }}/{{ weekTheoreticalTotal }}
-        </strong>
+        <strong> {{ weekTotal }}/{{ weekTheoreticalTotal }} </strong>
       </span>
     </b-col>
   </b-row>
