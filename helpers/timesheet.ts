@@ -34,7 +34,8 @@ export const createWeeklyTimesheet = (params: {
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
     status: weeklyStatus as RecordStatus,
     isReadonly:
-      weeklyStatus === recordStatus.APPROVED || weeklyStatus === recordStatus.PENDING,
+      weeklyStatus === recordStatus.APPROVED ||
+      weeklyStatus === recordStatus.PENDING,
   };
 };
 
@@ -165,4 +166,45 @@ const getWeeklyStatus = (weeklyTimeRecords: TimeRecord[]) => {
     return recordStatus.PENDING;
 
   return recordStatus.NEW;
+};
+
+export const getTimeRecordsToSave = (
+  timesheet: WeeklyTimesheet,
+  week: WeekDate[],
+  status: RecordStatus
+): TimeRecord[] => {
+  const timeRecordsToSave: TimeRecord[] = [];
+
+  timesheet.projects.forEach((project) => {
+    if (project.isExternal) return;
+
+    project.values.forEach((value, index) => {
+      timeRecordsToSave.push({
+        date: week[index].date,
+        customer: project.customer,
+        hours: value,
+        status,
+      });
+    });
+  });
+
+  return timeRecordsToSave;
+};
+
+export const getTravelRecordsToSave = (
+  timesheet: WeeklyTimesheet,
+  week: WeekDate[],
+  status: RecordStatus
+): TravelRecord[] => {
+  const travelRecordsToSave: TravelRecord[] = [];
+
+  timesheet.travelProject?.values.forEach((value, index) => {
+    travelRecordsToSave.push({
+      date: week[index].date,
+      kilometers: value,
+      status,
+    });
+  });
+
+  return travelRecordsToSave;
 };
