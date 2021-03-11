@@ -28,9 +28,11 @@ const mutations: MutationTree<RecordsStoreState> = {
     state,
     payload: {
       selectedWeek: WeekDate[];
+      workScheme: WorkScheme[];
     }
   ) {
     state.selectedWeek = payload.selectedWeek;
+    state.workScheme = payload.workScheme;
   },
 
   setTimeRecords(state, payload: { timeRecords: TimeRecord[] }) {

@@ -3,9 +3,9 @@
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
-      @previous="goToPreviousWeek()"
-      @next="goToNextWeek()"
-      @current="goToCurrentWeek()"
+      @previous="goToWeek('previous')"
+      @next="goToWeek('next')"
+      @current="goToWeek('current')"
     />
 
     <empty-timesheet
@@ -74,7 +74,7 @@ import {
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
-import { startOfISOWeek, subDays, } from "date-fns";
+import { startOfISOWeek, subDays } from "date-fns";
 
 import emptyTimesheet from "~/components/records/empty-timesheet.vue";
 import navigationButtons from "~/components/records/navigation-buttons.vue";
@@ -101,9 +101,8 @@ export default defineComponent({
       () => store.getters["customers/getSelectableCustomers"]
     );
 
-    const goToCurrentWeek = () => store.dispatch("records/goToCurrentWeek");
-    const goToPreviousWeek = () => store.dispatch("records/goToPreviousWeek");
-    const goToNextWeek = () => store.dispatch("records/goToNextWeek");
+    const goToWeek = (to: 'current' | 'previous' | 'next' ) =>
+      store.dispatch("records/goToWeek", { to });
 
     const timesheet = ref<WeeklyTimesheet>({
       isReadonly: false,
@@ -130,8 +129,8 @@ export default defineComponent({
     };
 
     const copyPreviousWeek = () => {
-      const startDate = new Date(recordsState.value.selectedWeek[0].date)
-      const prevStartDate = subDays(startDate, 7)
+      const startDate = new Date(recordsState.value.selectedWeek[0].date);
+      const prevStartDate = subDays(startDate, 7);
       const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
 
       timesheet.value = createWeeklyTimesheet({
@@ -171,9 +170,7 @@ export default defineComponent({
 
     return {
       user,
-      goToCurrentWeek,
-      goToPreviousWeek,
-      goToNextWeek,
+      goToWeek,
       copyPreviousWeek,
       addProject,
       deleteProject,
