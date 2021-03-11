@@ -1,7 +1,4 @@
-import { startOfISOWeek } from "date-fns";
 import { MutationTree } from "vuex";
-
-import { buildWeek } from "~/helpers/dates";
 
 const mutations: MutationTree<RecordsStoreState> = {
   setLoading(state, payload: { isLoading: boolean }) {
@@ -17,17 +14,26 @@ const mutations: MutationTree<RecordsStoreState> = {
     payload: {
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
-      startDate: Date;
+      selectedWeek: WeekDate[];
     }
   ) {
     state.timeRecords = payload.timeRecords;
     state.travelRecords = payload.travelRecords;
-    state.selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
+    state.selectedWeek = payload.selectedWeek;
+  },
+
+  setSelectedWeek(
+    state,
+    payload: {
+      selectedWeek: WeekDate[];
+    }
+  ) {
+    state.selectedWeek = payload.selectedWeek;
   },
 
   setTimeRecords(state, payload: { timeRecords: TimeRecord[] }) {
     state.timeRecords = payload.timeRecords;
-  }
+  },
 };
 
 export default mutations;

@@ -93,6 +93,10 @@ export default defineComponent({
       () => store.getters["customers/getSelectableCustomers"]
     );
 
+    const goToCurrentWeek = () => store.dispatch("records/goToCurrentWeek");
+    const goToPreviousWeek = () => store.dispatch("records/goToPreviousWeek");
+    const goToNextWeek = () => store.dispatch("records/goToNextWeek");
+
     const timesheet = ref<WeeklyTimesheet>({
       isReadonly: false,
       projects: [],
@@ -128,7 +132,7 @@ export default defineComponent({
           timeRecords: recordsState.value.timeRecords,
           travelRecords: recordsState.value.travelRecords,
         });
-      },
+      }
     );
 
     watch(
@@ -144,6 +148,9 @@ export default defineComponent({
 
     return {
       user,
+      goToCurrentWeek,
+      goToPreviousWeek,
+      goToNextWeek,
       addProject,
       deleteProject,
       selectableCustomers,

@@ -1,5 +1,8 @@
 /* eslint-disable camelcase */
+import { addDays, startOfISOWeek, subDays } from "date-fns";
 import { ActionTree } from "vuex";
+
+import { buildWeek } from "~/helpers/dates";
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords({ commit, rootState }, payload: { startDate: Date }) {
@@ -13,8 +16,32 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     commit("setRecords", {
       timeRecords: result.timeRecords,
       travelRecords: result.travelRecords,
-      startDate: payload.startDate,
+      selectedWeek: buildWeek(startOfISOWeek(payload.startDate), []),
     });
+  },
+
+  goToCurrentWeek({ commit }) {
+    commit('setSelectedWeek', {
+      selectedWeek: buildWeek(startOfISOWeek(new Date()), []),
+    })
+  },
+
+  goToPreviousWeek({ commit, state }) {
+    const currentStartDate = state.selectedWeek[0].date;
+    const newStartDate = subDays(new Date(currentStartDate), 7);
+
+    commit('setSelectedWeek', {
+      selectedWeek: buildWeek(startOfISOWeek(newStartDate), []),
+    })
+  },
+
+  goToNextWeek({ commit, state }) {
+    const currentStartDate = state.selectedWeek[0].date;
+    const newStartDate = addDays(new Date(currentStartDate), 7);
+
+    commit('setSelectedWeek', {
+      selectedWeek: buildWeek(startOfISOWeek(newStartDate), []),
+    })
   },
 
   async saveTimesheet(
