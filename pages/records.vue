@@ -21,7 +21,7 @@
           :key="project.customer.id"
           :project="timesheet.projects[index]"
           :readonly="timesheet.isReadonly || project.isExternal"
-          :can-remove="!timesheet.isReadonly && !project.isExternal"
+          :removeable="!timesheet.isReadonly && !project.isExternal"
           :selected-week="recordsState.selectedWeek"
           :value-formatter="timesheetFormatter"
           @update="timesheet.projects[index] = $event"
@@ -46,8 +46,8 @@
           <!-- disable inputs while saving? -->
           <weekly-timesheet-row
             :project="timesheet.travelProject"
-            :can-remove="false"
             :readonly="timesheet.isReadonly"
+            :removable="false"
             :selected-week="recordsState.selectedWeek"
             :value-formatter="kilometerFormatter"
             @update="timesheet.travelProject = $event"
