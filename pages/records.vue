@@ -89,7 +89,7 @@ import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import { buildWeek } from "~/helpers/dates";
 
-import { debounce } from "~/helpers/debounce";
+import { recordStatus } from "~/helpers/record-status";
 import { generateValueFormatter } from "~/helpers/records";
 import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
@@ -157,7 +157,11 @@ export default defineComponent({
     };
 
     watch(
-      () => recordsState.value.selectedWeek,
+      () => [
+        recordsState.value.selectedWeek,
+        recordsState.value.timeRecords,
+        recordsState.value.travelRecords,
+      ],
       () => {
         timesheet.value = createWeeklyTimesheet({
           week: recordsState.value.selectedWeek,
@@ -165,23 +169,31 @@ export default defineComponent({
           travelRecords: recordsState.value.travelRecords,
           workScheme: recordsState.value.workScheme,
         });
-      }
+      },
+      { deep: true }
     );
 
     const saveTimesheet = () => {
       store.dispatch("records/saveTimesheet", {
         week: recordsState.value.selectedWeek,
         timesheet: timesheet.value,
+        status: recordStatus.NEW as RecordStatus,
       });
     };
 
-    watch(() => timesheet.value, debounce(saveTimesheet, 10000), {
-      deep: true,
-    });
+    // FIXME: the debounce helper is looping?
+    // FIXME: should be triggerd on @update of timesheet-row
+    // watch(() => timesheet.value, debounce(saveTimesheet, 10000), {
+    //   deep: true,
+    // });
 
-    const submitTimesheet = debounce(() => {
-      console.log("TODO: implement submitting timesheet for approval");
-    }, 300);
+    const submitTimesheet = () => {
+      store.dispatch("records/saveTimesheet", {
+        week: recordsState.value.selectedWeek,
+        timesheet: timesheet.value,
+        status: recordStatus.PENDING as RecordStatus,
+      });
+    };
 
     return {
       user,

@@ -3,6 +3,11 @@ import { addDays, startOfISOWeek, subDays } from "date-fns";
 import { ActionTree } from "vuex";
 
 import { buildWeek } from "~/helpers/dates";
+import { recordStatus } from "~/helpers/record-status";
+import {
+  getTimeRecordsToSave,
+  getTravelRecordsToSave,
+} from "~/helpers/timesheet";
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords({ commit, rootState }, payload: { startDate: Date }) {
@@ -56,33 +61,25 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
   async saveTimesheet(
     { commit, rootState },
-    payload: { week: WeekDate[]; timesheet: WeeklyTimesheet }
+    payload: {
+      week: WeekDate[];
+      timesheet: WeeklyTimesheet;
+      status: RecordStatus;
+    }
   ) {
     commit("setSaving", { isSaving: true });
 
-    const timeRecordsToSave: TimeRecord[] = [];
-    const travelRecordsToSave: TravelRecord[] = [];
+    const timeRecordsToSave = getTimeRecordsToSave(
+      payload.timesheet,
+      payload.week,
+      payload.status
+    );
 
-    payload.timesheet.projects.forEach((project) => {
-      if (project.isExternal) return;
-
-      project.values.forEach((value, index) => {
-        timeRecordsToSave.push({
-          date: payload.week[index].date,
-          customer: project.customer,
-          hours: value,
-          status: "new" as RecordStatus,
-        });
-      });
-    });
-
-    payload.timesheet.travelProject?.values.forEach((value, index) => {
-      travelRecordsToSave.push({
-        date: payload.week[index].date,
-        kilometers: value,
-        status: "new" as RecordStatus,
-      });
-    });
+    const travelRecordsToSave = getTravelRecordsToSave(
+      payload.timesheet,
+      payload.week,
+      payload.status
+    );
 
     const result = await this.app.$recordsService.saveUserRecords({
       userId: rootState.user.user?.id,

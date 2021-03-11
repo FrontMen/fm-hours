@@ -1,6 +1,6 @@
 export default (): RecordsStoreState => ({
-  isSaving: false,
   isLoading: false,
+  isSaving: false,
   lastSaved: null,
   selectedWeek: [],
   timeRecords: [],

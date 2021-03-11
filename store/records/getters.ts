@@ -6,6 +6,7 @@ import {
   generateWeeklyValuesForTable,
 } from "~/helpers/records";
 
+// TODO: delete this file
 const getters: GetterTree<RecordsStoreState, RootStoreState> = {
   getTimeRecordsForCurrentWeek: (state, _, __, rootGetters) => {
     const records = state.timeRecords;
