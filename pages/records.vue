@@ -10,7 +10,7 @@
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
-      @copy-previous-week="() => console.log('test')"
+      @copy-previous-week="copyPreviousWeek"
     />
 
     <weekly-timesheet v-else :selected-week="recordsState.selectedWeek">
@@ -69,10 +69,12 @@ import {
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
+import { startOfISOWeek, subDays, } from "date-fns";
 
 import emptyTimesheet from "~/components/records/empty-timesheet.vue";
 import navigationButtons from "~/components/records/navigation-buttons.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
+import { buildWeek } from "~/helpers/dates";
 
 import { generateValueFormatter } from "~/helpers/records";
 import { createWeeklyTimesheet } from "~/helpers/timesheet";
@@ -120,6 +122,18 @@ export default defineComponent({
       });
     };
 
+    const copyPreviousWeek = () => {
+      const startDate = new Date(recordsState.value.selectedWeek[0].date)
+      const prevStartDate = subDays(startDate, 7)
+      const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
+
+      timesheet.value = createWeeklyTimesheet({
+        week: previousWeek,
+        timeRecords: recordsState.value.timeRecords,
+        travelRecords: recordsState.value.travelRecords,
+      });
+    };
+
     watch(
       () => [
         recordsState.value.timeRecords,
@@ -151,6 +165,7 @@ export default defineComponent({
       goToCurrentWeek,
       goToPreviousWeek,
       goToNextWeek,
+      copyPreviousWeek,
       addProject,
       deleteProject,
       selectableCustomers,
