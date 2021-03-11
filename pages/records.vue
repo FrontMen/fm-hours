@@ -20,7 +20,8 @@
           v-for="(project, index) in timesheet.projects"
           :key="project.customer.id"
           :project="timesheet.projects[index]"
-          :readonly="timesheet.isReadonly"
+          :readonly="timesheet.isReadonly || project.isExternal"
+          :can-remove="!timesheet.isReadonly && !project.isExternal"
           :selected-week="recordsState.selectedWeek"
           :value-formatter="timesheetFormatter"
           @update="timesheet.projects[index] = $event"
@@ -45,6 +46,7 @@
           <!-- disable inputs while saving? -->
           <weekly-timesheet-row
             :project="timesheet.travelProject"
+            :can-remove="false"
             :readonly="timesheet.isReadonly"
             :selected-week="recordsState.selectedWeek"
             :value-formatter="kilometerFormatter"
@@ -53,6 +55,8 @@
         </template>
       </weekly-timesheet>
     </template>
+
+    <!-- TODO: add save & approve button with last saved label -->
 
     <select-project-dialog
       :projects="selectableCustomers"
@@ -81,6 +85,7 @@ import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
 export default defineComponent({
   components: { emptyTimesheet, navigationButtons, WeeklyTimesheetRow },
+  middleware: ["isAuthenticated"],
   setup() {
     const store = useStore<RootStoreState>();
     const user = computed(() => store.state.user.user);
@@ -112,6 +117,7 @@ export default defineComponent({
       timesheet.value.projects.push({
         customer,
         values: Array.from(Array(7), () => 0),
+        isExternal: false,
       });
     };
 
@@ -131,6 +137,7 @@ export default defineComponent({
         week: previousWeek,
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
+        workScheme: recordsState.value.workScheme,
       });
     };
 
@@ -145,6 +152,7 @@ export default defineComponent({
           week: recordsState.value.selectedWeek,
           timeRecords: recordsState.value.timeRecords,
           travelRecords: recordsState.value.travelRecords,
+          workScheme: recordsState.value.workScheme,
         });
       }
     );

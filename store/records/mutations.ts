@@ -15,11 +15,13 @@ const mutations: MutationTree<RecordsStoreState> = {
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
       selectedWeek: WeekDate[];
+      workScheme: WorkScheme[]
     }
   ) {
     state.timeRecords = payload.timeRecords;
     state.travelRecords = payload.travelRecords;
     state.selectedWeek = payload.selectedWeek;
+    state.workScheme = payload.workScheme;
   },
 
   setSelectedWeek(

@@ -5,6 +5,7 @@ export const createWeeklyTimesheet = (params: {
   week: WeekDate[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
+  workScheme: WorkScheme[];
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
@@ -26,7 +27,8 @@ export const createWeeklyTimesheet = (params: {
     projects: createTimesheetProjects(
       params.week,
       weeklyCustomers,
-      weeklyTimeRecords
+      weeklyTimeRecords,
+      params.workScheme
     ),
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
     isReadonly:
@@ -37,7 +39,68 @@ export const createWeeklyTimesheet = (params: {
 const createTimesheetProjects = (
   week: WeekDate[],
   customers: Customer[],
-  timeRecords: TimeRecord[]
+  timeRecords: TimeRecord[],
+  workScheme: WorkScheme[]
+): TimesheetProject[] => {
+  const projects: TimesheetProject[] = [];
+
+  const leaveProject = createLeaveProject(workScheme);
+  const absenceProject = createAbsceneProject(workScheme);
+  const customerProjects = createCustomerProjects(week, customers, timeRecords);
+
+  if (leaveProject) projects.push(leaveProject);
+  if (absenceProject) projects.push(absenceProject);
+  if (customerProjects.length > 0) projects.push(...customerProjects);
+
+  return projects;
+};
+
+const createLeaveProject = (
+  workScheme: WorkScheme[]
+): TimesheetProject | null => {
+  const holidayHours = workScheme.map((scheme) => scheme.holiday);
+  const hasHolidayHours = holidayHours.some((hours) => hours && hours > 0);
+
+  if (hasHolidayHours) {
+    return {
+      customer: {
+        id: "leaveProjectId",
+        name: "Leave",
+        debtor: "Frontmen",
+      },
+      values: holidayHours,
+      isExternal: true,
+    };
+  }
+
+  return null;
+};
+
+const createAbsceneProject = (
+  workScheme: WorkScheme[]
+): TimesheetProject | null => {
+  const absenceHours = workScheme.map((scheme) => scheme.holiday);
+  const hasAbsenceHours = absenceHours.some((hours) => hours && hours > 0);
+
+  if (hasAbsenceHours) {
+    return {
+      customer: {
+        id: "absenceProjectId",
+        name: "Absence",
+        debtor: "Frontmen",
+      },
+      values: absenceHours,
+      isExternal: true,
+    };
+  }
+
+  return null;
+};
+
+const createCustomerProjects = (
+  week: WeekDate[],
+  customers: Customer[],
+  timeRecords: TimeRecord[],
 ): TimesheetProject[] => {
   return customers.map((customer) => {
     const projectRecords = timeRecords.filter(
@@ -52,6 +115,7 @@ const createTimesheetProjects = (
     return {
       customer,
       values,
+      isExternal: false,
     };
   });
 };
@@ -72,6 +136,7 @@ const createTravelProject = (
       debtor: "Frontmen",
     },
     values,
+    isExternal: false,
   };
 };
 
