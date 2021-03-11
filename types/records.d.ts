@@ -21,12 +21,21 @@ interface TravelRecord {
 interface TimesheetProject {
   customer: Customer
   values: number[]
+  isExternal: boolean
 }
 
 interface WeeklyTimesheet {
   isReadonly: boolean
   projects: TimesheetProject[]
   travelProject: TimesheetProject | null
+}
+
+interface WorkScheme {
+  date: string
+  theoreticalHours: number
+  absenceHours: number
+  workHours: number
+  holiday: number
 }
 
 interface RecordsStoreState {
@@ -36,4 +45,5 @@ interface RecordsStoreState {
   selectedWeek: WeekDate[]
   timeRecords: TimeRecord[]
   travelRecords: TravelRecord[]
+  workScheme: WorkScheme[]
 }

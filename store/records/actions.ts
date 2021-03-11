@@ -8,25 +8,35 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords({ commit, rootState }, payload: { startDate: Date }) {
     commit("setLoading", { isLoading: true });
 
-    const result = await this.app.$recordsService.getUserRecords({
+    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), [])
+    const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
+      userId: rootState.user.user?.id,
+      startDate: new Date(selectedWeek[0].date),
+      endDate: new Date(selectedWeek[6].date),
+    })
+
+    const recordsResult = await this.app.$recordsService.getUserRecords({
       userId: rootState.user.user?.id,
     });
 
     commit("setLoading", { isLoading: false });
     commit("setRecords", {
-      timeRecords: result.timeRecords,
-      travelRecords: result.travelRecords,
-      selectedWeek: buildWeek(startOfISOWeek(payload.startDate), []),
+      timeRecords: recordsResult.timeRecords,
+      travelRecords: recordsResult.travelRecords,
+      selectedWeek,
+      workScheme: workSchemeResult,
     });
   },
 
   goToCurrentWeek({ commit }) {
+    // TODO: fetch work scheme
     commit('setSelectedWeek', {
       selectedWeek: buildWeek(startOfISOWeek(new Date()), []),
     })
   },
 
   goToPreviousWeek({ commit, state }) {
+    // TODO: fetch work scheme
     const currentStartDate = state.selectedWeek[0].date;
     const newStartDate = subDays(new Date(currentStartDate), 7);
 
@@ -36,6 +46,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   goToNextWeek({ commit, state }) {
+    // TODO: fetch work scheme
     const currentStartDate = state.selectedWeek[0].date;
     const newStartDate = addDays(new Date(currentStartDate), 7);
 
@@ -54,6 +65,8 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const travelRecordsToSave: TravelRecord[] = [];
 
     payload.timesheet.projects.forEach((project) => {
+      if (project.isExternal) return
+
       project.values.forEach((value, index) => {
         timeRecordsToSave.push({
           date: payload.week[index].date,
