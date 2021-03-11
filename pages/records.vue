@@ -24,6 +24,7 @@
           :selected-week="recordsState.selectedWeek"
           :value-formatter="timesheetFormatter"
           @update="timesheet.projects[index] = $event"
+          @remove="deleteProject(timesheet.projects[index])"
         />
 
         <weekly-timesheet-totals-row
@@ -64,7 +65,6 @@
 import {
   computed,
   defineComponent,
-  reactive,
   ref,
   useStore,
   watch,
@@ -83,7 +83,6 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const user = computed(() => store.state.user.user);
     const recordsState = computed(() => store.state.records);
-    const selectedWeek = reactive(recordsState.value.selectedWeek);
 
     store.dispatch("customers/getCustomers");
     store.dispatch("records/getRecords", {
@@ -110,11 +109,19 @@ export default defineComponent({
       });
     };
 
-    watch(() => [
-      recordsState.value.timeRecords,
-      recordsState.value.travelRecords,
-      recordsState.value.selectedWeek,
-    ],
+    const deleteProject = (project: TimesheetProject) => {
+      store.dispatch("records/deleteProjectRecords", {
+        week: recordsState.value.selectedWeek,
+        project,
+      });
+    };
+
+    watch(
+      () => [
+        recordsState.value.timeRecords,
+        recordsState.value.travelRecords,
+        recordsState.value.selectedWeek,
+      ],
       () => {
         timesheet.value = createWeeklyTimesheet({
           week: recordsState.value.selectedWeek,
@@ -122,19 +129,23 @@ export default defineComponent({
           travelRecords: recordsState.value.travelRecords,
         });
       },
-      { immediate: false }
     );
 
-    watch(() => timesheet.value, () => {
-      store.dispatch('records/saveTimesheet', {
-        week: recordsState.value.selectedWeek,
-        timesheet: timesheet.value
-      })
-    }, { deep: true });
+    watch(
+      () => timesheet.value,
+      () => {
+        store.dispatch("records/saveTimesheet", {
+          week: recordsState.value.selectedWeek,
+          timesheet: timesheet.value,
+        });
+      },
+      { deep: true }
+    );
 
     return {
       user,
       addProject,
+      deleteProject,
       selectableCustomers,
       recordsState,
       timesheet,

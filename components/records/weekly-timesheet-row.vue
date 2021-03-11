@@ -46,7 +46,7 @@
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 
 export default defineComponent({
-  emits: ['remove'],
+  emits: ["remove"],
   props: {
     project: {
       type: Object as PropType<TimesheetProject>,
