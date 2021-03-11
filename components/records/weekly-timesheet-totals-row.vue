@@ -15,14 +15,22 @@
       :key="index"
       cols="1"
       class="weekly-timesheet-totals-row__column"
+      :class="{
+        exceeded: value > dayTheoreticalHours[index],
+        valid: value === dayTheoreticalHours[index]
+      }"
     >
-      <span>{{ value }}</span>
+      <span>{{ value }}/{{ dayTheoreticalHours[index] }}</span>
     </b-col>
 
-    <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-none d-sm-block">
+    <b-col
+      cols="1"
+      class="weekly-timesheet-totals-row__week-column d-none d-sm-block"
+      :class="{ exceeded: weekTotal > weekTheoreticalTotal }"
+    >
       <span>
         <strong>
-          {{ weekTotal }}
+          {{ weekTotal }}/{{ weekTheoreticalTotal }}
         </strong>
       </span>
     </b-col>
@@ -42,10 +50,14 @@ export default defineComponent({
       type: Array as PropType<WeekDate[]>,
       required: true,
     },
+    workScheme: {
+      type: Array as PropType<WorkScheme[]>,
+      required: true,
+    },
     showAddProjectButton: {
       type: Boolean,
-      required: true
-    }
+      required: true,
+    },
   },
   setup(props) {
     const weekTotal = computed(() => {
@@ -56,6 +68,13 @@ export default defineComponent({
       });
 
       return total;
+    });
+
+    const weekTheoreticalTotal = computed(() => {
+      return props.workScheme.reduce(
+        (prevValue, scheme) => prevValue + scheme.theoreticalHours,
+        0
+      );
     });
 
     const dayTotals = computed(() => {
@@ -70,9 +89,15 @@ export default defineComponent({
       });
     });
 
+    const dayTheoreticalHours = computed(() => {
+      return props.workScheme.map((scheme) => scheme.theoreticalHours);
+    });
+
     return {
       weekTotal,
+      weekTheoreticalTotal,
       dayTotals,
+      dayTheoreticalHours,
     };
   },
 });
@@ -87,11 +112,24 @@ export default defineComponent({
   &__column {
     padding: 8px;
     text-align: center;
+
+    &.exceeded {
+      color: red;
+    }
+
+    &.exceeded,
+    &.valid {
+      font-weight: bold;
+    }
   }
 
   &__week-column {
     padding-right: 16px;
     text-align: right;
+
+    &.exceeded {
+      color: red;
+    }
   }
 }
 </style>

@@ -44,13 +44,13 @@ const createTimesheetProjects = (
 ): TimesheetProject[] => {
   const projects: TimesheetProject[] = [];
 
+  const customerProjects = createCustomerProjects(week, customers, timeRecords);
   const leaveProject = createLeaveProject(workScheme);
   const absenceProject = createAbsceneProject(workScheme);
-  const customerProjects = createCustomerProjects(week, customers, timeRecords);
 
+  if (customerProjects.length > 0) projects.push(...customerProjects);
   if (leaveProject) projects.push(leaveProject);
   if (absenceProject) projects.push(absenceProject);
-  if (customerProjects.length > 0) projects.push(...customerProjects);
 
   return projects;
 };
@@ -79,7 +79,7 @@ const createLeaveProject = (
 const createAbsceneProject = (
   workScheme: WorkScheme[]
 ): TimesheetProject | null => {
-  const absenceHours = workScheme.map((scheme) => scheme.holiday);
+  const absenceHours = workScheme.map((scheme) => scheme.absenceHours);
   const hasAbsenceHours = absenceHours.some((hours) => hours && hours > 0);
 
   if (hasAbsenceHours) {

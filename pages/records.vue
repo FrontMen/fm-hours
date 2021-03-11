@@ -31,6 +31,7 @@
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
           :selected-week="recordsState.selectedWeek"
+          :work-scheme="recordsState.workScheme"
           :show-add-project-button="
             !timesheet.isReadonly && selectableCustomers.length > 0
           "
