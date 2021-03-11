@@ -16,6 +16,7 @@ export const createWeeklyTimesheet = (params: {
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
+  const weeklyStatus = getWeeklyStatus(weeklyTimeRecords);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
@@ -31,8 +32,9 @@ export const createWeeklyTimesheet = (params: {
       params.workScheme
     ),
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
+    status: weeklyStatus as RecordStatus,
     isReadonly:
-      weeklyTimeRecords.some(isPending) || weeklyTravelRecords.some(isPending),
+      weeklyStatus === recordStatus.APPROVED || weeklyStatus === recordStatus.PENDING,
   };
 };
 
@@ -100,7 +102,7 @@ const createAbsceneProject = (
 const createCustomerProjects = (
   week: WeekDate[],
   customers: Customer[],
-  timeRecords: TimeRecord[],
+  timeRecords: TimeRecord[]
 ): TimesheetProject[] => {
   return customers.map((customer) => {
     const projectRecords = timeRecords.filter(
@@ -152,6 +154,15 @@ const findRecordByDate = (
   });
 };
 
-const isPending = (record: TimeRecord | TravelRecord) =>
-  record.status === recordStatus.PENDING ||
-  record.status === recordStatus.APPROVED;
+const getWeeklyStatus = (weeklyTimeRecords: TimeRecord[]) => {
+  if (weeklyTimeRecords.some((x) => x.status === recordStatus.APPROVED))
+    return recordStatus.APPROVED;
+
+  if (weeklyTimeRecords.some((x) => x.status === recordStatus.DENIED))
+    return recordStatus.DENIED;
+
+  if (weeklyTimeRecords.some((x) => x.status === recordStatus.PENDING))
+    return recordStatus.PENDING;
+
+  return recordStatus.NEW;
+};

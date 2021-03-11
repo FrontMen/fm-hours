@@ -97,23 +97,28 @@ export default class RecordsService {
     const doc = await ref.get();
     const currentRecords = this.getRecordsFromDoc(doc);
 
-    const timeRecordsToSave = this.mergeTimeRecords(
+    const mergedTimeRecords = this.mergeTimeRecords(
       currentRecords.timeRecords,
       params.timeRecords
     );
 
-    const travelRecordsToSave = this.mergeTravelRecords(
+    const mergedTravelRecords = this.mergeTravelRecords(
       currentRecords.travelRecords,
       params.travelRecords
     );
 
-    return ref.set(
+    await ref.set(
       {
-        time_records: timeRecordsToSave,
-        travel_records: travelRecordsToSave,
+        time_records: mergedTimeRecords,
+        travel_records: mergedTravelRecords,
       },
       { merge: true }
     );
+
+    return {
+      timeRecords: mergedTimeRecords,
+      travelRecords: mergedTravelRecords,
+    }
   }
 
   async deleteUserRecords(params: {
