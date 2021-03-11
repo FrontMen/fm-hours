@@ -28,6 +28,7 @@ interface WeeklyTimesheet {
   isReadonly: boolean
   projects: TimesheetProject[]
   travelProject: TimesheetProject | null
+  status: RecordStatus
 }
 
 interface WorkScheme {

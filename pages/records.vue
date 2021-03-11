@@ -13,51 +13,58 @@
       @copy-previous-week="copyPreviousWeek"
     />
 
-    <weekly-timesheet v-else :selected-week="recordsState.selectedWeek">
-      <template #rows>
-        <!-- disable inputs while saving? -->
-        <weekly-timesheet-row
-          v-for="(project, index) in timesheet.projects"
-          :key="project.customer.id"
-          :project="timesheet.projects[index]"
-          :readonly="timesheet.isReadonly || project.isExternal"
-          :removeable="!timesheet.isReadonly && !project.isExternal"
-          :selected-week="recordsState.selectedWeek"
-          :value-formatter="timesheetFormatter"
-          @update="timesheet.projects[index] = $event"
-          @remove="deleteProject(timesheet.projects[index])"
-        />
-
-        <weekly-timesheet-totals-row
-          :projects="timesheet.projects"
-          :selected-week="recordsState.selectedWeek"
-          :work-scheme="recordsState.workScheme"
-          :show-add-project-button="
-            !timesheet.isReadonly && selectableCustomers.length > 0
-          "
-        />
-      </template>
-    </weekly-timesheet>
-
-    <template v-if="user.travelAllowance && timesheet.travelProject">
-      <h3 class="my-5">Travel allowance</h3>
-
+    <template v-else>
       <weekly-timesheet :selected-week="recordsState.selectedWeek">
         <template #rows>
-          <!-- disable inputs while saving? -->
           <weekly-timesheet-row
-            :project="timesheet.travelProject"
-            :readonly="timesheet.isReadonly"
-            :removable="false"
+            v-for="(project, index) in timesheet.projects"
+            :key="project.customer.id"
+            :project="timesheet.projects[index]"
+            :readonly="timesheet.isReadonly || project.isExternal"
+            :removeable="!timesheet.isReadonly && !project.isExternal"
             :selected-week="recordsState.selectedWeek"
-            :value-formatter="kilometerFormatter"
-            @update="timesheet.travelProject = $event"
+            :value-formatter="timesheetFormatter"
+            @update="timesheet.projects[index] = $event"
+            @remove="deleteProject(timesheet.projects[index])"
+          />
+
+          <weekly-timesheet-totals-row
+            :projects="timesheet.projects"
+            :selected-week="recordsState.selectedWeek"
+            :work-scheme="recordsState.workScheme"
+            :show-add-project-button="
+              !timesheet.isReadonly && selectableCustomers.length > 0
+            "
           />
         </template>
       </weekly-timesheet>
-    </template>
 
-    <!-- TODO: add save & approve button with last saved label -->
+      <template v-if="user.travelAllowance && timesheet.travelProject">
+        <h3 class="my-5">Travel allowance</h3>
+
+        <weekly-timesheet :selected-week="recordsState.selectedWeek">
+          <template #rows>
+            <weekly-timesheet-row
+              :project="timesheet.travelProject"
+              :readonly="timesheet.isReadonly"
+              :removable="false"
+              :selected-week="recordsState.selectedWeek"
+              :value-formatter="kilometerFormatter"
+              @update="timesheet.travelProject = $event"
+            />
+          </template>
+        </weekly-timesheet>
+      </template>
+
+      <weekly-timesheet-footer
+        class="mt-5"
+        :is-saving="recordsState.isSaving"
+        :last-saved="recordsState.lastSaved"
+        :status="timesheet.status"
+        @save="saveTimesheet"
+        @submit="submitTimesheet"
+      />
+    </template>
 
     <select-project-dialog
       :projects="selectableCustomers"
@@ -76,16 +83,23 @@ import {
 } from "@nuxtjs/composition-api";
 import { startOfISOWeek, subDays } from "date-fns";
 
-import emptyTimesheet from "~/components/records/empty-timesheet.vue";
-import navigationButtons from "~/components/records/navigation-buttons.vue";
+import EmptyTimesheet from "~/components/records/empty-timesheet.vue";
+import NavigationButtons from "~/components/records/navigation-buttons.vue";
+import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import { buildWeek } from "~/helpers/dates";
 
+import { debounce } from "~/helpers/debounce";
 import { generateValueFormatter } from "~/helpers/records";
 import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
 export default defineComponent({
-  components: { emptyTimesheet, navigationButtons, WeeklyTimesheetRow },
+  components: {
+    EmptyTimesheet,
+    NavigationButtons,
+    WeeklyTimesheetRow,
+    WeeklyTimesheetFooter,
+  },
   middleware: ["isAuthenticated"],
   setup() {
     const store = useStore<RootStoreState>();
@@ -101,11 +115,12 @@ export default defineComponent({
       () => store.getters["customers/getSelectableCustomers"]
     );
 
-    const goToWeek = (to: 'current' | 'previous' | 'next' ) =>
+    const goToWeek = (to: "current" | "previous" | "next") =>
       store.dispatch("records/goToWeek", { to });
 
     const timesheet = ref<WeeklyTimesheet>({
       isReadonly: false,
+      status: "new" as RecordStatus,
       projects: [],
       travelProject: null,
     });
@@ -142,11 +157,7 @@ export default defineComponent({
     };
 
     watch(
-      () => [
-        recordsState.value.timeRecords,
-        recordsState.value.travelRecords,
-        recordsState.value.selectedWeek,
-      ],
+      () => recordsState.value.selectedWeek,
       () => {
         timesheet.value = createWeeklyTimesheet({
           week: recordsState.value.selectedWeek,
@@ -157,16 +168,20 @@ export default defineComponent({
       }
     );
 
-    watch(
-      () => timesheet.value,
-      () => {
-        store.dispatch("records/saveTimesheet", {
-          week: recordsState.value.selectedWeek,
-          timesheet: timesheet.value,
-        });
-      },
-      { deep: true }
-    );
+    const saveTimesheet = () => {
+      store.dispatch("records/saveTimesheet", {
+        week: recordsState.value.selectedWeek,
+        timesheet: timesheet.value,
+      });
+    };
+
+    watch(() => timesheet.value, debounce(saveTimesheet, 10000), {
+      deep: true,
+    });
+
+    const submitTimesheet = debounce(() => {
+      console.log("TODO: implement submitting timesheet for approval");
+    }, 300);
 
     return {
       user,
@@ -179,6 +194,8 @@ export default defineComponent({
       timesheet,
       timesheetFormatter: generateValueFormatter(0, 24),
       kilometerFormatter: generateValueFormatter(0, 9999),
+      saveTimesheet,
+      submitTimesheet,
     };
   },
 });

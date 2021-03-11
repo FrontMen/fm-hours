@@ -8,12 +8,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords({ commit, rootState }, payload: { startDate: Date }) {
     commit("setLoading", { isLoading: true });
 
-    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), [])
+    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
       userId: rootState.user.user?.id,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
-    })
+    });
 
     const recordsResult = await this.app.$recordsService.getUserRecords({
       userId: rootState.user.user?.id,
@@ -28,13 +28,16 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     });
   },
 
-  async goToWeek({ commit, state, rootState }, payload: { to: 'current' | 'next' | 'previous' }) {
+  async goToWeek(
+    { commit, state, rootState },
+    payload: { to: "current" | "next" | "previous" }
+  ) {
     const currentStartDate = state.selectedWeek[0].date;
-    let newStartDate = new Date()
+    let newStartDate = new Date();
 
-    if (payload.to === 'previous') {
+    if (payload.to === "previous") {
       newStartDate = subDays(new Date(currentStartDate), 7);
-    } else if (payload.to === 'next') {
+    } else if (payload.to === "next") {
       newStartDate = addDays(new Date(currentStartDate), 7);
     }
 
@@ -43,12 +46,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       userId: rootState.user.user?.id,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
-    })
+    });
 
-    commit('setSelectedWeek', {
+    commit("setSelectedWeek", {
       selectedWeek,
       workScheme: workSchemeResult,
-    })
+    });
   },
 
   async saveTimesheet(
@@ -61,7 +64,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const travelRecordsToSave: TravelRecord[] = [];
 
     payload.timesheet.projects.forEach((project) => {
-      if (project.isExternal) return
+      if (project.isExternal) return;
 
       project.values.forEach((value, index) => {
         timeRecordsToSave.push({
@@ -81,15 +84,17 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     });
 
-    await this.app.$recordsService.saveUserRecords({
+    const result = await this.app.$recordsService.saveUserRecords({
       userId: rootState.user.user?.id,
       timeRecords: timeRecordsToSave,
       travelRecords: travelRecordsToSave,
     });
 
-    // TODO: should commit merged records to state
-
     commit("setSaving", { isSaving: false });
+    commit("updateRecords", {
+      timeRecords: result.timeRecords,
+      travelRecords: result.travelRecords,
+    });
   },
 
   async deleteProjectRecords(
@@ -105,7 +110,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       status: "new" as RecordStatus,
     }));
 
-    commit("setTimeRecords", {
+    commit("updateRecords", {
       timeRecords: await this.app.$recordsService.deleteUserRecords({
         userId: rootState.user.user?.id,
         recordsToDelete,
