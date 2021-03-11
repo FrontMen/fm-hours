@@ -18,11 +18,6 @@ interface TravelRecord {
   status: RecordStatus;
 }
 
-// interface TimesheetProjectValue {
-//   date: string
-//   value: number
-// }
-
 interface TimesheetProject {
   customer: Customer
   values: number[]
