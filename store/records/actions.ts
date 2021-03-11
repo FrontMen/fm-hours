@@ -28,30 +28,26 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     });
   },
 
-  goToCurrentWeek({ commit }) {
-    // TODO: fetch work scheme
-    commit('setSelectedWeek', {
-      selectedWeek: buildWeek(startOfISOWeek(new Date()), []),
-    })
-  },
-
-  goToPreviousWeek({ commit, state }) {
-    // TODO: fetch work scheme
+  async goToWeek({ commit, state, rootState }, payload: { to: 'current' | 'next' | 'previous' }) {
     const currentStartDate = state.selectedWeek[0].date;
-    const newStartDate = subDays(new Date(currentStartDate), 7);
+    let newStartDate = new Date()
 
-    commit('setSelectedWeek', {
-      selectedWeek: buildWeek(startOfISOWeek(newStartDate), []),
+    if (payload.to === 'previous') {
+      newStartDate = subDays(new Date(currentStartDate), 7);
+    } else if (payload.to === 'next') {
+      newStartDate = addDays(new Date(currentStartDate), 7);
+    }
+
+    const selectedWeek = buildWeek(startOfISOWeek(newStartDate), []);
+    const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
+      userId: rootState.user.user?.id,
+      startDate: new Date(selectedWeek[0].date),
+      endDate: new Date(selectedWeek[6].date),
     })
-  },
-
-  goToNextWeek({ commit, state }) {
-    // TODO: fetch work scheme
-    const currentStartDate = state.selectedWeek[0].date;
-    const newStartDate = addDays(new Date(currentStartDate), 7);
 
     commit('setSelectedWeek', {
-      selectedWeek: buildWeek(startOfISOWeek(newStartDate), []),
+      selectedWeek,
+      workScheme: workSchemeResult,
     })
   },
 
@@ -90,6 +86,8 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       timeRecords: timeRecordsToSave,
       travelRecords: travelRecordsToSave,
     });
+
+    // TODO: should commit merged records to state
 
     commit("setSaving", { isSaving: false });
   },
