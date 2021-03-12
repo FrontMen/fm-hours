@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import { NuxtFireInstance } from "@nuxtjs/firebase";
 import { compareAsc, isSameDay } from "date-fns";
 
