@@ -168,6 +168,15 @@ const getWeeklyStatus = (weeklyTimeRecords: TimeRecord[]) => {
   return recordStatus.NEW;
 };
 
+export function generateValueFormatter(min: number, max: number) {
+  return {
+    min,
+    max,
+    formatter: (value: number) =>
+      Math.min(Math.max(Number(value) || 0, min), max),
+  };
+}
+
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[],
