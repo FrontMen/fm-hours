@@ -7,21 +7,14 @@ export default class UsersService {
     this.fire = fire;
   }
 
-  async createUser(params: {
-    userId: string;
-    name: string;
-    picture: string;
-  }): Promise<User> {
-    const newUser = {
-      name: params.name,
-      picture: params.picture,
-      travelAllowence: false,
-    }
-
+  async getUsers() {
     const ref = this.fire.firestore.collection("users");
-    await ref.doc(params.userId).set(newUser)
+    const snapshot = await ref.get();
 
-    return { id: params.userId, ...newUser }
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   async getUser(params: {
@@ -32,17 +25,44 @@ export default class UsersService {
     const doc = await ref.doc(params.userId).get();
 
     if (doc.exists) {
-      const { name, picture, travelAllowence } = doc.data() as User;
+      const { name, picture, travelAllowance } = doc.data() as User;
 
       return {
         id: doc.id,
         name,
         picture,
-        travelAllowence,
+        travelAllowance,
       };
     }
 
     return null;
+  }
+
+  async createUser(params: {
+    userId: string;
+    name: string;
+    picture: string;
+  }): Promise<User> {
+    const newUser = {
+      name: params.name,
+      picture: params.picture,
+      travelAllowance: false,
+    };
+
+    const ref = this.fire.firestore.collection("users");
+    await ref.doc(params.userId).set(newUser);
+
+    return { id: params.userId, ...newUser };
+  }
+
+  async updateUser(user: User) {
+    const newUser = { ...user } as any;
+    delete newUser.id;
+
+    return await this.fire.firestore
+      .collection("users")
+      .doc(user.id)
+      .set(newUser, { merge: true });
   }
 
   public async isAdmin(email: string) {

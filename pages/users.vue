@@ -38,7 +38,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     // @ts-ignore FIXME: users state is not defined yet
     const users = computed(() => store.state.users.users);
-    store.dispatch("users/getUserList");
+    store.dispatch("users/getUsers");
 
     // FIXME: use `User` type
     const toggleTravelAllowance = (user: any) => {
