@@ -2,7 +2,7 @@ interface User {
   id: string;
   name: string;
   picture: string;
-  travelAllowence: boolean;
+  travelAllowance: boolean;
 }
 
 interface UserStoreState {

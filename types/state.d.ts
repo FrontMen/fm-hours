@@ -3,4 +3,5 @@ interface RootStoreState {
   holidays: HolidaysStoreState;
   records: RecordsStoreState;
   user: UserStoreState;
+  users: UsersStoreState;
 }
