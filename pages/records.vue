@@ -85,18 +85,22 @@ import { startOfISOWeek, subDays } from "date-fns";
 
 import EmptyTimesheet from "~/components/records/empty-timesheet.vue";
 import NavigationButtons from "~/components/records/navigation-buttons.vue";
+import SelectProjectDialog from "~/components/records/select-project-dialog.vue"
 import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import { buildWeek } from "~/helpers/dates";
 
 import { recordStatus } from "~/helpers/record-status";
-import { generateValueFormatter } from "~/helpers/records";
-import { createWeeklyTimesheet } from "~/helpers/timesheet";
+import {
+  createWeeklyTimesheet,
+  generateValueFormatter,
+} from "~/helpers/timesheet";
 
 export default defineComponent({
   components: {
     EmptyTimesheet,
     NavigationButtons,
+    SelectProjectDialog,
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
   },
