@@ -3,6 +3,4 @@ interface RootStoreState {
   holidays: HolidaysStoreState;
   records: RecordsStoreState;
   user: UserStoreState;
-  // FIXME: rename to camelCase?
-  "week-dates": WeekDatesStoreState;
 }

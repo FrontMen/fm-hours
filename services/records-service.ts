@@ -80,7 +80,7 @@ export default class RecordsService {
 
   // MARK: public methods
 
-  async getUserRecords(params: { userId: string; startDate: string }) {
+  async getUserRecords(params: { userId: string; startDate?: string }) {
     const ref = this.fire.firestore.collection("records").doc(params.userId);
     const doc = await ref.get();
 
@@ -117,7 +117,7 @@ export default class RecordsService {
     return {
       timeRecords: mergedTimeRecords,
       travelRecords: mergedTravelRecords,
-    }
+    };
   }
 
   async deleteUserRecords(params: {
@@ -128,10 +128,11 @@ export default class RecordsService {
     const doc = await ref.get();
 
     const currentRecords = this.getRecordsFromDoc(doc);
-    const mergedRecords = [...currentRecords.timeRecords].filter((record) =>
-      !params.recordsToDelete.some(recordToDelete =>
-        this.isSameRecord(record, recordToDelete)
-      )
+    const mergedRecords = [...currentRecords.timeRecords].filter(
+      (record) =>
+        !params.recordsToDelete.some((recordToDelete) =>
+          this.isSameRecord(record, recordToDelete)
+        )
     );
 
     await ref.set(
@@ -141,6 +142,6 @@ export default class RecordsService {
       { merge: true }
     );
 
-    return mergedRecords
+    return mergedRecords;
   }
 }

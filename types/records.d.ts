@@ -5,6 +5,18 @@ declare enum RecordStatus {
   DENIED = "denied",
 }
 
+interface WeekDate {
+  date: string;
+  weekDay: string;
+  weekDayShort: string;
+  monthDay: string;
+  month: string;
+  year: string;
+  isWeekend: boolean;
+  isToday: boolean;
+  isHoliday: boolean;
+}
+
 interface TimeRecord {
   date: string;
   customer: Customer;
@@ -19,32 +31,32 @@ interface TravelRecord {
 }
 
 interface TimesheetProject {
-  customer: Customer
-  values: number[]
-  isExternal: boolean
+  customer: Customer;
+  values: number[];
+  isExternal: boolean;
 }
 
 interface WeeklyTimesheet {
-  isReadonly: boolean
-  projects: TimesheetProject[]
-  travelProject: TimesheetProject | null
-  status: RecordStatus
+  isReadonly: boolean;
+  projects: TimesheetProject[];
+  travelProject: TimesheetProject | null;
+  status: RecordStatus;
 }
 
 interface WorkScheme {
-  date: string
-  theoreticalHours: number
-  absenceHours: number
-  workHours: number
-  holiday: number
+  date: string;
+  theoreticalHours: number;
+  absenceHours: number;
+  workHours: number;
+  holiday: number;
 }
 
 interface RecordsStoreState {
-  isLoading: boolean
-  isSaving: boolean
-  lastSaved: Date | null
-  selectedWeek: WeekDate[]
-  timeRecords: TimeRecord[]
-  travelRecords: TravelRecord[]
-  workScheme: WorkScheme[]
+  isLoading: boolean;
+  isSaving: boolean;
+  lastSaved: Date | null;
+  selectedWeek: WeekDate[];
+  timeRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
+  workScheme: WorkScheme[];
 }
