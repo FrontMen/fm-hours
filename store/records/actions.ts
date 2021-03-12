@@ -3,7 +3,6 @@ import { addDays, startOfISOWeek, subDays } from "date-fns";
 import { ActionTree } from "vuex";
 
 import { buildWeek } from "~/helpers/dates";
-import { recordStatus } from "~/helpers/record-status";
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,

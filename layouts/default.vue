@@ -79,9 +79,9 @@ import {
 
 export default defineComponent({
   setup() {
-    const router = useRouter();
-    // FIXME: would be nice it can access user store directly
     const store = useStore<RootStoreState>();
+    store.dispatch("holidays/getHolidays");
+
     const user = computed(() => store.state.user.user);
     const isAdmin = computed(() => store.state.user.isAdmin);
 
@@ -89,6 +89,7 @@ export default defineComponent({
       store.dispatch("user/logout");
     };
 
+    const router = useRouter();
     const toPage = (page: string) => {
       router.push(page);
     };

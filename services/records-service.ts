@@ -4,7 +4,6 @@ import { isSameDay } from "date-fns";
 
 export default class RecordsService {
   fire: NuxtFireInstance;
-  collection = "records";
 
   constructor(fire: NuxtFireInstance) {
     this.fire = fire;
