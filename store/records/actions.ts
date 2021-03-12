@@ -14,13 +14,13 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      userId: rootState.user.user?.id,
+      userId: rootState.user.user!.id,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
     });
 
     const recordsResult = await this.app.$recordsService.getUserRecords({
-      userId: rootState.user.user?.id,
+      userId: rootState.user.user!.id,
     });
 
     commit("setLoading", { isLoading: false });
@@ -47,7 +47,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = buildWeek(startOfISOWeek(newStartDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      userId: rootState.user.user?.id,
+      userId: rootState.user.user!.id,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
     });
@@ -81,7 +81,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     );
 
     const result = await this.app.$recordsService.saveUserRecords({
-      userId: rootState.user.user?.id,
+      userId: rootState.user.user!.id,
       timeRecords: timeRecordsToSave,
       travelRecords: travelRecordsToSave,
     });
@@ -108,7 +108,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     commit("updateRecords", {
       timeRecords: await this.app.$recordsService.deleteUserRecords({
-        userId: rootState.user.user?.id,
+        userId: rootState.user.user!.id,
         recordsToDelete,
       }),
     });
