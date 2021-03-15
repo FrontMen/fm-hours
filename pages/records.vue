@@ -85,7 +85,7 @@ import { startOfISOWeek, subDays } from "date-fns";
 
 import EmptyTimesheet from "~/components/records/empty-timesheet.vue";
 import NavigationButtons from "~/components/records/navigation-buttons.vue";
-import SelectProjectDialog from "~/components/records/select-project-dialog.vue"
+import SelectProjectDialog from "~/components/records/select-project-dialog.vue";
 import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import { buildWeek } from "~/helpers/dates";
@@ -115,9 +115,24 @@ export default defineComponent({
       startDate: new Date(),
     });
 
-    const selectableCustomers = computed(
-      () => store.getters["customers/getSelectableCustomers"]
-    );
+    const selectableCustomers = computed(() => {
+      const customers = store.state.customers.customers;
+      const selectedCustomers = timesheet.value.projects.map(
+        (project) => project.customer.id
+      );
+
+      const selectableCustomers = customers.filter(
+        (x) => !selectedCustomers.includes(x.id)
+      );
+
+      return [
+        { text: "Choose project", disabled: true },
+        ...selectableCustomers.map((entry) => ({
+          value: entry.id,
+          text: entry.name,
+        })),
+      ];
+    });
 
     const goToWeek = (to: "current" | "previous" | "next") =>
       store.dispatch("records/goToWeek", { to });
