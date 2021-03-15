@@ -40,8 +40,7 @@ export default defineComponent({
   emits: ["project-selected"],
   props: {
     projects: {
-      // FIXME: use typing for `projects` array
-      type: Array as PropType<any[]>,
+      type: Array as PropType<Customer[]>,
       default: () => [],
     },
   },

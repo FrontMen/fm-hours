@@ -61,7 +61,6 @@ import {
 export default defineComponent({
   middleware: ["isAdmin"],
   setup() {
-    // FIXME: would be nice it can access customer store directly
     const store = useStore<RootStoreState>();
     const customers = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");

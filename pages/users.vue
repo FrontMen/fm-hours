@@ -34,14 +34,11 @@ import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
 export default defineComponent({
   middleware: ["isAdmin"],
   setup() {
-    // FIXME: would be nice it can access users store directly
     const store = useStore<RootStoreState>();
-    // @ts-ignore FIXME: users state is not defined yet
     const users = computed(() => store.state.users.users);
     store.dispatch("users/getUsers");
 
-    // FIXME: use `User` type
-    const toggleTravelAllowance = (user: any) => {
+    const toggleTravelAllowance = (user: User) => {
       store.dispatch("users/toggleTravelAllowence", user);
     };
 
