@@ -19,14 +19,18 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       endDate: new Date(selectedWeek[6].date),
     });
 
-    const recordsResult = await this.app.$recordsService.getUserRecords({
+    const timeRecords = await this.app.$timeRecordsService.getUserRecords({
+      userId: rootState.user.user!.id,
+    });
+
+    const travelRecords = await this.app.$travelRecordsService.getUserRecords({
       userId: rootState.user.user!.id,
     });
 
     commit("setLoading", { isLoading: false });
     commit("setRecords", {
-      timeRecords: recordsResult.timeRecords,
-      travelRecords: recordsResult.travelRecords,
+      timeRecords,
+      travelRecords,
       selectedWeek,
       workScheme: workSchemeResult,
     });
@@ -80,37 +84,46 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.status
     );
 
-    const result = await this.app.$recordsService.saveUserRecords({
+    const timeRecords = await this.app.$timeRecordsService.saveUserRecords({
       userId: rootState.user.user!.id,
       timeRecords: timeRecordsToSave,
+    });
+
+    const travelRecords = await this.app.$travelRecordsService.saveUserRecords({
+      userId: rootState.user.user!.id,
       travelRecords: travelRecordsToSave,
     });
 
     commit("setSaving", { isSaving: false });
     commit("updateRecords", {
-      timeRecords: result.timeRecords,
-      travelRecords: result.travelRecords,
+      timeRecords,
+      travelRecords,
     });
   },
 
   async deleteProjectRecords(
-    { commit, rootState },
+    { commit, rootState, state },
     payload: { week: WeekDate[]; project: TimesheetProject }
   ) {
     commit("setSaving", { isSaving: true });
 
     const recordsToDelete = payload.project.values.map((value, index) => ({
+      id: payload.project.ids[index],
+      userId: rootState.user.user?.id,
       date: payload.week[index].date,
       hours: value,
       customer: payload.project.customer,
       status: "new" as RecordStatus,
     }));
 
+    await this.app.$timeRecordsService.deleteUserRecords({
+      recordsToDelete,
+    });
+
     commit("updateRecords", {
-      timeRecords: await this.app.$recordsService.deleteUserRecords({
-        userId: rootState.user.user!.id,
-        recordsToDelete,
-      }),
+      timeRecords: state.timeRecords.filter(
+        (x) => !recordsToDelete.some((y) => y.id === x.id)
+      ),
     });
 
     commit("setSaving", { isSaving: false });

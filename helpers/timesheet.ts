@@ -72,6 +72,7 @@ const createLeaveProject = (
         debtor: "Frontmen",
       },
       values: holidayHours,
+      ids: [null, null, null, null, null, null, null],
       isExternal: true,
     };
   }
@@ -93,6 +94,7 @@ const createAbsceneProject = (
         debtor: "Frontmen",
       },
       values: absenceHours,
+      ids: [null, null, null, null, null, null, null],
       isExternal: true,
     };
   }
@@ -115,8 +117,14 @@ const createCustomerProjects = (
       return record?.hours || 0;
     });
 
+    const ids = week.map((weekDay) => {
+      const record = findRecordByDate(weekDay, projectRecords) as TimeRecord;
+      return record?.id || null;
+    });
+
     return {
       customer,
+      ids,
       values,
       isExternal: false,
     };
@@ -132,12 +140,18 @@ const createTravelProject = (
     return record?.kilometers || 0;
   });
 
+  const ids = week.map((weekDay) => {
+    const record = findRecordByDate(weekDay, travelRecords) as TravelRecord;
+    return record?.id || null;
+  });
+
   return {
     customer: {
       id: "travelProjectId",
       name: "Kilometers",
       debtor: "Frontmen",
     },
+    ids,
     values,
     isExternal: false,
   };
@@ -189,6 +203,7 @@ export const getTimeRecordsToSave = (
 
     project.values.forEach((value, index) => {
       timeRecordsToSave.push({
+        id: project.ids ? project.ids[index] : null,
         date: week[index].date,
         customer: project.customer,
         hours: value,
@@ -209,6 +224,7 @@ export const getTravelRecordsToSave = (
 
   timesheet.travelProject?.values.forEach((value, index) => {
     travelRecordsToSave.push({
+      id: timesheet.travelProject?.ids[index] || null,
       date: week[index].date,
       kilometers: value,
       status,

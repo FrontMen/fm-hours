@@ -151,6 +151,7 @@ export default defineComponent({
       timesheet.value.projects.push({
         customer,
         values: Array.from(Array(7), () => 0),
+        ids: Array.from(Array(7), () => null),
         isExternal: false,
       });
     };

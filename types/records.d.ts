@@ -18,6 +18,7 @@ interface WeekDate {
 }
 
 interface TimeRecord {
+  id: string | null;
   date: string;
   customer: Customer;
   hours: number;
@@ -25,6 +26,7 @@ interface TimeRecord {
 }
 
 interface TravelRecord {
+  id: string | null;
   date: string;
   kilometers: number;
   status: RecordStatus;
@@ -33,6 +35,7 @@ interface TravelRecord {
 interface TimesheetProject {
   customer: Customer;
   values: number[];
+  ids: Array<string | null>;
   isExternal: boolean;
 }
 
