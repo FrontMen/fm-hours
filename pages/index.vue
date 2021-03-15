@@ -22,22 +22,23 @@ export default defineComponent({
   middleware: ["isLoggedIn"],
   layout: "login",
   setup() {
-    // FIXME: would be nice it can access user store directly
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    // @ts-ignore (FIXME: user store is not types yet)
     const isLoggedIn = computed(() => store.state.user.isLoggedIn);
 
     const login = () => {
       store.dispatch("user/login");
     };
 
-    watch(isLoggedIn, () => {
-      if (isLoggedIn) {
-        router.push("/hours");
+    watch(
+      () => [isLoggedIn.value],
+      () => {
+        if (isLoggedIn.value) {
+          router.push("/records");
+        }
       }
-    });
+    );
 
     return {
       isLoggedIn,
