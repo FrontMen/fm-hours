@@ -6,7 +6,7 @@ interface User {
 }
 
 interface UserStoreState {
-  isLoggedin: boolean;
+  isLoggedIn: boolean;
   isAdmin: boolean;
   user: User | null;
 }

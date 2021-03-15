@@ -9,7 +9,7 @@
                 <img
                   src="@/assets/images/logo-dark.png"
                   alt="frontmen logo"
-                  @click="toPage('/hours')"
+                  @click="toPage('/records')"
                 />
 
                 <div
@@ -163,6 +163,7 @@ export default defineComponent({
   img {
     width: 50px;
     max-height: 100%;
+    cursor: pointer;
   }
 
   .user__dropdown {

@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { ActionTree } from "vuex";
+import UsersService from "~/services/users-service";
 
 const actions: ActionTree<UserStoreState, RootStoreState> = {
   async login() {
@@ -20,19 +21,20 @@ const actions: ActionTree<UserStoreState, RootStoreState> = {
   ) {
     if (!payload.authUser) return;
 
-    const user = await this.app.$usersService.getUser(payload.claims.user_id);
-    const isAdmin = await this.app.$usersService.isAdmin(payload.claims.email);
+    const usersService = new UsersService(this.$fire);
+    const user = await usersService.getUser(payload.claims.user_id);
+    const isAdmin = await usersService.isAdmin(payload.claims.email);
 
     if (user) {
-      commit('setUser', { ...user, isAdmin })
+      commit("setUser", { user, isAdmin });
     } else {
-      const newUser = await this.app.$usersService.createUser({
+      const newUser = await usersService.createUser({
         userId: payload.claims.user_id,
         name: payload.claims.name,
         picture: payload.claims.picture,
-      })
+      });
 
-      commit('setUser', { ...newUser, isAdmin })
+      commit("setUser", { user: newUser, isAdmin });
     }
   },
 };

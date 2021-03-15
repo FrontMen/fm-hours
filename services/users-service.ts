@@ -17,12 +17,9 @@ export default class UsersService {
     }));
   }
 
-  async getUser(params: {
-    userId: string;
-    email: string;
-  }): Promise<User | null> {
+  async getUser(userId: string): Promise<User | null> {
     const ref = this.fire.firestore.collection("users");
-    const doc = await ref.doc(params.userId).get();
+    const doc = await ref.doc(userId).get();
 
     if (doc.exists) {
       const { name, picture, travelAllowance } = doc.data() as User;
@@ -73,7 +70,7 @@ export default class UsersService {
   private async getAdminEmails(): Promise<string[]> {
     const ref = this.fire.firestore.collection("admins");
     const snapshot = await ref.get();
-    const result = snapshot.docs[0] || [];
+    const result = snapshot.docs[0].data().admins || [];
 
     return (result as unknown) as string[];
   }
