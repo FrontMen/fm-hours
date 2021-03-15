@@ -1,83 +1,20 @@
 <template>
   <div class="layout-wrapper">
-    <div class="top-bar">
-      <div class="top-bar__inner content-wrapper">
-        <b-container class="mx-0 px-0" fluid>
-          <b-row class="py-2" align-v="center">
-            <b-col>
-              <div class="d-flex align-items-center">
-                <img
-                  src="@/assets/images/logo-dark.png"
-                  alt="frontmen logo"
-                  @click="toPage('/records')"
-                />
+    <top-bar :user="user" :is-admin="isAdmin" @logout="logout()" />
+    <admin-sidebar v-if="isAdmin" />
 
-                <div
-                  v-if="isAdmin"
-                  v-b-toggle.sidebar-1
-                  class="hamburger ml-4"
-                />
-              </div>
-            </b-col>
-
-            <b-col>
-              <div class="user d-flex align-items-center justify-content-end">
-                <div class="d-none d-md-block user__name mr-3">
-                  {{ user.name }}
-                </div>
-                <b-dropdown right class="user__dropdown">
-                  <template #button-content>
-                    <div class="user__image flex-shrink-0 mr-1">
-                      <img
-                        :src="user.picture"
-                        alt="user image"
-                        referrerpolicy="no-referrer"
-                      />
-                    </div>
-                  </template>
-
-                  <b-dropdown-item @click="logout()"> Logout </b-dropdown-item>
-                </b-dropdown>
-              </div>
-            </b-col>
-          </b-row>
-        </b-container>
-      </div>
-    </div>
-
-    <b-sidebar
-      v-if="isAdmin"
-      id="sidebar-1"
-      class="pl-2"
-      title="Admin"
-      shadow
-      backdrop
-    >
-      <div class="mx-2 mx-md-3">
-        <b-button
-          v-for="(button, index) in buttons"
-          :key="index"
-          block
-          class="py-2 text-left"
-          @click="toPage(button.page)"
-        >
-          {{ button.label }}
-        </b-button>
-      </div>
-    </b-sidebar>
     <Nuxt />
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  useRouter,
-  useStore,
-} from "@nuxtjs/composition-api";
+import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
+
+import AdminSidebar from "~/components/app/admin-sidebar.vue";
+import TopBar from "~/components/app/top-bar.vue";
 
 export default defineComponent({
+  components: { AdminSidebar, TopBar },
   setup() {
     const store = useStore<RootStoreState>();
     store.dispatch("holidays/getHolidays");
@@ -89,102 +26,11 @@ export default defineComponent({
       store.dispatch("user/logout");
     };
 
-    const router = useRouter();
-    const toPage = (page: string) => {
-      router.push(page);
-    };
-
     return {
       user,
       isAdmin,
       logout,
-      toPage,
-      buttons: [
-        {
-          label: "Manage customers",
-          page: "/customers",
-        },
-        {
-          label: "Manage users",
-          page: "/users",
-        },
-        {
-          label: "Manage holidays",
-          page: "/holidays",
-        },
-        {
-          label: "Manage timesheets",
-          page: "/timesheets",
-        },
-      ],
     };
   },
 });
 </script>
-
-<style lang="scss">
-.manage-customers-button {
-  background: transparent !important;
-  border: none;
-  border-radius: 0;
-
-  &:hover {
-    border-bottom: 1px solid white;
-  }
-}
-.hamburger {
-  border-top: 2px solid white;
-  border-bottom: 2px solid white;
-  border-radius: 0;
-  width: 30px;
-  height: 20px;
-  background: transparent !important;
-  position: relative;
-
-  &:focus {
-    outline: none;
-  }
-
-  &:before {
-    content: "";
-    position: absolute;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
-    width: 100%;
-    background: white;
-    height: 2px;
-  }
-}
-
-.top-bar {
-  background: var(--color-primary);
-
-  img {
-    width: 50px;
-    max-height: 100%;
-    cursor: pointer;
-  }
-
-  .user__dropdown {
-    button {
-      padding: 0;
-      background-color: transparent !important;
-      border: none;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  .user {
-    color: white;
-    &__image {
-      width: 45px;
-      height: 45px;
-      border-radius: 100%;
-      background: white;
-      overflow: hidden;
-    }
-  }
-}
-</style>
