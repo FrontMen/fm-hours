@@ -33,6 +33,7 @@
         :min="valueFormatter.min"
         :max="valueFormatter.max"
         :readonly="readonly"
+        @input="$emit('change')"
       />
     </b-col>
 

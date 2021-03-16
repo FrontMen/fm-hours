@@ -24,7 +24,7 @@
             :removeable="!timesheet.isReadonly && !project.isExternal"
             :selected-week="recordsState.selectedWeek"
             :value-formatter="timesheetFormatter"
-            @update="timesheet.projects[index] = $event"
+            @change="hasUnsavedChanges = true"
             @remove="deleteProject(timesheet.projects[index])"
           />
 
@@ -50,7 +50,7 @@
               :removable="false"
               :selected-week="recordsState.selectedWeek"
               :value-formatter="kilometerFormatter"
-              @update="timesheet.travelProject = $event"
+              @change="hasUnsavedChanges = true"
             />
           </template>
         </weekly-timesheet>
@@ -58,6 +58,7 @@
 
       <weekly-timesheet-footer
         class="mt-5"
+        :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="recordsState.isSaving"
         :last-saved="recordsState.lastSaved"
         :status="timesheet.status"
@@ -139,6 +140,7 @@ export default defineComponent({
     const goToWeek = (to: "current" | "previous" | "next") =>
       store.dispatch("records/goToWeek", { to });
 
+    const hasUnsavedChanges = ref<Boolean>(false);
     const timesheet = ref<WeeklyTimesheet>({
       isReadonly: false,
       status: "new" as RecordStatus,
@@ -159,6 +161,8 @@ export default defineComponent({
     };
 
     const deleteProject = (project: TimesheetProject) => {
+      hasUnsavedChanges.value = false;
+
       store.dispatch("records/deleteProjectRecords", {
         week: recordsState.value.selectedWeek,
         project,
@@ -176,6 +180,8 @@ export default defineComponent({
         travelRecords: recordsState.value.travelRecords,
         workScheme: recordsState.value.workScheme,
       });
+
+      hasUnsavedChanges.value = true;
     };
 
     watch(
@@ -201,13 +207,9 @@ export default defineComponent({
         timesheet: timesheet.value,
         status: recordStatus.NEW as RecordStatus,
       });
-    };
 
-    // FIXME: the debounce helper is looping?
-    // FIXME: should be triggerd on @update of timesheet-row
-    // watch(() => timesheet.value, debounce(saveTimesheet, 10000), {
-    //   deep: true,
-    // });
+      hasUnsavedChanges.value = false;
+    };
 
     const submitTimesheet = () => {
       store.dispatch("records/saveTimesheet", {
@@ -225,6 +227,7 @@ export default defineComponent({
       deleteProject,
       selectableCustomers,
       recordsState,
+      hasUnsavedChanges,
       timesheet,
       timesheetFormatter: generateValueFormatter(0, 24),
       kilometerFormatter: generateValueFormatter(0, 9999),
