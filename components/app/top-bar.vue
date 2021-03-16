@@ -8,7 +8,7 @@
               <img
                 src="@/assets/images/logo-dark.png"
                 alt="frontmen logo"
-                @click="toPage('/records')"
+                @click="handleLogoClick"
               />
 
               <div
@@ -49,7 +49,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "@nuxtjs/composition-api";
+import { defineComponent, PropType, useRouter } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emit: ["logout"],
@@ -64,9 +64,13 @@ export default defineComponent({
     },
   },
   setup(_, { emit }) {
+    const router = useRouter();
+
+    const handleLogoClick = () => router.push("/records");
     const handleLogoutClick = () => emit("logout");
 
     return {
+      handleLogoClick,
       handleLogoutClick,
     };
   },
