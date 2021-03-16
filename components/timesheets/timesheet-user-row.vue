@@ -4,7 +4,7 @@
     no-gutters
     @click="handleClick"
   >
-    <b-col cols="0" class="mr-4">
+    <b-col cols="0" class="mr-2">
       <b-avatar :src="user.picture" />
     </b-col>
 

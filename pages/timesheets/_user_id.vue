@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper mt-5">
-      <div>timesheet user page for id: {{ userId }}</div>
+      <timesheet-user-header :user="user" />
     </div>
   </div>
 </template>
@@ -14,10 +14,13 @@ import {
   useRouter,
   useContext,
 } from "@nuxtjs/composition-api";
+
+import TimesheetUserHeader from "~/components/timesheets/timesheet-user-header.vue";
 import { recordStatus } from "~/helpers/record-status";
 import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
 export default defineComponent({
+  components: { TimesheetUserHeader },
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();
@@ -71,7 +74,7 @@ export default defineComponent({
     };
 
     return {
-      userId,
+      user: computed(() => users.value.find((x) => x.id === userId)),
       pendingTimeRecords,
       pendingTravelRecords,
       pendingWeeks,
