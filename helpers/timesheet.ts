@@ -72,7 +72,7 @@ const createLeaveProject = (
         debtor: "Frontmen",
       },
       values: holidayHours,
-      ids: [null, null, null, null, null, null, null],
+      ids: Array.from(Array(7), () => null),
       isExternal: true,
     };
   }
@@ -94,7 +94,7 @@ const createAbsceneProject = (
         debtor: "Frontmen",
       },
       values: absenceHours,
-      ids: [null, null, null, null, null, null, null],
+      ids: Array.from(Array(7), () => null),
       isExternal: true,
     };
   }

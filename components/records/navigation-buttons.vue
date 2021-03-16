@@ -48,7 +48,7 @@ export default defineComponent({
     const handleCurrentClick = () => emit("current");
 
     const weekLabel = computed(() => {
-      if (!props.selectedWeek.length) return ''
+      if (!props.selectedWeek.length) return "";
 
       const firstDate = props.selectedWeek[0].date;
       const { start, end } = getWeekRange(firstDate);
@@ -57,7 +57,7 @@ export default defineComponent({
     });
 
     const weekDifference = computed(() => {
-      if (!props.selectedWeek.length) return 0
+      if (!props.selectedWeek.length) return 0;
 
       const today = new Date();
       const startDate = new Date(props.selectedWeek[0].date);
@@ -94,7 +94,7 @@ export default defineComponent({
 
   &__week-label {
     flex: 1 1 auto;
-    margin: 0 0 0 8px; // TODO: use margin class instead
+    margin: 0 0 0 8px;
     font-size: 18px;
     font-weight: bold;
 

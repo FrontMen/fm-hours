@@ -1,7 +1,20 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper mt-5">
-      <timesheet-user-header :user="user" />
+      <timesheet-user-header v-if="user" :user="user" />
+
+      <div
+        v-for="(week, weekIndex) in pendingWeeks"
+        :key="weekIndex"
+        class="mt-5"
+        :set="(weekData = getTimesheetAndWorkscheme(week.dates))"
+      >
+        <weekly-pending-timesheet
+          :week="week.dates"
+          :timesheet="weekData.timesheet"
+          :work-scheme="weekData.workScheme"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -16,11 +29,16 @@ import {
 } from "@nuxtjs/composition-api";
 
 import TimesheetUserHeader from "~/components/timesheets/timesheet-user-header.vue";
+import WeeklyPendingTimesheet from "~/components/timesheets/weekly-pending-timesheet.vue";
 import { recordStatus } from "~/helpers/record-status";
-import { createWeeklyTimesheet } from "~/helpers/timesheet";
+import {
+  createWeeklyTimesheet,
+  generateValueFormatter,
+} from "~/helpers/timesheet";
 
 export default defineComponent({
-  components: { TimesheetUserHeader },
+  components: { TimesheetUserHeader, WeeklyPendingTimesheet },
+  middleware: ["isAdmin"],
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();
@@ -46,19 +64,22 @@ export default defineComponent({
       () => store.getters["timesheets/getUserPendingWeeks"]
     );
 
-    const getTimesheet = (week: WeekDate[]) => {
+    const getTimesheetAndWorkscheme = (week: WeekDate[]) => {
       const workScheme = context.$workSchemeService.getWorkScheme({
         userId,
         startDate: new Date(week[0].date),
         endDate: new Date(week[6].date),
       });
 
-      return createWeeklyTimesheet({
-        week,
+      return {
         workScheme,
-        timeRecords: pendingTimeRecords.value,
-        travelRecords: pendingTravelRecords.value,
-      });
+        timesheet: createWeeklyTimesheet({
+          week,
+          workScheme,
+          timeRecords: pendingTimeRecords.value,
+          travelRecords: pendingTravelRecords.value,
+        }),
+      };
     };
 
     const saveTimesheet = (
@@ -79,8 +100,10 @@ export default defineComponent({
       pendingTravelRecords,
       pendingWeeks,
       recordStatus,
-      getTimesheet,
+      getTimesheetAndWorkscheme,
       saveTimesheet,
+      timesheetFormatter: generateValueFormatter(0, 24),
+      kilometerFormatter: generateValueFormatter(0, 9999),
     };
   },
 });
