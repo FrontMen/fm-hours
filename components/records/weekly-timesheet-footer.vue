@@ -5,7 +5,7 @@
 
       <b-button
         class="mx-3"
-        :disabled="isSaving || !hasUnsavedChanges"
+        :disabled="(isSaving || !hasUnsavedChanges) && !canSubmitForApproval"
         @click="handleSaveClick"
       >
         <b-spinner v-if="isSaving" small />
