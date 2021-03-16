@@ -42,8 +42,13 @@
     </template>
 
     <b-container fluid class="weekly-pending-timesheet__buttons mt-4 mb-4">
-      <b-button variant="danger" :disabled="false"> Deny </b-button>
-      <b-button variant="success" :disabled="false"> Approve </b-button>
+      <b-button variant="danger" :disabled="false" @click="handleDenyClick">
+        Deny
+      </b-button>
+
+      <b-button variant="success" :disabled="false" @click="handleApproveClick">
+        Approve
+      </b-button>
     </b-container>
   </div>
 </template>
@@ -73,11 +78,11 @@ export default defineComponent({
       required: true,
     },
     workScheme: {
-      type: Object as PropType<WorkScheme>,
+      type: Array as PropType<WorkScheme[]>,
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const weekLabel = computed(() => {
       if (!props.week.length) return "";
 
@@ -87,8 +92,13 @@ export default defineComponent({
       return getDateLabel(start, end);
     });
 
+    const handleDenyClick = () => emit("deny");
+    const handleApproveClick = () => emit("approve");
+
     return {
       weekLabel,
+      handleDenyClick,
+      handleApproveClick,
       timesheetFormatter: generateValueFormatter(0, 24),
       kilometerFormatter: generateValueFormatter(0, 9999),
     };

@@ -1,5 +1,5 @@
 <template>
-  <b-container class="timesheet-user-header pt-3 pb-2">
+  <b-container class="timesheet-user-header pt-3 pb-2" fluid>
     <b-row no-gutters align-v="center">
       <b-col cols="0" class="mr-2">
         <b-avatar :src="user.picture" />
