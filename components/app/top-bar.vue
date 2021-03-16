@@ -27,13 +27,7 @@
 
               <b-dropdown right class="user__dropdown">
                 <template #button-content>
-                  <div class="user__image flex-shrink-0 mr-1">
-                    <img
-                      :src="user.picture"
-                      alt="user image"
-                      referrerpolicy="no-referrer"
-                    />
-                  </div>
+                  <b-avatar :src="user.picture" class="flex-shrink mr-1" />
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
@@ -99,13 +93,6 @@ export default defineComponent({
 
   .user {
     color: white;
-    &__image {
-      width: 45px;
-      height: 45px;
-      border-radius: 100%;
-      background: white;
-      overflow: hidden;
-    }
   }
 
   &__hamburger {

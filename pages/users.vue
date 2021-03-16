@@ -7,17 +7,23 @@
             <span class="font-weight-bold">Users</span>
           </b-col>
         </b-row>
+
         <b-row
           v-for="user in users"
           :key="user.id"
           class="app-table__row user-row py-3"
         >
+          <b-col cols="0" class="ml-3">
+            <b-avatar :src="user.picture" />
+          </b-col>
+
           <b-col cols-md="7">
-            <div class="font-weight-bold user-row__name">
+            <div class="font-weight-bold user-row__name my-2">
               {{ user.name }}
             </div>
           </b-col>
-          <b-col cols-md="4" class="d-flex justify-content-end">
+
+          <b-col cols-md="3" class="d-flex justify-content-end">
             <b-button @click="toggleTravelAllowance(user)">
               {{ user.travelAllowance ? "Disable" : "Enable" }} travel allowance
             </b-button>

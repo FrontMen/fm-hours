@@ -12,8 +12,13 @@
           v-for="user in users"
           :key="user.id"
           class="app-table__row user-row py-3"
+          no-gutters
           @click="openUserTimesheetPage(user)"
         >
+          <b-col cols="0" class="mr-4">
+            <b-avatar :src="user.picture" />
+          </b-col>
+
           <b-col>
             <div class="font-weight-bold">
               {{ user.name }}
