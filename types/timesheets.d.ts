@@ -10,4 +10,5 @@ interface TimesheetPendingWeek {
 
 interface TimesheetsStoreState {
   users: TimesheetUser[];
+  selectedUserId: string;
 }
