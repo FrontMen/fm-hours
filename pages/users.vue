@@ -45,7 +45,7 @@ export default defineComponent({
     store.dispatch("users/getUsers");
 
     const toggleTravelAllowance = (user: User) => {
-      store.dispatch("users/toggleTravelAllowence", user);
+      store.dispatch("users/toggleTravelAllowance", user);
     };
 
     return {
