@@ -8,38 +8,12 @@
           </b-col>
         </b-row>
 
-        <b-row
+        <timesheet-user-row
           v-for="user in users"
           :key="user.id"
-          class="app-table__row user-row py-3"
-          no-gutters
+          :user="user"
           @click="openUserTimesheetPage(user)"
-        >
-          <b-col cols="0" class="mr-4">
-            <b-avatar :src="user.picture" />
-          </b-col>
-
-          <b-col>
-            <div class="font-weight-bold">
-              {{ user.name }}
-            </div>
-
-            <div v-if="user.status === recordStatus.NEW" class="text-success">
-              Nothing to approve
-            </div>
-
-            <div
-              v-if="user.status === recordStatus.PENDING"
-              class="text-warning"
-            >
-              Waiting on approval
-            </div>
-
-            <div v-if="user.status === recordStatus.DENIED" class="text-danger">
-              Has denied records
-            </div>
-          </b-col>
-        </b-row>
+        />
       </b-container>
     </div>
   </div>
@@ -52,10 +26,13 @@ import {
   useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
+
+import TimesheetUserRow from "~/components/timesheets/timesheet-user-row.vue";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
   middleware: ["isAdmin"],
+  components: { TimesheetUserRow },
   setup() {
     const store = useStore<RootStoreState>();
     const users = computed(() => store.state.timesheets.users);
@@ -74,9 +51,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss">
-.user-row {
-  cursor: pointer;
-}
-</style>
