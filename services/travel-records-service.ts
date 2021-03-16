@@ -1,5 +1,6 @@
 /* eslint-disable camelcase */
 import { NuxtFireInstance } from "@nuxtjs/firebase";
+import { recordStatus } from "~/helpers/record-status";
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -17,6 +18,18 @@ export default class RecordsService {
     return snapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
+    }));
+  }
+
+  async getPendingOrDeniedRecords(): Promise<TravelRecord[]> {
+    const snapshot = await this.fire.firestore
+      .collection("travel_records")
+      .where("status", "in", [recordStatus.PENDING, recordStatus.DENIED])
+      .get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as TravelRecord),
     }));
   }
 

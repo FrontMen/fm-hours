@@ -12,7 +12,7 @@
           v-for="user in users"
           :key="user.id"
           class="app-table__row user-row py-3"
-          @click="openUserTimesheetPage(user.id)"
+          @click="openUserTimesheetPage(user)"
         >
           <b-col>
             <div class="font-weight-bold">
@@ -41,7 +41,12 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  useRouter,
+  useStore,
+} from "@nuxtjs/composition-api";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
@@ -51,8 +56,9 @@ export default defineComponent({
     const users = computed(() => store.state.timesheets.users);
     store.dispatch("timesheets/getUserList");
 
+    const router = useRouter();
     const openUserTimesheetPage = (user: TimesheetUser) => {
-      console.log("TODO: should go to detail page", user.id);
+      router.push(`timesheets/${user.id}`);
     };
 
     return {
