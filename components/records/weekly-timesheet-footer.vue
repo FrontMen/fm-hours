@@ -3,13 +3,20 @@
     <div>
       <span v-if="lastSaved">Last saved: {{ lastSavedLabel }}</span>
 
-      <b-button class="mx-3" :disabled="isSaving" @click="handleSaveClick">
+      <b-button
+        class="mx-3"
+        :disabled="isSaving || !hasUnsavedChanges"
+        @click="handleSaveClick"
+      >
         <b-spinner v-if="isSaving" small />
         Save
       </b-button>
     </div>
 
-    <b-button :disabled="isSaving || !canSubmitForApproval" @click="handleSubmitClick">
+    <b-button
+      :disabled="isSaving || !canSubmitForApproval"
+      @click="handleSubmitClick"
+    >
       {{ submitButtonLabel }}
     </b-button>
   </div>
@@ -30,6 +37,10 @@ import { recordStatus } from "~/helpers/record-status";
 export default defineComponent({
   emits: ["approve", "save"],
   props: {
+    hasUnsavedChanges: {
+      type: Boolean,
+      default: false,
+    },
     isSaving: {
       type: Boolean,
       required: true,
@@ -53,15 +64,15 @@ export default defineComponent({
     const submitButtonLabel = computed(() => {
       switch (props.status) {
         case recordStatus.PENDING:
-          return 'Waiting on approval'
+          return "Waiting on approval";
         case recordStatus.APPROVED:
-          return 'Approved'
+          return "Approved";
         case recordStatus.DENIED:
-          return 'Resubmit for approval'
+          return "Resubmit for approval";
         default:
-          return 'Submit for approval'
+          return "Submit for approval";
       }
-    })
+    });
 
     const canSubmitForApproval = computed(
       () =>
