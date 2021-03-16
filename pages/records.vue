@@ -88,8 +88,9 @@ import NavigationButtons from "~/components/records/navigation-buttons.vue";
 import SelectProjectDialog from "~/components/records/select-project-dialog.vue";
 import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
-import { buildWeek } from "~/helpers/dates";
+import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
 
+import { buildWeek } from "~/helpers/dates";
 import { recordStatus } from "~/helpers/record-status";
 import {
   createWeeklyTimesheet,
@@ -103,6 +104,7 @@ export default defineComponent({
     SelectProjectDialog,
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
+    WeeklyTimesheetTotalsRow,
   },
   middleware: ["isAuthenticated"],
   setup() {
