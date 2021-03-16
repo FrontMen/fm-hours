@@ -25,6 +25,7 @@ export default class RecordsService {
     const snapshot = await this.fire.firestore
       .collection("travel_records")
       .where("status", "in", [recordStatus.PENDING, recordStatus.DENIED])
+      .orderBy("date", "asc")
       .get();
 
     return snapshot.docs.map((doc) => ({
