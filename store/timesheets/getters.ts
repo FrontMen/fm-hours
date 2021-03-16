@@ -31,8 +31,8 @@ const getters: GetterTree<TimesheetsStoreState, RootStoreState> = {
       const firstPendingDate = startOfISOWeek(
         new Date(firstPendingRecord.date)
       );
-      const pendingWeek = buildWeek(firstPendingDate, holidays);
 
+      const pendingWeek = buildWeek(firstPendingDate, holidays);
       const start = new Date(pendingWeek[0].date);
       const end = new Date(pendingWeek[6].date);
 
