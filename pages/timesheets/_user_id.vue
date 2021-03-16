@@ -10,10 +10,8 @@
 import {
   computed,
   defineComponent,
-  ref,
   useStore,
   useRouter,
-  watch,
 } from "@nuxtjs/composition-api";
 import { recordStatus } from "~/helpers/record-status";
 
@@ -23,32 +21,23 @@ export default defineComponent({
     const router = useRouter();
 
     const userId = router.currentRoute.params.user_id;
+    store.dispatch("timesheets/selectUser", { userId });
+
     const users = computed(() => store.state.timesheets.users);
-
-    const pendingTimeRecords = ref<TimeRecord[]>();
-    const pendingTravelRecords = ref<TravelRecord[]>();
-    const pendingWeeks = ref<TimesheetPendingWeek[]>();
-
     if (users.value.length === 0) {
       store.dispatch("timesheets/getUserList");
     }
 
-    watch(
-      () => users.value,
-      () => {
-        pendingTimeRecords.value = store.getters[
-          "timesheets/getUserPendingTimeRecords"
-        ](userId);
+    const pendingTimeRecords = computed(
+      () => store.getters["timesheets/getUserPendingTimeRecords"]
+    );
 
-        pendingTravelRecords.value = store.getters[
-          "timesheets/getUserPendingTravelRecords"
-        ](userId);
+    const pendingTravelRecords = computed(
+      () => store.getters["timesheets/getUserPendingTravelRecords"]
+    );
 
-        pendingWeeks.value = store.getters["timesheets/getPendingWeeks"](
-          userId
-        );
-      },
-      { deep: true, immediate: true }
+    const pendingWeeks = computed(
+      () => store.getters["timesheets/getUserPendingWeeks"]
     );
 
     // TODO: have work scheme
@@ -67,6 +56,9 @@ export default defineComponent({
 
     return {
       userId,
+      pendingTimeRecords,
+      pendingTravelRecords,
+      pendingWeeks,
       recordStatus,
       saveTimesheet,
     };

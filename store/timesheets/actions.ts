@@ -44,6 +44,10 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     commit("setTimesheetUsers", { users: timesheetUsers });
   },
+
+  selectUser({ commit }, payload: { userId: string }) {
+    commit("setSelectedUserId", { userId: payload.userId });
+  },
 };
 
 export default actions;

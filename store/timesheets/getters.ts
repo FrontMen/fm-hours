@@ -5,51 +5,45 @@ import { buildWeek } from "~/helpers/dates";
 
 const getters: GetterTree<TimesheetsStoreState, RootStoreState> = {
   getUserPendingTimeRecords(state) {
-    return function (userId: string) {
-      const user = state.users.find((user) => user.id === userId);
-      return user ? user.pendingTimeRecords : [];
-    };
+    const user = state.users.find((user) => user.id === state.selectedUserId);
+    return user ? user.pendingTimeRecords : [];
   },
 
   getUserPendingTravelRecords(state) {
-    return function (userId: string) {
-      const user = state.users.find((user) => user.id === userId);
-      return user ? user.pendingTravelRecords : [];
-    };
+    const user = state.users.find((user) => user.id === state.selectedUserId);
+    return user ? user.pendingTravelRecords : [];
   },
 
   getUserPendingWeeks(state, _, rootState) {
-    return function (userId: string) {
-      const user = state.users.find((user) => user.id === userId);
-      if (!user) return [];
+    const user = state.users.find((user) => user.id === state.selectedUserId);
+    if (!user) return [];
 
-      const pendingWeeks = [];
-      const holidays = rootState.holidays.holidays;
+    const pendingWeeks = [];
+    const holidays = rootState.holidays.holidays;
 
-      let pendingRecords = [
-        ...user.pendingTimeRecords,
-        ...user.pendingTravelRecords,
-      ];
+    let pendingRecords = [
+      ...user.pendingTimeRecords,
+      ...user.pendingTravelRecords,
+    ];
 
-      while (pendingRecords.length > 0) {
-        const firstPendingRecord = pendingRecords[0];
-        const firstPendingDate = startOfISOWeek(
-          new Date(firstPendingRecord.date)
-        );
-        const pendingWeek = buildWeek(firstPendingDate, holidays);
+    while (pendingRecords.length > 0) {
+      const firstPendingRecord = pendingRecords[0];
+      const firstPendingDate = startOfISOWeek(
+        new Date(firstPendingRecord.date)
+      );
+      const pendingWeek = buildWeek(firstPendingDate, holidays);
 
-        const start = new Date(pendingWeek[0].date);
-        const end = new Date(pendingWeek[6].date);
+      const start = new Date(pendingWeek[0].date);
+      const end = new Date(pendingWeek[6].date);
 
-        const isNotWithinPendingWeek = (record: TimeRecord | TravelRecord) =>
-          !isWithinInterval(new Date(record.date), { start, end });
+      const isNotWithinPendingWeek = (record: TimeRecord | TravelRecord) =>
+        !isWithinInterval(new Date(record.date), { start, end });
 
-        pendingRecords = pendingRecords.filter(isNotWithinPendingWeek);
-        pendingWeeks.push({ dates: pendingWeek });
-      }
+      pendingRecords = pendingRecords.filter(isNotWithinPendingWeek);
+      pendingWeeks.push({ dates: pendingWeek });
+    }
 
-      return pendingWeeks;
-    };
+    return pendingWeeks;
   },
 };
 
