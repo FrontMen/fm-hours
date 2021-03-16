@@ -12,13 +12,16 @@ import {
   defineComponent,
   useStore,
   useRouter,
+  useContext,
 } from "@nuxtjs/composition-api";
 import { recordStatus } from "~/helpers/record-status";
+import { createWeeklyTimesheet } from "~/helpers/timesheet";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();
+    const context = useContext();
 
     const userId = router.currentRoute.params.user_id;
     store.dispatch("timesheets/selectUser", { userId });
@@ -40,7 +43,20 @@ export default defineComponent({
       () => store.getters["timesheets/getUserPendingWeeks"]
     );
 
-    // TODO: have work scheme
+    const getTimesheet = (week: WeekDate[]) => {
+      const workScheme = context.$workSchemeService.getWorkScheme({
+        userId,
+        startDate: new Date(week[0].date),
+        endDate: new Date(week[6].date),
+      });
+
+      return createWeeklyTimesheet({
+        week,
+        workScheme,
+        timeRecords: pendingTimeRecords.value,
+        travelRecords: pendingTravelRecords.value,
+      });
+    };
 
     const saveTimesheet = (
       week: WeekDate[],
@@ -60,6 +76,7 @@ export default defineComponent({
       pendingTravelRecords,
       pendingWeeks,
       recordStatus,
+      getTimesheet,
       saveTimesheet,
     };
   },
