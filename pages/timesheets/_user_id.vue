@@ -3,6 +3,10 @@
     <div class="content-wrapper mt-5">
       <timesheet-user-header v-if="user" :user="user" />
 
+      <div v-if="pendingWeeks.length === 0" class="mt-4">
+        No timesheets to approve
+      </div>
+
       <div
         v-for="(week, weekIndex) in pendingWeeks"
         :key="weekIndex"
@@ -13,6 +17,12 @@
           :week="week.dates"
           :timesheet="weekData.timesheet"
           :work-scheme="weekData.workScheme"
+          @deny="
+            saveTimesheet(week.dates, weekData.timesheet, recordStatus.DENIED)
+          "
+          @approve="
+            saveTimesheet(week.dates, weekData.timesheet, recordStatus.APPROVED)
+          "
         />
       </div>
     </div>
@@ -88,6 +98,7 @@ export default defineComponent({
       status: RecordStatus
     ) => {
       store.dispatch("timesheets/saveTimesheet", {
+        userId,
         week,
         timesheet,
         status,

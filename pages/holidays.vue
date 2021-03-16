@@ -82,6 +82,7 @@ export default defineComponent({
     };
 
     return {
+      holidays,
       newHolidayValue,
       addHoliday,
       deleteHoliday,
