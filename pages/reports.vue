@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper mt-5">
-    <b-table
+    <reports-table
       :busy="isLoading || !items.length"
       :items="items"
       bordered
@@ -19,7 +19,10 @@ import {
   useStore,
 } from "@nuxtjs/composition-api";
 
+import ReportsTable from "~/components/reports/reports-table.vue";
+
 export default defineComponent({
+  components: { ReportsTable },
   setup() {
     const store = useStore<RootStoreState>();
     const monthDate = ref<Date>(new Date());
