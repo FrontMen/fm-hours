@@ -44,7 +44,10 @@ export default defineComponent({
         const cols = tableRow.querySelectorAll("td, th");
 
         cols.forEach((col) => {
-          row.push(col.textContent || "");
+          let textContent = col.textContent || "";
+          textContent = textContent.replaceAll("(Click to sort Ascending)", "");
+
+          row.push(textContent);
         });
 
         csv.push(row.join(","));
