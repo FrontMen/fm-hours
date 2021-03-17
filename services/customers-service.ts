@@ -22,8 +22,8 @@ export default class CustomersService {
     const { id } = await ref.add(customer);
 
     return {
-      id,
       ...customer,
+      id,
     };
   }
 }
