@@ -8,7 +8,7 @@ const actions: ActionTree<CustomersStoreState, RootStoreState> = {
 
   async addNewCustomer({ commit }, payload: { name: string; debtor: string }) {
     const newCustomer = await this.app.$customersService.addCustomer(payload);
-    commit("addNewCustomerSuccess", newCustomer);
+    commit("addNewCustomerSuccess", { customer: newCustomer });
   },
 };
 
