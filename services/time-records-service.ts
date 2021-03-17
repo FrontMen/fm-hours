@@ -33,14 +33,14 @@ export default class RecordsService {
   }
 
   async getApprovedRecords(params: {
-    startDate: string;
-    endDate: string;
+    startDate: Date;
+    endDate: Date;
   }): Promise<TimeRecord[]> {
     const snapshot = await this.fire.firestore
       .collection("time_records")
       .where("status", "==", recordStatus.APPROVED)
-      .where("date", ">=", new Date(params.startDate).getTime())
-      .where("date", "<=", new Date(params.endDate).getTime())
+      .where("date", ">=", params.startDate.getTime())
+      .where("date", "<=", params.endDate.getTime())
       .orderBy("date", "asc")
       .get();
 
