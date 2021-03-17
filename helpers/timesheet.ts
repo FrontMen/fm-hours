@@ -204,7 +204,7 @@ export const getTimeRecordsToSave = (
     project.values.forEach((value, index) => {
       timeRecordsToSave.push({
         id: project.ids ? project.ids[index] : null,
-        date: week[index].date,
+        date: new Date(week[index].date).getTime(),
         customer: project.customer,
         hours: value,
         status,
@@ -225,7 +225,7 @@ export const getTravelRecordsToSave = (
   timesheet.travelProject?.values.forEach((value, index) => {
     travelRecordsToSave.push({
       id: timesheet.travelProject?.ids[index] || null,
-      date: week[index].date,
+      date: new Date(week[index].date).getTime(),
       kilometers: value,
       status,
     });

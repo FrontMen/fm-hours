@@ -19,7 +19,7 @@ interface WeekDate {
 
 interface TimeRecord {
   id: string | null;
-  date: string;
+  date: number;
   customer: Customer;
   hours: number;
   status: RecordStatus;
@@ -28,7 +28,7 @@ interface TimeRecord {
 
 interface TravelRecord {
   id: string | null;
-  date: string;
+  date: number;
   kilometers: number;
   status: RecordStatus;
   userId?: string;

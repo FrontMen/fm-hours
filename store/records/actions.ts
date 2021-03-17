@@ -110,7 +110,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const recordsToDelete = payload.project.values.map((value, index) => ({
       id: payload.project.ids[index],
       userId: rootState.user.user?.id,
-      date: payload.week[index].date,
+      date: new Date(payload.week[index].date).getTime(),
       hours: value,
       customer: payload.project.customer,
       status: "new" as RecordStatus,
