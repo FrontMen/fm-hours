@@ -9,15 +9,44 @@ export default class RecordsService {
     this.fire = fire;
   }
 
-  async getUserRecords(params: { userId: string; startDate?: string }) {
+  async getUserRecords(params: {
+    userId: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<TravelRecord[]> {
+    const query = await this.fire.firestore
+      .collection("travel_records")
+      .where("userId", "==", params.userId);
+
+    if (params.startDate)
+      query.where("date", ">=", new Date(params.startDate).getTime());
+
+    if (params.endDate)
+      query.where("date", "<=", new Date(params.endDate).getTime());
+
+    const snapshot = await query.get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as TravelRecord),
+    }));
+  }
+
+  async getApprovedRecords(params: {
+    startDate: string;
+    endDate: string;
+  }): Promise<TravelRecord[]> {
     const snapshot = await this.fire.firestore
       .collection("travel_records")
-      .where("userId", "==", params.userId)
+      .where("status", "==", recordStatus.APPROVED)
+      .where("date", ">=", new Date(params.startDate).getTime())
+      .where("date", "<=", new Date(params.endDate).getTime())
+      .orderBy("date", "asc")
       .get();
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      ...(doc.data() as TravelRecord),
     }));
   }
 
