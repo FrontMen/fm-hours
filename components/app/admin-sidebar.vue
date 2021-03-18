@@ -44,6 +44,10 @@ export default defineComponent({
           label: "Manage timesheets",
           page: "/timesheets",
         },
+        {
+          label: "Monthly reports",
+          page: "/reports",
+        },
       ],
     };
   },
