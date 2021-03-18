@@ -1,6 +1,6 @@
 <template>
   <div class="page-wrapper">
-    <div class="content-wrapper my-5">
+    <div class="my-5 mx-5">
       <month-navigation-buttons
         class="mb-4"
         :selected-date="monthDate"

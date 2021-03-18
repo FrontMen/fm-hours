@@ -1,18 +1,4 @@
 import { MutationTree } from "vuex";
-import { uniqueByKey } from "~/helpers/array";
-
-// MARK: helpers
-
-const getNonBillableProjects = (records: TimeRecord[]): Customer[] => {
-  const uniqueProjects = uniqueByKey(records, "id");
-  const projects = uniqueProjects.filter((record) =>
-    record.customer.debtor.toUpperCase().includes("FRONTMEN")
-  );
-
-  return projects.map((record) => record.customer);
-};
-
-// MARK: mutations
 
 const mutations: MutationTree<ReportsStoreState> = {
   setIsLoading(state, payload: { isLoading: boolean }) {
@@ -23,12 +9,15 @@ const mutations: MutationTree<ReportsStoreState> = {
     state,
     payload: {
       users: User[];
+      customers: Customer[];
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
     }
   ) {
     const { users, timeRecords, travelRecords } = payload;
-    const nonBillableProjects = getNonBillableProjects(timeRecords);
+    const nonBillableProjects = payload.customers.filter((customer) =>
+      customer.debtor.toUpperCase().includes("FRONTMEN")
+    );
 
     const reportUsers = users.map((user) => {
       const userTimeRecords = timeRecords.filter((x) => x.userId === user.id);
