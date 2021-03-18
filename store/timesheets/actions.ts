@@ -25,7 +25,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
         isPendingRecord(record, user.id)
       );
 
-      const pendingTravelRecords = timeRecords.filter((record) =>
+      const pendingTravelRecords = travelRecords.filter((record) =>
         isPendingRecord(record, user.id)
       );
 
