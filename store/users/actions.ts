@@ -6,6 +6,13 @@ const actions: ActionTree<UsersStoreState, RootStoreState> = {
     commit("setUsers", { users });
   },
 
+  async toggleActive({ commit }, payload: User) {
+    const newUser = { ...payload, active: !payload.active };
+    await this.app.$usersService.updateUser(newUser);
+
+    commit("updateUser", { user: newUser });
+  },
+
   async toggleTravelAllowance({ commit }, payload: User) {
     const newUser = { ...payload, travelAllowance: !payload.travelAllowance };
     await this.app.$usersService.updateUser(newUser);
