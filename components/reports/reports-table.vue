@@ -49,6 +49,10 @@ export default defineComponent({
         cols.forEach((col) => {
           let textContent = col.textContent || "";
           textContent = textContent.replaceAll("(Click to sort Ascending)", "");
+          textContent = textContent.replaceAll(
+            "(Click to sort Descending)",
+            ""
+          );
 
           row.push(textContent);
         });
