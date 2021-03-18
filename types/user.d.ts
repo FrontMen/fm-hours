@@ -1,5 +1,6 @@
 interface User {
   id: string;
+  active: boolean;
   name: string;
   picture: string;
   travelAllowance: boolean;
