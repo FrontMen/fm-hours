@@ -7,8 +7,11 @@
     <b-table
       bordered
       table-variant="light"
+      sticky-header="75vh"
       striped
       hover
+      small
+      responsive
       v-bind="$attrs"
       v-on="$listeners"
     />
@@ -70,6 +73,11 @@ export default defineComponent({
 
   &__btn {
     text-align: right;
+  }
+
+  td,
+  th {
+    white-space: nowrap;
   }
 }
 </style>
