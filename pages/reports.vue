@@ -1,14 +1,12 @@
 <template>
-  <div class="mx-5 my-5">
-    <reports-table
-      :busy="isLoading || !items.length"
-      :items="items"
-      :fields="fields"
-      bordered
-      table-variant="light"
-      striped
-      hover
-    />
+  <div class="page-wrapper">
+    <div class="content-wrapper my-5">
+      <reports-table
+        :busy="isLoading || !items.length"
+        :items="items"
+        :fields="fields"
+      />
+    </div>
   </div>
 </template>
 
