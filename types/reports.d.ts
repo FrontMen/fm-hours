@@ -1,6 +1,7 @@
 interface ReportUser {
   name: string;
   billableHours: number;
+  billableRecords: TimeRecord[];
   nonBillableProjects: {
     customerId: string;
     hours: number;

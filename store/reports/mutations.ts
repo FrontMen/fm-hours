@@ -36,6 +36,7 @@ const mutations: MutationTree<ReportsStoreState> = {
           customerId: record.customer.id,
           hours: record.hours,
         })),
+        billableRecords: userBillableRecords,
         billableHours: userBillableRecords.reduce(
           (total, record) => (total += record.hours),
           0
