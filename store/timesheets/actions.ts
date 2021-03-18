@@ -19,8 +19,9 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     const travelRecords = await this.app.$travelRecordsService.getPendingOrDeniedRecords();
 
     const users = await this.app.$usersService.getUsers();
+    const activeUsers = users.filter((x) => !!x.active);
 
-    const timesheetUsers = users.map((user) => {
+    const timesheetUsers = activeUsers.map((user) => {
       const pendingTimeRecords = timeRecords.filter((record) =>
         isPendingRecord(record, user.id)
       );
