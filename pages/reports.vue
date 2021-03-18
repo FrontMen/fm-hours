@@ -25,53 +25,50 @@ import {
   defineComponent,
   ref,
   useStore,
-  onMounted,
+  watch,
 } from "@nuxtjs/composition-api";
 import { format, addMonths, subMonths } from "date-fns";
 
-import useMonthlyReport from "~/composables/useMonthlyReport";
+import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
 import ReportsTable from "~/components/reports/reports-table.vue";
 
 export default defineComponent({
   components: { ReportsTable },
   setup() {
-    const { createFields, createItems } = useMonthlyReport();
+    const { createFields, createItems } = useMonthlyTotalsReport();
     const monthDate = ref<Date>(new Date());
 
-    const getMonthlyReport = () => {
-      store.dispatch("reports/getMonthlyReport", {
-        startDate: monthDate.value,
-      });
-    };
-
     const store = useStore<RootStoreState>();
-    const report = computed(() => store.state.reports.report);
+    const reportData = computed(() => store.state.reports.reportData);
     const isLoading = computed(() => store.state.reports.isLoading);
 
-    const fields = computed(() => createFields(report.value));
-    const items = computed(() => createItems(report.value));
+    const fields = computed(() => createFields(reportData.value));
+    const items = computed(() => createItems(reportData.value));
     const fileName = computed(
       () => `Book ${format(monthDate.value, "MMMM-yyyy")}`
     );
 
     const goToPreviousMonth = () => {
       monthDate.value = subMonths(monthDate.value, 1);
-      getMonthlyReport();
     };
 
     const goToNextMonth = () => {
       monthDate.value = addMonths(monthDate.value, 1);
-      getMonthlyReport();
     };
 
     const goToCurrentMonth = () => {
       monthDate.value = new Date();
-      getMonthlyReport();
     };
 
-    onMounted(() => {
-      getMonthlyReport();
-    });
+    watch(
+      () => monthDate.value,
+      () => {
+        store.dispatch("reports/getMonthlyReportData", {
+          startDate: monthDate.value,
+        });
+      },
+      { immediate: true }
+    );
 
     return {
       monthDate,
