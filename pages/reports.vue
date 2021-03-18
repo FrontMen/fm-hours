@@ -13,6 +13,7 @@
         :busy="isLoading || !items.length"
         :items="items"
         :fields="fields"
+        :csv-file-name="fileName"
       />
     </div>
   </div>
@@ -25,7 +26,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
-import { addMonths, subMonths } from "date-fns";
+import { format, addMonths, subMonths } from "date-fns";
 
 import useMonthlyReport from "~/composables/useMonthlyReport";
 import ReportsTable from "~/components/reports/reports-table.vue";
@@ -44,6 +45,9 @@ export default defineComponent({
 
     const fields = computed(() => createFields(report.value));
     const items = computed(() => createItems(report.value));
+    const fileName = computed(
+      () => `Book ${format(monthDate.value, "MMMM-yyyy")}`
+    );
 
     const goToPreviousMonth = () => {
       monthDate.value = subMonths(monthDate.value, 1);
@@ -70,6 +74,7 @@ export default defineComponent({
       monthDate,
       fields,
       items,
+      fileName,
       isLoading,
       goToPreviousMonth,
       goToNextMonth,
