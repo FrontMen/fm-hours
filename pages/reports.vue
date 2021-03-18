@@ -1,6 +1,14 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
+      <month-navigation-buttons
+        class="mb-4"
+        :selected-date="monthDate"
+        @previous="goToPreviousMonth"
+        @next="goToNextMonth"
+        @current="goToCurrentMonth"
+      />
+
       <reports-table
         :busy="isLoading || !items.length"
         :items="items"
@@ -17,6 +25,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
+import { addMonths, subMonths } from "date-fns";
 
 import useMonthlyReport from "~/composables/useMonthlyReport";
 import ReportsTable from "~/components/reports/reports-table.vue";
@@ -36,10 +45,35 @@ export default defineComponent({
     const fields = computed(() => createFields(report.value));
     const items = computed(() => createItems(report.value));
 
+    const goToPreviousMonth = () => {
+      monthDate.value = subMonths(monthDate.value, 1);
+      store.dispatch("reports/getMonthlyReport", {
+        startDate: monthDate.value,
+      });
+    };
+
+    const goToNextMonth = () => {
+      monthDate.value = addMonths(monthDate.value, 1);
+      store.dispatch("reports/getMonthlyReport", {
+        startDate: monthDate.value,
+      });
+    };
+
+    const goToCurrentMonth = () => {
+      monthDate.value = new Date();
+      store.dispatch("reports/getMonthlyReport", {
+        startDate: monthDate.value,
+      });
+    };
+
     return {
+      monthDate,
       fields,
       items,
       isLoading,
+      goToPreviousMonth,
+      goToNextMonth,
+      goToCurrentMonth,
     };
   },
 });
