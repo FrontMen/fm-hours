@@ -1,5 +1,5 @@
 export default () => {
-  const createFields = (reportData: MonthlyReportData | null) => {
+  const createTotalsFields = (reportData: MonthlyReportData | null) => {
     const leftFields = [
       { key: "name", sortable: true },
       { key: "billable", sortable: true, variant: "success" },
@@ -68,9 +68,9 @@ export default () => {
     };
   };
 
-  const createItems = (report: MonthlyReportData | null) => {
+  const createTotalsItems = (report: MonthlyReportData | null) => {
     return report?.users.map((user) => createTotalsProject(user, report));
   };
 
-  return { createFields, createItems };
+  return { createTotalsFields, createTotalsItems };
 };

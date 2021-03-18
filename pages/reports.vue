@@ -9,12 +9,25 @@
         @current="goToCurrentMonth"
       />
 
-      <reports-table
-        :busy="isLoading || !items.length"
-        :items="items"
-        :fields="fields"
-        :csv-file-name="fileName"
-      />
+      <b-tabs pills card>
+        <b-tab title="Totals" active>
+          <reports-table
+            :busy="isLoading || !totalsItems.length"
+            :items="totalsItems"
+            :fields="totalsFields"
+            :csv-file-name="fileName"
+          />
+        </b-tab>
+
+        <b-tab title="Projects">
+          <reports-table
+            :busy="isLoading || !projectsItems.length"
+            :items="projectsItems"
+            :fields="projectsFields"
+            :csv-file-name="fileName"
+          />
+        </b-tab>
+      </b-tabs>
     </div>
   </div>
 </template>
@@ -30,20 +43,30 @@ import {
 import { format, addMonths, subMonths } from "date-fns";
 
 import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
+import useMonthlyProjectsReport from "~/composables/useMonthlyProjectsReport";
 import ReportsTable from "~/components/reports/reports-table.vue";
 
 export default defineComponent({
   components: { ReportsTable },
   setup() {
-    const { createFields, createItems } = useMonthlyTotalsReport();
+    const { createTotalsFields, createTotalsItems } = useMonthlyTotalsReport();
+    const {
+      createProjectsFields,
+      createProjectsItems,
+    } = useMonthlyProjectsReport();
+
     const monthDate = ref<Date>(new Date());
 
     const store = useStore<RootStoreState>();
     const reportData = computed(() => store.state.reports.reportData);
     const isLoading = computed(() => store.state.reports.isLoading);
 
-    const fields = computed(() => createFields(reportData.value));
-    const items = computed(() => createItems(reportData.value));
+    const totalsFields = computed(() => createTotalsFields(reportData.value));
+    const totalsItems = computed(() => createTotalsItems(reportData.value));
+
+    const projectsFields = createProjectsFields();
+    const projectsItems = computed(() => createProjectsItems(reportData.value));
+
     const fileName = computed(
       () => `Book ${format(monthDate.value, "MMMM-yyyy")}`
     );
@@ -72,8 +95,10 @@ export default defineComponent({
 
     return {
       monthDate,
-      fields,
-      items,
+      totalsFields,
+      totalsItems,
+      projectsFields,
+      projectsItems,
       fileName,
       isLoading,
       goToPreviousMonth,
