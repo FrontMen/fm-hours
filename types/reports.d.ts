@@ -1,19 +1,16 @@
 interface ReportUser {
   name: string;
-  billableHours: number;
   billableRecords: TimeRecord[];
-  nonBillableProjects: {
-    customerId: string;
-    hours: number;
-  }[];
+  nonBillableRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
 }
 
-interface MonthlyReport {
+interface MonthlyReportData {
   nonBillableProjects: Customer[];
   users: ReportUser[];
 }
 
 interface ReportsStoreState {
   isLoading: boolean;
-  report: MonthlyReport | null;
+  reportData: MonthlyReportData | null;
 }
