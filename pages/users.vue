@@ -17,10 +17,16 @@
             <b-avatar :src="user.picture" />
           </b-col>
 
-          <b-col cols-md="7">
+          <b-col cols-md="4">
             <div class="font-weight-bold user-row__name my-2">
               {{ user.name }}
             </div>
+          </b-col>
+
+          <b-col cols-md="3" class="d-flex justify-content-end">
+            <b-button @click="toggleActive(user)">
+              {{ user.active ? "Deactivate" : "Activate" }} user
+            </b-button>
           </b-col>
 
           <b-col cols-md="3" class="d-flex justify-content-end">
@@ -44,12 +50,17 @@ export default defineComponent({
     const users = computed(() => store.state.users.users);
     store.dispatch("users/getUsers");
 
+    const toggleActive = (user: User) => {
+      store.dispatch("users/toggleActive", user);
+    };
+
     const toggleTravelAllowance = (user: User) => {
       store.dispatch("users/toggleTravelAllowance", user);
     };
 
     return {
       users,
+      toggleActive,
       toggleTravelAllowance,
     };
   },
