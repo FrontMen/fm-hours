@@ -14,6 +14,7 @@ export default () => {
     const rightFields = [
       { key: "totalHours", sortable: true, variant: "info" },
       { key: "productivity", sortable: true, variant: "info" },
+      { key: "kilometers", sortable: true },
     ];
 
     return [...leftFields, ...(middleFields || []), ...rightFields];
@@ -21,6 +22,12 @@ export default () => {
 
   const getTotalHours = (records: TimeRecord[]): number =>
     records.reduce((total, currentRecord) => (total += currentRecord.hours), 0);
+
+  const getTotalKilometers = (records: TravelRecord[]): number =>
+    records.reduce(
+      (total, currentRecord) => (total += currentRecord.kilometers),
+      0
+    );
 
   const getNonBillableColumns = (
     user: ReportUser,
@@ -56,6 +63,7 @@ export default () => {
       nonBillable: nonBillableHours,
       totalHours: billableHours + nonBillableHours,
       productivity: Math.round(productivity || 0) + "%",
+      kilometers: getTotalKilometers(user.travelRecords) || 0,
       ...nonBillableColumns,
     };
   };
