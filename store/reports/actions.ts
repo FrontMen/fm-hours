@@ -16,7 +16,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       endDate,
     });
 
-    const travelRecords = await this.app.$timeRecordsService.getApprovedRecords(
+    const travelRecords = await this.app.$travelRecordsService.getApprovedRecords(
       {
         startDate,
         endDate,

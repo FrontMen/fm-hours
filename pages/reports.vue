@@ -27,6 +27,15 @@
             :csv-file-name="fileName"
           />
         </b-tab>
+
+        <b-tab title="Kilometers">
+          <reports-table
+            :busy="isLoading || !kilometersItems.length"
+            :items="kilometersItems"
+            :fields="kilometersFields"
+            :csv-file-name="fileName"
+          />
+        </b-tab>
       </b-tabs>
     </div>
   </div>
@@ -44,6 +53,8 @@ import { format, addMonths, subMonths } from "date-fns";
 
 import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
 import useMonthlyProjectsReport from "~/composables/useMonthlyProjectsReport";
+import useMonthlyKilometersReport from "~/composables/useMonthlyKilometersReport";
+
 import ReportsTable from "~/components/reports/reports-table.vue";
 
 export default defineComponent({
@@ -54,6 +65,11 @@ export default defineComponent({
       createProjectsFields,
       createProjectsItems,
     } = useMonthlyProjectsReport();
+
+    const {
+      createKilometersFields,
+      createKilomtersItems,
+    } = useMonthlyKilometersReport();
 
     const monthDate = ref<Date>(new Date());
 
@@ -66,6 +82,11 @@ export default defineComponent({
 
     const projectsFields = createProjectsFields();
     const projectsItems = computed(() => createProjectsItems(reportData.value));
+
+    const kilometersFields = createKilometersFields();
+    const kilometersItems = computed(() =>
+      createKilomtersItems(reportData.value)
+    );
 
     const fileName = computed(
       () => `Book ${format(monthDate.value, "MMMM-yyyy")}`
@@ -99,6 +120,8 @@ export default defineComponent({
       totalsItems,
       projectsFields,
       projectsItems,
+      kilometersFields,
+      kilometersItems,
       fileName,
       isLoading,
       goToPreviousMonth,
