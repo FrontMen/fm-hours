@@ -25,6 +25,7 @@ import {
   defineComponent,
   ref,
   useStore,
+  onMounted,
 } from "@nuxtjs/composition-api";
 import { format, addMonths, subMonths } from "date-fns";
 
@@ -37,11 +38,15 @@ export default defineComponent({
     const { createFields, createItems } = useMonthlyReport();
     const monthDate = ref<Date>(new Date());
 
+    const getMonthlyReport = () => {
+      store.dispatch("reports/getMonthlyReport", {
+        startDate: monthDate.value,
+      });
+    };
+
     const store = useStore<RootStoreState>();
     const report = computed(() => store.state.reports.report);
     const isLoading = computed(() => store.state.reports.isLoading);
-
-    store.dispatch("reports/getMonthlyReport", { startDate: monthDate.value });
 
     const fields = computed(() => createFields(report.value));
     const items = computed(() => createItems(report.value));
@@ -51,24 +56,22 @@ export default defineComponent({
 
     const goToPreviousMonth = () => {
       monthDate.value = subMonths(monthDate.value, 1);
-      store.dispatch("reports/getMonthlyReport", {
-        startDate: monthDate.value,
-      });
+      getMonthlyReport();
     };
 
     const goToNextMonth = () => {
       monthDate.value = addMonths(monthDate.value, 1);
-      store.dispatch("reports/getMonthlyReport", {
-        startDate: monthDate.value,
-      });
+      getMonthlyReport();
     };
 
     const goToCurrentMonth = () => {
       monthDate.value = new Date();
-      store.dispatch("reports/getMonthlyReport", {
-        startDate: monthDate.value,
-      });
+      getMonthlyReport();
     };
+
+    onMounted(() => {
+      getMonthlyReport();
+    });
 
     return {
       monthDate,
