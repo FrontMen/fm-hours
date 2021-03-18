@@ -15,7 +15,7 @@
             :busy="isLoading || !totalsItems.length"
             :items="totalsItems"
             :fields="totalsFields"
-            :csv-file-name="fileName"
+            :csv-file-name="`totals-${formattedMonthDate}`"
           />
         </b-tab>
 
@@ -24,7 +24,7 @@
             :busy="isLoading || !projectsItems.length"
             :items="projectsItems"
             :fields="projectsFields"
-            :csv-file-name="fileName"
+            :csv-file-name="`projects-${formattedMonthDate}`"
           />
         </b-tab>
 
@@ -33,7 +33,7 @@
             :busy="isLoading || !kilometersItems.length"
             :items="kilometersItems"
             :fields="kilometersFields"
-            :csv-file-name="fileName"
+            :csv-file-name="`kilometers-${formattedMonthDate}`"
           />
         </b-tab>
       </b-tabs>
@@ -88,8 +88,8 @@ export default defineComponent({
       createKilomtersItems(reportData.value)
     );
 
-    const fileName = computed(
-      () => `Book ${format(monthDate.value, "MMMM-yyyy")}`
+    const formattedMonthDate = computed(() =>
+      format(monthDate.value, "MM-yyyy")
     );
 
     const goToPreviousMonth = () => {
@@ -116,13 +116,13 @@ export default defineComponent({
 
     return {
       monthDate,
+      formattedMonthDate,
       totalsFields,
       totalsItems,
       projectsFields,
       projectsItems,
       kilometersFields,
       kilometersItems,
-      fileName,
       isLoading,
       goToPreviousMonth,
       goToNextMonth,
