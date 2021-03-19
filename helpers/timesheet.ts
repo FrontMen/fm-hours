@@ -48,12 +48,19 @@ const createTimesheetProjects = (
   const projects: TimesheetProject[] = [];
 
   const customerProjects = createCustomerProjects(week, customers, timeRecords);
+
+  // TODO: enable this when the `workScheme` api has been implemented
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const leaveProject = createLeaveProject(workScheme);
+  // TODO: enable this when the `workScheme` api has been implemented
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   const absenceProject = createAbsceneProject(workScheme);
 
   if (customerProjects.length > 0) projects.push(...customerProjects);
-  if (leaveProject) projects.push(leaveProject);
-  if (absenceProject) projects.push(absenceProject);
+  // TODO: enable this when the `workScheme` api has been implemented
+  // if (leaveProject) projects.push(leaveProject);
+  // TODO: enable this when the `workScheme` api has been implemented
+  // if (absenceProject) projects.push(absenceProject);
 
   return projects;
 };

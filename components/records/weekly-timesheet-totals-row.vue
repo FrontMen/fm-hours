@@ -10,26 +10,23 @@
       </b-button>
     </b-col>
 
+    <!-- TODO: use classes and show {{ value / dayTheoraticalTotals[index] }} when `workSchem` API is implemented -->
     <b-col
       v-for="(value, index) in dayTotals"
       :key="index"
       cols="1"
       class="weekly-timesheet-totals-row__column"
-      :class="{
-        exceeded: value > dayTheoreticalHours[index],
-        valid: value === dayTheoreticalHours[index],
-      }"
     >
-      <span>{{ value }}/{{ dayTheoreticalHours[index] }}</span>
+      <span>{{ value }}</span>
     </b-col>
 
+    <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col
       cols="1"
       class="weekly-timesheet-totals-row__week-column d-none d-sm-block"
-      :class="{ exceeded: weekTotal > weekTheoreticalTotal }"
     >
       <span>
-        <strong> {{ weekTotal }}/{{ weekTheoreticalTotal }} </strong>
+        <strong>{{ weekTotal }}</strong>
       </span>
     </b-col>
   </b-row>
