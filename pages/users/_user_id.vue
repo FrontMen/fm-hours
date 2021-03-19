@@ -14,9 +14,12 @@
           text-field="name"
           switches
           stacked
+          @change="hasUnsavedChanges = true"
         />
 
-        <b-button @click="saveProjects"> Save </b-button>
+        <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
+          Save
+        </b-button>
       </div>
     </div>
   </div>
@@ -43,6 +46,8 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
 
     const selectedCustomers = ref<string[]>([]);
+    const hasUnsavedChanges = ref<boolean>(false);
+
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
       customers.value.map((customer) => ({
@@ -78,6 +83,8 @@ export default defineComponent({
         user: user.value,
         customerIds: selectedCustomers.value,
       });
+
+      hasUnsavedChanges.value = false;
     };
 
     return {
@@ -85,6 +92,7 @@ export default defineComponent({
       customerOptions,
       selectedCustomers,
       saveProjects,
+      hasUnsavedChanges,
     };
   },
 });
