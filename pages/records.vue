@@ -191,6 +191,7 @@ export default defineComponent({
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
         workScheme: recordsState.value.workScheme,
+        status: recordStatus.NEW as RecordStatus,
       });
 
       hasUnsavedChanges.value = true;

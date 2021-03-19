@@ -6,7 +6,7 @@
 
       <b-button
         v-if="canSubmitForApproval"
-        class="mx-3"
+        class="ml-3"
         :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
@@ -15,7 +15,7 @@
 
       <b-button
         v-if="canUnsubmitForApproval"
-        class="mx-3"
+        class="ml-3"
         :disabled="isSaving"
         @click="handleUnsubmitClick"
       >
@@ -24,6 +24,7 @@
     </div>
 
     <b-button
+      class="ml-3"
       :disabled="isSaving || !canSubmitForApproval"
       @click="handleSubmitClick"
     >
