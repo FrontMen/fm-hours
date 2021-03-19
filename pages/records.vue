@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper mt-5">
-    <user-header v-if="isAdminView" class="mb-5" :user="user" />
+    <user-header v-if="isAdminView && user" class="mb-5" :user="user" />
 
     <navigation-buttons
       class="mb-5"
@@ -46,7 +46,7 @@
         </template>
       </weekly-timesheet>
 
-      <template v-if="user.travelAllowance && timesheet.travelProject">
+      <template v-if="user && user.travelAllowance && timesheet.travelProject">
         <h3 class="my-5">Travel allowance</h3>
 
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
@@ -63,7 +63,20 @@
         </weekly-timesheet>
       </template>
 
+      <weekly-timesheet-admin-footer
+        v-if="isAdminView"
+        class="mt-5"
+        :has-unsaved-changes="hasUnsavedChanges"
+        :is-saving="recordsState.isSaving"
+        :last-saved="recordsState.lastSaved"
+        :status="timesheet.status"
+        @save="saveTimesheet(recordStatus.PENDING)"
+        @deny="saveTimesheet(recordStatus.DENIED)"
+        @approve="saveTimesheet(recordStatus.APPROVED)"
+      />
+
       <weekly-timesheet-footer
+        v-else
         class="mt-5"
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="recordsState.isSaving"
@@ -100,7 +113,6 @@ import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-tota
 
 import useTimesheet from "~/composables/useTimesheet";
 import { recordStatus } from "~/helpers/record-status";
-import isAdmin from "~/middleware/isAdmin";
 
 export default defineComponent({
   components: {
@@ -128,7 +140,7 @@ export default defineComponent({
 
     const userId = isAdminView
       ? router.currentRoute.params.user_id
-      : store.state.user.user!.id
+      : store.state.user.user!.id;
 
     const selectedUser = computed(() => {
       const users = store.state.users.users;
