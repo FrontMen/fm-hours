@@ -1,5 +1,7 @@
 <template>
   <div class="content-wrapper mt-5">
+    <user-header v-if="isAdminView" class="mb-5" :user="user" />
+
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
@@ -10,6 +12,7 @@
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
+      :is-admin-view="isAdminView"
       @copy-previous-week="copyPreviousWeek"
     />
 
@@ -20,8 +23,12 @@
             v-for="(project, index) in timesheet.projects"
             :key="project.customer.id"
             :project="timesheet.projects[index]"
-            :readonly="timesheet.isReadonly || project.isExternal"
-            :removeable="!timesheet.isReadonly && !project.isExternal"
+            :readonly="
+              !isAdminView && (timesheet.isReadonly || project.isExternal)
+            "
+            :removeable="
+              !isAdminView && !timesheet.isReadonly && !project.isExternal
+            "
             :selected-week="recordsState.selectedWeek"
             :value-formatter="timesheetFormatter"
             @change="hasUnsavedChanges = true"
@@ -46,7 +53,7 @@
           <template #rows>
             <weekly-timesheet-row
               :project="timesheet.travelProject"
-              :readonly="timesheet.isReadonly"
+              :readonly="!isAdminView && timesheet.isReadonly"
               :removable="false"
               :selected-week="recordsState.selectedWeek"
               :value-formatter="kilometerFormatter"
@@ -62,9 +69,9 @@
         :is-saving="recordsState.isSaving"
         :last-saved="recordsState.lastSaved"
         :status="timesheet.status"
-        @save="saveTimesheet"
-        @submit="submitTimesheet"
-        @unsubmit="saveTimesheet"
+        @save="saveTimesheet(recordStatus.NEW)"
+        @submit="saveTimesheet(recordStatus.PENDING)"
+        @unsubmit="saveTimesheet(recordStatus.NEW)"
       />
     </template>
 
@@ -79,12 +86,11 @@
 import {
   computed,
   defineComponent,
-  ref,
+  useRouter,
   useStore,
-  watch,
 } from "@nuxtjs/composition-api";
-import { startOfISOWeek, subDays } from "date-fns";
 
+import UserHeader from "~/components/app/user-header.vue";
 import EmptyTimesheet from "~/components/records/empty-timesheet.vue";
 import NavigationButtons from "~/components/records/navigation-buttons.vue";
 import SelectProjectDialog from "~/components/records/select-project-dialog.vue";
@@ -92,15 +98,13 @@ import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
 
-import { buildWeek } from "~/helpers/dates";
+import useTimesheet from "~/composables/useTimesheet";
 import { recordStatus } from "~/helpers/record-status";
-import {
-  createWeeklyTimesheet,
-  generateValueFormatter,
-} from "~/helpers/timesheet";
+import isAdmin from "~/middleware/isAdmin";
 
 export default defineComponent({
   components: {
+    UserHeader,
     EmptyTimesheet,
     NavigationButtons,
     SelectProjectDialog,
@@ -110,24 +114,41 @@ export default defineComponent({
   },
   middleware: ["isAuthenticated"],
   setup() {
+    const router = useRouter();
     const store = useStore<RootStoreState>();
-    const user = computed(() => store.state.user.user);
     const recordsState = computed(() => store.state.records);
+    const isAdminView = router.currentRoute.name?.includes("timesheets");
 
+    store.dispatch("users/getUsers");
     store.dispatch("customers/getCustomers");
-    store.dispatch("records/getRecords", {
-      startDate: new Date(),
+
+    if (isAdminView && !store.getters["user/isUserAdmin"]) {
+      return router.replace("/records");
+    }
+
+    const userId = isAdminView
+      ? router.currentRoute.params.user_id
+      : store.state.user.user!.id
+
+    const selectedUser = computed(() => {
+      const users = store.state.users.users;
+
+      return isAdminView
+        ? users.find((x) => x.id === userId)
+        : store.state.user.user;
     });
+
+    const timesheet = useTimesheet(userId);
 
     const selectableCustomers = computed(() => {
       const customers = store.state.customers.customers;
-      const selectedCustomers = timesheet.value.projects.map(
+      const selectedCustomers = timesheet.timesheet.value.projects.map(
         (project) => project.customer.id
       );
 
       const selectableCustomers = customers.filter(
         (x) =>
-          user.value?.projects.includes(x.id) &&
+          selectedUser.value?.projects.includes(x.id) &&
           !selectedCustomers.includes(x.id)
       );
 
@@ -140,116 +161,13 @@ export default defineComponent({
       ];
     });
 
-    const hasUnsavedChanges = ref<Boolean>(false);
-    const timesheet = ref<WeeklyTimesheet>({
-      isReadonly: false,
-      status: "new" as RecordStatus,
-      projects: [],
-      travelProject: null,
-    });
-
-    const goToWeek = (to: "current" | "previous" | "next") => {
-      if (hasUnsavedChanges.value) {
-        const confirmation = confirm(
-          "You have unsaved changes, are you sure you want to switch to another week?"
-        );
-
-        if (!confirmation) return;
-      }
-
-      store.dispatch("records/goToWeek", { to });
-    };
-
-    const addProject = (id: string) => {
-      const allCustomers = store.state.customers.customers;
-      const customer = allCustomers.find((x) => x.id === id) as Customer;
-
-      timesheet.value.projects.push({
-        customer,
-        values: Array.from(Array(7), () => 0),
-        ids: Array.from(Array(7), () => null),
-        isExternal: false,
-      });
-    };
-
-    const deleteProject = (project: TimesheetProject) => {
-      hasUnsavedChanges.value = false;
-
-      store.dispatch("records/deleteProjectRecords", {
-        week: recordsState.value.selectedWeek,
-        project,
-      });
-    };
-
-    const copyPreviousWeek = () => {
-      const startDate = new Date(recordsState.value.selectedWeek[0].date);
-      const prevStartDate = subDays(startDate, 7);
-      const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
-
-      timesheet.value = createWeeklyTimesheet({
-        week: previousWeek,
-        timeRecords: recordsState.value.timeRecords,
-        travelRecords: recordsState.value.travelRecords,
-        workScheme: recordsState.value.workScheme,
-        status: recordStatus.NEW as RecordStatus,
-      });
-
-      hasUnsavedChanges.value = true;
-    };
-
-    watch(
-      () => [
-        recordsState.value.selectedWeek,
-        recordsState.value.timeRecords,
-        recordsState.value.travelRecords,
-      ],
-      () => {
-        hasUnsavedChanges.value = false;
-
-        timesheet.value = createWeeklyTimesheet({
-          week: recordsState.value.selectedWeek,
-          timeRecords: recordsState.value.timeRecords,
-          travelRecords: recordsState.value.travelRecords,
-          workScheme: recordsState.value.workScheme,
-        });
-      },
-      { deep: true }
-    );
-
-    const saveTimesheet = () => {
-      store.dispatch("records/saveTimesheet", {
-        week: recordsState.value.selectedWeek,
-        timesheet: timesheet.value,
-        status: recordStatus.NEW as RecordStatus,
-      });
-
-      hasUnsavedChanges.value = false;
-    };
-
-    const submitTimesheet = () => {
-      store.dispatch("records/saveTimesheet", {
-        week: recordsState.value.selectedWeek,
-        timesheet: timesheet.value,
-        status: recordStatus.PENDING as RecordStatus,
-      });
-
-      hasUnsavedChanges.value = false;
-    };
-
     return {
-      user,
-      goToWeek,
-      copyPreviousWeek,
-      addProject,
-      deleteProject,
+      user: selectedUser,
       selectableCustomers,
       recordsState,
-      hasUnsavedChanges,
-      timesheet,
-      timesheetFormatter: generateValueFormatter(0, 24),
-      kilometerFormatter: generateValueFormatter(0, 9999),
-      saveTimesheet,
-      submitTimesheet,
+      recordStatus,
+      isAdminView,
+      ...timesheet,
     };
   },
 });
