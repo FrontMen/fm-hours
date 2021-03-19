@@ -138,9 +138,6 @@ export default defineComponent({
       ];
     });
 
-    const goToWeek = (to: "current" | "previous" | "next") =>
-      store.dispatch("records/goToWeek", { to });
-
     const hasUnsavedChanges = ref<Boolean>(false);
     const timesheet = ref<WeeklyTimesheet>({
       isReadonly: false,
@@ -148,6 +145,18 @@ export default defineComponent({
       projects: [],
       travelProject: null,
     });
+
+    const goToWeek = (to: "current" | "previous" | "next") => {
+      if (hasUnsavedChanges.value) {
+        const confirmation = confirm(
+          "You have unsaved changes, are you sure you want to switch to another week?"
+        );
+
+        if (!confirmation) return;
+      }
+
+      store.dispatch("records/goToWeek", { to });
+    };
 
     const addProject = (id: string) => {
       const allCustomers = store.state.customers.customers;
@@ -192,6 +201,8 @@ export default defineComponent({
         recordsState.value.travelRecords,
       ],
       () => {
+        hasUnsavedChanges.value = false;
+
         timesheet.value = createWeeklyTimesheet({
           week: recordsState.value.selectedWeek,
           timeRecords: recordsState.value.timeRecords,
