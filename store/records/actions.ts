@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { addDays, startOfISOWeek, subDays } from "date-fns";
+import { addDays, startOfISOWeek, subDays, isWithinInterval } from "date-fns";
 import { ActionTree } from "vuex";
 
 import { buildWeek } from "~/helpers/dates";
@@ -63,7 +63,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async saveTimesheet(
-    { commit },
+    { commit, state },
     payload: {
       userId: string;
       week: WeekDate[];
@@ -72,6 +72,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     }
   ) {
     commit("setSaving", { isSaving: true });
+
+    const start = new Date(payload.week[0].date);
+    const end = new Date(payload.week[6].date);
+
+    const isNotWithinSavedWeek = (record: TimeRecord | TravelRecord) =>
+      !isWithinInterval(new Date(record.date), { start, end });
 
     const timeRecordsToSave = getTimeRecordsToSave(
       payload.timesheet,
@@ -97,8 +103,14 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     commit("setSaving", { isSaving: false });
     commit("updateRecords", {
-      timeRecords,
-      travelRecords,
+      timeRecords: [
+        ...state.timeRecords.filter(isNotWithinSavedWeek),
+        ...timeRecords,
+      ],
+      travelRecords: [
+        ...state.travelRecords.filter(isNotWithinSavedWeek),
+        ...travelRecords,
+      ],
     });
   },
 
