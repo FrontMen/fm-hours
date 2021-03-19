@@ -4,6 +4,7 @@ interface User {
   name: string;
   picture: string;
   travelAllowance: boolean;
+  projects: string[];
 }
 
 interface UserStoreState {

@@ -22,13 +22,20 @@ export default class UsersService {
     const doc = await ref.doc(userId).get();
 
     if (doc.exists) {
-      const { active, name, picture, travelAllowance } = doc.data() as User;
+      const {
+        active,
+        name,
+        picture,
+        projects,
+        travelAllowance,
+      } = doc.data() as User;
 
       return {
         id: doc.id,
         active,
         name,
         picture,
+        projects,
         travelAllowance,
       };
     }
@@ -44,6 +51,7 @@ export default class UsersService {
     const newUser = {
       name: params.name,
       picture: params.picture,
+      projects: [],
       active: true,
       travelAllowance: false,
     };
