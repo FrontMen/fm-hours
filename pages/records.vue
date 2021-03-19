@@ -64,6 +64,7 @@
         :status="timesheet.status"
         @save="saveTimesheet"
         @submit="submitTimesheet"
+        @unsubmit="saveTimesheet"
       />
     </template>
 
@@ -217,6 +218,8 @@ export default defineComponent({
         timesheet: timesheet.value,
         status: recordStatus.PENDING as RecordStatus,
       });
+
+      hasUnsavedChanges.value = false;
     };
 
     return {

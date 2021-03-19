@@ -2,14 +2,24 @@
   <div class="weekly-timesheet-footer">
     <div>
       <span v-if="lastSaved">Last saved: {{ lastSavedLabel }}</span>
+      <b-spinner v-if="isSaving" small />
 
       <b-button
+        v-if="canSubmitForApproval"
         class="mx-3"
-        :disabled="(isSaving || !hasUnsavedChanges) && !canSubmitForApproval"
+        :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
-        <b-spinner v-if="isSaving" small />
         Save
+      </b-button>
+
+      <b-button
+        v-if="canUnsubmitForApproval"
+        class="mx-3"
+        :disabled="isSaving"
+        @click="handleUnsubmitClick"
+      >
+        Unsubmit
       </b-button>
     </div>
 
@@ -35,7 +45,7 @@ import { formatDistanceToNow } from "date-fns";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
-  emits: ["approve", "save"],
+  emits: ["submit", "save", "unsubmit"],
   props: {
     hasUnsavedChanges: {
       type: Boolean,
@@ -60,6 +70,7 @@ export default defineComponent({
 
     const handleSaveClick = () => emit("save");
     const handleSubmitClick = () => emit("submit");
+    const handleUnsubmitClick = () => emit("unsubmit");
 
     const submitButtonLabel = computed(() => {
       switch (props.status) {
@@ -78,6 +89,10 @@ export default defineComponent({
       () =>
         props.status === recordStatus.NEW ||
         props.status === recordStatus.DENIED
+    );
+
+    const canUnsubmitForApproval = computed(
+      () => props.status === recordStatus.PENDING
     );
 
     const updateLastSavedLabel = () => {
@@ -102,8 +117,10 @@ export default defineComponent({
     return {
       handleSaveClick,
       handleSubmitClick,
+      handleUnsubmitClick,
       submitButtonLabel,
       canSubmitForApproval,
+      canUnsubmitForApproval,
       lastSavedLabel,
     };
   },
