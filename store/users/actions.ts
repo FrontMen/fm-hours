@@ -19,6 +19,16 @@ const actions: ActionTree<UsersStoreState, RootStoreState> = {
 
     commit("updateUser", { user: newUser });
   },
+
+  async saveProjects(
+    { commit },
+    payload: { user: User; customerIds: string[] }
+  ) {
+    const newUser = { ...payload.user, projects: payload.customerIds };
+    await this.app.$usersService.updateUser(newUser);
+
+    commit("updateUser", { user: newUser });
+  },
 };
 
 export default actions;

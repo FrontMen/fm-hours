@@ -17,21 +17,29 @@
             <b-avatar :src="user.picture" />
           </b-col>
 
-          <b-col cols-md="4">
+          <b-col cols="4">
             <div class="font-weight-bold user-row__name my-2">
               {{ user.name }}
             </div>
           </b-col>
 
-          <b-col cols-md="3" class="d-flex justify-content-end">
-            <b-button @click="toggleActive(user)">
-              {{ user.active ? "Deactivate" : "Activate" }} user
-            </b-button>
-          </b-col>
+          <b-col cols="7" class="d-flex justify-content-end">
+            <template v-if="user.active">
+              <b-button variant="info" @click="openUserPage(user)">
+                Manage projects
+              </b-button>
 
-          <b-col cols-md="3" class="d-flex justify-content-end">
-            <b-button @click="toggleTravelAllowance(user)">
-              {{ user.travelAllowance ? "Disable" : "Enable" }} travel allowance
+              <b-button class="mx-2" @click="toggleTravelAllowance(user)">
+                {{ user.travelAllowance ? "Disable" : "Enable" }} travel
+                allowance
+              </b-button>
+            </template>
+
+            <b-button
+              :variant="user.active ? 'warning' : 'danger'"
+              @click="toggleActive(user)"
+            >
+              {{ user.active ? "Deactivate" : "Activate" }} user
             </b-button>
           </b-col>
         </b-row>
@@ -41,11 +49,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, useStore } from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  useRouter,
+  useStore,
+} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   middleware: ["isAdmin"],
   setup() {
+    const router = useRouter();
     const store = useStore<RootStoreState>();
     const users = computed(() => store.state.users.users);
     store.dispatch("users/getUsers");
@@ -58,10 +72,15 @@ export default defineComponent({
       store.dispatch("users/toggleTravelAllowance", user);
     };
 
+    const openUserPage = (user: User) => {
+      router.push(`users/${user.id}`);
+    };
+
     return {
       users,
       toggleActive,
       toggleTravelAllowance,
+      openUserPage,
     };
   },
 });
