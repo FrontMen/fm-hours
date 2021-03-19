@@ -6,6 +6,7 @@ export const createWeeklyTimesheet = (params: {
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
+  status?: RecordStatus;
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
@@ -16,7 +17,7 @@ export const createWeeklyTimesheet = (params: {
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStatus = getWeeklyStatus(weeklyTimeRecords);
+  const weeklyStatus = params.status || getWeeklyStatus(weeklyTimeRecords);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
