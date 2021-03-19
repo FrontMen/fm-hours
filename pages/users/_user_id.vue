@@ -1,9 +1,10 @@
 <template>
   <div class="page-wrapper">
-    <div class="content-wrapper">
+    <div class="content-wrapper my-5">
       <div v-if="!user">User not found</div>
+
       <div v-else>
-        {{ user.name }}
+        <user-header :user="user" />
       </div>
     </div>
   </div>
@@ -18,7 +19,10 @@ import {
   useRouter,
 } from "@nuxtjs/composition-api";
 
+import UserHeader from "~/components/app/user-header.vue";
+
 export default defineComponent({
+  components: { UserHeader },
   middleware: ["isAdmin"],
   setup() {
     const router = useRouter();
