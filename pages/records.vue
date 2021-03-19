@@ -126,7 +126,9 @@ export default defineComponent({
       );
 
       const selectableCustomers = customers.filter(
-        (x) => !selectedCustomers.includes(x.id)
+        (x) =>
+          user.value?.projects.includes(x.id) &&
+          !selectedCustomers.includes(x.id)
       );
 
       return [
