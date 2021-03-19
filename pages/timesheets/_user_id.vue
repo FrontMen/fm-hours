@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper mt-5">
-      <timesheet-user-header v-if="user" :user="user" />
+      <user-header v-if="user" :user="user" />
 
       <div v-if="pendingWeeks.length === 0" class="mt-4">
         No timesheets to approve
@@ -38,7 +38,7 @@ import {
   useContext,
 } from "@nuxtjs/composition-api";
 
-import TimesheetUserHeader from "~/components/timesheets/timesheet-user-header.vue";
+import UserHeader from "~/components/app/user-header.vue";
 import WeeklyPendingTimesheet from "~/components/timesheets/weekly-pending-timesheet.vue";
 import { recordStatus } from "~/helpers/record-status";
 import {
@@ -47,7 +47,7 @@ import {
 } from "~/helpers/timesheet";
 
 export default defineComponent({
-  components: { TimesheetUserHeader, WeeklyPendingTimesheet },
+  components: { UserHeader, WeeklyPendingTimesheet },
   middleware: ["isAdmin"],
   setup() {
     const store = useStore<RootStoreState>();

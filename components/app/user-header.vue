@@ -1,5 +1,5 @@
 <template>
-  <b-container class="timesheet-user-header pt-3 pb-2" fluid>
+  <b-container class="user-header pt-3 pb-2" fluid>
     <b-row no-gutters align-v="center">
       <b-col cols="0" class="mr-2">
         <b-avatar :src="user.picture" />
@@ -20,7 +20,7 @@ import { defineComponent, PropType } from "@nuxtjs/composition-api";
 export default defineComponent({
   props: {
     user: {
-      type: Object as PropType<TimesheetUser>,
+      type: Object as PropType<User | TimesheetUser>,
       required: true,
     },
   },
@@ -28,7 +28,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.timesheet-user-header {
+.user-header {
   background-color: #84cac9;
   border-right: 1px solid #84cac9;
   border-bottom: 8px solid #84cac9;
