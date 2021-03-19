@@ -2,12 +2,14 @@
   <div class="empty-timesheet">
     <p>There are no hours registered for this week.</p>
 
-    <b-button v-b-modal.modal-add-project> Add a project </b-button>
-    <span class="d-none d-sm-inline mx-2">or</span>
+    <template v-if="!isAdminView">
+      <b-button v-b-modal.modal-add-project> Add a project </b-button>
+      <span class="d-none d-sm-inline mx-2">or</span>
 
-    <b-button @click="handleCopyPreviousWeekClick">
-      Copy previous week
-    </b-button>
+      <b-button @click="handleCopyPreviousWeekClick">
+        Copy previous week
+      </b-button>
+    </template>
   </div>
 </template>
 
@@ -16,6 +18,12 @@ import { defineComponent } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emits: ["copy-previous-week"],
+  props: {
+    isAdminView: {
+      type: Boolean,
+      default: false,
+    }
+  },
   setup(_, { emit }) {
     return {
       handleCopyPreviousWeekClick: () => emit("copy-previous-week"),
