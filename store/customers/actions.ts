@@ -10,6 +10,11 @@ const actions: ActionTree<CustomersStoreState, RootStoreState> = {
     const newCustomer = await this.app.$customersService.addCustomer(payload);
     commit("addNewCustomerSuccess", { customer: newCustomer });
   },
+
+  async deleteCustomer({ commit }, payload) {
+    await this.app.$customersService.deleteCustomer(payload);
+    commit("deleteCustomerSuccess", payload);
+  },
 };
 
 export default actions;

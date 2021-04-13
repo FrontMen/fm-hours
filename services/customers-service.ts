@@ -26,4 +26,8 @@ export default class CustomersService {
       id,
     };
   }
+
+  deleteCustomer(id: string) {
+    return this.fire.firestore.collection("customers").doc(id).delete();
+  }
 }

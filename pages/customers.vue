@@ -29,6 +29,10 @@
               {{ customer.debtor }}
             </div>
           </b-col>
+
+          <b-col cols-md="4" class="d-flex justify-content-end">
+            <b-button @click="deleteCustomer(customer.id)"> Delete </b-button>
+          </b-col>
         </b-row>
       </b-container>
     </div>
@@ -43,9 +47,12 @@
       <b-form-input v-model="newCustomer.name" placeholder="Customer name" />
       <b-form-input
         v-model="newCustomer.debtor"
-        placeholder="Debtor of Customer"
+        placeholder="Debtor (only visible in reports)"
         class="mt-3"
       />
+      <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
+        Billable
+      </b-form-checkbox>
     </b-modal>
   </div>
 </template>
@@ -68,6 +75,7 @@ export default defineComponent({
     const newCustomer = ref({
       name: "",
       debtor: "",
+      isBillable: true,
     });
 
     const canAddCustomer = computed(() => {
@@ -82,6 +90,11 @@ export default defineComponent({
 
       newCustomer.value.name = "";
       newCustomer.value.debtor = "";
+      newCustomer.value.isBillable = true;
+    };
+
+    const deleteCustomer = (id: String) => {
+      store.dispatch("customers/deleteCustomer", id);
     };
 
     return {
@@ -89,6 +102,7 @@ export default defineComponent({
       newCustomer,
       canAddCustomer,
       addCustomer,
+      deleteCustomer,
     };
   },
 });
