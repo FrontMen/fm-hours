@@ -47,7 +47,7 @@
       </weekly-timesheet>
 
       <template v-if="user && user.travelAllowance && timesheet.travelProject">
-        <h3 class="my-5">Travel allowance</h3>
+        <h3 class="mt-5 mb-3">Travel allowance</h3>
 
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
           <template #rows>

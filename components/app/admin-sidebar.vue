@@ -1,55 +1,30 @@
 <template>
-  <b-sidebar id="sidebar-1" class="pl-2" title="Admin" shadow backdrop>
-    <div class="mx-2 mx-md-3">
-      <b-button
-        v-for="(button, index) in buttons"
-        :key="index"
-        block
-        class="py-2 text-left"
-        @click="toPage(button.page)"
-      >
-        {{ button.label }}
-      </b-button>
-    </div>
+  <b-sidebar id="sidebar-1" shadow backdrop>
+    <b-list-group>
+      <b-list-group-item href="/">
+        <b-icon icon="house" /> Home
+      </b-list-group-item>
+      <b-list-group-item href="/customers">
+        <b-icon icon="building" /> Customers
+      </b-list-group-item>
+      <b-list-group-item href="/users">
+        <b-icon icon="people" /> Users
+      </b-list-group-item>
+      <b-list-group-item href="/holidays">
+        <b-icon icon="sun" /> Holidays
+      </b-list-group-item>
+      <b-list-group-item href="/timesheets">
+        <b-icon icon="calendar" /> Timesheets
+      </b-list-group-item>
+      <b-list-group-item href="/reports">
+        <b-icon icon="file-bar-graph" /> Reports
+      </b-list-group-item>
+    </b-list-group>
   </b-sidebar>
 </template>
 
 <script lang="ts">
-import { defineComponent, useRouter } from "@nuxtjs/composition-api";
+import { defineComponent } from "@nuxtjs/composition-api";
 
-export default defineComponent({
-  setup() {
-    const router = useRouter();
-
-    const toPage = (page: string) => {
-      router.push(page);
-    };
-
-    return {
-      toPage,
-      buttons: [
-        {
-          label: "Manage customers",
-          page: "/customers",
-        },
-        {
-          label: "Manage users",
-          page: "/users",
-        },
-        {
-          label: "Manage holidays",
-          page: "/holidays",
-        },
-        {
-          label: "Manage timesheets",
-          page: "/timesheets",
-        },
-        {
-          label: "Monthly reports",
-          page: "/reports",
-        },
-      ],
-    };
-  },
-});
+export default defineComponent({});
 </script>
