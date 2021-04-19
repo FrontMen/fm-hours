@@ -15,9 +15,9 @@ const mutations: MutationTree<ReportsStoreState> = {
     }
   ) {
     const { users, timeRecords, travelRecords } = payload;
-    const activeUsers = users.filter((x) => !!x.active);
-    const nonBillableProjects = payload.customers.filter((customer) =>
-      customer.debtor.toUpperCase().includes("FRONTMEN")
+    const activeUsers = users.filter((x) => x.active);
+    const nonBillableProjects = payload.customers.filter(
+      (customer) => !customer.isBillable
     );
 
     const reportUsers = activeUsers.map((user) => {
