@@ -1,17 +1,15 @@
 <template>
-  <b-container class="user-header pt-3 pb-2" fluid>
-    <b-row no-gutters align-v="center">
-      <b-col cols="0" class="mr-2">
-        <b-avatar :src="user.picture" />
-      </b-col>
+  <b-row no-gutters align-v="center">
+    <b-col cols="0" class="mr-2">
+      <b-avatar :src="user.picture" />
+    </b-col>
 
-      <b-col>
-        <div class="font-weight-bold">
-          {{ user.name }}
-        </div>
-      </b-col>
-    </b-row>
-  </b-container>
+    <b-col>
+      <div class="font-weight-bold">
+        {{ user.name }}
+      </div>
+    </b-col>
+  </b-row>
 </template>
 
 <script lang="ts">
@@ -26,13 +24,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss">
-.user-header {
-  background-color: #84cac9;
-  border-right: 1px solid #84cac9;
-  border-bottom: 8px solid #84cac9;
-  border-left: 1px solid #84cac9;
-  border-radius: 8px;
-}
-</style>

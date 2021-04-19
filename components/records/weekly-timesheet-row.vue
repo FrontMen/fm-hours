@@ -91,6 +91,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .weekly-timesheet-row {
   background: #fff;
+  color: var(--body-color);
   align-items: center;
 
   &__remove-button {
@@ -116,7 +117,7 @@ export default defineComponent({
     padding-left: 0;
     padding-right: 0;
     text-align: center;
-    border: 1px solid #85cac9;
+    border: 1px solid var(--color-primary);
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {

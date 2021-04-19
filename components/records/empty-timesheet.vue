@@ -22,7 +22,7 @@ export default defineComponent({
     isAdminView: {
       type: Boolean,
       default: false,
-    }
+    },
   },
   setup(_, { emit }) {
     return {
@@ -37,7 +37,7 @@ export default defineComponent({
   padding: 40px 8px;
   text-align: center;
   background-color: #fff;
-  border-top: 8px solid #85cac9;
+  border-top: 8px solid var(--color-primary);
   border-radius: 8px;
 
   p {

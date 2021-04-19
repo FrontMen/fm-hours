@@ -46,15 +46,17 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet {
-  background-color: #84cac9;
-  border-right: 1px solid #84cac9;
-  border-bottom: 8px solid #84cac9;
-  border-left: 1px solid #84cac9;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+  border-right: 1px solid var(--color-primary);
+  border-bottom: 8px solid var(--color-primary);
+  border-left: 1px solid var(--color-primary);
   border-radius: 8px;
 
   &__date-column {
     text-align: center;
     padding: 8px;
+    line-height: 1.2;
 
     &.today::after {
       content: "TODAY";
@@ -65,7 +67,8 @@ export default defineComponent({
       height: 17px;
       padding-top: 2px;
       font-size: 12px;
-      background-color: #85cac9;
+      background-color: var(--color-primary);
+      color: var(--color-primary-text);
       border-radius: 4px 4px 0 0;
     }
   }
