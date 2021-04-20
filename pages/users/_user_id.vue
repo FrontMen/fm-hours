@@ -32,6 +32,7 @@ import {
   onMounted,
   useStore,
   useRouter,
+  useMeta,
   watch,
   ref,
 } from "@nuxtjs/composition-api";
@@ -41,6 +42,7 @@ import UserHeader from "~/components/app/user-header.vue";
 export default defineComponent({
   components: { UserHeader },
   middleware: ["isAdmin"],
+  head: {},
   setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
@@ -59,6 +61,8 @@ export default defineComponent({
     const userId = router.currentRoute.params.user_id;
     const users = computed(() => store.state.users.users);
     const user = computed(() => users.value.find((x) => x.id === userId));
+
+    useMeta({ title: `Users - ${user.value?.name}` });
 
     onMounted(() => {
       if (users.value.length === 0) {

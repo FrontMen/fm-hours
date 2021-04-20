@@ -58,6 +58,11 @@ import {
 
 export default defineComponent({
   middleware: ["isAdmin"],
+
+  head: {
+    title: "Users",
+  },
+
   setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
