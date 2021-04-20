@@ -59,6 +59,11 @@ import { formatISO, isSameDay } from "date-fns";
 
 export default defineComponent({
   middleware: ["isAdmin"],
+
+  head: {
+    title: "Holidays",
+  },
+
   setup() {
     const store = useStore<RootStoreState>();
     const holidays = computed(() => store.state.holidays.holidays);

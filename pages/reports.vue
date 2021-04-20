@@ -60,6 +60,11 @@ import ReportsTable from "~/components/reports/reports-table.vue";
 export default defineComponent({
   components: { ReportsTable },
   middleware: ["isAdmin"],
+
+  head: {
+    title: "Reports",
+  },
+
   setup() {
     const { createTotalsFields, createTotalsItems } = useMonthlyTotalsReport();
     const {

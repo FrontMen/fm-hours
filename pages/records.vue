@@ -101,6 +101,7 @@ import {
   defineComponent,
   useRouter,
   useStore,
+  useMeta,
 } from "@nuxtjs/composition-api";
 
 import UserHeader from "~/components/app/user-header.vue";
@@ -125,6 +126,9 @@ export default defineComponent({
     WeeklyTimesheetTotalsRow,
   },
   middleware: ["isAuthenticated"],
+
+  head: {},
+
   setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
@@ -148,6 +152,12 @@ export default defineComponent({
       return isAdminView
         ? users.find((x) => x.id === userId)
         : store.state.user.user;
+    });
+
+    useMeta({
+      title: isAdminView
+        ? `Timesheets - ${selectedUser.value?.name}`
+        : undefined,
     });
 
     const timesheet = useTimesheet(userId);

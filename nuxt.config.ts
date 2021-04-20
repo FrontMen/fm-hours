@@ -9,7 +9,7 @@ export default defineNuxtConfig({
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: "fm-hours",
+    title: "Frontmen - Hours",
     meta: [
       { charset: "utf-8" },
       {

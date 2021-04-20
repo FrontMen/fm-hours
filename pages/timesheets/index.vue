@@ -33,6 +33,11 @@ import { recordStatus } from "~/helpers/record-status";
 export default defineComponent({
   middleware: ["isAdmin"],
   components: { TimesheetUserRow },
+
+  head: {
+    title: "Timesheets",
+  },
+
   setup() {
     const store = useStore<RootStoreState>();
     const users = computed(() => store.state.timesheets.users);

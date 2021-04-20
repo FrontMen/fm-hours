@@ -67,6 +67,11 @@ import {
 
 export default defineComponent({
   middleware: ["isAdmin"],
+
+  head: {
+    title: "Customers",
+  },
+
   setup() {
     const store = useStore<RootStoreState>();
     const customers = computed(() => store.state.customers.customers);
