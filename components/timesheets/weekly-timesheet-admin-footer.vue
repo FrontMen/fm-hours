@@ -9,10 +9,10 @@
       <b-button
         v-if="!isClosed || hasUnsavedChanges"
         class="mr-3"
-        :disabled="isSaving"
+        :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
-        Save
+        Update
       </b-button>
     </div>
 
