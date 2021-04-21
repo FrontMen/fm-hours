@@ -5,6 +5,7 @@ export default () => {
     return [
       { key: "name", sortable: true },
       { key: "project", sortable: true },
+      { key: "debtor", sortable: true },
       { key: "billable", sortable: true, variant: "success" },
     ];
   };
@@ -21,6 +22,7 @@ export default () => {
       name: user.name,
       billable: getTotalHours(records) || 0,
       project: customer.name,
+      debtor: customer.debtor,
     };
   };
 
