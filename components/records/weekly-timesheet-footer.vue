@@ -10,7 +10,7 @@
         :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
-        Save
+        Update
       </b-button>
 
       <b-button
