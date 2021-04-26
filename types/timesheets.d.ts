@@ -1,4 +1,4 @@
-interface TimesheetUser extends User {
+interface TimesheetEmployee extends Employee {
   status: RecordStatus;
   pendingTimeRecords: TimeRecord[];
   pendingTravelRecords: TravelRecord[];
@@ -9,6 +9,6 @@ interface TimesheetPendingWeek {
 }
 
 interface TimesheetsStoreState {
-  users: TimesheetUser[];
-  selectedUserId: string;
+  employees: TimesheetEmployee[];
+  selectedEmployeeId: string;
 }

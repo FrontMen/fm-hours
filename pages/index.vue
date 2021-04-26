@@ -25,10 +25,10 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const isLoggedIn = computed(() => store.state.user.isLoggedIn);
+    const isLoggedIn = computed(() => store.state.employee.isLoggedIn);
 
     const login = () => {
-      store.dispatch("user/login");
+      store.dispatch("employee/login");
     };
 
     watch(

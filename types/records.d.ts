@@ -23,7 +23,7 @@ interface TimeRecord {
   customer: Customer;
   hours: number;
   status: RecordStatus;
-  userId?: string;
+  employeeId?: string;
 }
 
 interface TravelRecord {
@@ -31,7 +31,7 @@ interface TravelRecord {
   date: number;
   kilometers: number;
   status: RecordStatus;
-  userId?: string;
+  employeeId?: string;
 }
 
 interface TimesheetProject {

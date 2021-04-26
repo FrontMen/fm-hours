@@ -20,14 +20,14 @@
           </b-col>
 
           <b-col>
-            <div class="user d-flex align-items-center justify-content-end">
-              <div class="d-none d-md-block user__name mr-3">
-                {{ user.name }}
+            <div class="employee d-flex align-items-center justify-content-end">
+              <div class="d-none d-md-block employee__name mr-3">
+                {{ employee.name }}
               </div>
 
-              <b-dropdown right class="user__dropdown">
+              <b-dropdown right class="employee__dropdown">
                 <template #button-content>
-                  <b-avatar :src="user.picture" class="flex-shrink mr-1" />
+                  <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
@@ -52,8 +52,8 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
-    user: {
-      type: Object as PropType<User>,
+    employee: {
+      type: Object as PropType<Employee>,
       required: true,
     },
   },
@@ -81,7 +81,7 @@ export default defineComponent({
     cursor: pointer;
   }
 
-  .user__dropdown {
+  .employee__dropdown {
     button {
       padding: 0;
       background-color: transparent !important;
@@ -91,7 +91,7 @@ export default defineComponent({
     }
   }
 
-  .user {
+  .employee {
     color: white;
   }
 

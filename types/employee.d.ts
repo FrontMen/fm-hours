@@ -1,4 +1,4 @@
-interface User {
+interface Employee {
   id: string;
   active: boolean;
   name: string;
@@ -7,8 +7,8 @@ interface User {
   projects: string[];
 }
 
-interface UserStoreState {
+interface EmployeeStoreState {
   isLoggedIn: boolean;
   isAdmin: boolean;
-  user: User | null;
+  employee: Employee | null;
 }

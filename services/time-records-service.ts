@@ -9,14 +9,14 @@ export default class RecordsService {
     this.fire = fire;
   }
 
-  async getUserRecords(params: {
-    userId: string;
+  async getEmployeeRecords(params: {
+    employeeId: string;
     startDate?: string;
     endDate?: string;
   }): Promise<TimeRecord[]> {
     const query = this.fire.firestore
       .collection("time_records")
-      .where("userId", "==", params.userId);
+      .where("employeeId", "==", params.employeeId);
 
     if (params.startDate)
       query.where("date", ">=", new Date(params.startDate).getTime());
@@ -63,12 +63,15 @@ export default class RecordsService {
     }));
   }
 
-  async saveUserRecords(params: { userId: string; timeRecords: TimeRecord[] }) {
+  async saveEmployeeRecords(params: {
+    employeeId: string;
+    timeRecords: TimeRecord[];
+  }) {
     const ref = this.fire.firestore.collection("time_records");
 
     const updatedRecords = await Promise.all(
       params.timeRecords.map(async (timeRecord) => {
-        return await this.updateRecord(ref, params.userId, timeRecord);
+        return await this.updateRecord(ref, params.employeeId, timeRecord);
       })
     );
 
@@ -77,7 +80,7 @@ export default class RecordsService {
 
   private async updateRecord(
     ref: any,
-    userId: string,
+    employeeId: string,
     record: TimeRecord
   ): Promise<TimeRecord> {
     const { id, hours } = record;
@@ -98,7 +101,7 @@ export default class RecordsService {
     }
 
     if (hours > 0) {
-      const newDocument = await ref.add({ userId, ...newRecord });
+      const newDocument = await ref.add({ employeeId, ...newRecord });
 
       return {
         ...newRecord,
@@ -109,7 +112,7 @@ export default class RecordsService {
     return record;
   }
 
-  async deleteUserRecords(params: {
+  async deleteEmployeeRecords(params: {
     recordsToDelete: TimeRecord[];
   }): Promise<void> {
     const batch = this.fire.firestore.batch();

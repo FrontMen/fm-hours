@@ -21,7 +21,7 @@
         <b-row
           v-for="date in holidays"
           :key="date"
-          class="app-table__row user-row py-3"
+          class="app-table__row employee-row py-3"
         >
           <b-col cols-md="8" class="d-flex align-items-center font-weight-bold">
             {{ date | formatDate("dd MMMM yyyy") }}

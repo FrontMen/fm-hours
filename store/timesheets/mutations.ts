@@ -1,12 +1,15 @@
 import { MutationTree } from "vuex";
 
 const mutations: MutationTree<TimesheetsStoreState> = {
-  setTimesheetUsers: (state, payload: { users: TimesheetUser[] }) => {
-    state.users = payload.users;
+  setTimesheetEmployees: (
+    state,
+    payload: { employees: TimesheetEmployee[] }
+  ) => {
+    state.employees = payload.employees;
   },
 
-  setSelectedUserId: (state, payload: { userId: string }) => {
-    state.selectedUserId = payload.userId;
+  setSelectedEmployeeId: (state, payload: { employeeId: string }) => {
+    state.selectedEmployeeId = payload.employeeId;
   },
 };
 

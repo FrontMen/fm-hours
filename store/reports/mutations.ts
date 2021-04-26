@@ -8,44 +8,46 @@ const mutations: MutationTree<ReportsStoreState> = {
   createMonthlyReportData(
     state,
     payload: {
-      users: User[];
+      employees: Employee[];
       customers: Customer[];
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
     }
   ) {
-    const { users, timeRecords, travelRecords } = payload;
-    const activeUsers = users.filter((x) => x.active);
+    const { employees, timeRecords, travelRecords } = payload;
+    const activeEmployees = employees.filter((x) => x.active);
     const nonBillableProjects = payload.customers.filter(
       (customer) => !customer.isBillable
     );
 
-    const reportUsers = activeUsers.map((user) => {
-      const userTimeRecords = timeRecords.filter((x) => x.userId === user.id);
-
-      const userTravelRecords = travelRecords.filter(
-        (x) => x.userId === user.id
+    const reportEmployees = activeEmployees.map((employee) => {
+      const employeeTimeRecords = timeRecords.filter(
+        (x) => x.employeeId === employee.id
       );
 
-      const userNonBillableRecords = userTimeRecords.filter((x) =>
+      const employeeTravelRecords = travelRecords.filter(
+        (x) => x.employeeId === employee.id
+      );
+
+      const employeeNonBillableRecords = employeeTimeRecords.filter((x) =>
         nonBillableProjects.some((y) => y.id === x.customer.id)
       );
 
-      const userBillableRecords = userTimeRecords.filter(
+      const employeeBillableRecords = employeeTimeRecords.filter(
         (x) => !nonBillableProjects.some((y) => y.id === x.customer.id)
       );
 
       return {
-        name: user.name,
-        travelRecords: userTravelRecords,
-        billableRecords: userBillableRecords,
-        nonBillableRecords: userNonBillableRecords,
+        name: employee.name,
+        travelRecords: employeeTravelRecords,
+        billableRecords: employeeBillableRecords,
+        nonBillableRecords: employeeNonBillableRecords,
       };
     });
 
     state.reportData = {
       nonBillableProjects,
-      users: reportUsers,
+      employees: reportEmployees,
     };
   },
 };

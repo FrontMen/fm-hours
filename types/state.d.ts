@@ -4,6 +4,6 @@ interface RootStoreState {
   records: RecordsStoreState;
   reports: ReportsStoreState;
   timesheets: TimesheetsStoreState;
-  user: UserStoreState;
-  users: UsersStoreState;
+  employee: EmployeeStoreState;
+  employees: EmployeesStoreState;
 }
