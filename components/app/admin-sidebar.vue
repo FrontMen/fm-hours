@@ -7,8 +7,8 @@
       <b-list-group-item href="/customers">
         <b-icon icon="building" /> Customers
       </b-list-group-item>
-      <b-list-group-item href="/users">
-        <b-icon icon="people" /> Users
+      <b-list-group-item href="/employees">
+        <b-icon icon="people" /> Employees
       </b-list-group-item>
       <b-list-group-item href="/holidays">
         <b-icon icon="sun" /> Holidays

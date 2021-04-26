@@ -1,0 +1,3 @@
+interface EmployeesStoreState {
+  employees: Employee[];
+}

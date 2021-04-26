@@ -1,4 +1,4 @@
-interface ReportUser {
+interface ReportEmployee {
   name: string;
   billableRecords: TimeRecord[];
   nonBillableRecords: TimeRecord[];
@@ -7,7 +7,7 @@ interface ReportUser {
 
 interface MonthlyReportData {
   nonBillableProjects: Customer[];
-  users: ReportUser[];
+  employees: ReportEmployee[];
 }
 
 interface ReportsStoreState {

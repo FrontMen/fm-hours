@@ -1,3 +1,0 @@
-interface UsersStoreState {
-  users: User[];
-}

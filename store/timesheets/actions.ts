@@ -7,37 +7,41 @@ import {
   getTravelRecordsToSave,
 } from "~/helpers/timesheet";
 
-const isPendingRecord = (record: TimeRecord | TravelRecord, userId: string) =>
-  record.userId === userId && record.status === recordStatus.PENDING;
+const isPendingRecord = (
+  record: TimeRecord | TravelRecord,
+  employeeId: string
+) => record.employeeId === employeeId && record.status === recordStatus.PENDING;
 
-const isDeniedRecord = (record: TimeRecord | TravelRecord, userId: string) =>
-  record.userId === userId && record.status === recordStatus.DENIED;
+const isDeniedRecord = (
+  record: TimeRecord | TravelRecord,
+  employeeId: string
+) => record.employeeId === employeeId && record.status === recordStatus.DENIED;
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
-  async getUserList({ commit }) {
+  async getEmployeeList({ commit }) {
     const timeRecords = await this.app.$timeRecordsService.getPendingOrDeniedRecords();
     const travelRecords = await this.app.$travelRecordsService.getPendingOrDeniedRecords();
 
-    const users = await this.app.$usersService.getUsers();
-    const activeUsers = users.filter((x) => !!x.active);
+    const employees = await this.app.$employeesService.getEmployees();
+    const activeEmployees = employees.filter((x) => !!x.active);
 
-    const timesheetUsers = activeUsers.map((user) => {
+    const timesheetEmployees = activeEmployees.map((employee) => {
       const pendingTimeRecords = timeRecords.filter((record) =>
-        isPendingRecord(record, user.id)
+        isPendingRecord(record, employee.id)
       );
 
       const pendingTravelRecords = travelRecords.filter((record) =>
-        isPendingRecord(record, user.id)
+        isPendingRecord(record, employee.id)
       );
 
       const hasPendingRecords =
         pendingTimeRecords.length > 0 || pendingTravelRecords.length > 0;
       const hasDeniedRecords =
-        timeRecords.some((record) => isDeniedRecord(record, user.id)) ||
-        travelRecords.some((record) => isDeniedRecord(record, user.id));
+        timeRecords.some((record) => isDeniedRecord(record, employee.id)) ||
+        travelRecords.some((record) => isDeniedRecord(record, employee.id));
 
       return {
-        ...user,
+        ...employee,
         pendingTimeRecords,
         pendingTravelRecords,
         status: hasPendingRecords
@@ -48,17 +52,17 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       };
     });
 
-    commit("setTimesheetUsers", { users: timesheetUsers });
+    commit("setTimesheetEmployees", { employees: timesheetEmployees });
   },
 
-  selectUser({ commit }, payload: { userId: string }) {
-    commit("setSelectedUserId", { userId: payload.userId });
+  selectEmployee({ commit }, payload: { employeeId: string }) {
+    commit("setSelectedEmployeeId", { employeeId: payload.employeeId });
   },
 
   async saveTimesheet(
     { state, commit },
     payload: {
-      userId: string;
+      employeeId: string;
       week: WeekDate[];
       timesheet: WeeklyTimesheet;
       status: RecordStatus;
@@ -76,26 +80,26 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       payload.status
     );
 
-    await this.app.$timeRecordsService.saveUserRecords({
-      userId: payload.userId,
+    await this.app.$timeRecordsService.saveEmployeeRecords({
+      employeeId: payload.employeeId,
       timeRecords: timeRecordsToSave,
     });
 
-    await this.app.$travelRecordsService.saveUserRecords({
-      userId: payload.userId,
+    await this.app.$travelRecordsService.saveEmployeeRecords({
+      employeeId: payload.employeeId,
       travelRecords: travelRecordsToSave,
     });
 
-    commit("setTimesheetUsers", {
-      users: state.users.map((user) => {
-        if (user.id !== payload.userId) return user;
+    commit("setTimesheetEmployees", {
+      employees: state.employees.map((employee) => {
+        if (employee.id !== payload.employeeId) return employee;
 
         return {
-          ...user,
-          pendingTimeRecords: user.pendingTimeRecords.filter(
+          ...employee,
+          pendingTimeRecords: employee.pendingTimeRecords.filter(
             (x) => !timeRecordsToSave.some((y) => y.id === x.id)
           ),
-          pendingTravelRecords: user.pendingTimeRecords.filter(
+          pendingTravelRecords: employee.pendingTimeRecords.filter(
             (x) => !travelRecordsToSave.some((y) => y.id === x.id)
           ),
         };

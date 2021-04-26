@@ -15,12 +15,12 @@ export default () => {
   const createKilomtersItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.users.forEach((user) => {
-      const kilometers = getTotalKilometers(user.travelRecords);
+    report?.employees.forEach((employee) => {
+      const kilometers = getTotalKilometers(employee.travelRecords);
 
       if (kilometers > 0) {
         items.push({
-          name: user.name,
+          name: employee.name,
           kilometers,
         });
       }

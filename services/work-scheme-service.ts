@@ -1,5 +1,9 @@
 export default class WorkSchemeService {
-  getWorkScheme(params: { userId: string; startDate: Date; endDate: Date }) {
+  getWorkScheme(params: {
+    employeeId: string;
+    startDate: Date;
+    endDate: Date;
+  }) {
     console.log("retrieve real data from Intracto API with params", params);
 
     return [

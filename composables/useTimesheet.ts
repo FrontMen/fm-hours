@@ -8,7 +8,7 @@ import {
   generateValueFormatter,
 } from "~/helpers/timesheet";
 
-export default (userId: string) => {
+export default (employeeId: string) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
   const recordsState = computed(() => store.state.records);
@@ -21,7 +21,7 @@ export default (userId: string) => {
   });
 
   store.dispatch("records/getRecords", {
-    userId,
+    employeeId,
     startDate: new Date(),
   });
 
@@ -34,7 +34,7 @@ export default (userId: string) => {
       if (!confirmation) return;
     }
 
-    store.dispatch("records/goToWeek", { userId, to });
+    store.dispatch("records/goToWeek", { employeeId, to });
   };
 
   const addProject = (id: string) => {
@@ -55,7 +55,7 @@ export default (userId: string) => {
     store.dispatch("records/deleteProjectRecords", {
       week: recordsState.value.selectedWeek,
       project,
-      userId,
+      employeeId,
     });
   };
 
@@ -96,7 +96,7 @@ export default (userId: string) => {
 
   const saveTimesheet = (recordStatus: RecordStatus) => {
     store.dispatch("records/saveTimesheet", {
-      userId,
+      employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
       status: recordStatus,

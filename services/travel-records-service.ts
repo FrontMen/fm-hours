@@ -9,14 +9,14 @@ export default class RecordsService {
     this.fire = fire;
   }
 
-  async getUserRecords(params: {
-    userId: string;
+  async getEmployeeRecords(params: {
+    employeeId: string;
     startDate?: string;
     endDate?: string;
   }): Promise<TravelRecord[]> {
     const query = await this.fire.firestore
       .collection("travel_records")
-      .where("userId", "==", params.userId);
+      .where("employeeId", "==", params.employeeId);
 
     if (params.startDate)
       query.where("date", ">=", new Date(params.startDate).getTime());
@@ -63,15 +63,15 @@ export default class RecordsService {
     }));
   }
 
-  async saveUserRecords(params: {
-    userId: string;
+  async saveEmployeeRecords(params: {
+    employeeId: string;
     travelRecords: TravelRecord[];
   }) {
     const ref = this.fire.firestore.collection("travel_records");
 
     const updatedRecords = await Promise.all(
       params.travelRecords.map(async (record) => {
-        return await this.updateRecord(ref, params.userId, record);
+        return await this.updateRecord(ref, params.employeeId, record);
       })
     );
 
@@ -80,7 +80,7 @@ export default class RecordsService {
 
   private async updateRecord(
     ref: any,
-    userId: string,
+    employeeId: string,
     record: TravelRecord
   ): Promise<TravelRecord> {
     const { id, kilometers } = record;
@@ -101,7 +101,7 @@ export default class RecordsService {
     }
 
     if (kilometers > 0) {
-      const newDocument = await ref.add({ userId, ...newRecord });
+      const newDocument = await ref.add({ employeeId, ...newRecord });
 
       return {
         ...newRecord,

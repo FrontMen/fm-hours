@@ -1,10 +1,10 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!user">User not found</div>
+      <div v-if="!employee">Employee not found</div>
 
       <div v-else>
-        <user-header :user="user" />
+        <employee-header :employee="employee" />
 
         <b-form-checkbox-group
           v-model="selectedCustomers"
@@ -37,10 +37,10 @@ import {
   ref,
 } from "@nuxtjs/composition-api";
 
-import UserHeader from "~/components/app/user-header.vue";
+import EmployeeHeader from "~/components/app/employee-header.vue";
 
 export default defineComponent({
-  components: { UserHeader },
+  components: { EmployeeHeader },
   middleware: ["isAdmin"],
   head: {},
   setup() {
@@ -58,15 +58,17 @@ export default defineComponent({
       }))
     );
 
-    const userId = router.currentRoute.params.user_id;
-    const users = computed(() => store.state.users.users);
-    const user = computed(() => users.value.find((x) => x.id === userId));
+    const employeeId = router.currentRoute.params.employee_id;
+    const employees = computed(() => store.state.employees.employees);
+    const employee = computed(() =>
+      employees.value.find((x) => x.id === employeeId)
+    );
 
-    useMeta({ title: `Users - ${user.value?.name}` });
+    useMeta({ title: `Employees - ${employee.value?.name}` });
 
     onMounted(() => {
-      if (users.value.length === 0) {
-        store.dispatch("users/getUsers");
+      if (employees.value.length === 0) {
+        store.dispatch("employees/getEmployees");
       }
 
       if (customers.value.length === 0) {
@@ -75,16 +77,16 @@ export default defineComponent({
     });
 
     watch(
-      () => user.value?.projects,
+      () => employee.value?.projects,
       () => {
-        selectedCustomers.value = user.value?.projects || [];
+        selectedCustomers.value = employee.value?.projects || [];
       },
       { immediate: true }
     );
 
     const saveProjects = () => {
-      store.dispatch("users/saveProjects", {
-        user: user.value,
+      store.dispatch("employees/saveProjects", {
+        employee: employee.value,
         customerIds: selectedCustomers.value,
       });
 
@@ -92,7 +94,7 @@ export default defineComponent({
     };
 
     return {
-      user,
+      employee,
       customerOptions,
       selectedCustomers,
       saveProjects,

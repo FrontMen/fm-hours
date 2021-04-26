@@ -4,15 +4,15 @@
       <b-container fluid class="app-table">
         <b-row class="app-table__top-row py-3">
           <b-col>
-            <span class="font-weight-bold">Users</span>
+            <span class="font-weight-bold">Employees</span>
           </b-col>
         </b-row>
 
-        <timesheet-user-row
-          v-for="user in users"
-          :key="user.id"
-          :user="user"
-          @click="openUserTimesheetPage(user)"
+        <timesheet-employee-row
+          v-for="employee in employees"
+          :key="employee.id"
+          :employee="employee"
+          @click="openEmployeeTimesheetPage(employee)"
         />
       </b-container>
     </div>
@@ -27,12 +27,12 @@ import {
   useStore,
 } from "@nuxtjs/composition-api";
 
-import TimesheetUserRow from "~/components/timesheets/timesheet-user-row.vue";
+import TimesheetEmployeeRow from "~/components/timesheets/timesheet-employee-row.vue";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
   middleware: ["isAdmin"],
-  components: { TimesheetUserRow },
+  components: { TimesheetEmployeeRow },
 
   head: {
     title: "Timesheets",
@@ -40,18 +40,18 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
-    const users = computed(() => store.state.timesheets.users);
-    store.dispatch("timesheets/getUserList");
+    const employees = computed(() => store.state.timesheets.employees);
+    store.dispatch("timesheets/getEmployeeList");
 
     const router = useRouter();
-    const openUserTimesheetPage = (user: TimesheetUser) => {
-      router.push(`timesheets/${user.id}`);
+    const openEmployeeTimesheetPage = (employee: TimesheetEmployee) => {
+      router.push(`timesheets/${employee.id}`);
     };
 
     return {
-      users,
+      employees,
       recordStatus,
-      openUserTimesheetPage,
+      openEmployeeTimesheetPage,
     };
   },
 });

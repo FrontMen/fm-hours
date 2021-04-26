@@ -1,6 +1,10 @@
 <template>
   <div class="content-wrapper mt-5">
-    <user-header v-if="isAdminView && user" class="mb-5" :user="user" />
+    <employee-header
+      v-if="isAdminView && employee"
+      class="mb-5"
+      :employee="employee"
+    />
 
     <navigation-buttons
       class="mb-5"
@@ -46,7 +50,9 @@
         </template>
       </weekly-timesheet>
 
-      <template v-if="user && user.travelAllowance && timesheet.travelProject">
+      <template
+        v-if="employee && employee.travelAllowance && timesheet.travelProject"
+      >
         <h3 class="mt-5 mb-3">Travel allowance</h3>
 
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
@@ -104,7 +110,7 @@ import {
   useMeta,
 } from "@nuxtjs/composition-api";
 
-import UserHeader from "~/components/app/user-header.vue";
+import EmployeeHeader from "~/components/app/employee-header.vue";
 import EmptyTimesheet from "~/components/records/empty-timesheet.vue";
 import NavigationButtons from "~/components/records/navigation-buttons.vue";
 import SelectProjectDialog from "~/components/records/select-project-dialog.vue";
@@ -117,7 +123,7 @@ import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
   components: {
-    UserHeader,
+    EmployeeHeader,
     EmptyTimesheet,
     NavigationButtons,
     SelectProjectDialog,
@@ -135,32 +141,32 @@ export default defineComponent({
     const recordsState = computed(() => store.state.records);
     const isAdminView = router.currentRoute.name?.includes("timesheets");
 
-    store.dispatch("users/getUsers");
+    store.dispatch("employees/getEmployees");
     store.dispatch("customers/getCustomers");
 
-    if (isAdminView && !store.getters["user/isUserAdmin"]) {
+    if (isAdminView && !store.getters["employee/isEmployeeAdmin"]) {
       return router.replace("/records");
     }
 
-    const userId = isAdminView
-      ? router.currentRoute.params.user_id
-      : store.state.user.user!.id;
+    const employeeId = isAdminView
+      ? router.currentRoute.params.employee_id
+      : store.state.employee.employee!.id;
 
-    const selectedUser = computed(() => {
-      const users = store.state.users.users;
+    const selectedEmployee = computed(() => {
+      const employees = store.state.employees.employees;
 
       return isAdminView
-        ? users.find((x) => x.id === userId)
-        : store.state.user.user;
+        ? employees.find((x) => x.id === employeeId)
+        : store.state.employee.employee;
     });
 
     useMeta({
       title: isAdminView
-        ? `Timesheets - ${selectedUser.value?.name}`
+        ? `Timesheets - ${selectedEmployee.value?.name}`
         : undefined,
     });
 
-    const timesheet = useTimesheet(userId);
+    const timesheet = useTimesheet(employeeId);
 
     const selectableCustomers = computed(() => {
       const customers = store.state.customers.customers;
@@ -170,7 +176,7 @@ export default defineComponent({
 
       const selectableCustomers = customers.filter(
         (x) =>
-          selectedUser.value?.projects.includes(x.id) &&
+          selectedEmployee.value?.projects.includes(x.id) &&
           !selectedCustomers.includes(x.id)
       );
 
@@ -184,7 +190,7 @@ export default defineComponent({
     });
 
     return {
-      user: selectedUser,
+      employee: selectedEmployee,
       selectableCustomers,
       recordsState,
       recordStatus,

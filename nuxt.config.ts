@@ -70,7 +70,7 @@ export default defineNuxtConfig({
       firestore: true,
       auth: {
         initialize: {
-          onAuthStateChangedAction: "user/onAuthStateChanged",
+          onAuthStateChangedAction: "employee/onAuthStateChanged",
         },
       },
     },

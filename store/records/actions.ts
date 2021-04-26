@@ -9,23 +9,28 @@ import {
 } from "~/helpers/timesheet";
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
-  async getRecords({ commit }, payload: { userId: string; startDate: Date }) {
+  async getRecords(
+    { commit },
+    payload: { employeeId: string; startDate: Date }
+  ) {
     commit("setLoading", { isLoading: true });
 
     const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      userId: payload.userId,
+      employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
     });
 
-    const timeRecords = await this.app.$timeRecordsService.getUserRecords({
-      userId: payload.userId,
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
+      employeeId: payload.employeeId,
     });
 
-    const travelRecords = await this.app.$travelRecordsService.getUserRecords({
-      userId: payload.userId,
-    });
+    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords(
+      {
+        employeeId: payload.employeeId,
+      }
+    );
 
     commit("setLoading", { isLoading: false });
     commit("setRecords", {
@@ -38,7 +43,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
   async goToWeek(
     { commit, state },
-    payload: { userId: string; to: "current" | "next" | "previous" }
+    payload: { employeeId: string; to: "current" | "next" | "previous" }
   ) {
     const currentStartDate = state.selectedWeek[0].date;
     let newStartDate = new Date();
@@ -51,7 +56,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = buildWeek(startOfISOWeek(newStartDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      userId: payload.userId,
+      employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
     });
@@ -65,7 +70,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async saveTimesheet(
     { commit, state },
     payload: {
-      userId: string;
+      employeeId: string;
       week: WeekDate[];
       timesheet: WeeklyTimesheet;
       status: RecordStatus;
@@ -91,15 +96,17 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.status
     );
 
-    const timeRecords = await this.app.$timeRecordsService.saveUserRecords({
-      userId: payload.userId,
+    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
+      employeeId: payload.employeeId,
       timeRecords: timeRecordsToSave,
     });
 
-    const travelRecords = await this.app.$travelRecordsService.saveUserRecords({
-      userId: payload.userId,
-      travelRecords: travelRecordsToSave,
-    });
+    const travelRecords = await this.app.$travelRecordsService.saveEmployeeRecords(
+      {
+        employeeId: payload.employeeId,
+        travelRecords: travelRecordsToSave,
+      }
+    );
 
     commit("setSaving", { isSaving: false });
     commit("updateRecords", {
@@ -116,20 +123,20 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
   async deleteProjectRecords(
     { commit, state },
-    payload: { userId: string; week: WeekDate[]; project: TimesheetProject }
+    payload: { employeeId: string; week: WeekDate[]; project: TimesheetProject }
   ) {
     commit("setSaving", { isSaving: true });
 
     const recordsToDelete = payload.project.values.map((value, index) => ({
       id: payload.project.ids[index],
-      userId: payload.userId,
+      employeeId: payload.employeeId,
       date: new Date(payload.week[index].date).getTime(),
       hours: value,
       customer: payload.project.customer,
       status: "new" as RecordStatus,
     }));
 
-    await this.app.$timeRecordsService.deleteUserRecords({
+    await this.app.$timeRecordsService.deleteEmployeeRecords({
       recordsToDelete,
     });
 

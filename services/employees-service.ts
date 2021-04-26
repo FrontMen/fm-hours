@@ -1,14 +1,14 @@
 import { NuxtFireInstance } from "@nuxtjs/firebase";
 
-export default class UsersService {
+export default class EmployeesService {
   fire: NuxtFireInstance;
 
   constructor(fire: NuxtFireInstance) {
     this.fire = fire;
   }
 
-  async getUsers() {
-    const ref = this.fire.firestore.collection("users");
+  async getEmployees() {
+    const ref = this.fire.firestore.collection("employees");
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
@@ -17,9 +17,9 @@ export default class UsersService {
     }));
   }
 
-  async getUser(userId: string): Promise<User | null> {
-    const ref = this.fire.firestore.collection("users");
-    const doc = await ref.doc(userId).get();
+  async getEmployee(employeeId: string): Promise<Employee | null> {
+    const ref = this.fire.firestore.collection("employees");
+    const doc = await ref.doc(employeeId).get();
 
     if (doc.exists) {
       const {
@@ -28,7 +28,7 @@ export default class UsersService {
         picture,
         projects,
         travelAllowance,
-      } = doc.data() as User;
+      } = doc.data() as Employee;
 
       return {
         id: doc.id,
@@ -43,12 +43,12 @@ export default class UsersService {
     return null;
   }
 
-  async createUser(params: {
-    userId: string;
+  async createEmployee(params: {
+    employeeId: string;
     name: string;
     picture: string;
-  }): Promise<User> {
-    const newUser = {
+  }): Promise<Employee> {
+    const newEmployee = {
       name: params.name,
       picture: params.picture,
       projects: [],
@@ -56,20 +56,20 @@ export default class UsersService {
       travelAllowance: false,
     };
 
-    const ref = this.fire.firestore.collection("users");
-    await ref.doc(params.userId).set(newUser);
+    const ref = this.fire.firestore.collection("employees");
+    await ref.doc(params.employeeId).set(newEmployee);
 
-    return { id: params.userId, ...newUser };
+    return { id: params.employeeId, ...newEmployee };
   }
 
-  async updateUser(user: User) {
-    const newUser = { ...user } as any;
-    delete newUser.id;
+  async updateEmployee(employee: Employee) {
+    const newEmployee = { ...employee } as any;
+    delete newEmployee.id;
 
     return await this.fire.firestore
-      .collection("users")
-      .doc(user.id)
-      .set(newUser, { merge: true });
+      .collection("employees")
+      .doc(employee.id)
+      .set(newEmployee, { merge: true });
   }
 
   public async isAdmin(email: string) {

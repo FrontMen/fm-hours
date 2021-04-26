@@ -23,10 +23,10 @@ export default () => {
     records.reduce((total, currentRecord) => (total += currentRecord.hours), 0);
 
   const getNonBillableColumns = (
-    user: ReportUser,
+    employee: ReportEmployee,
     nonBillableProjects: Customer[]
   ) => {
-    const { nonBillableRecords } = user;
+    const { nonBillableRecords } = employee;
 
     return nonBillableProjects.reduce((total: any, currentProject) => {
       const records = nonBillableRecords.filter(
@@ -38,12 +38,15 @@ export default () => {
     }, {});
   };
 
-  const createTotalsProject = (user: ReportUser, report: MonthlyReportData) => {
-    const billableHours = getTotalHours(user.billableRecords);
+  const createTotalsProject = (
+    employee: ReportEmployee,
+    report: MonthlyReportData
+  ) => {
+    const billableHours = getTotalHours(employee.billableRecords);
 
-    const nonBillableHours = getTotalHours(user.nonBillableRecords);
+    const nonBillableHours = getTotalHours(employee.nonBillableRecords);
     const nonBillableColumns = getNonBillableColumns(
-      user,
+      employee,
       report.nonBillableProjects
     );
 
@@ -51,7 +54,7 @@ export default () => {
       (billableHours / (billableHours + nonBillableHours)) * 100;
 
     return {
-      name: user.name,
+      name: employee.name,
       billable: billableHours,
       nonBillable: nonBillableHours,
       totalHours: billableHours + nonBillableHours,
@@ -61,7 +64,9 @@ export default () => {
   };
 
   const createTotalsItems = (report: MonthlyReportData | null) => {
-    return report?.users.map((user) => createTotalsProject(user, report));
+    return report?.employees.map((employee) =>
+      createTotalsProject(employee, report)
+    );
   };
 
   return { createTotalsFields, createTotalsItems };

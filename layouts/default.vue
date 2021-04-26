@@ -1,6 +1,6 @@
 <template>
   <div class="layout-wrapper">
-    <top-bar :user="user" :is-admin="isAdmin" @logout="logout()" />
+    <top-bar :employee="employee" :is-admin="isAdmin" @logout="logout()" />
     <admin-sidebar v-if="isAdmin" />
 
     <Nuxt />
@@ -19,15 +19,15 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     store.dispatch("holidays/getHolidays");
 
-    const user = computed(() => store.state.user.user);
-    const isAdmin = computed(() => store.state.user.isAdmin);
+    const employee = computed(() => store.state.employee.employee);
+    const isAdmin = computed(() => store.state.employee.isAdmin);
 
     const logout = () => {
-      store.dispatch("user/logout");
+      store.dispatch("employee/logout");
     };
 
     return {
-      user,
+      employee,
       isAdmin,
       logout,
     };

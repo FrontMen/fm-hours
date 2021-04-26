@@ -1,27 +1,27 @@
 <template>
   <b-row
-    class="timesheet-user-row app-table__row py-3"
+    class="timesheet-employee-row app-table__row py-3"
     no-gutters
     @click="handleClick"
   >
     <b-col cols="0" class="mr-2">
-      <b-avatar :src="user.picture" />
+      <b-avatar :src="employee.picture" />
     </b-col>
 
     <b-col>
       <div class="font-weight-bold">
-        {{ user.name }}
+        {{ employee.name }}
       </div>
 
-      <div v-if="user.status === recordStatus.NEW" class="text-success">
+      <div v-if="employee.status === recordStatus.NEW" class="text-success">
         Nothing to approve
       </div>
 
-      <div v-if="user.status === recordStatus.PENDING" class="text-warning">
+      <div v-if="employee.status === recordStatus.PENDING" class="text-warning">
         Waiting on approval
       </div>
 
-      <div v-if="user.status === recordStatus.DENIED" class="text-danger">
+      <div v-if="employee.status === recordStatus.DENIED" class="text-danger">
         Has denied records
       </div>
     </b-col>
@@ -35,8 +35,8 @@ import { recordStatus } from "~/helpers/record-status";
 export default defineComponent({
   emits: ["click"],
   props: {
-    user: {
-      type: Object as PropType<TimesheetUser>,
+    employee: {
+      type: Object as PropType<TimesheetEmployee>,
       required: true,
     },
   },
@@ -52,7 +52,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.timesheet-user-row {
+.timesheet-employee-row {
   cursor: pointer;
 }
 </style>

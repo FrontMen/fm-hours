@@ -1,4 +1,4 @@
 export default (): TimesheetsStoreState => ({
-  users: [],
-  selectedUserId: "",
+  employees: [],
+  selectedEmployeeId: "",
 });

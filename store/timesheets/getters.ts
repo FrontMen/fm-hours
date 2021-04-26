@@ -4,26 +4,32 @@ import { GetterTree } from "vuex";
 import { buildWeek } from "~/helpers/dates";
 
 const getters: GetterTree<TimesheetsStoreState, RootStoreState> = {
-  getUserPendingTimeRecords(state) {
-    const user = state.users.find((user) => user.id === state.selectedUserId);
-    return user ? user.pendingTimeRecords : [];
+  getEmployeePendingTimeRecords(state) {
+    const employee = state.employees.find(
+      (employee) => employee.id === state.selectedEmployeeId
+    );
+    return employee ? employee.pendingTimeRecords : [];
   },
 
-  getUserPendingTravelRecords(state) {
-    const user = state.users.find((user) => user.id === state.selectedUserId);
-    return user ? user.pendingTravelRecords : [];
+  getEmployeePendingTravelRecords(state) {
+    const employee = state.employees.find(
+      (employee) => employee.id === state.selectedEmployeeId
+    );
+    return employee ? employee.pendingTravelRecords : [];
   },
 
-  getUserPendingWeeks(state, _, rootState) {
-    const user = state.users.find((user) => user.id === state.selectedUserId);
-    if (!user) return [];
+  getEmployeePendingWeeks(state, _, rootState) {
+    const employee = state.employees.find(
+      (employee) => employee.id === state.selectedEmployeeId
+    );
+    if (!employee) return [];
 
     const pendingWeeks = [];
     const holidays = rootState.holidays.holidays;
 
     let pendingRecords = [
-      ...user.pendingTimeRecords,
-      ...user.pendingTravelRecords,
+      ...employee.pendingTimeRecords,
+      ...employee.pendingTravelRecords,
     ];
 
     while (pendingRecords.length > 0) {

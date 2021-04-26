@@ -9,7 +9,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
     const endDate = lastDayOfMonth(payload.startDate);
 
     const customers = await this.app.$customersService.getCustomers();
-    const users = await this.app.$usersService.getUsers(); // TODO: should filter on `active` users
+    const employees = await this.app.$employeesService.getEmployees(); // TODO: should filter on `active` employees
 
     const timeRecords = await this.app.$timeRecordsService.getApprovedRecords({
       startDate,
@@ -25,7 +25,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     commit("setIsLoading", { isLoading: false });
     commit("createMonthlyReportData", {
-      users,
+      employees,
       customers,
       timeRecords,
       travelRecords,
