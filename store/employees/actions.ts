@@ -6,23 +6,6 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit("setEmployees", { employees });
   },
 
-  async toggleActive({ commit }, payload: Employee) {
-    const newEmployee = { ...payload, active: !payload.active };
-    await this.app.$EmployeesService.updateEmployee(newEmployee);
-
-    commit("updateEmployee", { employee: newEmployee });
-  },
-
-  async toggleTravelAllowance({ commit }, payload: Employee) {
-    const newEmployee = {
-      ...payload,
-      travelAllowance: !payload.travelAllowance,
-    };
-    await this.app.$employeesService.updateEmployee(newEmployee);
-
-    commit("updateEmployee", { employee: newEmployee });
-  },
-
   async saveProjects(
     { commit },
     payload: { employee: Employee; customerIds: string[] }
@@ -31,6 +14,11 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     await this.app.$employeesService.updateEmployee(newEmployee);
 
     commit("updateEmployee", { employee: newEmployee });
+  },
+
+  async updateEmployee({ commit }, payload: Employee) {
+    await this.app.$employeesService.updateEmployee(payload);
+    commit("updateEmployee", { employee: payload });
   },
 };
 
