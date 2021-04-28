@@ -6,16 +6,40 @@
       <div v-else>
         <employee-header :employee="employee" />
 
-        <b-form-checkbox-group
-          v-model="selectedCustomers"
-          :options="customerOptions"
-          class="my-3"
-          value-field="item"
-          text-field="name"
-          switches
-          stacked
-          @change="hasUnsavedChanges = true"
-        />
+        <b-row class="my-5">
+          <b-col cols="12" md="6">
+            <h6 class="mb-3">Manage Projects</h6>
+            <b-form-checkbox-group
+              v-model="selectedCustomers"
+              :options="customerOptions"
+              value-field="item"
+              text-field="name"
+              switches
+              stacked
+              @change="hasUnsavedChanges = true"
+            />
+          </b-col>
+
+          <b-col cols="12" md="6">
+            <h6 class="mb-3">Employee Settings</h6>
+            <b-form-checkbox
+              v-model="isTravelAllowed"
+              name="check-button"
+              switch
+              @change="hasUnsavedChanges = true"
+            >
+              Travel allowance
+            </b-form-checkbox>
+            <b-form-checkbox
+              v-model="isEmployeeActive"
+              name="check-button"
+              switch
+              @change="hasUnsavedChanges = true"
+            >
+              Active employee
+            </b-form-checkbox>
+          </b-col>
+        </b-row>
 
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
           Save
@@ -84,11 +108,35 @@ export default defineComponent({
       { immediate: true }
     );
 
+    const isTravelAllowed = ref<boolean>(!!employee.value?.travelAllowance);
+    watch(
+      () => employee.value?.travelAllowance,
+      () => {
+        isTravelAllowed.value = !!employee.value?.travelAllowance;
+      },
+      { immediate: true }
+    );
+
+    const isEmployeeActive = ref<boolean>(!!employee.value?.active);
+    watch(
+      () => employee.value?.active,
+      () => {
+        isEmployeeActive.value = !!employee.value?.active;
+      },
+      { immediate: true }
+    );
+
     const saveProjects = () => {
-      store.dispatch("employees/saveProjects", {
-        employee: employee.value,
-        customerIds: selectedCustomers.value,
-      });
+      if (!employee.value) return;
+
+      const newEmployee = {
+        ...employee.value,
+        projects: selectedCustomers.value,
+        travelAllowance: isTravelAllowed.value,
+        active: isEmployeeActive.value,
+      };
+
+      store.dispatch("employees/updateEmployee", newEmployee);
 
       hasUnsavedChanges.value = false;
     };
@@ -99,6 +147,8 @@ export default defineComponent({
       selectedCustomers,
       saveProjects,
       hasUnsavedChanges,
+      isTravelAllowed,
+      isEmployeeActive,
     };
   },
 });
