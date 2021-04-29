@@ -1,10 +1,11 @@
 interface Employee {
   id: string;
-  active: boolean;
+  active?: boolean;
   name: string;
   picture: string;
   travelAllowance: boolean;
   projects: string[];
+  endDate: number | null;
 }
 
 interface EmployeeStoreState {
