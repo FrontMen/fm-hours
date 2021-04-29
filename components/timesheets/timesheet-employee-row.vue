@@ -10,7 +10,7 @@
 
     <b-col>
       <div class="font-weight-bold">
-        {{ employee.name }}
+        {{ employee.name }} {{ employee.endDate ? "(Inactive)" : "" }}
       </div>
 
       <div v-if="employee.status === recordStatus.NEW" class="text-success">

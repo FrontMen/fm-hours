@@ -5,6 +5,7 @@ import { recordStatus } from "~/helpers/record-status";
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
+  compareTimesheetEmployees,
 } from "~/helpers/timesheet";
 
 const isPendingRecord = (
@@ -23,36 +24,39 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     const travelRecords = await this.app.$travelRecordsService.getPendingOrDeniedRecords();
 
     const employees = await this.app.$employeesService.getEmployees();
-    const activeEmployees = employees.filter((x) => !!x.active);
 
-    const timesheetEmployees = activeEmployees.map((employee) => {
-      const pendingTimeRecords = timeRecords.filter((record) =>
-        isPendingRecord(record, employee.id)
-      );
+    const timesheetEmployees: TimesheetEmployee[] = employees.map(
+      (employee) => {
+        const pendingTimeRecords = timeRecords.filter((record) =>
+          isPendingRecord(record, employee.id)
+        );
 
-      const pendingTravelRecords = travelRecords.filter((record) =>
-        isPendingRecord(record, employee.id)
-      );
+        const pendingTravelRecords = travelRecords.filter((record) =>
+          isPendingRecord(record, employee.id)
+        );
 
-      const hasPendingRecords =
-        pendingTimeRecords.length > 0 || pendingTravelRecords.length > 0;
-      const hasDeniedRecords =
-        timeRecords.some((record) => isDeniedRecord(record, employee.id)) ||
-        travelRecords.some((record) => isDeniedRecord(record, employee.id));
+        const hasPendingRecords =
+          pendingTimeRecords.length > 0 || pendingTravelRecords.length > 0;
+        const hasDeniedRecords =
+          timeRecords.some((record) => isDeniedRecord(record, employee.id)) ||
+          travelRecords.some((record) => isDeniedRecord(record, employee.id));
 
-      return {
-        ...employee,
-        pendingTimeRecords,
-        pendingTravelRecords,
-        status: hasPendingRecords
-          ? recordStatus.PENDING
-          : hasDeniedRecords
-          ? recordStatus.DENIED
-          : recordStatus.NEW,
-      };
-    });
+        return {
+          ...employee,
+          pendingTimeRecords,
+          pendingTravelRecords,
+          status: hasPendingRecords
+            ? recordStatus.PENDING
+            : hasDeniedRecords
+            ? recordStatus.DENIED
+            : recordStatus.NEW,
+        };
+      }
+    );
 
-    commit("setTimesheetEmployees", { employees: timesheetEmployees });
+    const sortedEmployees = timesheetEmployees.sort(compareTimesheetEmployees);
+
+    commit("setTimesheetEmployees", { employees: sortedEmployees });
   },
 
   selectEmployee({ commit }, payload: { employeeId: string }) {

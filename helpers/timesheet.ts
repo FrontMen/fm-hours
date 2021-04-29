@@ -244,3 +244,34 @@ export const getTravelRecordsToSave = (
 
   return travelRecordsToSave;
 };
+
+const scoringTimesheetEmployee = (timesheetEmployee: TimesheetEmployee) => {
+  let score = 0;
+
+  if (timesheetEmployee.status === recordStatus.PENDING) {
+    score = 100000;
+  } else if (timesheetEmployee.status === recordStatus.DENIED) {
+    score = 1000;
+  } else {
+    score = 10;
+  }
+
+  if (!timesheetEmployee.endDate) {
+    score *= 1.1;
+  }
+
+  return score;
+};
+
+// Compare TimesheetEmployees to sort then to show from top to bottom:
+// PENDING > DENIED > NEW
+// Inactive employees will be the last of each block
+export const compareTimesheetEmployees = (
+  prevEmployee: TimesheetEmployee,
+  nextEmployee: TimesheetEmployee
+) => {
+  const prevScore = scoringTimesheetEmployee(prevEmployee);
+  const nextScore = scoringTimesheetEmployee(nextEmployee);
+
+  return nextScore - prevScore;
+};
