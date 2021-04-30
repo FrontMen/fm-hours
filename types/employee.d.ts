@@ -1,6 +1,5 @@
 interface Employee {
   id: string;
-  active?: boolean;
   name: string;
   picture: string;
   travelAllowance: boolean;

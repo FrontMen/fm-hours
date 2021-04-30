@@ -23,7 +23,6 @@ export default class EmployeesService {
 
     if (doc.exists) {
       const {
-        active,
         name,
         picture,
         projects,
@@ -33,7 +32,6 @@ export default class EmployeesService {
 
       return {
         id: doc.id,
-        active,
         name,
         picture,
         projects,
