@@ -1,5 +1,7 @@
-import { startOfMonth, lastDayOfMonth, isBefore } from "date-fns";
+import { startOfMonth, lastDayOfMonth } from "date-fns";
 import { ActionTree } from "vuex";
+
+import { checkEmployeeAvailability } from "../../helpers/employee";
 
 const actions: ActionTree<ReportsStoreState, RootStoreState> = {
   async getMonthlyReportData({ commit }, payload: { startDate: Date }) {
@@ -10,9 +12,8 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     const customers = await this.app.$customersService.getCustomers();
     const employees: Employee[] = await this.app.$employeesService.getEmployees();
-    const activeEmployees = employees.filter(
-      (employee) =>
-        !employee.endDate || !isBefore(new Date(employee.endDate), startDate)
+    const activeEmployees = employees.filter((employee) =>
+      checkEmployeeAvailability(employee, startDate)
     );
 
     const timeRecords = await this.app.$timeRecordsService.getApprovedRecords({

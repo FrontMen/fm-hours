@@ -32,7 +32,10 @@
         :formatter="valueFormatter.formatter"
         :min="valueFormatter.min"
         :max="valueFormatter.max"
-        :readonly="readonly"
+        :readonly="checkIfReadonly(selectedWeek[index].date)"
+        @focus.native="
+          handleInputFocus($event.target, selectedWeek[index].date)
+        "
         @input="$emit('change')"
       />
     </b-col>
@@ -45,6 +48,8 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+
+import { checkEmployeeAvailability } from "../../helpers/employee";
 
 export default defineComponent({
   emits: ["remove"],
@@ -68,6 +73,10 @@ export default defineComponent({
     valueFormatter: {
       type: Object as PropType<{ min: number; max: number; formatter(): void }>,
     },
+    employee: {
+      type: Object as PropType<Employee>,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const canRemove = computed(() => !props.readonly && props.removable);
@@ -79,10 +88,30 @@ export default defineComponent({
       props.project.values.reduce((total, current) => total + current)
     );
 
+    const checkIfReadonly = (paramDate: string) => {
+      if (props.readonly) {
+        return true;
+      }
+
+      const isEmployeeActive = props.employee.endDate
+        ? checkEmployeeAvailability(props.employee, new Date(paramDate))
+        : false;
+
+      return !isEmployeeActive;
+    };
+
+    const handleInputFocus = ($input: HTMLInputElement, paramDate: string) => {
+      if (!checkIfReadonly(paramDate)) {
+        $input.select();
+      }
+    };
+
     return {
       canRemove,
       handleRemoveClick,
       totalValue,
+      checkIfReadonly,
+      handleInputFocus,
     };
   },
 });
