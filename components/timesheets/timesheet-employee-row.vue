@@ -10,7 +10,7 @@
 
     <b-col>
       <div class="font-weight-bold">
-        {{ employee.name }} {{ employee.endDate ? "(Inactive)" : "" }}
+        {{ displayName }}
       </div>
 
       <div v-if="employee.status === recordStatus.NEW" class="text-success">
@@ -29,7 +29,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from "@nuxtjs/composition-api";
+import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
@@ -40,12 +40,18 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(_, { emit }) {
+  setup(props, { emit }) {
     const handleClick = () => emit("click");
+
+    const displayName = computed(
+      () =>
+        `${props.employee.name}${props.employee.endDate ? " (Inactive)" : ""}`
+    );
 
     return {
       handleClick,
       recordStatus,
+      displayName,
     };
   },
 });

@@ -32,10 +32,8 @@
         :formatter="valueFormatter.formatter"
         :min="valueFormatter.min"
         :max="valueFormatter.max"
-        :readonly="checkIfReadonly(selectedWeek[index].date)"
-        @focus.native="
-          handleInputFocus($event.target, selectedWeek[index].date)
-        "
+        :readonly="isReadonlyList[index]"
+        @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
     </b-col>
@@ -88,20 +86,24 @@ export default defineComponent({
       props.project.values.reduce((total, current) => total + current)
     );
 
-    const checkIfReadonly = (paramDate: string) => {
-      if (props.readonly) {
-        return true;
-      }
+    // An array of booleans, one for each day of the selected week, that states
+    // if the input for that respective day is readonly or not.
+    const isReadonlyList = computed(() =>
+      props.selectedWeek.map((day) => {
+        if (props.readonly) {
+          return true;
+        }
 
-      const isEmployeeActive = props.employee.endDate
-        ? checkEmployeeAvailability(props.employee, new Date(paramDate))
-        : false;
+        const isEmployeeActive = props.employee.endDate
+          ? checkEmployeeAvailability(props.employee, new Date(day.date))
+          : false;
 
-      return !isEmployeeActive;
-    };
+        return !isEmployeeActive;
+      })
+    );
 
-    const handleInputFocus = ($input: HTMLInputElement, paramDate: string) => {
-      if (!checkIfReadonly(paramDate)) {
+    const handleInputFocus = ($input: HTMLInputElement, dayIndex: number) => {
+      if (!isReadonlyList.value[dayIndex]) {
         $input.select();
       }
     };
@@ -110,7 +112,7 @@ export default defineComponent({
       canRemove,
       handleRemoveClick,
       totalValue,
-      checkIfReadonly,
+      isReadonlyList,
       handleInputFocus,
     };
   },
