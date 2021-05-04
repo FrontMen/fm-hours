@@ -12,6 +12,7 @@
     "noEmit": true,
     "experimentalDecorators": true,
     "baseUrl": ".",
+    "skipLibCheck": true,
     "paths": {
       "~/*": ["./*"],
       "@/*": ["./*"]
