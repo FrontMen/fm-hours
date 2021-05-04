@@ -117,11 +117,11 @@ export default defineComponent({
       { immediate: true }
     );
 
-    const isEmployeeActive = ref<boolean>(!!employee.value?.active);
+    const isEmployeeActive = ref<boolean>(!employee.value?.endDate);
     watch(
-      () => employee.value?.active,
+      () => employee.value?.endDate,
       () => {
-        isEmployeeActive.value = !!employee.value?.active;
+        isEmployeeActive.value = !employee.value?.endDate;
       },
       { immediate: true }
     );
@@ -133,8 +133,18 @@ export default defineComponent({
         ...employee.value,
         projects: selectedCustomers.value,
         travelAllowance: isTravelAllowed.value,
-        active: isEmployeeActive.value,
       };
+
+      const hasActivationChanged =
+        !!employee.value.endDate === isEmployeeActive.value;
+
+      if (hasActivationChanged && !isEmployeeActive.value) {
+        newEmployee.endDate = new Date().getTime();
+      }
+
+      if (hasActivationChanged && isEmployeeActive.value) {
+        newEmployee.endDate = null;
+      }
 
       store.dispatch("employees/updateEmployee", newEmployee);
 
