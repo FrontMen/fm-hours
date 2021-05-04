@@ -25,8 +25,11 @@ export function addDays(dirtyDate: string | number | Date, days: number) {
 
 // based on a date, create a label with the begin and enddate of that week
 export function getDateLabel(startDate: Date, endDate: Date) {
-  let label = format(startDate, "dd");
+  const today = new Date();
+  const thisWeek = today <= endDate && today >= startDate;
 
+  let label = format(startDate, "dd");
+  label = `${thisWeek ? "This Week: " : ""}${label}`;
   if (startDate.getMonth() !== endDate.getMonth()) {
     label += ` ${format(startDate, "MMM")}`;
 

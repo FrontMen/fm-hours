@@ -1,30 +1,26 @@
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
-      <b-button
-        class="navigation-buttons__button"
-        @click="handlePreviousClick()"
-      >
-        <b-icon icon="arrow-left" />
-      </b-button>
+      <b-button-group>
+        <b-button @click="handlePreviousClick()">
+          <b-icon icon="arrow-left" />
+        </b-button>
+        <b-button
+          :disabled="weekDifference === 0"
+          @click="handleCurrentClick()"
+        >
+          <b-icon icon="calendar2-date" />
+          <span class="ml-2 d-none d-sm-inline">This week</span>
+        </b-button>
 
-      <b-button
-        class="navigation-buttons__button"
-        :disabled="weekDifference > 3"
-        @click="handleNextClick()"
-      >
-        <b-icon icon="arrow-right" />
-      </b-button>
-
+        <b-button :disabled="weekDifference > 3" @click="handleNextClick()">
+          <b-icon icon="arrow-right" />
+        </b-button>
+      </b-button-group>
       <h2 class="navigation-buttons__week-label">
         {{ weekLabel }}
       </h2>
     </div>
-
-    <b-button v-if="weekDifference !== 0" @click="handleCurrentClick()">
-      <b-icon icon="calendar2-date" />
-      <span class="ml-2 d-none d-sm-inline">To current week</span>
-    </b-button>
   </div>
 </template>
 
@@ -85,11 +81,6 @@ export default defineComponent({
     flex: 0 0 auto;
     display: flex;
     align-items: center;
-  }
-
-  &__button {
-    flex: 0 0 auto;
-    margin-right: 8px;
   }
 
   &__week-label {

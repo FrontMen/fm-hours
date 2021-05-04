@@ -1,11 +1,12 @@
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
-    <img src="@/assets/images/logo.png" alt="Frontmen logo" />
+    <b-card align="center">
+      <img src="@/assets/images/logo.png" alt="Frontmen logo" />
+      <h1>Login</h1>
+      <b-card-text> Login to use the hours registration tool </b-card-text>
 
-    <h1>Login</h1>
-    <p>Login to use the hours registration tool</p>
-
-    <b-button class="login-button" @click="login()"> Login </b-button>
+      <b-button class="login-button" @click="login()"> Login </b-button>
+    </b-card>
   </b-container>
 </template>
 
