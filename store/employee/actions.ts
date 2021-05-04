@@ -20,7 +20,6 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     payload: { authUser?: any; claims?: any }
   ) {
     if (!payload.authUser) return;
-
     const employeesService = new EmployeesService(this.$fire);
     const employee = await employeesService.getEmployee(payload.claims.user_id);
     const isAdmin = await employeesService.isAdmin(payload.claims.email);
@@ -28,12 +27,15 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (employee) {
       commit("setEmployee", { employee, isAdmin });
     } else {
-      const newEmployee = await employeesService.createEmployee({
-        employeeId: payload.claims.user_id,
+      const newEmployee = {
+        id: payload.claims.user_id,
         name: payload.claims.name,
         picture: payload.claims.picture,
-      });
-
+        email: payload.claims.email,
+        projects: [],
+        travelAllowance: false,
+        endDate: null,
+      };
       commit("setEmployee", { employee: newEmployee, isAdmin });
     }
   },
