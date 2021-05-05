@@ -1,6 +1,7 @@
 interface Employee {
   id: string;
   name: string;
+  email: string;
   picture: string;
   travelAllowance: boolean;
   projects: string[];

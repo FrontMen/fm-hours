@@ -24,6 +24,7 @@ export default class EmployeesService {
     if (doc.exists) {
       const {
         name,
+        email,
         picture,
         projects,
         travelAllowance,
@@ -33,6 +34,7 @@ export default class EmployeesService {
       return {
         id: doc.id,
         name,
+        email,
         picture,
         projects,
         travelAllowance,
@@ -44,22 +46,23 @@ export default class EmployeesService {
   }
 
   async createEmployee(params: {
-    employeeId: string;
     name: string;
-    picture: string;
+    email: string;
+    travelAllowance: boolean;
   }): Promise<Employee> {
     const newEmployee = {
       name: params.name,
-      picture: params.picture,
+      picture: "",
+      email: params.email,
       projects: [],
-      travelAllowance: false,
+      travelAllowance: params.travelAllowance,
       endDate: null,
     };
 
     const ref = this.fire.firestore.collection("employees");
-    await ref.doc(params.employeeId).set(newEmployee);
+    const { id } = await ref.add(newEmployee);
 
-    return { id: params.employeeId, ...newEmployee };
+    return { ...newEmployee, id };
   }
 
   async updateEmployee(employee: Employee) {

@@ -16,6 +16,16 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit("updateEmployee", { employee: newEmployee });
   },
 
+  async addNewEmployee(
+    { commit },
+    payload: { name: string; email: string; travelAllowance: boolean }
+  ) {
+    const newEmployee = await this.app.$employeesService.createEmployee(
+      payload
+    );
+    commit("addNewEmployeeSuccess", { employee: newEmployee });
+  },
+
   async updateEmployee({ commit }, payload: Employee) {
     await this.app.$employeesService.updateEmployee(payload);
     commit("updateEmployee", { employee: payload });
