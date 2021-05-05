@@ -96,7 +96,7 @@ export default defineComponent({
 
         const isEmployeeActive = props.employee.endDate
           ? checkEmployeeAvailability(props.employee, new Date(day.date))
-          : false;
+          : true;
 
         return !isEmployeeActive;
       })
