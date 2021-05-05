@@ -78,3 +78,5 @@ dist
 .tern-port
 # Mac
 .DS_Store
+# webstorm
+.idea
