@@ -6,6 +6,7 @@ import TimeRecordsService from "~/services/time-records-service";
 import TravelRecordsService from "~/services/travel-records-service";
 import EmployeesService from "~/services/employees-service";
 import WorkSchemeService from "~/services/work-scheme-service";
+import TimesheetsService from "~/services/timesheets-service";
 
 export default defineNuxtPlugin(({ $fire }, inject) => {
   inject("customersService", new CustomersService($fire));
@@ -14,4 +15,5 @@ export default defineNuxtPlugin(({ $fire }, inject) => {
   inject("travelRecordsService", new TravelRecordsService($fire));
   inject("employeesService", new EmployeesService($fire));
   inject("workSchemeService", new WorkSchemeService());
+  inject("timesheetsService", new TimesheetsService($fire));
 });

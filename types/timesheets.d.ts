@@ -12,3 +12,10 @@ interface TimesheetsStoreState {
   employees: TimesheetEmployee[];
   selectedEmployeeId: string;
 }
+
+interface Timesheet {
+  id: string;
+  date: number;
+  employeeId: string;
+  status: TimesheetStatus;
+}
