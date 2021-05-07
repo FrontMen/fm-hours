@@ -11,6 +11,13 @@ const mutations: MutationTree<TimesheetsStoreState> = {
   setSelectedEmployeeId: (state, payload: { employeeId: string }) => {
     state.selectedEmployeeId = payload.employeeId;
   },
+
+  setWeeklyTimesheetsStatus: (
+    state,
+    payload: { weeklyTimesheetStatus: WeeklyTimesheetStatus[] }
+  ) => {
+    state.weeklyTimesheetsStatus = payload.weeklyTimesheetStatus;
+  },
 };
 
 export default mutations;

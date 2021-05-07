@@ -4,6 +4,7 @@ import TimeRecordsService from "~/services/time-records-service";
 import TravelRecordsService from "~/services/travel-records-service";
 import EmployeesService from "~/services/employees-service";
 import WorkSchemeService from "~/services/work-scheme-service";
+import WeeklyTimesheetStatusService from "~/services/weekly-timesheet-status-service";
 
 declare module "@nuxt/types" {
   interface NuxtAppOptions {
@@ -13,6 +14,7 @@ declare module "@nuxt/types" {
     $travelRecordsService: TravelRecordsService;
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;
+    $weeklyTimesheetStatusService: WeeklyTimesheetStatusService;
   }
 
   interface Context {
@@ -22,5 +24,6 @@ declare module "@nuxt/types" {
     $travelRecordsService: TravelRecordsService;
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;
+    $weeklyTimesheetStatusService: WeeklyTimesheetStatusService;
   }
 }

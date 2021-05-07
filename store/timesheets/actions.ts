@@ -72,16 +72,39 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       status: RecordStatus;
     }
   ) {
+    const start = new Date(payload.week[0].date);
+    const end = new Date(payload.week[6].date);
+
+    const fetchedEmployeeWeeklyTimesheet = await this.app.$weeklyTimesheetStatusService.getWeeklyTimesheet(
+      {
+        employeeId: payload.employeeId,
+        startDate: start,
+      }
+    );
+
+    const employeeWeeklyTimesheet: WeeklyTimesheetStatus =
+      fetchedEmployeeWeeklyTimesheet ||
+      (await this.app.$weeklyTimesheetStatusService.createWeeklyTimesheet({
+        employeeId: payload.employeeId,
+        startDate: start.getTime(),
+        endDate: end.getTime(),
+        timeRecordIds: [],
+        travelRecordIds: [],
+        status: payload.status,
+      }));
+
     const timeRecordsToSave = getTimeRecordsToSave(
       payload.timesheet,
       payload.week,
-      payload.status
+      payload.status,
+      employeeWeeklyTimesheet.id
     );
 
     const travelRecordsToSave = getTravelRecordsToSave(
       payload.timesheet,
       payload.week,
-      payload.status
+      payload.status,
+      employeeWeeklyTimesheet.id
     );
 
     await this.app.$timeRecordsService.saveEmployeeRecords({

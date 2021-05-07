@@ -24,6 +24,7 @@ interface TimeRecord {
   hours: number;
   status: RecordStatus;
   employeeId?: string;
+  weeklyTimesheetStatusId: string;
 }
 
 interface TravelRecord {
@@ -32,6 +33,7 @@ interface TravelRecord {
   kilometers: number;
   status: RecordStatus;
   employeeId?: string;
+  weeklyTimesheetStatusId: string;
 }
 
 interface TimesheetProject {

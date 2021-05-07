@@ -205,7 +205,8 @@ export function generateValueFormatter(min: number, max: number) {
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[],
-  status: RecordStatus
+  status: RecordStatus,
+  weeklyTimesheetStatusId: string
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
@@ -219,6 +220,7 @@ export const getTimeRecordsToSave = (
         customer: project.customer,
         hours: value,
         status,
+        weeklyTimesheetStatusId,
       });
     });
   });
@@ -229,7 +231,8 @@ export const getTimeRecordsToSave = (
 export const getTravelRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[],
-  status: RecordStatus
+  status: RecordStatus,
+  weeklyTimesheetStatusId: string
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
@@ -239,6 +242,7 @@ export const getTravelRecordsToSave = (
       date: new Date(week[index].date).getTime(),
       kilometers: value,
       status,
+      weeklyTimesheetStatusId,
     });
   });
 

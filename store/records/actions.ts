@@ -68,7 +68,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async saveTimesheet(
-    { commit, state },
+    { commit, state, rootState },
     payload: {
       employeeId: string;
       week: WeekDate[];
@@ -78,33 +78,95 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   ) {
     commit("setSaving", { isSaving: true });
 
+    console.log(">>>> week", payload.week);
+    console.log(">>>> timesheet", payload.timesheet);
+    console.log(">>>> status", payload.status);
+
     const start = new Date(payload.week[0].date);
     const end = new Date(payload.week[6].date);
 
     const isNotWithinSavedWeek = (record: TimeRecord | TravelRecord) =>
       !isWithinInterval(new Date(record.date), { start, end });
 
+    const currentWeeklyTimesheet = rootState.timesheets.weeklyTimesheetsStatus.find(
+      (weeklyTimesheet) =>
+        weeklyTimesheet.employeeId === payload.employeeId &&
+        weeklyTimesheet.startDate === start.getTime()
+    );
+
+    const employeeWeeklyTimesheet: WeeklyTimesheetStatus =
+      currentWeeklyTimesheet ||
+      (await this.app.$weeklyTimesheetStatusService.createWeeklyTimesheet({
+        employeeId: payload.employeeId,
+        startDate: start.getTime(),
+        endDate: end.getTime(),
+        timeRecordIds: [],
+        travelRecordIds: [],
+        status: payload.status,
+      }));
+
     const timeRecordsToSave = getTimeRecordsToSave(
       payload.timesheet,
       payload.week,
-      payload.status
+      payload.status,
+      employeeWeeklyTimesheet.id
     );
 
     const travelRecordsToSave = getTravelRecordsToSave(
       payload.timesheet,
       payload.week,
-      payload.status
+      payload.status,
+      employeeWeeklyTimesheet.id
     );
 
-    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
-      employeeId: payload.employeeId,
-      timeRecords: timeRecordsToSave,
-    });
+    const timeRecordsPromise = this.app.$timeRecordsService.saveEmployeeRecords(
+      {
+        employeeId: payload.employeeId,
+        timeRecords: timeRecordsToSave,
+      }
+    );
 
-    const travelRecords = await this.app.$travelRecordsService.saveEmployeeRecords(
+    const travelRecordsPromise = this.app.$travelRecordsService.saveEmployeeRecords(
       {
         employeeId: payload.employeeId,
         travelRecords: travelRecordsToSave,
+      }
+    );
+
+    const [timeRecords, travelRecords] = await Promise.all([
+      timeRecordsPromise,
+      travelRecordsPromise,
+    ]);
+
+    const updatedTimeRecordIds = timeRecords.reduce((acc, timeRecord) => {
+      if (!timeRecord.id) return acc;
+      return !timeRecord.hours ? [...acc, timeRecord.id] : acc;
+    }, [] as string[]);
+
+    const updatedTravelRecordIds = timeRecords.reduce((acc, travelRecord) => {
+      if (!travelRecord.id) return acc;
+      return !travelRecord.hours ? [...acc, travelRecord.id] : acc;
+    }, [] as string[]);
+
+    const updatedWeeklyTimesheetStatus = await this.app.$weeklyTimesheetStatusService.updateWeeklyTimesheetStatus(
+      {
+        weeklyTimesheet: employeeWeeklyTimesheet,
+        status: payload.status,
+        timeRecordIds: updatedTimeRecordIds,
+        travelRecordIds: updatedTravelRecordIds,
+      }
+    );
+
+    const updatedWeeklyTimesheetStatusList = rootState.timesheets.weeklyTimesheetsStatus.map(
+      (weeklyTimesheet) => {
+        if (
+          weeklyTimesheet.employeeId === payload.employeeId &&
+          weeklyTimesheet.startDate === start.getTime()
+        ) {
+          return updatedWeeklyTimesheetStatus;
+        }
+
+        return weeklyTimesheet;
       }
     );
 
@@ -119,13 +181,26 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
         ...travelRecords,
       ],
     });
+    commit(
+      "timesheets/setWeeklyTimesheetsStatus",
+      { weeklyTimesheetStatus: updatedWeeklyTimesheetStatusList },
+      { root: true }
+    );
   },
 
   async deleteProjectRecords(
-    { commit, state },
+    { commit, state, rootState },
     payload: { employeeId: string; week: WeekDate[]; project: TimesheetProject }
   ) {
     commit("setSaving", { isSaving: true });
+
+    const currentWeeklyTimesheet = rootState.timesheets.weeklyTimesheetsStatus.find(
+      (weeklyTimesheet) =>
+        weeklyTimesheet.employeeId === payload.employeeId &&
+        weeklyTimesheet.startDate === new Date(payload.week[0].date).getTime()
+    );
+
+    if (!currentWeeklyTimesheet) return;
 
     const recordsToDelete = payload.project.values.map((value, index) => ({
       id: payload.project.ids[index],
@@ -134,6 +209,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       hours: value,
       customer: payload.project.customer,
       status: "new" as RecordStatus,
+      weeklyTimesheetStatusId: currentWeeklyTimesheet.id,
     }));
 
     await this.app.$timeRecordsService.deleteEmployeeRecords({
