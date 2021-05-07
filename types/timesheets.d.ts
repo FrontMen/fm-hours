@@ -11,6 +11,7 @@ interface TimesheetPendingWeek {
 interface TimesheetsStoreState {
   employees: TimesheetEmployee[];
   selectedEmployeeId: string;
+  timesheets: Timesheet[];
 }
 
 interface Timesheet {

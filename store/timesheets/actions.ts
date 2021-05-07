@@ -59,6 +59,18 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     commit("setTimesheetEmployees", { employees: sortedEmployees });
   },
 
+  async getTimesheets(
+    { commit },
+    payload: { startDate: number; endDate: number }
+  ) {
+    const timesheets = await this.app.$timesheetsService.getTimesheets(
+      payload.startDate,
+      payload.endDate
+    );
+
+    commit("setTimesheets", { timesheets });
+  },
+
   selectEmployee({ commit }, payload: { employeeId: string }) {
     commit("setSelectedEmployeeId", { employeeId: payload.employeeId });
   },
