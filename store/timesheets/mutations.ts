@@ -15,6 +15,13 @@ const mutations: MutationTree<TimesheetsStoreState> = {
   setTimesheets: (state, payload: { timesheets: Timesheet[] }) => {
     state.timesheets = payload.timesheets;
   },
+
+  setTimesheetsTableData: (
+    state,
+    payload: { tableData: TimesheetTableData }
+  ) => {
+    state.timesheetTableData = payload.tableData;
+  },
 };
 
 export default mutations;

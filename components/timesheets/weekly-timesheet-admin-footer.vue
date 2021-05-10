@@ -77,7 +77,7 @@ export default defineComponent({
       required: false,
     },
     status: {
-      type: String as PropType<RecordStatus>,
+      type: String as PropType<TimesheetStatus>,
       required: true,
     },
   },

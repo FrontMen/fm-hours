@@ -15,7 +15,7 @@ export default (employeeId: string) => {
 
   const timesheet = ref<WeeklyTimesheet>({
     isReadonly: false,
-    status: "new" as RecordStatus,
+    status: "new" as TimesheetStatus,
     projects: [],
     travelProject: null,
   });
@@ -69,7 +69,7 @@ export default (employeeId: string) => {
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
-      status: recordStatus.NEW as RecordStatus,
+      status: recordStatus.NEW as TimesheetStatus,
     });
 
     hasUnsavedChanges.value = true;
@@ -94,7 +94,7 @@ export default (employeeId: string) => {
     { deep: true }
   );
 
-  const saveTimesheet = (recordStatus: RecordStatus) => {
+  const saveTimesheet = (recordStatus: TimesheetStatus) => {
     store.dispatch("records/saveTimesheet", {
       employeeId,
       week: recordsState.value.selectedWeek,

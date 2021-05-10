@@ -3,4 +3,5 @@ export const recordStatus = {
   PENDING: "pending",
   APPROVED: "approved",
   DENIED: "denied",
+  EMPTY: "empty",
 };

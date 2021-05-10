@@ -1,10 +1,3 @@
-declare enum RecordStatus {
-  NEW = "new",
-  PENDING = "pending",
-  APPROVED = "approved",
-  DENIED = "denied",
-}
-
 interface WeekDate {
   date: string;
   weekDay: string;
@@ -22,7 +15,7 @@ interface TimeRecord {
   date: number;
   customer: Customer;
   hours: number;
-  status: RecordStatus;
+  status: TimesheetStatus;
   employeeId?: string;
 }
 
@@ -30,7 +23,7 @@ interface TravelRecord {
   id: string | null;
   date: number;
   kilometers: number;
-  status: RecordStatus;
+  status: TimesheetStatus;
   employeeId?: string;
 }
 
@@ -45,7 +38,7 @@ interface WeeklyTimesheet {
   isReadonly: boolean;
   projects: TimesheetProject[];
   travelProject: TimesheetProject | null;
-  status: RecordStatus;
+  status: TimesheetStatus;
 }
 
 interface WorkScheme {

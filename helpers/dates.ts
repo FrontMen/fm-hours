@@ -90,7 +90,10 @@ function buildWeekSpan(startDate: Date) {
   };
 }
 
-export function getWeeksSpan(weeksBefore: number, weeksAfter: number) {
+export function getWeeksSpan(
+  weeksBefore: number,
+  weeksAfter: number
+): WeekSpan[] {
   const totalWeeks = weeksBefore + weeksAfter + 1;
   const currentWeekSpan = buildWeekSpan(new Date());
 

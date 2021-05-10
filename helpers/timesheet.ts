@@ -6,7 +6,7 @@ export const createWeeklyTimesheet = (params: {
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
-  status?: RecordStatus;
+  status?: TimesheetStatus;
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
@@ -33,7 +33,7 @@ export const createWeeklyTimesheet = (params: {
       params.workScheme
     ),
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
-    status: weeklyStatus as RecordStatus,
+    status: weeklyStatus as TimesheetStatus,
     isReadonly:
       weeklyStatus === recordStatus.APPROVED ||
       weeklyStatus === recordStatus.PENDING,
@@ -205,7 +205,7 @@ export function generateValueFormatter(min: number, max: number) {
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[],
-  status: RecordStatus
+  status: TimesheetStatus
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
@@ -229,7 +229,7 @@ export const getTimeRecordsToSave = (
 export const getTravelRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[],
-  status: RecordStatus
+  status: TimesheetStatus
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
@@ -274,4 +274,51 @@ export const compareTimesheetEmployees = (
   const nextScore = scoringTimesheetEmployee(nextEmployee);
 
   return nextScore - prevScore;
+};
+
+export const createTimesheetTableData = (params: {
+  employees: Employee[];
+  timesheets: Timesheet[];
+  weeksSpan: WeekSpan[];
+}) => {
+  const { employees, timesheets, weeksSpan } = params;
+
+  const weekItemsMap = weeksSpan.reduce((acc, week) => {
+    acc[week.start.date.toString()] = recordStatus.EMPTY as TimesheetStatus;
+    return acc;
+  }, {} as { [timestamp: string]: TimesheetStatus });
+
+  const items = employees.map(
+    (employee) =>
+      ({
+        ...employee,
+        ...weekItemsMap,
+      } as TimesheetTableItems)
+  );
+
+  items.forEach((item) => {
+    timesheets.forEach((timesheet) => {
+      if (item.id === timesheet.employeeId) {
+        const dateString = timesheet.date.toString();
+        item[dateString] = timesheet.status;
+      }
+    });
+  });
+
+  const weekFields: TimesheetTableField[] = weeksSpan.map((week) => ({
+    key: week.start.date.toString(),
+    label: `${week.start.formatedDate} - ${week.end.formatedDate}`,
+  }));
+
+  const fields = [
+    {
+      key: "id",
+      label: "Employee",
+      stickyColumn: true,
+      isRowHeader: true,
+    },
+    ...weekFields,
+  ];
+
+  return { items, fields };
 };
