@@ -8,7 +8,7 @@ import {
   generateValueFormatter,
 } from "~/helpers/timesheet";
 
-export default (employeeId: string) => {
+export default (employeeId: string, startTimestamp?: number) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
   const recordsState = computed(() => store.state.records);
@@ -22,7 +22,7 @@ export default (employeeId: string) => {
 
   store.dispatch("records/getRecords", {
     employeeId,
-    startDate: new Date(),
+    startDate: startTimestamp ? new Date(startTimestamp) : new Date(),
   });
 
   const goToWeek = (to: "current" | "previous" | "next") => {

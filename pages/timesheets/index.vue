@@ -24,7 +24,10 @@
           />
         </template>
         <template #cell()="scope">
-          <div :class="['container--cell', scope.item[scope.field.key]]" />
+          <div
+            :class="['container--cell', scope.item[scope.field.key]]"
+            @click="openEmployeeTimesheetPage(scope.item.id, scope.field.key)"
+          />
         </template>
       </b-table>
     </div>
@@ -53,8 +56,6 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
-    const employeesList = computed(() => store.state.timesheets.employees);
-    store.dispatch("timesheets/getEmployeeList");
 
     const weeksBefore = 8;
     const weeksAfter = 4;
@@ -66,12 +67,14 @@ export default defineComponent({
     });
 
     const router = useRouter();
-    const openEmployeeTimesheetPage = (employee: TimesheetEmployee) => {
-      router.push(`timesheets/${employee.id}`);
+    const openEmployeeTimesheetPage = (
+      employeeId: string,
+      startTimestamp: number
+    ) => {
+      router.push(`timesheets/${employeeId}/${startTimestamp}`);
     };
 
     return {
-      employeesList,
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,
@@ -98,6 +101,7 @@ export default defineComponent({
   height: 40px;
   width: 40px;
   background-color: grey;
+  cursor: pointer;
 }
 
 .container--cell.pending {

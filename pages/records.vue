@@ -168,7 +168,9 @@ export default defineComponent({
         : undefined,
     });
 
-    const timesheet = useTimesheet(employeeId);
+    const startTimestamp = router.currentRoute.params.start_timestamp;
+
+    const timesheet = useTimesheet(employeeId, Number(startTimestamp));
 
     const selectableCustomers = computed(() => {
       const customers = store.state.customers.customers;
