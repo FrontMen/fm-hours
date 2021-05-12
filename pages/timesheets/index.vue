@@ -8,20 +8,23 @@
         :fields="tableData.fields"
       >
         <template #head(id)="scope">
-          <div class="text-nowrap">
+          <div>
             {{ scope.label }}
           </div>
         </template>
         <template #head()="scope">
-          <div class="text-nowrap">
-            {{ scope.label }}
+          <div class="table-cell-wrapper table-cell-wrapper__heading">
+            <p>
+              {{
+                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate}`
+              }}
+            </p>
           </div>
         </template>
         <template #cell(id)="scope">
-          <employee-cell
-            :name="scope.item.name"
-            :picture="scope.item.picture"
-          />
+          <div class="table-cell-wrapper table-cell-wrapper__employee">
+            <p>{{ scope.item.name }}</p>
+          </div>
         </template>
         <template #cell()="scope">
           <div
@@ -43,12 +46,11 @@ import {
 } from "@nuxtjs/composition-api";
 
 import TimesheetEmployeeRow from "~/components/timesheets/timesheet-employee-row.vue";
-import EmployeeCell from "~/components/timesheets/employee-cell.vue";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
   middleware: ["isAdmin"],
-  components: { TimesheetEmployeeRow, EmployeeCell },
+  components: { TimesheetEmployeeRow },
 
   head: {
     title: "Timesheets",
@@ -57,7 +59,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
 
-    const weeksBefore = 8;
+    const weeksBefore = 4;
     const weeksAfter = 4;
 
     const tableData = computed(() => store.state.timesheets.timesheetTableData);
@@ -92,23 +94,44 @@ export default defineComponent({
   padding-bottom: 1rem;
 }
 
-.timesheet-table td {
-  vertical-align: inherit;
-}
-
 .container--cell {
   margin: auto;
-  height: 40px;
-  width: 40px;
-  background-color: grey;
+  height: 30px;
+  width: 30px;
+  background-color: var(--color-medium-gray);
   cursor: pointer;
 }
 
 .container--cell.pending {
-  background-color: #ff5900;
+  background-color: var(--color-alert);
 }
 
 .container--cell.approved {
-  background-color: #00cccc;
+  background-color: var(--color-tertiary);
+}
+
+.table-cell-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  &__employee {
+    p {
+      margin: 0;
+      white-space: nowrap;
+    }
+  }
+
+  &__heading {
+    p {
+      margin: 0;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+  }
+}
+
+.timesheet-table .table th {
+  vertical-align: inherit;
 }
 </style>

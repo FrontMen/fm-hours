@@ -50,6 +50,8 @@ interface TimesheetTableField {
   label?: string;
   stickyColumn?: boolean;
   isRowHeader?: boolean;
+  formatedStartDate?: string;
+  formatedEndDate?: string;
 }
 
 interface TimesheetTableData {
