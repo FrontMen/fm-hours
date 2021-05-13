@@ -270,7 +270,7 @@ export const createTimesheetTableData = (params: {
       ({
         ...employee,
         ...weekItemsMap,
-      } as TimesheetTableItems)
+      } as TimesheetTableItem)
   );
 
   items.forEach((item) => {
@@ -294,6 +294,7 @@ export const createTimesheetTableData = (params: {
       label: "Employee",
       stickyColumn: true,
       isRowHeader: true,
+      sortable: true,
     },
     ...weekFields,
   ];

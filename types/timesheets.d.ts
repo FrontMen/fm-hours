@@ -41,7 +41,7 @@ interface WeekSpan {
   };
 }
 
-interface TimesheetTableItems extends Employee {
+interface TimesheetTableItem extends Employee {
   [timestamp: string]: TimesheetStatus | null;
 }
 
@@ -56,5 +56,5 @@ interface TimesheetTableField {
 
 interface TimesheetTableData {
   fields: TimesheetTableField[];
-  items: TimesheetTableItems[];
+  items: TimesheetTableItem[];
 }
