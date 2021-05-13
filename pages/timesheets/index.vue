@@ -6,6 +6,8 @@
         responsive
         :items="tableData.items"
         :fields="tableData.fields"
+        :sort-compare="sortCompare"
+        no-sort-reset
       >
         <template #head(id)="scope">
           <div>
@@ -76,10 +78,21 @@ export default defineComponent({
       router.push(`/timesheets/${employeeId}/${startTimestamp}`);
     };
 
+    const sortCompare = (
+      a: TimesheetTableItem,
+      b: TimesheetTableItem,
+      key: string
+    ) => {
+      if (key === "id") {
+        return a.name.localeCompare(b.name);
+      }
+    };
+
     return {
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,
+      sortCompare,
     };
   },
 });
