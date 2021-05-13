@@ -73,7 +73,7 @@ export default defineComponent({
       employeeId: string,
       startTimestamp: number
     ) => {
-      router.push(`timesheets/${employeeId}/${startTimestamp}`);
+      router.push(`/timesheets/${employeeId}/${startTimestamp}`);
     };
 
     return {

@@ -6,7 +6,6 @@ export const createWeeklyTimesheet = (params: {
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
-  status?: TimesheetStatus;
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
@@ -17,7 +16,6 @@ export const createWeeklyTimesheet = (params: {
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStatus = params.status || getWeeklyStatus(weeklyTimeRecords);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
@@ -33,10 +31,6 @@ export const createWeeklyTimesheet = (params: {
       params.workScheme
     ),
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
-    status: weeklyStatus as TimesheetStatus,
-    isReadonly:
-      weeklyStatus === recordStatus.APPROVED ||
-      weeklyStatus === recordStatus.PENDING,
   };
 };
 
@@ -180,19 +174,6 @@ const findRecordByDate = (
   });
 };
 
-const getWeeklyStatus = (weeklyTimeRecords: TimeRecord[]) => {
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.APPROVED))
-    return recordStatus.APPROVED;
-
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.DENIED))
-    return recordStatus.DENIED;
-
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.PENDING))
-    return recordStatus.PENDING;
-
-  return recordStatus.NEW;
-};
-
 export function generateValueFormatter(min: number, max: number) {
   return {
     min,
@@ -204,8 +185,7 @@ export function generateValueFormatter(min: number, max: number) {
 
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
-  week: WeekDate[],
-  status: TimesheetStatus
+  week: WeekDate[]
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
@@ -218,7 +198,6 @@ export const getTimeRecordsToSave = (
         date: new Date(week[index].date).getTime(),
         customer: project.customer,
         hours: value,
-        status,
       });
     });
   });
@@ -228,8 +207,7 @@ export const getTimeRecordsToSave = (
 
 export const getTravelRecordsToSave = (
   timesheet: WeeklyTimesheet,
-  week: WeekDate[],
-  status: TimesheetStatus
+  week: WeekDate[]
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
@@ -238,7 +216,6 @@ export const getTravelRecordsToSave = (
       id: timesheet.travelProject?.ids[index] || null,
       date: new Date(week[index].date).getTime(),
       kilometers: value,
-      status,
     });
   });
 

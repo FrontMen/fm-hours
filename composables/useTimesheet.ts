@@ -12,17 +12,30 @@ export default (employeeId: string, startTimestamp?: number) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
   const recordsState = computed(() => store.state.records);
+  const timesheetState = computed(() => store.state.timesheets);
+
+  const timesheetStatus = computed(() =>
+    timesheetState.value.timesheets[0]
+      ? timesheetState.value.timesheets[0].status
+      : (recordStatus.NEW as TimesheetStatus)
+  );
+
+  const isReadonly = computed(
+    () =>
+      timesheetStatus.value === recordStatus.APPROVED ||
+      timesheetStatus.value === recordStatus.PENDING
+  );
 
   const timesheet = ref<WeeklyTimesheet>({
-    isReadonly: false,
-    status: "new" as TimesheetStatus,
     projects: [],
     travelProject: null,
   });
 
+  const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
+
   store.dispatch("records/getRecords", {
     employeeId,
-    startDate: startTimestamp ? new Date(startTimestamp) : new Date(),
+    startDate: initialDate,
   });
 
   const goToWeek = (to: "current" | "previous" | "next") => {
@@ -69,7 +82,6 @@ export default (employeeId: string, startTimestamp?: number) => {
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
-      status: recordStatus.NEW as TimesheetStatus,
     });
 
     hasUnsavedChanges.value = true;
@@ -84,6 +96,11 @@ export default (employeeId: string, startTimestamp?: number) => {
     () => {
       hasUnsavedChanges.value = false;
 
+      store.dispatch("timesheets/getTimesheets", {
+        date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+        employeeId,
+      });
+
       timesheet.value = createWeeklyTimesheet({
         week: recordsState.value.selectedWeek,
         timeRecords: recordsState.value.timeRecords,
@@ -94,13 +111,22 @@ export default (employeeId: string, startTimestamp?: number) => {
     { deep: true }
   );
 
-  const saveTimesheet = (recordStatus: TimesheetStatus) => {
+  const saveTimesheet = (newTimesheetStatus: TimesheetStatus) => {
     store.dispatch("records/saveTimesheet", {
       employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
-      status: recordStatus,
     });
+
+    const newTimesheet = timesheetState.value.timesheets[0]
+      ? { ...timesheetState.value.timesheets[0], status: newTimesheetStatus }
+      : {
+          employeeId,
+          date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+          status: newTimesheetStatus,
+        };
+
+    store.dispatch("timesheets/saveTimesheet", newTimesheet);
 
     hasUnsavedChanges.value = false;
   };
@@ -115,5 +141,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     timesheetFormatter: generateValueFormatter(0, 24),
     kilometerFormatter: generateValueFormatter(0, 9999),
     saveTimesheet,
+    timesheetStatus,
+    isReadonly,
   };
 };

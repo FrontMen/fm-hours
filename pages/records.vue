@@ -27,12 +27,8 @@
             v-for="(project, index) in timesheet.projects"
             :key="project.customer.id"
             :project="timesheet.projects[index]"
-            :readonly="
-              !isAdminView && (timesheet.isReadonly || project.isExternal)
-            "
-            :removeable="
-              !isAdminView && !timesheet.isReadonly && !project.isExternal
-            "
+            :readonly="!isAdminView && (isReadonly || project.isExternal)"
+            :removeable="!isAdminView && !isReadonly && !project.isExternal"
             :selected-week="recordsState.selectedWeek"
             :value-formatter="timesheetFormatter"
             :employee="employee"
@@ -45,7 +41,7 @@
             :selected-week="recordsState.selectedWeek"
             :work-scheme="recordsState.workScheme"
             :show-add-project-button="
-              !timesheet.isReadonly && selectableCustomers.length > 0
+              !isReadonly && selectableCustomers.length > 0
             "
           />
         </template>
@@ -60,7 +56,7 @@
           <template #rows>
             <weekly-timesheet-row
               :project="timesheet.travelProject"
-              :readonly="!isAdminView && timesheet.isReadonly"
+              :readonly="!isAdminView && isReadonly"
               :removable="false"
               :selected-week="recordsState.selectedWeek"
               :value-formatter="kilometerFormatter"
@@ -77,7 +73,7 @@
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="recordsState.isSaving"
         :last-saved="recordsState.lastSaved"
-        :status="timesheet.status"
+        :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.PENDING)"
         @deny="saveTimesheet(recordStatus.DENIED)"
         @approve="saveTimesheet(recordStatus.APPROVED)"
@@ -89,7 +85,7 @@
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="recordsState.isSaving"
         :last-saved="recordsState.lastSaved"
-        :status="timesheet.status"
+        :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.NEW)"
         @submit="saveTimesheet(recordStatus.PENDING)"
         @unsubmit="saveTimesheet(recordStatus.NEW)"

@@ -15,7 +15,6 @@ interface TimeRecord {
   date: number;
   customer: Customer;
   hours: number;
-  status: TimesheetStatus;
   employeeId?: string;
 }
 
@@ -23,7 +22,6 @@ interface TravelRecord {
   id: string | null;
   date: number;
   kilometers: number;
-  status: TimesheetStatus;
   employeeId?: string;
 }
 
@@ -35,10 +33,8 @@ interface TimesheetProject {
 }
 
 interface WeeklyTimesheet {
-  isReadonly: boolean;
   projects: TimesheetProject[];
   travelProject: TimesheetProject | null;
-  status: TimesheetStatus;
 }
 
 interface WorkScheme {
