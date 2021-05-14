@@ -1,6 +1,8 @@
 import { DocumentData } from "@google-cloud/firestore";
 import { NuxtFireInstance } from "@nuxtjs/firebase";
 
+import { recordStatus } from "~/helpers/record-status";
+
 export default class TimesheetsService {
   fire: NuxtFireInstance;
 
@@ -30,6 +32,24 @@ export default class TimesheetsService {
     if (employeeId) query = query.where("employeeId", "==", employeeId);
 
     const snapshot = await query.get();
+
+    return snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...(doc.data() as Omit<Timesheet, "id">),
+    }));
+  }
+
+  async getApprovedTimesheets(params: {
+    startDate: number;
+    endDate: number;
+  }): Promise<Timesheet[]> {
+    const snapshot = await this.fire.firestore
+      .collection("timesheets")
+      .where("status", "==", recordStatus.APPROVED)
+      .where("date", ">=", params.startDate)
+      .where("date", "<=", params.endDate)
+      .orderBy("date", "asc")
+      .get();
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
