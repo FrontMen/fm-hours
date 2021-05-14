@@ -58,3 +58,10 @@ interface TimesheetTableData {
   fields: TimesheetTableField[];
   items: TimesheetTableItem[];
 }
+
+interface GetTimesheetsProps {
+  startDate?: number;
+  endDate?: number;
+  employeeId?: string;
+  date?: number;
+}

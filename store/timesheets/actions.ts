@@ -14,12 +14,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       date?: number;
     }
   ) {
-    const timesheets = await this.app.$timesheetsService.getTimesheets(
-      payload.startDate,
-      payload.endDate,
-      payload.employeeId,
-      payload.date
-    );
+    const timesheets = await this.app.$timesheetsService.getTimesheets(payload);
 
     commit("setTimesheets", { timesheets });
   },
@@ -34,10 +29,10 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     const weeksSpan = getWeeksSpan(payload.weeksBefore, payload.weeksAfter);
 
     const employeesPromise = this.app.$employeesService.getEmployees();
-    const timesheetsPromise = this.app.$timesheetsService.getTimesheets(
-      weeksSpan[0].start.date,
-      weeksSpan[payload.weeksBefore + payload.weeksAfter].start.date
-    );
+    const timesheetsPromise = this.app.$timesheetsService.getTimesheets({
+      startDate: weeksSpan[0].start.date,
+      endDate: weeksSpan[payload.weeksBefore + payload.weeksAfter].start.date,
+    });
 
     const [employees, timesheets] = await Promise.all([
       employeesPromise,

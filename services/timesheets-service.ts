@@ -8,12 +8,12 @@ export default class TimesheetsService {
     this.fire = fire;
   }
 
-  async getTimesheets(
-    startDate?: number,
-    endDate?: number,
-    employeeId?: string,
-    date?: number
-  ) {
+  async getTimesheets({
+    date,
+    startDate,
+    endDate,
+    employeeId,
+  }: GetTimesheetsProps) {
     let query:
       | firebase.default.firestore.CollectionReference<DocumentData>
       | firebase.default.firestore.Query<
