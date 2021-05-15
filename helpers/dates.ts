@@ -1,5 +1,6 @@
 import {
   format,
+  formatISO,
   isToday,
   isWeekend,
   isSameDay,
@@ -74,6 +75,12 @@ export function getWeekRange(beginDate: string) {
   return { start: new Date(formatDate(start)), end: new Date(formatDate(end)) };
 }
 
+// Get ISO date string with the format "YYYY-MM-DD" on the GMT time, so we can
+// easily check for date equality wihout worrying abou hours or timezone differences
+export function getISODay(date: number | Date) {
+  return formatISO(date).slice(0, 10);
+}
+
 function buildWeekSpan(startDate: Date) {
   const start = startOfISOWeek(startDate);
   const end = addDays(start, 6);
@@ -82,10 +89,12 @@ function buildWeekSpan(startDate: Date) {
     start: {
       date: start.getTime(),
       formatedDate: format(start, "dd/MMM"),
+      ISO: getISODay(start),
     },
     end: {
       date: end.getTime(),
       formatedDate: format(end, "dd/MMM"),
+      ISO: getISODay(end),
     },
   };
 }

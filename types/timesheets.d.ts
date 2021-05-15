@@ -34,10 +34,12 @@ interface WeekSpan {
   start: {
     date: number;
     formatedDate: string;
+    ISO: string;
   };
   end: {
     date: number;
     formatedDate: string;
+    ISO: string;
   };
 }
 

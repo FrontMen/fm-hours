@@ -1,5 +1,7 @@
 import { isSameDay, isWithinInterval } from "date-fns";
+
 import { recordStatus } from "./record-status";
+import { getISODay } from "./dates";
 
 export const createWeeklyTimesheet = (params: {
   week: WeekDate[];
@@ -261,9 +263,9 @@ export const createTimesheetTableData = (params: {
   const { employees, timesheets, weeksSpan } = params;
 
   const weekItemsMap = weeksSpan.reduce((acc, week) => {
-    acc[week.start.date.toString()] = recordStatus.EMPTY as TimesheetStatus;
+    acc[week.start.ISO] = recordStatus.EMPTY as TimesheetStatus;
     return acc;
-  }, {} as { [timestamp: string]: TimesheetStatus });
+  }, {} as { [isoDate: string]: TimesheetStatus });
 
   const items = employees.map(
     (employee) =>
@@ -276,14 +278,13 @@ export const createTimesheetTableData = (params: {
   items.forEach((item) => {
     timesheets.forEach((timesheet) => {
       if (item.id === timesheet.employeeId) {
-        const dateString = timesheet.date.toString();
-        item[dateString] = timesheet.status;
+        item[getISODay(timesheet.date)] = timesheet.status;
       }
     });
   });
 
   const weekFields: TimesheetTableField[] = weeksSpan.map((week) => ({
-    key: week.start.date.toString(),
+    key: week.start.ISO,
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
   }));
