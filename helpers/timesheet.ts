@@ -285,6 +285,7 @@ export const createTimesheetTableData = (params: {
 
   const weekFields: TimesheetTableField[] = weeksSpan.map((week) => ({
     key: week.start.ISO,
+    timestamp: week.start.date,
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
   }));

@@ -32,7 +32,9 @@
         <template #cell()="scope">
           <div
             :class="['container--cell', scope.item[scope.field.key]]"
-            @click="openEmployeeTimesheetPage(scope.item.id, scope.field.key)"
+            @click="
+              openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
+            "
           />
         </template>
       </b-table>
