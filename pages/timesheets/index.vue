@@ -7,6 +7,7 @@
         :items="tableData.items"
         :fields="tableData.fields"
         :sort-compare="sortCompare"
+        sort-by="id"
         no-sort-reset
       >
         <template #head(id)="scope">
