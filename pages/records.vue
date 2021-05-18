@@ -158,11 +158,17 @@ export default defineComponent({
         : store.state.employee.employee;
     });
 
-    useMeta({
-      title: isAdminView
+    const pageTitle = computed(() => {
+      if (!isAdminView) return undefined;
+
+      return selectedEmployee.value
         ? `Timesheets - ${selectedEmployee.value?.name}`
-        : undefined,
+        : "Timesheets";
     });
+
+    useMeta(() => ({
+      title: pageTitle.value,
+    }));
 
     const startTimestamp = router.currentRoute.params.start_timestamp;
 
