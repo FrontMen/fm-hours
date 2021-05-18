@@ -22,12 +22,13 @@ export default class TimesheetsService {
           DocumentData
         > = this.fire.firestore.collection("timesheets");
 
-    if (date) query = query.where("date", "==", date);
+    if (date && !startDate && !endDate) query = query.where("date", "==", date);
 
-    if (startDate)
+    if (startDate && !date)
       query = query.where("date", ">=", new Date(startDate).getTime());
 
-    if (endDate) query = query.where("date", "<=", new Date(endDate).getTime());
+    if (endDate && !date)
+      query = query.where("date", "<=", new Date(endDate).getTime());
 
     if (employeeId) query = query.where("employeeId", "==", employeeId);
 
