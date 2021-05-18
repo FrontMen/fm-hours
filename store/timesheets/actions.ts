@@ -1,114 +1,60 @@
 /* eslint-disable camelcase */
 import { ActionTree } from "vuex";
 
-import { recordStatus } from "~/helpers/record-status";
-import {
-  getTimeRecordsToSave,
-  getTravelRecordsToSave,
-  compareTimesheetEmployees,
-} from "~/helpers/timesheet";
-
-const isPendingRecord = (
-  record: TimeRecord | TravelRecord,
-  employeeId: string
-) => record.employeeId === employeeId && record.status === recordStatus.PENDING;
-
-const isDeniedRecord = (
-  record: TimeRecord | TravelRecord,
-  employeeId: string
-) => record.employeeId === employeeId && record.status === recordStatus.DENIED;
+import { createTimesheetTableData } from "~/helpers/timesheet";
+import { getWeeksSpan } from "~/helpers/dates";
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
-  async getEmployeeList({ commit }) {
-    const timeRecords = await this.app.$timeRecordsService.getPendingOrDeniedRecords();
-    const travelRecords = await this.app.$travelRecordsService.getPendingOrDeniedRecords();
+  async getTimesheets(
+    { commit },
+    payload: {
+      startDate?: number;
+      endDate?: number;
+      employeeId?: string;
+      date?: number;
+    }
+  ) {
+    const timesheets = await this.app.$timesheetsService.getTimesheets(payload);
 
-    const employees = await this.app.$employeesService.getEmployees();
+    commit("setTimesheets", { timesheets });
+  },
 
-    const timesheetEmployees: TimesheetEmployee[] = employees.map(
-      (employee) => {
-        const pendingTimeRecords = timeRecords.filter((record) =>
-          isPendingRecord(record, employee.id)
-        );
+  async getTableData(
+    { commit },
+    payload: {
+      weeksBefore: number;
+      weeksAfter: number;
+    }
+  ) {
+    const weeksSpan = getWeeksSpan(payload.weeksBefore, payload.weeksAfter);
 
-        const pendingTravelRecords = travelRecords.filter((record) =>
-          isPendingRecord(record, employee.id)
-        );
+    const employeesPromise = this.app.$employeesService.getEmployees();
+    const timesheetsPromise = this.app.$timesheetsService.getTimesheets({
+      startDate: weeksSpan[0].start.date,
+      endDate: weeksSpan[payload.weeksBefore + payload.weeksAfter].start.date,
+    });
 
-        const hasPendingRecords =
-          pendingTimeRecords.length > 0 || pendingTravelRecords.length > 0;
-        const hasDeniedRecords =
-          timeRecords.some((record) => isDeniedRecord(record, employee.id)) ||
-          travelRecords.some((record) => isDeniedRecord(record, employee.id));
+    const [employees, timesheets] = await Promise.all([
+      employeesPromise,
+      timesheetsPromise,
+    ]);
 
-        return {
-          ...employee,
-          pendingTimeRecords,
-          pendingTravelRecords,
-          status: hasPendingRecords
-            ? recordStatus.PENDING
-            : hasDeniedRecords
-            ? recordStatus.DENIED
-            : recordStatus.NEW,
-        };
-      }
-    );
+    const tableData = createTimesheetTableData({
+      employees,
+      timesheets,
+      weeksSpan,
+    });
 
-    const sortedEmployees = timesheetEmployees.sort(compareTimesheetEmployees);
-
-    commit("setTimesheetEmployees", { employees: sortedEmployees });
+    commit("setTimesheetsTableData", { tableData });
   },
 
   selectEmployee({ commit }, payload: { employeeId: string }) {
     commit("setSelectedEmployeeId", { employeeId: payload.employeeId });
   },
 
-  async saveTimesheet(
-    { state, commit },
-    payload: {
-      employeeId: string;
-      week: WeekDate[];
-      timesheet: WeeklyTimesheet;
-      status: RecordStatus;
-    }
-  ) {
-    const timeRecordsToSave = getTimeRecordsToSave(
-      payload.timesheet,
-      payload.week,
-      payload.status
-    );
-
-    const travelRecordsToSave = getTravelRecordsToSave(
-      payload.timesheet,
-      payload.week,
-      payload.status
-    );
-
-    await this.app.$timeRecordsService.saveEmployeeRecords({
-      employeeId: payload.employeeId,
-      timeRecords: timeRecordsToSave,
-    });
-
-    await this.app.$travelRecordsService.saveEmployeeRecords({
-      employeeId: payload.employeeId,
-      travelRecords: travelRecordsToSave,
-    });
-
-    commit("setTimesheetEmployees", {
-      employees: state.employees.map((employee) => {
-        if (employee.id !== payload.employeeId) return employee;
-
-        return {
-          ...employee,
-          pendingTimeRecords: employee.pendingTimeRecords.filter(
-            (x) => !timeRecordsToSave.some((y) => y.id === x.id)
-          ),
-          pendingTravelRecords: employee.pendingTimeRecords.filter(
-            (x) => !travelRecordsToSave.some((y) => y.id === x.id)
-          ),
-        };
-      }),
-    });
+  async saveTimesheet({ commit }, payload: Optional<Timesheet, "id">) {
+    const timesheet = await this.app.$timesheetsService.saveTimesheet(payload);
+    commit("setTimesheets", { timesheets: [timesheet] });
   },
 };
 

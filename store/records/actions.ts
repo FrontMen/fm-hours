@@ -73,7 +73,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       employeeId: string;
       week: WeekDate[];
       timesheet: WeeklyTimesheet;
-      status: RecordStatus;
     }
   ) {
     commit("setSaving", { isSaving: true });
@@ -86,14 +85,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const timeRecordsToSave = getTimeRecordsToSave(
       payload.timesheet,
-      payload.week,
-      payload.status
+      payload.week
     );
 
     const travelRecordsToSave = getTravelRecordsToSave(
       payload.timesheet,
-      payload.week,
-      payload.status
+      payload.week
     );
 
     const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
@@ -133,7 +130,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       date: new Date(payload.week[index].date).getTime(),
       hours: value,
       customer: payload.project.customer,
-      status: "new" as RecordStatus,
     }));
 
     await this.app.$timeRecordsService.deleteEmployeeRecords({

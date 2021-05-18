@@ -1,12 +1,13 @@
 import { isSameDay, isWithinInterval } from "date-fns";
+
 import { recordStatus } from "./record-status";
+import { getISODay } from "./dates";
 
 export const createWeeklyTimesheet = (params: {
   week: WeekDate[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
-  status?: RecordStatus;
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
@@ -17,7 +18,6 @@ export const createWeeklyTimesheet = (params: {
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStatus = params.status || getWeeklyStatus(weeklyTimeRecords);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
@@ -33,10 +33,6 @@ export const createWeeklyTimesheet = (params: {
       params.workScheme
     ),
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
-    status: weeklyStatus as RecordStatus,
-    isReadonly:
-      weeklyStatus === recordStatus.APPROVED ||
-      weeklyStatus === recordStatus.PENDING,
   };
 };
 
@@ -180,19 +176,6 @@ const findRecordByDate = (
   });
 };
 
-const getWeeklyStatus = (weeklyTimeRecords: TimeRecord[]) => {
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.APPROVED))
-    return recordStatus.APPROVED;
-
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.DENIED))
-    return recordStatus.DENIED;
-
-  if (weeklyTimeRecords.some((x) => x.status === recordStatus.PENDING))
-    return recordStatus.PENDING;
-
-  return recordStatus.NEW;
-};
-
 export function generateValueFormatter(min: number, max: number) {
   return {
     min,
@@ -204,8 +187,7 @@ export function generateValueFormatter(min: number, max: number) {
 
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
-  week: WeekDate[],
-  status: RecordStatus
+  week: WeekDate[]
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
@@ -218,7 +200,6 @@ export const getTimeRecordsToSave = (
         date: new Date(week[index].date).getTime(),
         customer: project.customer,
         hours: value,
-        status,
       });
     });
   });
@@ -228,8 +209,7 @@ export const getTimeRecordsToSave = (
 
 export const getTravelRecordsToSave = (
   timesheet: WeeklyTimesheet,
-  week: WeekDate[],
-  status: RecordStatus
+  week: WeekDate[]
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
@@ -238,7 +218,6 @@ export const getTravelRecordsToSave = (
       id: timesheet.travelProject?.ids[index] || null,
       date: new Date(week[index].date).getTime(),
       kilometers: value,
-      status,
     });
   });
 
@@ -274,4 +253,53 @@ export const compareTimesheetEmployees = (
   const nextScore = scoringTimesheetEmployee(nextEmployee);
 
   return nextScore - prevScore;
+};
+
+export const createTimesheetTableData = (params: {
+  employees: Employee[];
+  timesheets: Timesheet[];
+  weeksSpan: WeekSpan[];
+}) => {
+  const { employees, timesheets, weeksSpan } = params;
+
+  const weekItemsMap = weeksSpan.reduce((acc, week) => {
+    acc[week.start.ISO] = recordStatus.EMPTY as TimesheetStatus;
+    return acc;
+  }, {} as { [isoDate: string]: TimesheetStatus });
+
+  const items = employees.map(
+    (employee) =>
+      ({
+        ...employee,
+        ...weekItemsMap,
+      } as TimesheetTableItem)
+  );
+
+  items.forEach((item) => {
+    timesheets.forEach((timesheet) => {
+      if (item.id === timesheet.employeeId) {
+        item[getISODay(timesheet.date)] = timesheet.status;
+      }
+    });
+  });
+
+  const weekFields: TimesheetTableField[] = weeksSpan.map((week) => ({
+    key: week.start.ISO,
+    timestamp: week.start.date,
+    formatedStartDate: week.start.formatedDate,
+    formatedEndDate: week.end.formatedDate,
+  }));
+
+  const fields = [
+    {
+      key: "id",
+      label: "Employee",
+      stickyColumn: true,
+      isRowHeader: true,
+      sortable: true,
+    },
+    ...weekFields,
+  ];
+
+  return { items, fields };
 };
