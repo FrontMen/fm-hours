@@ -70,9 +70,9 @@ export function buildWeek(
 // return in this format so its usable for date-fns, which need the js new Date object.
 // wrap it in the format function to get rid of the hours
 export function getWeekRange(beginDate: string) {
-  const start = startOfISOWeek(new Date(beginDate));
+  const start = startOfISOWeek(getDayOnGMT(beginDate));
   const end = addDays(start, 6);
-  return { start: new Date(formatDate(start)), end: new Date(formatDate(end)) };
+  return { start, end };
 }
 
 // Get ISO date string with the format "YYYY-MM-DD" on the GMT time, so we can
@@ -117,4 +117,16 @@ export function getWeeksSpan(
   });
 
   return weeksSpan;
+}
+
+// Due to timezones, the timestamps or other date formats can be referencing the wrong day.
+// To guarantee that we are always referencing to the same date, we use GMT as a standard.
+// This function will adjust the date to the correct day.
+export function getDayOnGMT(initialZonedValue: Date | number | string) {
+  const MILLISECONDS_IN_MINUTES = 60000;
+  const zonedDate = new Date(initialZonedValue);
+  return new Date(
+    zonedDate.getTime() +
+      zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
+  );
 }

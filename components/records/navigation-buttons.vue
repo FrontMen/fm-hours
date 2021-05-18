@@ -28,7 +28,7 @@
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
 
-import { getWeekRange, getDateLabel } from "~/helpers/dates";
+import { getWeekRange, getDateLabel, getDayOnGMT } from "~/helpers/dates";
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -56,7 +56,7 @@ export default defineComponent({
       if (!props.selectedWeek.length) return 0;
 
       const today = new Date();
-      const startDate = new Date(props.selectedWeek[0].date);
+      const startDate = getDayOnGMT(props.selectedWeek[0].date);
 
       return differenceInCalendarWeeks(startDate, today, { weekStartsOn: 1 });
     });
