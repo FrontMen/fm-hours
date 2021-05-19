@@ -28,6 +28,7 @@ interface Timesheet {
   date: number;
   employeeId: string;
   status: TimesheetStatus;
+  message: string;
 }
 
 interface WeekSpan {
