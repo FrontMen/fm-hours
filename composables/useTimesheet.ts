@@ -20,6 +20,12 @@ export default (employeeId: string, startTimestamp?: number) => {
       : (recordStatus.NEW as TimesheetStatus)
   );
 
+  const timesheetDenyMessage = computed(() =>
+    timesheetState.value.timesheets[0]
+      ? timesheetState.value.timesheets[0].reasonOfDenial
+      : ""
+  );
+
   const isReadonly = computed(
     () =>
       timesheetStatus.value === recordStatus.APPROVED ||
@@ -111,19 +117,37 @@ export default (employeeId: string, startTimestamp?: number) => {
     { deep: true }
   );
 
-  const saveTimesheet = (newTimesheetStatus: TimesheetStatus) => {
+  const saveTimesheet = (
+    newTimesheetStatus: TimesheetStatus,
+    denialMessage?: string
+  ) => {
     store.dispatch("records/saveTimesheet", {
       employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
     });
 
+    let reasonOfDenial = "";
+    if (timesheetState.value.timesheets[0]) {
+      reasonOfDenial = timesheetState.value.timesheets[0].reasonOfDenial;
+    }
+    if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
+      reasonOfDenial = denialMessage;
+    } else if (newTimesheetStatus === recordStatus.PENDING) {
+      reasonOfDenial = "";
+    }
+
     const newTimesheet = timesheetState.value.timesheets[0]
-      ? { ...timesheetState.value.timesheets[0], status: newTimesheetStatus }
+      ? {
+          ...timesheetState.value.timesheets[0],
+          status: newTimesheetStatus,
+          reasonOfDenial,
+        }
       : {
           employeeId,
           date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
           status: newTimesheetStatus,
+          reasonOfDenial,
         };
 
     store.dispatch("timesheets/saveTimesheet", newTimesheet);
@@ -143,5 +167,6 @@ export default (employeeId: string, startTimestamp?: number) => {
     saveTimesheet,
     timesheetStatus,
     isReadonly,
+    timesheetDenyMessage,
   };
 };
