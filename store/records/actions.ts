@@ -2,7 +2,7 @@
 import { addDays, startOfISOWeek, subDays, isWithinInterval } from "date-fns";
 import { ActionTree } from "vuex";
 
-import { buildWeek } from "~/helpers/dates";
+import { buildWeek, getDayOnGMT } from "~/helpers/dates";
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
@@ -49,9 +49,9 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     let newStartDate = new Date();
 
     if (payload.to === "previous") {
-      newStartDate = subDays(new Date(currentStartDate), 7);
+      newStartDate = subDays(getDayOnGMT(currentStartDate), 7);
     } else if (payload.to === "next") {
-      newStartDate = addDays(new Date(currentStartDate), 7);
+      newStartDate = addDays(getDayOnGMT(currentStartDate), 7);
     }
 
     const selectedWeek = buildWeek(startOfISOWeek(newStartDate), []);

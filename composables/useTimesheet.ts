@@ -1,7 +1,7 @@
 import { computed, useStore, ref, watch } from "@nuxtjs/composition-api";
 import { startOfISOWeek, subDays } from "date-fns";
 
-import { buildWeek } from "~/helpers/dates";
+import { buildWeek, getDayOnGMT } from "~/helpers/dates";
 import { recordStatus } from "~/helpers/record-status";
 import {
   createWeeklyTimesheet,
@@ -20,6 +20,12 @@ export default (employeeId: string, startTimestamp?: number) => {
       : (recordStatus.NEW as TimesheetStatus)
   );
 
+  const timesheetDenyMessage = computed(() =>
+    timesheetState.value.timesheets[0]
+      ? timesheetState.value.timesheets[0].reasonOfDenial
+      : ""
+  );
+
   const isReadonly = computed(
     () =>
       timesheetStatus.value === recordStatus.APPROVED ||
@@ -31,12 +37,25 @@ export default (employeeId: string, startTimestamp?: number) => {
     travelProject: null,
   });
 
-  const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
+  const initialDate = startTimestamp ? getDayOnGMT(startTimestamp) : new Date();
 
   store.dispatch("records/getRecords", {
     employeeId,
     startDate: initialDate,
   });
+
+  const message = ref<string>(
+    timesheetState.value?.timesheets[0]
+      ? timesheetState.value?.timesheets[0].message
+      : ""
+  );
+  watch(
+    () => timesheetState.value?.timesheets[0],
+    () => {
+      message.value = timesheetState.value?.timesheets[0]?.message;
+    },
+    { immediate: true }
+  );
 
   const goToWeek = (to: "current" | "previous" | "next") => {
     if (hasUnsavedChanges.value) {
@@ -111,19 +130,39 @@ export default (employeeId: string, startTimestamp?: number) => {
     { deep: true }
   );
 
-  const saveTimesheet = (newTimesheetStatus: TimesheetStatus) => {
+  const saveTimesheet = (
+    newTimesheetStatus: TimesheetStatus,
+    denialMessage?: string
+  ) => {
     store.dispatch("records/saveTimesheet", {
       employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
     });
 
+    let reasonOfDenial = "";
+    if (timesheetState.value.timesheets[0]) {
+      reasonOfDenial = timesheetState.value.timesheets[0].reasonOfDenial;
+    }
+    if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
+      reasonOfDenial = denialMessage;
+    } else if (newTimesheetStatus === recordStatus.PENDING) {
+      reasonOfDenial = "";
+    }
+
     const newTimesheet = timesheetState.value.timesheets[0]
-      ? { ...timesheetState.value.timesheets[0], status: newTimesheetStatus }
+      ? {
+          ...timesheetState.value.timesheets[0],
+          status: newTimesheetStatus,
+          reasonOfDenial,
+          message: message.value || "",
+        }
       : {
           employeeId,
           date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
           status: newTimesheetStatus,
+          reasonOfDenial,
+          message: message.value || "",
         };
 
     store.dispatch("timesheets/saveTimesheet", newTimesheet);
@@ -143,5 +182,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     saveTimesheet,
     timesheetStatus,
     isReadonly,
+    timesheetDenyMessage,
+    message,
   };
 };

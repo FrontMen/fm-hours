@@ -18,10 +18,10 @@
 
     <template v-if="!isClosed">
       <b-button
+        v-b-modal.deny-modal
         class="mr-3"
         variant="danger"
         :disabled="isSaving"
-        @click="handleDenyClick"
       >
         Deny
       </b-button>
@@ -86,7 +86,6 @@ export default defineComponent({
     let intervalHandle: NodeJS.Timeout;
 
     const handleSaveClick = () => emit("save");
-    const handleDenyClick = () => emit("deny");
     const handleApproveClick = () => emit("approve");
 
     const isApproved = computed(() => props.status === recordStatus.APPROVED);
@@ -114,7 +113,6 @@ export default defineComponent({
 
     return {
       handleSaveClick,
-      handleDenyClick,
       handleApproveClick,
       isClosed,
       isApproved,

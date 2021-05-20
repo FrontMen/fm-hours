@@ -67,6 +67,18 @@
         </weekly-timesheet>
       </template>
 
+      <b-form-textarea
+        v-if="!isReadonly || message"
+        id="message-textarea"
+        v-model="message"
+        class="mt-4"
+        placeholder="Add a comment here."
+        rows="1"
+        max-rows="4"
+        :plaintext="!isAdminView && isReadonly"
+        @change="hasUnsavedChanges = true"
+      />
+
       <weekly-timesheet-admin-footer
         v-if="isAdminView"
         class="mt-5"
@@ -75,7 +87,6 @@
         :last-saved="recordsState.lastSaved"
         :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.PENDING)"
-        @deny="saveTimesheet(recordStatus.DENIED)"
         @approve="saveTimesheet(recordStatus.APPROVED)"
       />
 
@@ -90,12 +101,37 @@
         @submit="saveTimesheet(recordStatus.PENDING)"
         @unsubmit="saveTimesheet(recordStatus.NEW)"
       />
+
+      <b-alert
+        :show="timesheetDenyMessage !== ''"
+        variant="danger"
+        class="my-3"
+      >
+        {{ timesheetDenyMessage }}
+      </b-alert>
     </template>
 
     <select-project-dialog
       :projects="selectableCustomers"
       @project-selected="addProject"
     />
+
+    <b-modal
+      id="deny-modal"
+      centered
+      title="Reason of denial"
+      cancel-variant="danger"
+      :ok-disabled="!reasonOfDenial"
+      @hidden="reasonOfDenial = ''"
+      @ok="handleDeny()"
+    >
+      <b-form-textarea
+        id="textarea"
+        v-model="reasonOfDenial"
+        placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
+        rows="3"
+      />
+    </b-modal>
   </div>
 </template>
 
@@ -106,6 +142,7 @@ import {
   useRouter,
   useStore,
   useMeta,
+  ref,
 } from "@nuxtjs/composition-api";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
@@ -174,6 +211,17 @@ export default defineComponent({
 
     const timesheet = useTimesheet(employeeId, Number(startTimestamp));
 
+    const reasonOfDenial = ref("");
+
+    const handleDeny = () => {
+      if (!reasonOfDenial.value) return;
+
+      timesheet.saveTimesheet(
+        recordStatus.DENIED as TimesheetStatus,
+        reasonOfDenial.value
+      );
+    };
+
     const selectableCustomers = computed(() => {
       const customers = store.state.customers.customers;
       const selectedCustomers = timesheet.timesheet.value.projects.map(
@@ -201,6 +249,8 @@ export default defineComponent({
       recordsState,
       recordStatus,
       isAdminView,
+      reasonOfDenial,
+      handleDeny,
       ...timesheet,
     };
   },

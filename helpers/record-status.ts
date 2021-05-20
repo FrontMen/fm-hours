@@ -1,5 +1,7 @@
 import { isSameISOWeek } from "date-fns";
 
+import { getDayOnGMT } from "./dates";
+
 export const recordStatus = {
   NEW: "new",
   PENDING: "pending",
@@ -16,7 +18,7 @@ export function filterApprovedRecords<T extends TimeRecord | TravelRecord>(
     const recordTimesheet = timesheets.find(
       (timesheet) =>
         record.employeeId === timesheet.employeeId &&
-        isSameISOWeek(record.date, timesheet.date)
+        isSameISOWeek(getDayOnGMT(record.date), getDayOnGMT(timesheet.date))
     );
 
     if (recordTimesheet && recordTimesheet.status === recordStatus.APPROVED) {
