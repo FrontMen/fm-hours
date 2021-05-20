@@ -29,6 +29,7 @@ export default class EmployeesService {
         projects,
         travelAllowance,
         endDate,
+        created,
       } = doc.data() as Employee;
 
       return {
@@ -39,6 +40,7 @@ export default class EmployeesService {
         projects,
         travelAllowance,
         endDate,
+        created,
       };
     }
 
@@ -57,6 +59,7 @@ export default class EmployeesService {
       projects: [],
       travelAllowance: params.travelAllowance,
       endDate: null,
+      created: new Date().getTime(),
     };
 
     const ref = this.fire.firestore.collection("employees");

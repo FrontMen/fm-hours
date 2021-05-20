@@ -6,6 +6,7 @@ interface Employee {
   travelAllowance: boolean;
   projects: string[];
   endDate: number | null;
+  created: number;
 }
 
 interface EmployeeStoreState {

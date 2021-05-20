@@ -28,6 +28,7 @@ export const createEmployee = functions.auth
           projects: [],
           travelAllowance: false,
           endDate: null,
+          created: admin.firestore.FieldValue.serverTimestamp(),
         };
       } else {
         employeeSnapshot.forEach((doc) => {
