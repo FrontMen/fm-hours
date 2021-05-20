@@ -1,7 +1,7 @@
 import { computed, useStore, ref, watch } from "@nuxtjs/composition-api";
 import { startOfISOWeek, subDays } from "date-fns";
 
-import { buildWeek } from "~/helpers/dates";
+import { buildWeek, getDayOnGMT } from "~/helpers/dates";
 import { recordStatus } from "~/helpers/record-status";
 import {
   createWeeklyTimesheet,
@@ -31,7 +31,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     travelProject: null,
   });
 
-  const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
+  const initialDate = startTimestamp ? getDayOnGMT(startTimestamp) : new Date();
 
   store.dispatch("records/getRecords", {
     employeeId,

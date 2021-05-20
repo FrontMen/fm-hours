@@ -55,7 +55,6 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
-import { formatISO, isSameDay } from "date-fns";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -71,19 +70,22 @@ export default defineComponent({
     const newHolidayValue = ref("");
 
     const addHoliday = () => {
-      const holidayDate = formatISO(new Date(newHolidayValue.value));
-      store.dispatch("holidays/addHoliday", holidayDate);
+      if (!newHolidayValue.value) return;
+
+      store.dispatch("holidays/addHoliday", newHolidayValue.value);
       newHolidayValue.value = "";
     };
 
-    const deleteHoliday = (date: Date) => {
-      store.dispatch("holidays/deleteHoliday", formatISO(new Date(date)));
+    const deleteHoliday = (ymd: string) => {
+      store.dispatch("holidays/deleteHoliday", ymd);
     };
 
-    const dateClass = (_: any, date: Date) => {
-      return holidays.value.some((holidayDate) => {
-        isSameDay(date, new Date(holidayDate));
-      });
+    const dateClass = (ymd: string) => {
+      const isHoliday = holidays.value.some(
+        (holidayDate) => ymd === holidayDate
+      );
+
+      return isHoliday ? "is-holiday" : "";
     };
 
     return {

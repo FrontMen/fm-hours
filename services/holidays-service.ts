@@ -1,7 +1,5 @@
 import { NuxtFireInstance } from "@nuxtjs/firebase";
-import { compareAsc, isSameDay } from "date-fns";
-
-import { formatDate } from "~/helpers/dates";
+import { compareAsc } from "date-fns";
 
 export default class HolidaysService {
   fire: NuxtFireInstance;
@@ -22,7 +20,7 @@ export default class HolidaysService {
 
   async saveHoliday(date: string) {
     const { docId, dates } = await this.getHolidays();
-    const newDates: string[] = [...dates, formatDate(date)];
+    const newDates: string[] = [...dates, date];
 
     const sortedDates = newDates.sort((accDate, currDate) =>
       compareAsc(new Date(accDate), new Date(currDate))
@@ -36,9 +34,7 @@ export default class HolidaysService {
 
   async deleteHoliday(date: string) {
     const { docId, dates } = await this.getHolidays();
-    const newDates = dates.filter(
-      (x) => !isSameDay(new Date(x), new Date(date))
-    );
+    const newDates = dates.filter((holidayDate) => date !== holidayDate);
 
     const ref = this.fire.firestore.collection("holidays").doc(docId);
     await ref.set({ dates: newDates });

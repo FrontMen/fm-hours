@@ -30,8 +30,10 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     const employeesPromise = this.app.$employeesService.getEmployees();
     const timesheetsPromise = this.app.$timesheetsService.getTimesheets({
-      startDate: weeksSpan[0].start.date,
-      endDate: weeksSpan[payload.weeksBefore + payload.weeksAfter].start.date,
+      startDate: new Date(weeksSpan[0].start.ISO).getTime(),
+      endDate: new Date(
+        weeksSpan[payload.weeksBefore + payload.weeksAfter].start.ISO
+      ).getTime(),
     });
 
     const [employees, timesheets] = await Promise.all([
