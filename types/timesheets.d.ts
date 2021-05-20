@@ -28,6 +28,7 @@ interface Timesheet {
   date: number;
   employeeId: string;
   status: TimesheetStatus;
+  reasonOfDenial: string;
   message: string;
 }
 
