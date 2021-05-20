@@ -44,6 +44,19 @@ export default (employeeId: string, startTimestamp?: number) => {
     startDate: initialDate,
   });
 
+  const message = ref<string>(
+    timesheetState.value?.timesheets[0]
+      ? timesheetState.value?.timesheets[0].message
+      : ""
+  );
+  watch(
+    () => timesheetState.value?.timesheets[0],
+    () => {
+      message.value = timesheetState.value?.timesheets[0]?.message;
+    },
+    { immediate: true }
+  );
+
   const goToWeek = (to: "current" | "previous" | "next") => {
     if (hasUnsavedChanges.value) {
       const confirmation = confirm(
@@ -142,12 +155,14 @@ export default (employeeId: string, startTimestamp?: number) => {
           ...timesheetState.value.timesheets[0],
           status: newTimesheetStatus,
           reasonOfDenial,
+          message: message.value || "",
         }
       : {
           employeeId,
           date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
           status: newTimesheetStatus,
           reasonOfDenial,
+          message: message.value || "",
         };
 
     store.dispatch("timesheets/saveTimesheet", newTimesheet);
@@ -168,5 +183,6 @@ export default (employeeId: string, startTimestamp?: number) => {
     timesheetStatus,
     isReadonly,
     timesheetDenyMessage,
+    message,
   };
 };

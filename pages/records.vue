@@ -67,6 +67,18 @@
         </weekly-timesheet>
       </template>
 
+      <b-form-textarea
+        v-if="!isReadonly || message"
+        id="message-textarea"
+        v-model="message"
+        class="mt-4"
+        placeholder="Add a comment here."
+        rows="1"
+        max-rows="4"
+        :plaintext="!isAdminView && isReadonly"
+        @change="hasUnsavedChanges = true"
+      />
+
       <weekly-timesheet-admin-footer
         v-if="isAdminView"
         class="mt-5"
