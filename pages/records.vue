@@ -103,7 +103,7 @@
       />
 
       <b-alert
-        :show="Boolean(timesheetDenyMessage)"
+        :show="timesheetDenyMessage !== ''"
         variant="danger"
         class="my-3"
       >
