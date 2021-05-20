@@ -51,7 +51,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
     );
 
     const activeEmployees = employees.filter((employee) =>
-      checkEmployeeAvailability(employee, startDate)
+      checkEmployeeAvailability(employee, startDate, endDate)
     );
 
     commit("setIsLoading", { isLoading: false });
