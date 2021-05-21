@@ -22,6 +22,11 @@
 
           <b-col cols="12" md="6">
             <h6 class="mb-3">Employee Settings</h6>
+            <b-form-datepicker
+              v-model="startDate"
+              class="w-75 mb-2"
+              @input="hasUnsavedChanges = true"
+            />
             <b-form-checkbox
               v-model="isTravelAllowed"
               name="check-button"
@@ -62,6 +67,7 @@ import {
 } from "@nuxtjs/composition-api";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
+import { formatDate, getDayOnGMT } from "~/helpers/dates";
 
 export default defineComponent({
   components: { EmployeeHeader },
@@ -126,6 +132,19 @@ export default defineComponent({
       { immediate: true }
     );
 
+    const startDate = ref<string>(
+      employee.value ? formatDate(getDayOnGMT(employee.value.startDate)) : ""
+    );
+    watch(
+      () => employee.value?.startDate,
+      () => {
+        startDate.value = employee.value
+          ? formatDate(getDayOnGMT(employee.value.startDate))
+          : "";
+      },
+      { immediate: true }
+    );
+
     const saveProjects = () => {
       if (!employee.value) return;
 
@@ -133,6 +152,7 @@ export default defineComponent({
         ...employee.value,
         projects: selectedCustomers.value,
         travelAllowance: isTravelAllowed.value,
+        startDate: new Date(startDate.value).getTime(),
       };
 
       const hasActivationChanged =
@@ -159,6 +179,7 @@ export default defineComponent({
       hasUnsavedChanges,
       isTravelAllowed,
       isEmployeeActive,
+      startDate,
     };
   },
 });
