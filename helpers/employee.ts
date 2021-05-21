@@ -1,6 +1,6 @@
 import { isAfter, endOfDay } from "date-fns";
 
-// Check if employee was already created and yet active in a given date or time span
+// Check if employee has already started and is yet active in a given date or time span
 export function checkEmployeeAvailability(
   employee: Employee,
   startCompareDate: Date,
@@ -10,7 +10,7 @@ export function checkEmployeeAvailability(
     ? endOfDay(endCompareDate)
     : endOfDay(startCompareDate);
 
-  if (end.getTime() < employee.created) {
+  if (end.getTime() < employee.startDate) {
     return false;
   }
 
