@@ -86,7 +86,7 @@ export default defineComponent({
     store.dispatch("employees/getEmployees");
 
     const openEmployeePage = (employee: Employee) => {
-      router.push(`employees/${employee.id}`);
+      router.push(`/employees/${employee.id}`);
     };
 
     const newEmployee = ref({
