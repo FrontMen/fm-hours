@@ -58,6 +58,18 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     const timesheet = await this.app.$timesheetsService.saveTimesheet(payload);
     commit("setTimesheets", { timesheets: [timesheet] });
   },
+
+  async denyTimesheet(
+    { commit },
+    payload: { timesheet: Optional<Timesheet, "id">; emailData: EmailData }
+  ) {
+    await this.app.$mailService.sendMail(payload.emailData);
+    const timesheet = await this.app.$timesheetsService.saveTimesheet(
+      payload.timesheet
+    );
+
+    commit("setTimesheets", { timesheets: [timesheet] });
+  },
 };
 
 export default actions;

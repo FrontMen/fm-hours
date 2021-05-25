@@ -7,6 +7,7 @@ import {
   createWeeklyTimesheet,
   generateValueFormatter,
 } from "~/helpers/timesheet";
+import { buildEmailData } from "~/helpers/email";
 
 export default (employeeId: string, startTimestamp?: number) => {
   const store = useStore<RootStoreState>();
@@ -170,6 +171,39 @@ export default (employeeId: string, startTimestamp?: number) => {
     hasUnsavedChanges.value = false;
   };
 
+  const denyTimesheet = (employee: Employee, denialMessage: string) => {
+    const selectedTimesheet = timesheetState.value.timesheets[0];
+
+    if (!selectedTimesheet || selectedTimesheet.status !== recordStatus.PENDING)
+      return;
+
+    store.dispatch("records/saveTimesheet", {
+      employeeId,
+      week: recordsState.value.selectedWeek,
+      timesheet: timesheet.value,
+    });
+
+    const newTimesheet = {
+      ...selectedTimesheet,
+      status: recordStatus.DENIED,
+      denialMessage,
+      message: message.value || "",
+    };
+
+    const emailData = buildEmailData({
+      employee,
+      week: recordsState.value.selectedWeek,
+      denialMessage,
+    });
+
+    store.dispatch("timesheets/denyTimesheet", {
+      timesheet: newTimesheet,
+      emailData,
+    });
+
+    hasUnsavedChanges.value = false;
+  };
+
   return {
     goToWeek,
     copyPreviousWeek,
@@ -184,5 +218,6 @@ export default (employeeId: string, startTimestamp?: number) => {
     isReadonly,
     timesheetDenyMessage,
     message,
+    denyTimesheet,
   };
 };

@@ -214,12 +214,9 @@ export default defineComponent({
     const reasonOfDenial = ref("");
 
     const handleDeny = () => {
-      if (!reasonOfDenial.value) return;
+      if (!reasonOfDenial.value || !selectedEmployee.value) return;
 
-      timesheet.saveTimesheet(
-        recordStatus.DENIED as TimesheetStatus,
-        reasonOfDenial.value
-      );
+      timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
     };
 
     const selectableCustomers = computed(() => {
