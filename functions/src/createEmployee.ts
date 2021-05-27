@@ -21,6 +21,7 @@ export const createEmployee = functions.auth
 
       // Write new employee if none exist
       if (employeeSnapshot.empty) {
+        const now = admin.firestore.FieldValue.serverTimestamp();
         employeeData = {
           name: displayName,
           email,
@@ -28,6 +29,8 @@ export const createEmployee = functions.auth
           projects: [],
           travelAllowance: false,
           endDate: null,
+          startDate: now,
+          created: now,
         };
       } else {
         employeeSnapshot.forEach((doc) => {

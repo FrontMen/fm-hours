@@ -54,6 +54,12 @@
         placeholder="Employee email"
         class="mt-3"
       />
+      <label for="employee-start-date" class="mt-3">Start date:</label>
+      <b-form-datepicker
+        id="employee-start-date"
+        v-model="newEmployee.startDate"
+        class="w-75"
+      />
       <b-form-checkbox v-model="newEmployee.travelAllowance" class="mt-3">
         Travel allowance
       </b-form-checkbox>
@@ -71,6 +77,7 @@ import {
 } from "@nuxtjs/composition-api";
 
 import { validateEmail } from "../../helpers/validation";
+import { formatDate } from "~/helpers/dates";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -92,6 +99,7 @@ export default defineComponent({
     const newEmployee = ref({
       name: "",
       email: "",
+      startDate: formatDate(new Date()),
       travelAllowance: false,
     });
 
@@ -103,10 +111,12 @@ export default defineComponent({
     const addEmployee = () => {
       store.dispatch("employees/addNewEmployee", {
         ...newEmployee.value,
+        startDate: new Date(newEmployee.value.startDate).getTime(),
       });
 
       newEmployee.value.name = "";
       newEmployee.value.email = "";
+      newEmployee.value.startDate = formatDate(new Date());
       newEmployee.value.travelAllowance = false;
     };
 

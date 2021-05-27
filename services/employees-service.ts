@@ -29,6 +29,8 @@ export default class EmployeesService {
         projects,
         travelAllowance,
         endDate,
+        startDate,
+        created,
       } = doc.data() as Employee;
 
       return {
@@ -39,6 +41,8 @@ export default class EmployeesService {
         projects,
         travelAllowance,
         endDate,
+        startDate,
+        created,
       };
     }
 
@@ -49,6 +53,7 @@ export default class EmployeesService {
     name: string;
     email: string;
     travelAllowance: boolean;
+    startDate: number;
   }): Promise<Employee> {
     const newEmployee = {
       name: params.name,
@@ -57,6 +62,8 @@ export default class EmployeesService {
       projects: [],
       travelAllowance: params.travelAllowance,
       endDate: null,
+      startDate: params.startDate,
+      created: new Date().getTime(),
     };
 
     const ref = this.fire.firestore.collection("employees");

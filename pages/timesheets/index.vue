@@ -50,12 +50,10 @@ import {
   useStore,
 } from "@nuxtjs/composition-api";
 
-import TimesheetEmployeeRow from "~/components/timesheets/timesheet-employee-row.vue";
 import { recordStatus } from "~/helpers/record-status";
 
 export default defineComponent({
   middleware: ["isAdmin"],
-  components: { TimesheetEmployeeRow },
 
   head: {
     title: "Timesheets",

@@ -18,7 +18,12 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
 
   async addNewEmployee(
     { commit },
-    payload: { name: string; email: string; travelAllowance: boolean }
+    payload: {
+      name: string;
+      email: string;
+      travelAllowance: boolean;
+      startDate: number;
+    }
   ) {
     const newEmployee = await this.app.$employeesService.createEmployee(
       payload
