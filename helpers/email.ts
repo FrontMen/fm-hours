@@ -20,7 +20,9 @@ export const buildEmailData = ({
   <blockquote cite="Frontmen Hours Team" style="padding: 15px; background: #eee; border-radius: 5px;">${denialMessage}</blockquote>
   <p>Please amend your timesheet & submit it again.</p>
   <p>For any questions contact uren@frontmen.nl or Matthias in Slack.</p>
+  <br />
   <p>Thanks,</p>
+  <p>Matthias</p>
   `;
 
   return {
