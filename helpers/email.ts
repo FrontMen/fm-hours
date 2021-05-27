@@ -16,15 +16,16 @@ export const buildEmailData = ({
 
   const html = `
   <p>Dear ${employee.name},</p><br />
-  <p>Your admin has denied your timesheet of period of <strong>${startDate}</strong> to <strong>${endDate}</strong>.</p>
-  <p>The reason for your timesheet not be accepted is described as:</p>
+  <p>Your timesheet for <strong>${startDate}</strong> to <strong>${endDate}</strong> has been denied with the following reason:</p>
   <blockquote cite="Frontmen Hours Team" style="padding: 15px; background: #eee; border-radius: 5px;">${denialMessage}</blockquote>
-  <p>Please, resubmit your report with the corrections asked or contact your manager.</p>
+  <p>Please amend your timesheet & submit it again.</p>
+  <p>For any questions contact uren@frontmen.nl or Matthias in Slack.</p>
+  <p>Thanks,</p>
   `;
 
   return {
     to: `${employee.name} ${employee.email}`,
-    subject: "A problem happened with your timesheet",
+    subject: "Timesheet denied",
     html,
   };
 };
