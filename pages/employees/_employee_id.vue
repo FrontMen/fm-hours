@@ -128,7 +128,11 @@ export default defineComponent({
       employees.value.find((x) => x.id === employeeId)
     );
 
-    useMeta({ title: `Employees - ${employee.value?.name}` });
+    const pageTitle = computed(() =>
+      employee.value ? `Employees - ${employee.value?.name}` : "Employees"
+    );
+
+    useMeta(() => ({ title: pageTitle.value }));
 
     onMounted(() => {
       if (employees.value.length === 0) {
