@@ -69,3 +69,9 @@ interface GetTimesheetsProps {
   employeeId?: string;
   date?: number;
 }
+
+interface EmailData {
+  to: string;
+  subject: string;
+  html: string;
+}
