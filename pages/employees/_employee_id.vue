@@ -7,26 +7,51 @@
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
-          <b-col cols="12" md="6">
+          <b-col cols="12" md="5">
             <h6 class="mb-3">Manage Projects</h6>
-            <b-form-checkbox-group
+            <multiselect
               v-model="selectedCustomers"
+              track-by="id"
+              label="label"
+              class="mb-3"
               :options="customerOptions"
-              value-field="item"
-              text-field="name"
-              switches
-              stacked
-              @change="hasUnsavedChanges = true"
-            />
+              :close-on-select="false"
+              :multiple="true"
+              :taggable="false"
+              placeholder="Click or search for a customer here"
+              @input="hasUnsavedChanges = true"
+            >
+              <template slot="selection" slot-scope="{ values }">
+                <span v-if="values.length" class="multiselect__single"
+                  >{{ values.length }} options selected</span
+                >
+              </template>
+            </multiselect>
+
+            <b-table
+              :items="selectedCustomers"
+              :fields="fields"
+              class="rounded"
+              small
+              striped
+              table-variant="light"
+            >
+              <template #cell(delete)="row">
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  @click="handleProjectDelete(row.item.id)"
+                >
+                  <b-icon-trash-fill />
+                </b-button>
+              </template>
+            </b-table>
           </b-col>
+
+          <b-col md="1" />
 
           <b-col cols="12" md="6">
             <h6 class="mb-3">Employee Settings</h6>
-            <b-form-datepicker
-              v-model="startDate"
-              class="w-75 mb-2"
-              @input="hasUnsavedChanges = true"
-            />
             <b-form-checkbox
               v-model="isTravelAllowed"
               name="check-button"
@@ -43,6 +68,13 @@
             >
               Active employee
             </b-form-checkbox>
+            <label class="mt-2" for="start-datepicker">Start date:</label>
+            <b-form-datepicker
+              id="start-datepicker"
+              v-model="startDate"
+              class="w-75 mb-2"
+              @input="hasUnsavedChanges = true"
+            />
           </b-col>
         </b-row>
 
@@ -65,26 +97,28 @@ import {
   watch,
   ref,
 } from "@nuxtjs/composition-api";
+import Multiselect from "vue-multiselect";
+import { BIconTrashFill } from "bootstrap-vue";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
 import { formatDate, getDayOnGMT } from "~/helpers/dates";
 
 export default defineComponent({
-  components: { EmployeeHeader },
+  components: { EmployeeHeader, Multiselect, BIconTrashFill },
   middleware: ["isAdmin"],
   head: {},
   setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
-    const selectedCustomers = ref<string[]>([]);
+    const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
       customers.value.map((customer) => ({
-        item: customer.id,
-        name: `${customer.name} (${customer.debtor})`,
+        ...customer,
+        label: `${customer.name} (${customer.debtor})`,
       }))
     );
 
@@ -94,7 +128,11 @@ export default defineComponent({
       employees.value.find((x) => x.id === employeeId)
     );
 
-    useMeta({ title: `Employees - ${employee.value?.name}` });
+    const pageTitle = computed(() =>
+      employee.value ? `Employees - ${employee.value?.name}` : "Employees"
+    );
+
+    useMeta(() => ({ title: pageTitle.value }));
 
     onMounted(() => {
       if (employees.value.length === 0) {
@@ -107,9 +145,14 @@ export default defineComponent({
     });
 
     watch(
-      () => employee.value?.projects,
+      () => [employee.value?.projects, customers.value],
       () => {
-        selectedCustomers.value = employee.value?.projects || [];
+        selectedCustomers.value =
+          employee.value?.projects && customers.value.length
+            ? employee.value.projects.map((project) =>
+                customers.value.find((customer) => customer.id === project)
+              )
+            : [];
       },
       { immediate: true }
     );
@@ -150,7 +193,7 @@ export default defineComponent({
 
       const newEmployee = {
         ...employee.value,
-        projects: selectedCustomers.value,
+        projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
         startDate: new Date(startDate.value).getTime(),
       };
@@ -171,6 +214,14 @@ export default defineComponent({
       hasUnsavedChanges.value = false;
     };
 
+    const handleProjectDelete = (customerId: string) => {
+      selectedCustomers.value = selectedCustomers.value.filter(
+        (customer) => customer!.id !== customerId
+      );
+    };
+
+    const fields = ["name", "debtor", "delete"];
+
     return {
       employee,
       customerOptions,
@@ -180,7 +231,11 @@ export default defineComponent({
       isTravelAllowed,
       isEmployeeActive,
       startDate,
+      fields,
+      handleProjectDelete,
     };
   },
 });
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

@@ -46,7 +46,8 @@
     "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
     "firebase": "^8.0.1",
-    "nuxt": "^2.14.6"
+    "nuxt": "^2.14.6",
+    "vue-multiselect": "^2.1.6"
   },
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
