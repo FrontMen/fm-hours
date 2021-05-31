@@ -27,6 +27,18 @@ export default class CustomersService {
     };
   }
 
+  async getCustomersAvailableToAll() {
+    const ref = this.fire.firestore
+      .collection("customers")
+      .where("availableToAll", "==", true);
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
+  }
+
   deleteCustomer(id: string) {
     return this.fire.firestore.collection("customers").doc(id).delete();
   }
