@@ -10,7 +10,7 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-container fluid class="app-table">
+      <b-container fluid class="app-table mb-5">
         <b-row class="app-table__top-row py-3">
           <b-col>
             <span class="font-weight-bold">Customers</span>
@@ -24,6 +24,7 @@
           <b-col>
             <div class="font-weight-bold">
               {{ customer.name }}
+              <b-badge v-if="customer.availableToAll"> Default </b-badge>
             </div>
             <div>
               {{ customer.debtor }}
@@ -53,6 +54,9 @@
       <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
         Billable
       </b-form-checkbox>
+      <b-form-checkbox v-model="newCustomer.availableToAll" class="mt-3">
+        Available to all employeees
+      </b-form-checkbox>
     </b-modal>
   </div>
 </template>
@@ -81,6 +85,7 @@ export default defineComponent({
       name: "",
       debtor: "",
       isBillable: true,
+      availableToAll: false,
     });
 
     const canAddCustomer = computed(() => {
@@ -89,13 +94,12 @@ export default defineComponent({
     });
 
     const addCustomer = () => {
-      store.dispatch("customers/addNewCustomer", {
-        ...newCustomer.value,
-      });
+      store.dispatch("customers/addNewCustomer", { ...newCustomer.value });
 
       newCustomer.value.name = "";
       newCustomer.value.debtor = "";
       newCustomer.value.isBillable = true;
+      newCustomer.value.availableToAll = false;
     };
 
     const deleteCustomer = (id: String) => {

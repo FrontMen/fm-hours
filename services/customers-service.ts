@@ -17,7 +17,7 @@ export default class CustomersService {
     }));
   }
 
-  async addCustomer(customer: { name: string; debtor: string }) {
+  async addCustomer(customer: Omit<Customer, "id">) {
     const ref = this.fire.firestore.collection("customers");
     const { id } = await ref.add(customer);
 
