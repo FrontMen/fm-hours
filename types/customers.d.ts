@@ -3,7 +3,7 @@ interface Customer {
   name: string;
   debtor: string;
   isBillable: boolean;
-  availableToAll: boolean;
+  isDefault: boolean;
 }
 
 interface CustomerOption {

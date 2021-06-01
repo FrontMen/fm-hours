@@ -54,13 +54,12 @@ export default class EmployeesService {
     email: string;
     travelAllowance: boolean;
     startDate: number;
-    projects: string[];
   }): Promise<Employee> {
     const newEmployee = {
       name: params.name,
       picture: "",
       email: params.email,
-      projects: params.projects,
+      projects: [],
       travelAllowance: params.travelAllowance,
       endDate: null,
       startDate: params.startDate,

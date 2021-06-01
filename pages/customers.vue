@@ -24,7 +24,7 @@
           <b-col>
             <div class="font-weight-bold">
               {{ customer.name }}
-              <b-badge v-if="customer.availableToAll"> Default </b-badge>
+              <b-badge v-if="customer.isDefault"> Default </b-badge>
             </div>
             <div>
               {{ customer.debtor }}
@@ -54,7 +54,7 @@
       <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
         Billable
       </b-form-checkbox>
-      <b-form-checkbox v-model="newCustomer.availableToAll" class="mt-3">
+      <b-form-checkbox v-model="newCustomer.isDefault" class="mt-3">
         Available to all employeees
       </b-form-checkbox>
     </b-modal>
@@ -85,7 +85,7 @@ export default defineComponent({
       name: "",
       debtor: "",
       isBillable: true,
-      availableToAll: false,
+      isDefault: false,
     });
 
     const canAddCustomer = computed(() => {
@@ -99,7 +99,7 @@ export default defineComponent({
       newCustomer.value.name = "";
       newCustomer.value.debtor = "";
       newCustomer.value.isBillable = true;
-      newCustomer.value.availableToAll = false;
+      newCustomer.value.isDefault = false;
     };
 
     const deleteCustomer = (id: String) => {

@@ -25,17 +25,9 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
       startDate: number;
     }
   ) {
-    const defaultProjects = await this.app.$customersService.getCustomersAvailableToAll();
-
-    let defaultProjectsIds = [];
-
-    if (defaultProjects)
-      defaultProjectsIds = defaultProjects.map((project) => project.id);
-
-    const newEmployee = await this.app.$employeesService.createEmployee({
-      ...payload,
-      projects: defaultProjectsIds,
-    });
+    const newEmployee = await this.app.$employeesService.createEmployee(
+      payload
+    );
     commit("addNewEmployeeSuccess", { employee: newEmployee });
   },
 
