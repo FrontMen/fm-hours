@@ -3,10 +3,9 @@ import * as admin from "firebase-admin";
 
 const EMPLOYEE_COLLECTION = "employees";
 
-export const createEmployeeBuilder = (
-  db: admin.firestore.Firestore
-): functions.CloudFunction<admin.auth.UserRecord> =>
-  functions.auth.user().onCreate(async (employee) => {
+export const createEmployee = functions.auth
+  .user()
+  .onCreate(async (employee) => {
     const { email, displayName, photoURL } = employee;
 
     try {
@@ -22,22 +21,12 @@ export const createEmployeeBuilder = (
 
       // Write new employee if none exist
       if (employeeSnapshot.empty) {
-        const querySnapshot = await db
-          .collection("customers")
-          .where("availableToAll", "==", true)
-          .get();
-
-        const defaultProjects = querySnapshot.docs
-          ? querySnapshot.docs.map((res: any) => res.id)
-          : [];
-
         const now = admin.firestore.FieldValue.serverTimestamp();
-
         employeeData = {
           name: displayName,
           email,
           picture: photoURL,
-          projects: defaultProjects,
+          projects: [],
           travelAllowance: false,
           endDate: null,
           startDate: now,
