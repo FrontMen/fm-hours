@@ -29,7 +29,7 @@
             </multiselect>
 
             <b-table
-              :items="selectedCustomers"
+              :items="items"
               :fields="fields"
               class="rounded"
               small
@@ -40,6 +40,7 @@
                 <b-button
                   size="sm"
                   variant="danger"
+                  :disabled="row.item.isDefault"
                   @click="handleProjectDelete(row.item.id)"
                 >
                   <b-icon-trash-fill />
@@ -116,10 +117,15 @@ export default defineComponent({
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
-      customers.value.map((customer) => ({
-        ...customer,
-        label: `${customer.name} (${customer.debtor})`,
-      }))
+      customers.value
+        .filter((customer) => !customer.isDefault)
+        .map((customer) => ({
+          ...customer,
+          label: `${customer.name} (${customer.debtor})`,
+        }))
+    );
+    const defaultCustomers = computed(
+      () => store.getters["customers/defaultCustomers"]
     );
 
     const employeeId = router.currentRoute.params.employee_id;
@@ -220,6 +226,11 @@ export default defineComponent({
       );
     };
 
+    const items = computed(() => [
+      ...selectedCustomers.value,
+      ...defaultCustomers.value,
+    ]);
+
     const fields = ["name", "debtor", "delete"];
 
     return {
@@ -233,6 +244,8 @@ export default defineComponent({
       startDate,
       fields,
       handleProjectDelete,
+      defaultCustomers,
+      items,
     };
   },
 });

@@ -17,7 +17,7 @@ export default class CustomersService {
     }));
   }
 
-  async addCustomer(customer: { name: string; debtor: string }) {
+  async addCustomer(customer: Omit<Customer, "id">) {
     const ref = this.fire.firestore.collection("customers");
     const { id } = await ref.add(customer);
 
@@ -25,6 +25,18 @@ export default class CustomersService {
       ...customer,
       id,
     };
+  }
+
+  async getCustomersAvailableToAll() {
+    const ref = this.fire.firestore
+      .collection("customers")
+      .where("availableToAll", "==", true);
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   deleteCustomer(id: string) {
