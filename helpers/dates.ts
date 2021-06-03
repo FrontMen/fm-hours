@@ -120,6 +120,6 @@ export function getDayOnGMT(initialZonedValue: Date | number | string) {
   const zonedDate = new Date(initialZonedValue);
   return new Date(
     zonedDate.getTime() +
-      zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
+    zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
   );
 }

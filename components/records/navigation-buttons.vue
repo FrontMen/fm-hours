@@ -81,11 +81,14 @@ export default defineComponent({
     flex: 0 0 auto;
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-width: 100%;
   }
 
   &__week-label {
     flex: 1 1 auto;
-    margin: 0 0 0 8px;
+    // margin: 0 0 0 8px;
     font-size: 18px;
     font-weight: bold;
 
