@@ -30,7 +30,6 @@ export function getDateLabel(startDate: Date, endDate: Date) {
   const thisWeek = today <= endDate && today >= startDate;
 
   let label = format(startDate, "dd");
-  label = `${thisWeek ? "This Week: " : ""}${label}`;
   if (startDate.getMonth() !== endDate.getMonth()) {
     label += ` ${format(startDate, "MMM")}`;
 

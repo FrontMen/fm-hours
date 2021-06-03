@@ -1,7 +1,7 @@
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
-      <b-button-group>
+      <b-button-group class="navigation-buttons__date-group">
         <b-button @click="handlePreviousClick()">
           <b-icon icon="arrow-left" />
         </b-button>
@@ -10,7 +10,6 @@
           @click="handleCurrentClick()"
         >
           <b-icon icon="calendar2-date" />
-          <span class="ml-2 d-none d-sm-inline">This week</span>
         </b-button>
 
         <b-button :disabled="weekDifference > 3" @click="handleNextClick()">
@@ -83,16 +82,24 @@ export default defineComponent({
     align-items: center;
     flex-wrap: wrap;
     gap: 8px;
+    width: 100%;
     max-width: 100%;
+  }
+
+  &__date-group {
+    width: 100%;
+
+    @media (min-width: 560px) {
+      width: unset;
+    }
   }
 
   &__week-label {
     flex: 1 1 auto;
-    // margin: 0 0 0 8px;
     font-size: 18px;
     font-weight: bold;
 
-    @media (min-width: 576px) {
+    @media (min-width: 560px) {
       font-size: 24px;
     }
   }
