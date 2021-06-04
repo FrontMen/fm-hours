@@ -30,7 +30,6 @@ export function getDateLabel(startDate: Date, endDate: Date) {
   const thisWeek = today <= endDate && today >= startDate;
 
   let label = format(startDate, "dd");
-  label = `${thisWeek ? "This Week: " : ""}${label}`;
   if (startDate.getMonth() !== endDate.getMonth()) {
     label += ` ${format(startDate, "MMM")}`;
 
@@ -120,6 +119,6 @@ export function getDayOnGMT(initialZonedValue: Date | number | string) {
   const zonedDate = new Date(initialZonedValue);
   return new Date(
     zonedDate.getTime() +
-      zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
+    zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
   );
 }

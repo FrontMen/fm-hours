@@ -1,30 +1,27 @@
 <template>
   <div class="weekly-timesheet-footer">
-    <div>
-      <span v-if="lastSaved">Last saved: {{ lastSavedLabel }}</span>
-      <b-spinner v-if="isSaving" small />
-
-      <b-button
-        v-if="canSubmitForApproval"
-        class="ml-3"
-        :disabled="isSaving || !hasUnsavedChanges"
-        @click="handleSaveClick"
-      >
-        Update
-      </b-button>
-
-      <b-button
-        v-if="canUnsubmitForApproval"
-        class="ml-3"
-        :disabled="isSaving"
-        @click="handleUnsubmitClick"
-      >
-        Unsubmit
-      </b-button>
+    <div class="weekly-timesheet-footer__status">
+      <span v-if="lastSaved">Last saved: {{ lastSavedLabel }} ago</span>
+      <b-spinner v-if="isSaving" class="ml-1" small />
     </div>
 
     <b-button
-      class="ml-3"
+      v-if="canSubmitForApproval"
+      :disabled="isSaving || !hasUnsavedChanges"
+      @click="handleSaveClick"
+    >
+      Update
+    </b-button>
+
+    <b-button
+      v-if="canUnsubmitForApproval"
+      :disabled="isSaving"
+      @click="handleUnsubmitClick"
+    >
+      Unsubmit
+    </b-button>
+
+    <b-button
       :disabled="isSaving || !canSubmitForApproval"
       @click="handleSubmitClick"
     >
@@ -131,7 +128,18 @@ export default defineComponent({
 <style lang="scss" scoped>
 .weekly-timesheet-footer {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  gap: 16px;
+  flex-direction: column;
+
+  @media (min-width: 560px) {
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  &__status {
+    display: inline-flex;
+    align-items: center;
+  }
 }
 </style>

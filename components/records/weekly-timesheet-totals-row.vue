@@ -1,6 +1,6 @@
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
-    <b-col cols="4">
+    <b-col class="weekly-timesheet-totals-row__action" cols="4">
       <b-button
         v-if="showAddProjectButton"
         v-b-modal.modal-add-project
@@ -21,10 +21,7 @@
     </b-col>
 
     <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
-    <b-col
-      cols="1"
-      class="weekly-timesheet-totals-row__week-column d-none d-sm-block"
-    >
+    <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
         <strong>{{ weekTotal }}</strong>
       </span>
@@ -104,9 +101,23 @@ export default defineComponent({
   padding-top: 8px;
   padding-bottom: 8px;
 
+  &__action {
+    @media (max-width: 560px) {
+      flex: 100%;
+      max-width: 100%;
+    }
+  }
+
   &__column {
+    flex: 1;
+    max-width: 100%;
     padding: 8px;
     text-align: center;
+
+    @media (max-width: 560px) {
+      flex: 1;
+      max-width: 100%;
+    }
 
     &.exceeded {
       color: red;
@@ -121,6 +132,11 @@ export default defineComponent({
   &__week-column {
     padding-right: 16px;
     text-align: right;
+    padding: 0 4px;
+
+    @media (min-width: 560px) {
+      padding: 0 15px;
+    }
 
     &.exceeded {
       color: red;

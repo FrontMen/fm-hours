@@ -1,6 +1,6 @@
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
-    <b-col cols="4">
+    <b-col class="weekly-timesheet-row__action-column" cols="4">
       <b-button
         v-if="canRemove"
         class="weekly-timesheet-row__remove-button"
@@ -125,6 +125,14 @@ export default defineComponent({
   color: var(--body-color);
   align-items: center;
 
+  + .weekly-timesheet-row {
+    padding-top: 12px;
+
+    @media (min-width: 560px) {
+      padding-top: 0;
+    }
+  }
+
   &__remove-button {
     display: inline-flex;
     align-items: center;
@@ -133,10 +141,24 @@ export default defineComponent({
     border: 0;
   }
 
+  &__action-column {
+    @media (max-width: 560px) {
+      flex: unset;
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
   &__date-column {
-    padding: 8px;
+    flex: 1;
+    padding: 2px;
     text-align: center;
     background-color: #fff;
+    max-width: 100%;
+
+    @media (min-width: 768px) {
+      padding: 8px;
+    }
 
     &.holiday,
     &.weekend {
@@ -158,6 +180,11 @@ export default defineComponent({
 
   &__total-column {
     text-align: right;
+    padding: 0 4px;
+
+    @media (min-width: 560px) {
+      padding: 0 15px;
+    }
   }
 }
 </style>
