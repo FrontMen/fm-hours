@@ -28,10 +28,8 @@
       <b-form-input
         v-model="project.values[index]"
         class="weekly-timesheet-row__value-input"
-        type="number"
+        type="text"
         :formatter="valueFormatter.formatter"
-        :min="valueFormatter.min"
-        :max="valueFormatter.max"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
@@ -82,8 +80,11 @@ export default defineComponent({
       emit("remove", props.project);
     };
 
-    const totalValue = computed(() =>
-      props.project.values.reduce((total, current) => total + current)
+    const totalValue = computed(
+      () =>
+        +props.project.values
+          .reduce((total, current) => total + +current)
+          .toFixed(1)
     );
 
     // An array of booleans, one for each day of the selected week, that states

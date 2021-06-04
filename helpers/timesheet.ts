@@ -181,10 +181,21 @@ const findRecordByDate = (
 
 export function generateValueFormatter(min: number, max: number) {
   return {
-    min,
-    max,
-    formatter: (value: number) =>
-      Math.min(Math.max(Number(value) || 0, min), max),
+    formatter: (value: string, event: FocusEvent | InputEvent) => {
+      // Allows only numbers and a max of 1 dot
+      const formatted = value.replace(/[^0-9.]+|\.(?=.*\.)/g, "");
+
+      // Don’t convert to number when the string ends with a dot, so we can add
+      // float numbers. In this case a string will be returned.
+      if (formatted.match(/\.$/)) {
+        // On blur, return a number
+        if (event.type === "blur") return +formatted || 0;
+        return formatted;
+      }
+
+      // Validates range and returns a number
+      return +Math.min(Math.max(Number(formatted), min), max).toFixed(1);
+    },
   };
 }
 
