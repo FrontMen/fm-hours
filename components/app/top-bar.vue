@@ -1,3 +1,10 @@
+<i18n lang="yaml">
+  en:
+    logout: "Logout"
+  nl:
+    logout: "Uitloggen"
+</i18n>
+
 <template>
   <div class="top-bar">
     <div class="top-bar__inner content-wrapper">
@@ -31,10 +38,13 @@
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
-                  Logout
+                  {{ $t("logout") }}
                 </b-dropdown-item>
               </b-dropdown>
             </div>
+          </b-col>
+          <b-col>
+            <LanguageSwitch class="language" />
           </b-col>
         </b-row>
       </b-container>
@@ -43,7 +53,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, useRouter } from "@nuxtjs/composition-api";
+import { defineComponent, PropType, useContext, useRouter } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emit: ["logout"],
@@ -59,8 +69,9 @@ export default defineComponent({
   },
   setup(_, { emit }) {
     const router = useRouter();
+    const {localePath} = useContext();
 
-    const handleLogoClick = () => router.push("/records");
+    const handleLogoClick = () => router.push(localePath("/records"));
     const handleLogoutClick = () => emit("logout");
 
     return {
@@ -91,8 +102,12 @@ export default defineComponent({
     }
   }
 
-  .employee {
+  .employee,
+  .language a {
     color: white;
+    &.active {
+      color: #00ff51;
+    }
   }
 
   &__hamburger {

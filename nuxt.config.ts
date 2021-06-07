@@ -1,4 +1,5 @@
 import { defineNuxtConfig } from "@nuxtjs/composition-api";
+import i18n from "./config/i18n";
 
 export default defineNuxtConfig({
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -52,6 +53,8 @@ export default defineNuxtConfig({
     // https://go.nuxtjs.dev/pwa
     "@nuxtjs/pwa",
     "@nuxtjs/firebase",
+    "nuxt-i18n",
+    ["@nuxtjs/proxy",{logLevel:'debug'}],
   ],
 
   firebase: {
@@ -75,6 +78,8 @@ export default defineNuxtConfig({
       },
     },
   },
+  i18n,
+  proxy: ["https://bridge.hosted-tools.com/api"],
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {},

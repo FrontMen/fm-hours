@@ -40,13 +40,17 @@
     "@nuxtjs/axios": "^5.12.2",
     "@nuxtjs/composition-api": "^0.20.2",
     "@nuxtjs/firebase": "^7.1.0",
+    "@nuxtjs/proxy": "^2.1.0",
     "@nuxtjs/pwa": "^3.0.2",
+    "@types/js-cookie": "^2.2.6",
     "bootstrap": "^4.5.2",
     "bootstrap-vue": "^2.17.3",
     "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
     "firebase": "^8.0.1",
+    "js-cookie": "^2.2.1",
     "nuxt": "^2.14.6",
+    "nuxt-i18n": "^6.26.0",
     "vue-multiselect": "^2.1.6"
   },
   "devDependencies": {

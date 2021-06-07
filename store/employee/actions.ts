@@ -4,7 +4,8 @@ import EmployeesService from "~/services/employees-service";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   async login() {
-    const provider = new this.$fireModule.auth.GoogleAuthProvider();
+    // const provider = new this.$fireModule.auth.GoogleAuthProvider();
+    const provider = new this.$fireModule.auth.SAMLAuthProvider("saml.intracto");
     await this.$fire.auth.signInWithPopup(provider);
   },
 
@@ -23,6 +24,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     const employeesService = new EmployeesService(this.$fire);
     const employee = await employeesService.getEmployee(payload.claims.user_id);
     const isAdmin = await employeesService.isAdmin(payload.claims.email);
+    console.log("-->", payload)
 
     if (employee) {
       commit("setEmployee", { employee, isAdmin });

@@ -1,13 +1,14 @@
 <template>
   <div class="empty-timesheet">
-    <p>There are no hours registered for this week.</p>
+    <h1>{{ $t("greeting") }}</h1>
+    <p>{{ $t("noHoursThisWeek") }}</p>
 
     <template v-if="!isAdminView">
-      <b-button v-b-modal.modal-add-project> Add a project </b-button>
+      <b-button v-b-modal.modal-add-project> {{ $t("addAProject") }} </b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 
       <b-button @click="handleCopyPreviousWeekClick">
-        Copy previous week
+        {{ $t("copyPreviousWeek") }}
       </b-button>
     </template>
   </div>
