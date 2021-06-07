@@ -93,16 +93,31 @@ export default (employeeId: string, startTimestamp?: number) => {
   };
 
   const copyPreviousWeek = () => {
-    const startDate = new Date(recordsState.value.selectedWeek[0].date);
+    const startDate = new Date(
+      getDayOnGMT(recordsState.value.selectedWeek[0].date)
+    );
     const prevStartDate = subDays(startDate, 7);
     const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
 
-    timesheet.value = createWeeklyTimesheet({
+    const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
     });
+
+    const newTimesheet = {
+      projects: previousWeekTimesheet.projects.map((project) => ({
+        ...project,
+        ids: new Array(7).fill(null),
+      })),
+      travelProject: {
+        ...previousWeekTimesheet.travelProject!,
+        ids: new Array(7).fill(null),
+      },
+    };
+
+    timesheet.value = newTimesheet;
 
     hasUnsavedChanges.value = true;
   };
