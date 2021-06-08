@@ -12,6 +12,7 @@ import { buildEmailData } from "~/helpers/email";
 export default (employeeId: string, startTimestamp?: number) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
+  const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
   const recordsState = computed(() => store.state.records);
   const timesheetState = computed(() => store.state.timesheets);
 
@@ -67,6 +68,7 @@ export default (employeeId: string, startTimestamp?: number) => {
       if (!confirmation) return;
     }
 
+    unsavedWeeklyTimesheet.value = undefined;
     store.dispatch("records/goToWeek", { employeeId, to });
   };
 
@@ -83,13 +85,18 @@ export default (employeeId: string, startTimestamp?: number) => {
   };
 
   const deleteProject = (project: TimesheetProject) => {
-    hasUnsavedChanges.value = false;
-
     store.dispatch("records/deleteProjectRecords", {
       week: recordsState.value.selectedWeek,
       project,
       employeeId,
     });
+
+    unsavedWeeklyTimesheet.value = {
+      projects: timesheet.value.projects.filter(
+        (proj) => proj.customer.id !== project.customer.id
+      ),
+      travelProject: timesheet.value.travelProject,
+    };
   };
 
   const copyPreviousWeek = () => {
@@ -129,19 +136,27 @@ export default (employeeId: string, startTimestamp?: number) => {
       recordsState.value.travelRecords,
     ],
     () => {
-      hasUnsavedChanges.value = false;
+      if (!timesheet.value) {
+        hasUnsavedChanges.value = false;
+      }
 
       store.dispatch("timesheets/getTimesheets", {
         date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
         employeeId,
       });
 
-      timesheet.value = createWeeklyTimesheet({
+      const newTimesheet = createWeeklyTimesheet({
         week: recordsState.value.selectedWeek,
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
         workScheme: recordsState.value.workScheme,
       });
+
+      timesheet.value = unsavedWeeklyTimesheet.value
+        ? unsavedWeeklyTimesheet.value
+        : newTimesheet;
+
+      unsavedWeeklyTimesheet.value = undefined;
     },
     { deep: true }
   );
@@ -150,6 +165,8 @@ export default (employeeId: string, startTimestamp?: number) => {
     newTimesheetStatus: TimesheetStatus,
     denialMessage?: string
   ) => {
+    unsavedWeeklyTimesheet.value = undefined;
+
     store.dispatch("records/saveTimesheet", {
       employeeId,
       week: recordsState.value.selectedWeek,
@@ -187,6 +204,7 @@ export default (employeeId: string, startTimestamp?: number) => {
   };
 
   const denyTimesheet = (employee: Employee, denialMessage: string) => {
+    unsavedWeeklyTimesheet.value = undefined;
     const selectedTimesheet = timesheetState.value.timesheets[0];
 
     if (!selectedTimesheet || selectedTimesheet.status !== recordStatus.PENDING)
