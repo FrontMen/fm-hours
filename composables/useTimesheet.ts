@@ -39,7 +39,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     travelProject: null,
   });
 
-  const initialDate = startTimestamp ? getDayOnGMT(startTimestamp) : new Date();
+  const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
 
   store.dispatch("records/getRecords", {
     employeeId,
