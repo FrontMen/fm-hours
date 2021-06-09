@@ -1,11 +1,4 @@
-import {
-  format,
-  isToday,
-  isWeekend,
-  isSameDay,
-  startOfISOWeek,
-  addWeeks,
-} from "date-fns";
+import { format, isToday, isWeekend, startOfISOWeek, addWeeks } from "date-fns";
 
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
@@ -26,9 +19,6 @@ export function addDays(dirtyDate: string | number | Date, days: number) {
 
 // based on a date, create a label with the begin and enddate of that week
 export function getDateLabel(startDate: Date, endDate: Date) {
-  const today = new Date();
-  const thisWeek = today <= endDate && today >= startDate;
-
   let label = format(startDate, "dd");
   if (startDate.getMonth() !== endDate.getMonth()) {
     label += ` ${format(startDate, "MMM")}`;
@@ -59,7 +49,7 @@ export function buildWeek(
       year: format(newDate, "yyyy"),
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
-      isHoliday: holidays.some((date) => isSameDay(new Date(date), newDate)),
+      isHoliday: holidays.some((date) => date === formatDate(newDate)),
     };
   });
 }
@@ -119,6 +109,6 @@ export function getDayOnGMT(initialZonedValue: Date | number | string) {
   const zonedDate = new Date(initialZonedValue);
   return new Date(
     zonedDate.getTime() +
-    zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
+      zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
   );
 }
