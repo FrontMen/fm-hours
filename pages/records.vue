@@ -9,6 +9,7 @@
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
+      :is-admin-view="isAdminView"
       @previous="goToWeek('previous')"
       @next="goToWeek('next')"
       @current="goToWeek('current')"

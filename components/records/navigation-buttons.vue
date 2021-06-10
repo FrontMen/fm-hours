@@ -1,6 +1,19 @@
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
+      <nuxt-link
+        v-if="isAdminView"
+        to="/timesheets"
+        class="d-flex align-items-center flex-nowrap"
+      >
+        <b-button>
+          <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
+          Timesheets
+        </b-button>
+      </nuxt-link>
+      <h2 class="navigation-buttons__week-label">
+        {{ weekLabel }}
+      </h2>
       <b-button-group class="navigation-buttons__date-group">
         <b-button @click="handlePreviousClick()">
           <b-icon icon="arrow-left" />
@@ -16,9 +29,6 @@
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
-      <h2 class="navigation-buttons__week-label">
-        {{ weekLabel }}
-      </h2>
     </div>
   </div>
 </template>
@@ -35,6 +45,10 @@ export default defineComponent({
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
       default: () => [],
+    },
+    isAdminView: {
+      type: Boolean,
+      default: false,
     },
   },
   setup(props, { emit }) {
@@ -95,12 +109,14 @@ export default defineComponent({
   }
 
   &__week-label {
-    flex: 1 1 auto;
     font-size: 18px;
     font-weight: bold;
 
+    margin: 0 auto;
+
     @media (min-width: 560px) {
       font-size: 24px;
+      margin-right: 0;
     }
   }
 }
