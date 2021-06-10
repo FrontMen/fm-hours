@@ -10,12 +10,14 @@ import {
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords(
-    { commit },
+    { commit, rootState },
     payload: { employeeId: string; startDate: Date }
   ) {
     commit("setLoading", { isLoading: true });
 
-    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
+    const holidays = rootState.holidays.holidays;
+
+    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), holidays);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
       employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
@@ -42,7 +44,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async goToWeek(
-    { commit, state },
+    { commit, state, rootState },
     payload: { employeeId: string; to: "current" | "next" | "previous" }
   ) {
     const currentStartDate = state.selectedWeek[0].date;
@@ -54,7 +56,9 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       newStartDate = addDays(getDayOnGMT(currentStartDate), 7);
     }
 
-    const selectedWeek = buildWeek(startOfISOWeek(newStartDate), []);
+    const holidays = rootState.holidays.holidays;
+
+    const selectedWeek = buildWeek(startOfISOWeek(newStartDate), holidays);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
       employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),

@@ -59,6 +59,20 @@ export default (employeeId: string, startTimestamp?: number) => {
     { immediate: true }
   );
 
+  const hasRestDayHours = computed(() => {
+    return timesheet.value.projects.reduce((_, project) => {
+      return project.values.reduce((acc, value, index) => {
+        if (!value) return acc;
+
+        return (
+          index === 5 ||
+          index === 6 ||
+          recordsState.value.selectedWeek[index].isHoliday
+        );
+      }, false);
+    }, false);
+  });
+
   const goToWeek = (to: "current" | "previous" | "next") => {
     if (hasUnsavedChanges.value) {
       const confirmation = confirm(
@@ -165,6 +179,14 @@ export default (employeeId: string, startTimestamp?: number) => {
     newTimesheetStatus: TimesheetStatus,
     denialMessage?: string
   ) => {
+    if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
+      const confirmation = confirm(
+        "You have add hours on weekends or holidays, are you sure you want to save this timesheet?"
+      );
+
+      if (!confirmation) return;
+    }
+
     unsavedWeeklyTimesheet.value = undefined;
 
     store.dispatch("records/saveTimesheet", {

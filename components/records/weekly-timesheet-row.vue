@@ -163,7 +163,7 @@ export default defineComponent({
 
     &.holiday,
     &.weekend {
-      background-color: #e4e4e4;
+      background-color: #999;
     }
   }
 
