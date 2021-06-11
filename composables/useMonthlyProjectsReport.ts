@@ -1,4 +1,4 @@
-import { uniqueByKey } from "~/helpers/array";
+import { uniqueByKey } from "~/helpers/helpers";
 
 export default () => {
   const createProjectsFields = () => {

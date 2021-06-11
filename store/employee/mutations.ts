@@ -12,6 +12,14 @@ const mutations: MutationTree<EmployeeStoreState> = {
     state.isAdmin = false;
     state.employee = null;
   },
+
+  setLoading: (state, payload: boolean) => {
+    state.isLoading = payload;
+  },
+
+  setErrorMessage: (state, payload: string) => {
+    state.errorMessage = payload;
+  },
 };
 
 export default mutations;
