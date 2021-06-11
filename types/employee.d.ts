@@ -13,5 +13,7 @@ interface Employee {
 interface EmployeeStoreState {
   isLoggedIn: boolean;
   isAdmin: boolean;
+  isLoading: boolean;
   employee: Employee | null;
+  errorMessage: string;
 }
