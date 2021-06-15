@@ -17,7 +17,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), []);
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
       endDate: new Date(selectedWeek[6].date),
     });

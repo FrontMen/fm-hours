@@ -31,6 +31,7 @@ export default class EmployeesService {
         endDate,
         startDate,
         created,
+        bridgeUid
       } = doc.data() as Employee;
 
       return {
@@ -43,6 +44,7 @@ export default class EmployeesService {
         endDate,
         startDate,
         created,
+        bridgeUid,
       };
     }
 

@@ -76,6 +76,9 @@
               class="w-75 mb-2"
               @input="hasUnsavedChanges = true"
             />
+            <pre>
+              {{JSON.stringify(employee)}}
+            </pre>
           </b-col>
         </b-row>
 

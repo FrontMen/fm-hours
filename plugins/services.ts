@@ -9,13 +9,14 @@ import WorkSchemeService from "~/services/work-scheme-service";
 import TimesheetsService from "~/services/timesheets-service";
 import MailService from "~/services/mail-service";
 
+
 export default defineNuxtPlugin(({ $fire, $axios }, inject) => {
   inject("customersService", new CustomersService($fire));
   inject("holidaysService", new HolidaysService($fire));
   inject("timeRecordsService", new TimeRecordsService($fire));
   inject("travelRecordsService", new TravelRecordsService($fire));
   inject("employeesService", new EmployeesService($fire));
-  inject("workSchemeService", new WorkSchemeService());
+  inject("workSchemeService", new WorkSchemeService($axios));
   inject("timesheetsService", new TimesheetsService($fire));
   inject("mailService", new MailService($axios));
 });
