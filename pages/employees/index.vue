@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page-wrapper pb-5">
     <div class="content-wrapper mt-5">
       <b-container class="mb-3" fluid>
         <b-row :no-gutters="true" class="px-3">
@@ -11,6 +11,31 @@
         </b-row>
       </b-container>
 
+      <b-container class="mb-3">
+        <b-row>
+          <b-col cols="4" class="pl-0">
+            <label class="employee-status__label" for="employee-search">
+              Search by employee name:
+            </label>
+            <b-input
+              id="employee-search"
+              v-model="searchInput"
+              type="search"
+              placeholder='Ex.: "John"'
+            />
+          </b-col>
+          <b-col cols="3">
+            <label class="employee-status__label" for="status-select">
+              Filter by status:
+            </label>
+            <b-form-select
+              id="status-select"
+              v-model="statusSelected"
+              :options="statusOptions"
+            />
+          </b-col>
+        </b-row>
+      </b-container>
       <b-container fluid class="app-table">
         <b-row class="app-table__top-row py-3">
           <b-col>
@@ -19,7 +44,16 @@
         </b-row>
 
         <b-row
-          v-for="employee in employees"
+          v-if="!filteredEmployees.length"
+          class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
+        >
+          <b-icon-person-x class="mr-2" />
+          No employee found.
+        </b-row>
+
+        <b-row
+          v-for="employee in filteredEmployees"
+          v-else
           :key="employee.id"
           class="app-table__row employee-row p-3 mr-0"
         >
@@ -78,6 +112,7 @@ import {
 
 import { validateEmail } from "../../helpers/validation";
 import { formatDate } from "~/helpers/dates";
+import { checkEmployeeAvailability } from "~/helpers/employee";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -91,6 +126,35 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     store.dispatch("employees/getEmployees");
+
+    const statusSelected = ref<string>("all");
+    const statusOptions = [
+      { value: "all", text: "All" },
+      { value: "active", text: "Active" },
+      { value: "incative", text: "Inactive" },
+    ];
+
+    const searchInput = ref<string>("");
+
+    const getEmployeeFilterStatus = (status: string, employee: Employee) => {
+      if (status === "all") return true;
+
+      const isSelectStatusActive = statusSelected.value === "active";
+      const isActive = checkEmployeeAvailability(employee, new Date());
+      return isActive === isSelectStatusActive;
+    };
+
+    const filteredEmployees = computed(() => {
+      // Avoid traverse array when no filter is set
+      if (statusSelected.value === "all" && !searchInput.value)
+        return [...employees.value];
+
+      return employees.value.filter(
+        (employee) =>
+          getEmployeeFilterStatus(statusSelected.value, employee) &&
+          employee.name.toUpperCase().includes(searchInput.value.toUpperCase())
+      );
+    });
 
     const openEmployeePage = (employee: Employee) => {
       router.push(`/employees/${employee.id}`);
@@ -126,7 +190,19 @@ export default defineComponent({
       canAddEmployee,
       addEmployee,
       openEmployeePage,
+      statusSelected,
+      statusOptions,
+      filteredEmployees,
+      searchInput,
     };
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.employee-status__label {
+  min-width: fit-content;
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
+</style>
