@@ -24,6 +24,7 @@
               placeholder='Ex.: "John"'
             />
           </b-col>
+
           <b-col cols="3">
             <label class="employee-status__label" for="status-select">
               Filter by status:
@@ -33,6 +34,30 @@
               v-model="statusSelected"
               :options="statusOptions"
             />
+          </b-col>
+
+          <b-col cols="4">
+            <label class="employee-status__label" for="customer-select">
+              Filter by customer:
+            </label>
+            <multiselect
+              id="customer-select"
+              v-model="selectedCustomers"
+              track-by="id"
+              label="label"
+              class="customer-select__wrapper"
+              :options="customerOptions"
+              :close-on-select="false"
+              :multiple="true"
+              :taggable="false"
+              placeholder="Click or search for a customer here"
+            >
+              <template slot="selection" slot-scope="{ values }">
+                <span v-if="values.length">
+                  {{ values.length }} options selected
+                </span>
+              </template>
+            </multiselect>
           </b-col>
         </b-row>
       </b-container>
@@ -106,13 +131,18 @@ import {
   computed,
   defineComponent,
   useStore,
+  onMounted,
 } from "@nuxtjs/composition-api";
+import Multiselect from "vue-multiselect";
 
 import { validateEmail } from "../../helpers/validation";
 import { formatDate } from "~/helpers/dates";
 import { checkEmployeeAvailability } from "~/helpers/employee";
+import { queryOnString } from "~/helpers/helpers";
 
 export default defineComponent({
+  components: { Multiselect },
+
   middleware: ["isAdmin"],
 
   head: {
@@ -122,7 +152,28 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
-    store.dispatch("employees/getEmployees");
+    const customers = computed(() => store.state.customers.customers);
+
+    onMounted(() => {
+      if (employees.value.length === 0) {
+        store.dispatch("employees/getEmployees");
+      }
+
+      if (customers.value.length === 0) {
+        store.dispatch("customers/getCustomers");
+      }
+    });
+
+    const customerOptions = computed(() =>
+      customers.value
+        .filter((customer) => !customer.isDefault)
+        .map((customer) => ({
+          ...customer,
+          label: `${customer.name} (${customer.debtor})`,
+        }))
+    );
+
+    const selectedCustomers = ref<Customer[]>([]);
 
     const statusSelected = ref<string>("all");
     const statusOptions = [
@@ -133,7 +184,7 @@ export default defineComponent({
 
     const searchInput = ref<string>("");
 
-    const getEmployeeFilterStatus = (status: string, employee: Employee) => {
+    const employeeStatusChecker = (status: string, employee: Employee) => {
       if (status === "all") return true;
 
       const isSelectStatusActive = statusSelected.value === "active";
@@ -141,15 +192,38 @@ export default defineComponent({
       return isActive === isSelectStatusActive;
     };
 
+    const employeeNameChecker = (employeeName: string, query: string) => {
+      if (!query) return true;
+
+      return queryOnString(employeeName, query);
+    };
+
+    const employeeProjectsChecker = (
+      employeeProjectsIds: string[],
+      selectedProjects: Customer[]
+    ) => {
+      if (!selectedProjects.length) return true;
+      if (!employeeProjectsIds.length) return false;
+
+      return employeeProjectsIds.every((id) =>
+        selectedProjects.some((project) => project.id === id)
+      );
+    };
+
     const filteredEmployees = computed(() => {
       // Avoid traverse array when no filter is set
-      if (statusSelected.value === "all" && !searchInput.value)
+      if (
+        statusSelected.value === "all" &&
+        !searchInput.value &&
+        !selectedCustomers.value.length
+      )
         return [...employees.value];
 
       return employees.value.filter(
         (employee) =>
-          getEmployeeFilterStatus(statusSelected.value, employee) &&
-          employee.name.toUpperCase().includes(searchInput.value.toUpperCase())
+          employeeStatusChecker(statusSelected.value, employee) &&
+          employeeNameChecker(employee.name, searchInput.value) &&
+          employeeProjectsChecker(employee.projects, selectedCustomers.value)
       );
     });
 
@@ -186,6 +260,8 @@ export default defineComponent({
       statusOptions,
       filteredEmployees,
       searchInput,
+      customerOptions,
+      selectedCustomers,
     };
   },
 });
@@ -196,5 +272,13 @@ export default defineComponent({
   min-width: fit-content;
   margin-bottom: 0;
   margin-right: 1rem;
+}
+</style>
+
+<style lang="scss">
+.customer-select__wrapper .multiselect__tags {
+  min-height: 38px;
+  padding-top: 6px;
+  border-color: #ced4da;
 }
 </style>
