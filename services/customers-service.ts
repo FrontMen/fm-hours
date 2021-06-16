@@ -39,6 +39,16 @@ export default class CustomersService {
     }));
   }
 
+  async updateCustomer(customer: Customer) {
+    const newCustomer = { ...customer } as any;
+    delete newCustomer.id;
+
+    return await this.fire.firestore
+      .collection("customers")
+      .doc(customer.id)
+      .update(newCustomer);
+  }
+
   deleteCustomer(id: string) {
     return this.fire.firestore.collection("customers").doc(id).delete();
   }

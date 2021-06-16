@@ -32,7 +32,12 @@
           </b-col>
 
           <b-col cols-md="4" class="d-flex justify-content-end">
-            <b-button @click="deleteCustomer(customer.id)"> Delete </b-button>
+            <nuxt-link
+              :to="`/customers/${customer.id}`"
+              class="btn btn-primary align-self-center"
+            >
+              Manage Customer
+            </nuxt-link>
           </b-col>
         </b-row>
       </b-container>
@@ -102,16 +107,11 @@ export default defineComponent({
       newCustomer.value.isDefault = false;
     };
 
-    const deleteCustomer = (id: String) => {
-      store.dispatch("customers/deleteCustomer", id);
-    };
-
     return {
       customers,
       newCustomer,
       canAddCustomer,
       addCustomer,
-      deleteCustomer,
     };
   },
 });
