@@ -148,6 +148,7 @@ export default defineComponent({
       });
 
       hasUnsavedChanges.value = false;
+      router.push("/customers");
     };
 
     return {
