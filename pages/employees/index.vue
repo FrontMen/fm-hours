@@ -63,13 +63,12 @@
             {{ employee.name }}
           </div>
 
-          <b-button
-            variant="info"
-            class="ml-auto"
-            @click="openEmployeePage(employee)"
+          <nuxt-link
+            class="btn btn-info ml-auto"
+            :to="`/employees/${employee.id}`"
           >
             Manage employee
-          </b-button>
+          </nuxt-link>
         </b-row>
       </b-container>
     </div>
@@ -106,7 +105,6 @@ import {
   ref,
   computed,
   defineComponent,
-  useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
 
@@ -122,7 +120,6 @@ export default defineComponent({
   },
 
   setup() {
-    const router = useRouter();
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     store.dispatch("employees/getEmployees");
@@ -156,10 +153,6 @@ export default defineComponent({
       );
     });
 
-    const openEmployeePage = (employee: Employee) => {
-      router.push(`/employees/${employee.id}`);
-    };
-
     const newEmployee = ref({
       name: "",
       email: "",
@@ -189,7 +182,6 @@ export default defineComponent({
       newEmployee,
       canAddEmployee,
       addEmployee,
-      openEmployeePage,
       statusSelected,
       statusOptions,
       filteredEmployees,
