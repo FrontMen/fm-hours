@@ -1,6 +1,11 @@
 <template>
   <div class="layout-wrapper">
-    <top-bar :employee="employee" :is-admin="isAdmin" @logout="logout()" />
+    <top-bar
+      :employee="employee"
+      :is-admin="isAdmin"
+      :is-dev="$config.isDevelopment"
+      @logout="logout()"
+    />
     <admin-sidebar v-if="isAdmin" />
 
     <Nuxt />
