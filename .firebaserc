@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "fm-hours"
+    "default": "fm-hours",
+    "dev": "fm-hours-dev"
   }
 }
