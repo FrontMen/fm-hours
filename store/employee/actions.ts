@@ -9,7 +9,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     try {
       commit("setLoading", true);
       commit("setErrorMessage", "");
-      const provider = new this.$fireModule.auth.GoogleAuthProvider();
+      const provider = new this.$fireModule.auth.SAMLAuthProvider("saml.intracto");
       await this.$fire.auth.signInWithPopup(provider);
     } catch (err) {
       commit("setLoading", false);
