@@ -1,5 +1,5 @@
 <template>
-  <div class="page-wrapper">
+  <div class="page-wrapper pb-5">
     <div class="content-wrapper mt-5">
       <b-container class="mb-3" fluid>
         <b-row :no-gutters="true" class="px-3">
@@ -11,6 +11,56 @@
         </b-row>
       </b-container>
 
+      <b-container class="mb-3">
+        <b-row>
+          <b-col cols="4" class="pl-0">
+            <label class="employee-status__label" for="employee-search">
+              Search by employee name:
+            </label>
+            <b-input
+              id="employee-search"
+              v-model="searchInput"
+              type="search"
+              placeholder='Ex.: "John"'
+            />
+          </b-col>
+
+          <b-col cols="3">
+            <label class="employee-status__label" for="status-select">
+              Filter by status:
+            </label>
+            <b-form-select
+              id="status-select"
+              v-model="statusSelected"
+              :options="statusOptions"
+            />
+          </b-col>
+
+          <b-col cols="4">
+            <label class="employee-status__label" for="customer-select">
+              Filter by customer:
+            </label>
+            <multiselect
+              id="customer-select"
+              v-model="selectedCustomers"
+              track-by="id"
+              label="label"
+              class="customer-select__wrapper"
+              :options="customerOptions"
+              :close-on-select="false"
+              :multiple="true"
+              :taggable="false"
+              placeholder="Click or search for a customer here"
+            >
+              <template slot="selection" slot-scope="{ values }">
+                <span v-if="values.length">
+                  {{ values.length }} options selected
+                </span>
+              </template>
+            </multiselect>
+          </b-col>
+        </b-row>
+      </b-container>
       <b-container fluid class="app-table">
         <b-row class="app-table__top-row py-3">
           <b-col>
@@ -19,7 +69,16 @@
         </b-row>
 
         <b-row
-          v-for="employee in employees"
+          v-if="!filteredEmployees.length"
+          class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
+        >
+          <b-icon-person-x class="mr-2" />
+          No employee found.
+        </b-row>
+
+        <b-row
+          v-for="employee in filteredEmployees"
+          v-else
           :key="employee.id"
           class="app-table__row employee-row p-3 mr-0"
         >
@@ -29,13 +88,12 @@
             {{ employee.name }}
           </div>
 
-          <b-button
-            variant="info"
-            class="ml-auto"
-            @click="openEmployeePage(employee)"
+          <nuxt-link
+            class="btn btn-info ml-auto"
+            :to="`/employees/${employee.id}`"
           >
             Manage employee
-          </b-button>
+          </nuxt-link>
         </b-row>
       </b-container>
     </div>
@@ -72,14 +130,19 @@ import {
   ref,
   computed,
   defineComponent,
-  useRouter,
   useStore,
+  onMounted,
 } from "@nuxtjs/composition-api";
+import Multiselect from "vue-multiselect";
 
 import { validateEmail } from "../../helpers/validation";
 import { formatDate } from "~/helpers/dates";
+import { checkEmployeeAvailability } from "~/helpers/employee";
+import { queryOnString } from "~/helpers/helpers";
 
 export default defineComponent({
+  components: { Multiselect },
+
   middleware: ["isAdmin"],
 
   head: {
@@ -87,14 +150,82 @@ export default defineComponent({
   },
 
   setup() {
-    const router = useRouter();
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
-    store.dispatch("employees/getEmployees");
+    const customers = computed(() => store.state.customers.customers);
 
-    const openEmployeePage = (employee: Employee) => {
-      router.push(`/employees/${employee.id}`);
+    onMounted(() => {
+      if (employees.value.length === 0) {
+        store.dispatch("employees/getEmployees");
+      }
+
+      if (customers.value.length === 0) {
+        store.dispatch("customers/getCustomers");
+      }
+    });
+
+    const customerOptions = computed(() =>
+      customers.value
+        .filter((customer) => !customer.isDefault)
+        .map((customer) => ({
+          ...customer,
+          label: `${customer.name} (${customer.debtor})`,
+        }))
+    );
+
+    const selectedCustomers = ref<Customer[]>([]);
+
+    const statusSelected = ref<string>("all");
+    const statusOptions = [
+      { value: "all", text: "All" },
+      { value: "active", text: "Active" },
+      { value: "incative", text: "Inactive" },
+    ];
+
+    const searchInput = ref<string>("");
+
+    const employeeStatusChecker = (status: string, employee: Employee) => {
+      if (status === "all") return true;
+
+      const isSelectStatusActive = statusSelected.value === "active";
+      const isActive = checkEmployeeAvailability(employee, new Date());
+      return isActive === isSelectStatusActive;
     };
+
+    const employeeNameChecker = (employeeName: string, query: string) => {
+      if (!query) return true;
+
+      return queryOnString(employeeName, query);
+    };
+
+    const employeeProjectsChecker = (
+      employeeProjectsIds: string[],
+      selectedProjects: Customer[]
+    ) => {
+      if (!selectedProjects.length) return true;
+      if (!employeeProjectsIds.length) return false;
+
+      return employeeProjectsIds.every((id) =>
+        selectedProjects.some((project) => project.id === id)
+      );
+    };
+
+    const filteredEmployees = computed(() => {
+      // Avoid traverse array when no filter is set
+      if (
+        statusSelected.value === "all" &&
+        !searchInput.value &&
+        !selectedCustomers.value.length
+      )
+        return [...employees.value];
+
+      return employees.value.filter(
+        (employee) =>
+          employeeStatusChecker(statusSelected.value, employee) &&
+          employeeNameChecker(employee.name, searchInput.value) &&
+          employeeProjectsChecker(employee.projects, selectedCustomers.value)
+      );
+    });
 
     const newEmployee = ref({
       name: "",
@@ -125,8 +256,29 @@ export default defineComponent({
       newEmployee,
       canAddEmployee,
       addEmployee,
-      openEmployeePage,
+      statusSelected,
+      statusOptions,
+      filteredEmployees,
+      searchInput,
+      customerOptions,
+      selectedCustomers,
     };
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.employee-status__label {
+  min-width: fit-content;
+  margin-bottom: 0;
+  margin-right: 1rem;
+}
+</style>
+
+<style lang="scss">
+.customer-select__wrapper .multiselect__tags {
+  min-height: 38px;
+  padding-top: 6px;
+  border-color: #ced4da;
+}
+</style>
