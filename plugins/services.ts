@@ -8,6 +8,7 @@ import EmployeesService from "~/services/employees-service";
 import WorkSchemeService from "~/services/work-scheme-service";
 import TimesheetsService from "~/services/timesheets-service";
 import MailService from "~/services/mail-service";
+import ApiService from "~/services/api-service";
 
 export default defineNuxtPlugin(({ $fire, $axios }, inject) => {
   inject("customersService", new CustomersService($fire));
@@ -18,4 +19,5 @@ export default defineNuxtPlugin(({ $fire, $axios }, inject) => {
   inject("workSchemeService", new WorkSchemeService());
   inject("timesheetsService", new TimesheetsService($fire));
   inject("mailService", new MailService($axios));
+  inject("apiService", new ApiService($fire, $axios));
 });
