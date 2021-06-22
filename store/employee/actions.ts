@@ -1,10 +1,10 @@
 /* eslint-disable camelcase */
 import { ActionTree } from "vuex";
-
 import EmployeesService from "~/services/employees-service";
 import { sleep } from "~/helpers/helpers";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
+
   async login({ commit }) {
     try {
       commit("setLoading", true);
@@ -33,13 +33,18 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     payload: { authUser?: any; claims?: any }
   ) {
     if (!payload.authUser) return;
+    const { isDevelopment } = this.app.$config;
+
     const employeesService = new EmployeesService(this.$fire);
-    let employee = await employeesService.getEmployee(payload.claims.user_id);
-    const isAdmin = await employeesService.isAdmin(payload.claims.email);
+    const { email, user_id } = payload.claims;
+
+    const employeeId = isDevelopment ? email : user_id;
+    let employee = await employeesService.getEmployee(employeeId);
+    const isAdmin = await employeesService.isAdmin(employeeId);
 
     if (!employee) {
       await sleep(3000);
-      employee = await employeesService.getEmployee(payload.claims.user_id);
+      employee = await employeesService.getEmployee(employeeId);
     }
 
     if (employee) {
@@ -49,7 +54,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         "setErrorMessage",
         "An unexpected error happened while trying to log in"
       );
-      dispatch("employee/logout");
+      dispatch("logout");
     }
   },
 };
