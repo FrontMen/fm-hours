@@ -54,6 +54,10 @@ export default defineNuxtConfig({
     "@nuxtjs/firebase",
   ],
 
+  publicRuntimeConfig: {
+    isDevelopment: process.env.NODE_ENV === 'development',
+  },
+
   firebase: {
     config: {
       // REQUIRED: Official config for firebase.initializeApp(config):

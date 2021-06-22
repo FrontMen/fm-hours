@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar">
+  <div class="top-bar" :class="{ 'top-bar__development': isDev }">
     <div class="top-bar__inner content-wrapper">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
@@ -17,6 +17,10 @@
                 class="top-bar__hamburger ml-4"
               />
             </div>
+          </b-col>
+
+          <b-col v-if="isDev" class="development">
+            USING DEVELOPMENT SERVER
           </b-col>
 
           <b-col>
@@ -56,6 +60,10 @@ export default defineComponent({
       type: Object as PropType<Employee>,
       required: true,
     },
+    isDev: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup(_, { emit }) {
     const router = useRouter();
@@ -74,6 +82,10 @@ export default defineComponent({
 <style lang="scss">
 .top-bar {
   background: var(--color-primary);
+
+  &__development {
+    background-color: var(--dark);
+  }
 
   img {
     width: 50px;
@@ -118,6 +130,10 @@ export default defineComponent({
       background: white;
       height: 2px;
     }
+  }
+
+  .development {
+    color: var(--danger);
   }
 }
 </style>
