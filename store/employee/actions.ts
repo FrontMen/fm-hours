@@ -4,12 +4,13 @@ import EmployeesService from "~/services/employees-service";
 import { sleep } from "~/helpers/helpers";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
-
   async login({ commit }) {
     try {
       commit("setLoading", true);
       commit("setErrorMessage", "");
-      const provider = new this.$fireModule.auth.SAMLAuthProvider("saml.intracto");
+      const provider = new this.$fireModule.auth.SAMLAuthProvider(
+        "saml.intracto"
+      );
       await this.$fire.auth.signInWithPopup(provider);
     } catch (err) {
       commit("setLoading", false);
@@ -40,7 +41,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
     const employeeId = isDevelopment ? email : user_id;
     let employee = await employeesService.getEmployee(employeeId);
-    const isAdmin = await employeesService.isAdmin(employeeId);
+    const isAdmin = await employeesService.isAdmin(email);
 
     if (!employee) {
       await sleep(3000);
