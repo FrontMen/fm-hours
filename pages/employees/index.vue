@@ -243,6 +243,7 @@ export default defineComponent({
       store.dispatch("employees/addNewEmployee", {
         ...newEmployee.value,
         startDate: new Date(newEmployee.value.startDate).getTime(),
+        email: newEmployee.value.email.toLowerCase(),
       });
 
       newEmployee.value.name = "";
