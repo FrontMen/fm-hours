@@ -1,5 +1,6 @@
 import { ActionTree } from "vuex";
 import EmployeesService from "~/services/employees-service";
+import ApiService from "~/services/api-service";
 import { sleep } from "~/helpers/helpers";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
@@ -37,36 +38,34 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (!payload.authUser) return;
     const { isDevelopment } = this.app.$config;
 
+    // if ppid cookie !exists || error from server -> log the user out
+    // if session cookie !exists and expired -> fetch again (hosted-tools-api-auth-2)
+
     try {
       const employeesService = new EmployeesService(this.$fire);
+      const apiService = new ApiService(this.$fire, this.$axios);
+
       const { email, user_id: userId } = payload.claims;
-  
+
       const employeeId = isDevelopment ? email : userId;
+
       let employee = await employeesService.getEmployee(employeeId);
-      const isAdmin = await employeesService.isAdmin(employeeId);
-  
+      const isAdmin = await employeesService.isAdmin(email);
+
       if (!employee) {
         await sleep(3000);
         employee = await employeesService.getEmployee(employeeId);
       }
 
-<<<<<<< HEAD
-    const employeeId = isDevelopment ? email : user_id;
-    let employee = await employeesService.getEmployee(employeeId);
-    const isAdmin = await employeesService.isAdmin(email);
-=======
-      if (!employee) {
-        throw new Error("Employee not found!");
-      }
->>>>>>> 1da328a (feat: set bridge cookie)
+      if (!employee) throw new Error("Employee not found!");
 
-      const ppid = this.app.$apiService.getPPidFromJWTToken(
-        payload.authUser.b.b.g
-      );
-      await this.app.$apiService.setSessionCookieByPpid(ppid);
+      const ppid = apiService.getPPidFromJWTToken(payload.authUser.b.b.g);
+      await apiService.setSessionCookieByPpid(ppid);
+
+      if (!ppid) throw new Error('User is not authenticated, please sign in again!');
 
       if (!employee.bridgeUid) {
-        this.app.$apiService.getUserInfo().then((bridgeUid: string) => {
+        apiService.getUserInfo().then((bridgeUid: string) => {
           employeesService.updateEmployee({
             ...employee!,
             bridgeUid,
