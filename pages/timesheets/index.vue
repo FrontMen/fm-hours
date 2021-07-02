@@ -62,8 +62,8 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
 
-    const weeksBefore = 4;
-    const weeksAfter = 4;
+    const weeksBefore = 6;
+    const weeksAfter = 2;
 
     const tableData = computed(() => store.state.timesheets.timesheetTableData);
     store.dispatch("timesheets/getTableData", {
