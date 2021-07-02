@@ -1,12 +1,27 @@
 <template>
   <div class="page-wrapper">
-    <div class="content-wrapper my-5">
+    <div class="my-5 content-wrapper">
+      <b-form-group
+        label="Filter by:"
+        label-for="filter-select"
+        label-class="font-weight-bold"
+        class="filter"
+      >
+        <b-form-select id="filter-select" v-model="selected" :options="options" class="filter__select">
+          <template #first>
+            <b-form-select-option :value="null"> 
+              All 
+            </b-form-select-option>
+          </template>
+        </b-form-select>
+      </b-form-group>
       <b-table
         class="mt-3 app-table timesheet-table"
         responsive
         :items="tableData.items"
         :fields="tableData.fields"
         :sort-compare="sortCompare"
+        :filter="filter"
         sort-by="id"
         no-sort-reset
       >
@@ -44,6 +59,7 @@
 
 <script lang="ts">
 import {
+  ref,
   computed,
   defineComponent,
   useRouter,
@@ -51,6 +67,7 @@ import {
 } from "@nuxtjs/composition-api";
 
 import { recordStatus } from "~/helpers/record-status";
+import { TimesheetStatus } from "~/types/enums.ts";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -61,6 +78,15 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
+
+
+    const options = Object.entries(TimesheetStatus).map(([value, text]) => ({
+      value,
+      text,
+    })).sort((a, b) => a.text.localeCompare(b.text))
+    
+    const selected = ref(null);
+    const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
     const weeksAfter = 2;
@@ -88,8 +114,11 @@ export default defineComponent({
         return a.name.localeCompare(b.name);
       }
     };
-
+  
     return {
+      options,
+      selected,
+      filter: getSelected,
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,
@@ -100,6 +129,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+.filter {
+  &__select {
+    text-transform: capitalize;
+  }
+
+  @media (min-width: 576px) {
+      width: 25%;
+  }
+}
+
 .timesheet-table > .table.b-table > thead > tr > .table-b-table-default,
 .timesheet-table > .table.b-table > thead > tr > th {
   background: var(--color-primary);
