@@ -5,7 +5,6 @@ declare enum TimesheetStatus {
   DENIED = "denied",
   EMPTY = "empty",
 }
-
 interface TimesheetEmployee extends Employee {
   status: TimesheetStatus;
   pendingTimeRecords: TimeRecord[];
