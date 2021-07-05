@@ -91,7 +91,7 @@
           </div>
 
           <div class="ml-auto d-flex">
-            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3" @change="(checked) => adminChange(checked, employee.email)">
+            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3" @change="(checked) => debouncedAdminChange(checked, employee.email)">
               Admin
             </b-form-checkbox>
 
@@ -146,7 +146,7 @@ import Multiselect from "vue-multiselect";
 import { validateEmail } from "../../helpers/validation";
 import { formatDate } from "~/helpers/dates";
 import { checkEmployeeAvailability } from "~/helpers/employee";
-import { queryOnString } from "~/helpers/helpers";
+import { queryOnString, debounce } from "~/helpers/helpers";
 
 export default defineComponent({
   components: { Multiselect },
@@ -249,16 +249,26 @@ export default defineComponent({
       return check;
     });
 
-    const adminChange = (checked: any, email: string) => {
-      let adminList = [...store.getters["employees/adminList"]];
+    const debouncedAdminChange = debounce((checked: any, email: string) => {
+      return adminChange(checked, email);
+    });
 
-      if (checked) {
-        adminList.push(email)
-      } else {
+    const adminChange = (checked: any, email: string) => {
+      let valueChanged = false;
+      let adminList = [...store.getters["employees/adminList"]];
+      const alreadyContained = adminList.includes(email);
+
+      if (checked && !alreadyContained) {
+        adminList.push(email);
+        valueChanged = true;
+      }
+      if (!checked && alreadyContained) {
         adminList = adminList.filter(admin => admin !== email);
+        valueChanged = true;
       }
 
-      store.dispatch("employees/updateAdminList", adminList);
+      // Only dispatch if value changed. Failsafe for spamming the checkbox.
+      if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
     }
 
     const newEmployee = ref({
@@ -288,7 +298,7 @@ export default defineComponent({
 
     return {
       adminCheck,
-      adminChange,
+      debouncedAdminChange,
       employees,
       newEmployee,
       canAddEmployee,
