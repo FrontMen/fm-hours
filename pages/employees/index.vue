@@ -5,7 +5,9 @@
         <b-row :no-gutters="true" class="px-3">
           <b-col>
             <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center> + New employee </b-button>
+              <b-button v-b-modal.modal-center>
+                + New employee
+              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -21,7 +23,7 @@
               id="employee-search"
               v-model="searchInput"
               type="search"
-              placeholder='Ex.: "John"'
+              placeholder="Ex.: &quot;John&quot;"
             />
           </b-col>
 
@@ -88,12 +90,18 @@
             {{ employee.name }}
           </div>
 
-          <nuxt-link
-            class="btn btn-info ml-auto"
-            :to="`/employees/${employee.id}`"
-          >
-            Manage employee
-          </nuxt-link>
+          <div class="ml-auto d-flex">
+            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3">
+              Admin
+            </b-form-checkbox>
+
+            <nuxt-link
+              class="btn btn-info"
+              :to="`/employees/${employee.id}`"
+            >
+              Manage employee
+            </nuxt-link>
+          </div>
         </b-row>
       </b-container>
     </div>
@@ -162,6 +170,10 @@ export default defineComponent({
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
       }
+
+      if (store.getters["employees/adminList"].length === 0) {
+        store.dispatch("employees/getAdminList");
+      }
     });
 
     const customerOptions = computed(() =>
@@ -227,6 +239,16 @@ export default defineComponent({
       );
     });
 
+    const adminCheck = computed((): {[key:string]: boolean} => {
+      const check: {[key:string]: boolean} = {};
+
+      store.getters["employees/adminList"].forEach((admin: string) => {
+        check[admin] = true;
+      });
+
+      return check;
+    });
+
     const newEmployee = ref({
       name: "",
       email: "",
@@ -253,6 +275,7 @@ export default defineComponent({
     };
 
     return {
+      adminCheck,
       employees,
       newEmployee,
       canAddEmployee,

@@ -110,7 +110,7 @@ export default class EmployeesService {
     return adminEmails.includes(email);
   }
 
-  private async getAdminEmails(): Promise<string[]> {
+  public async getAdminEmails(): Promise<string[]> {
     const ref = this.fire.firestore.collection("admins");
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
