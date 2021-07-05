@@ -38,10 +38,16 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   },
 
   async getAdminList({commit, getters }) {
-    if (getters["employees/adminList"].length) return; // TODO Vlad maybe move to service?
+    if (getters["employees/adminList"]?.length) return; // TODO Vlad maybe move to service?
 
     const employeesService = new EmployeesService(this.$fire);
     const adminList = await employeesService.getAdminEmails();
+    commit("setAdminList", adminList);
+  },
+
+  async updateAdminList({commit}, payload: string[]) {
+    const employeesService = new EmployeesService(this.$fire);
+    const adminList = await employeesService.updateAdminEmails(payload);
     commit("setAdminList", adminList);
   },
 };

@@ -91,7 +91,7 @@
           </div>
 
           <div class="ml-auto d-flex">
-            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3">
+            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3" @change="(checked) => adminChange(checked, employee.email)">
               Admin
             </b-form-checkbox>
 
@@ -249,6 +249,18 @@ export default defineComponent({
       return check;
     });
 
+    const adminChange = (checked: any, email: string) => {
+      let adminList = [...store.getters["employees/adminList"]];
+
+      if (checked) {
+        adminList.push(email)
+      } else {
+        adminList = adminList.filter(admin => admin !== email);
+      }
+
+      store.dispatch("employees/updateAdminList", adminList);
+    }
+
     const newEmployee = ref({
       name: "",
       email: "",
@@ -276,6 +288,7 @@ export default defineComponent({
 
     return {
       adminCheck,
+      adminChange,
       employees,
       newEmployee,
       canAddEmployee,
