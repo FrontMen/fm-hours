@@ -25,6 +25,10 @@ export default class AuthService {
     return Cookies.get("hosted-tools-api-auth-2");
   }
 
+  deleteAuthCookie() {
+    return Cookies.remove("hosted-tools-api-auth-2");
+  }
+
   decodeAuthResponseToken(token: string): JWTResponse {
     return jwtDecode(token);
   }
@@ -41,7 +45,8 @@ export default class AuthService {
 
   getToken(ppid: string): Promise<GetTokenResponse> {
     return this.axios.$post(
-      "/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/" + ppid
+      "https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/" +
+        ppid
     );
   }
 
