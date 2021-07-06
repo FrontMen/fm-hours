@@ -13,7 +13,7 @@ export default class ApiService {
     this.axios = axios;
   }
 
-  setCookie(cookieData: string, expires: Date): void {
+  setAuthCookie(cookieData: string, expires: Date): void {
     Cookies.set("hosted-tools-api-auth-2", cookieData, {
       expires,
       path: "",
@@ -30,10 +30,13 @@ export default class ApiService {
   }
 
   getPPidFromJWTToken(responseToken: string) {
-    return this.decodeAuthResponseToken(responseToken).firebase
+    const ppid = this.decodeAuthResponseToken(responseToken).firebase
       .sign_in_attributes[
       "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier"
     ];
+
+    localStorage.setItem("@fm-hours/ppid", ppid);
+    return ppid;
   }
 
   getToken(ppid: string): Promise<GetTokenResponse> {
@@ -45,7 +48,7 @@ export default class ApiService {
   async setSessionCookieByPpid(ppid: string): Promise<boolean> {
     const tokenResponse: GetTokenResponse = await this.getToken(ppid);
     if (tokenResponse.cookie_value) {
-      this.setCookie(
+      this.setAuthCookie(
         tokenResponse.cookie_value,
         new Date(tokenResponse.cookie_expiration)
       );

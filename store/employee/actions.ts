@@ -24,6 +24,8 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   },
 
   logout({ commit }) {
+    localStorage.removeItem("@fm-hours/ppid");
+
     this.$fire.auth.signOut();
     this.app.router?.push("/");
 
@@ -38,12 +40,20 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (!payload.authUser) return;
     const { isDevelopment } = this.app.$config;
 
-    // if ppid cookie !exists || error from server -> log the user out
-    // if session cookie !exists and expired -> fetch again (hosted-tools-api-auth-2)
-
     try {
       const employeesService = new EmployeesService(this.$fire);
       const apiService = new ApiService(this.$fire, this.$axios);
+
+      if (!apiService.getAuthCookie()) {
+        const ppid =
+          localStorage.getItem("@fm-hours/ppid") ||
+          apiService.getPPidFromJWTToken(payload.authUser.b.b.g);
+
+        if (!ppid)
+          throw new Error("User is not authenticated, please sign in again!");
+
+        await apiService.setSessionCookieByPpid(ppid);
+      }
 
       const { email, user_id: userId } = payload.claims;
 
@@ -59,13 +69,9 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       if (!employee) throw new Error("Employee not found!");
 
-      const ppid = apiService.getPPidFromJWTToken(payload.authUser.b.b.g);
-      await apiService.setSessionCookieByPpid(ppid);
-
-      if (!ppid) throw new Error('User is not authenticated, please sign in again!');
-
       if (!employee.bridgeUid) {
         apiService.getUserInfo().then((bridgeUid: string) => {
+          console.log("bridgeUid", bridgeUid);
           employeesService.updateEmployee({
             ...employee!,
             bridgeUid,
