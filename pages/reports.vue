@@ -74,7 +74,7 @@ export default defineComponent({
 
     const {
       createKilometersFields,
-      createKilomtersItems,
+      createKilometersItems,
     } = useMonthlyKilometersReport();
 
     const monthDate = ref<Date>(new Date());
@@ -91,7 +91,7 @@ export default defineComponent({
 
     const kilometersFields = createKilometersFields();
     const kilometersItems = computed(() =>
-      createKilomtersItems(reportData.value)
+      createKilometersItems(reportData.value)
     );
 
     const formattedMonthDate = computed(() =>

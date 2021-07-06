@@ -12,7 +12,7 @@ export default () => {
       0
     );
 
-  const createKilomtersItems = (report: MonthlyReportData | null) => {
+  const createKilometersItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
     report?.employees.forEach((employee) => {
@@ -29,5 +29,5 @@ export default () => {
     return items;
   };
 
-  return { createKilometersFields, createKilomtersItems };
+  return { createKilometersFields, createKilometersItems };
 };
