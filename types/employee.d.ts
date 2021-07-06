@@ -8,6 +8,7 @@ interface Employee {
   endDate: number | null;
   startDate: number;
   created: number;
+  bridgeUid?: string;
 }
 
 interface EmployeeStoreState {

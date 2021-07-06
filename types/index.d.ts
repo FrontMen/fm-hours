@@ -6,6 +6,7 @@ import EmployeesService from "~/services/employees-service";
 import WorkSchemeService from "~/services/work-scheme-service";
 import TimesheetsService from "~/services/timesheets-service";
 import MailService from "~/services/mail-service";
+import AuthService from "~/services/auth-service";
 
 declare module "@nuxt/types" {
   interface NuxtAppOptions {
@@ -17,6 +18,7 @@ declare module "@nuxt/types" {
     $workSchemeService: WorkSchemeService;
     $timesheetsService: TimesheetsService;
     $mailService: MailService;
+    $authService: AuthService;
   }
 
   interface Context {
@@ -27,6 +29,6 @@ declare module "@nuxt/types" {
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;
     $timesheetsService: TimesheetsService;
-    $mailService: MailService;
+    $authService: AuthService;
   }
 }

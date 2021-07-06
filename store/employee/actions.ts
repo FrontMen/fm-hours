@@ -1,6 +1,6 @@
-/* eslint-disable camelcase */
 import { ActionTree } from "vuex";
 import EmployeesService from "~/services/employees-service";
+import AuthService from "~/services/auth-service";
 import { sleep } from "~/helpers/helpers";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
@@ -13,6 +13,8 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       );
       await this.$fire.auth.signInWithPopup(provider);
     } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error(err);
       commit("setLoading", false);
       commit(
         "setErrorMessage",
@@ -22,6 +24,8 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   },
 
   logout({ commit }) {
+    localStorage.removeItem("@fm-hours/ppid");
+
     this.$fire.auth.signOut();
     this.app.router?.push("/");
 
@@ -36,21 +40,48 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (!payload.authUser) return;
     const { isDevelopment } = this.app.$config;
 
-    const employeesService = new EmployeesService(this.$fire);
-    const { email, user_id } = payload.claims;
+    try {
+      const employeesService = new EmployeesService(this.$fire);
+      const authService = new AuthService(this.$fire, this.$axios);
 
-    const employeeId = isDevelopment ? email : user_id;
-    let employee = await employeesService.getEmployee(employeeId);
-    const isAdmin = await employeesService.isAdmin(email);
+      if (!authService.getAuthCookie()) {
+        const ppid =
+          localStorage.getItem("@fm-hours/ppid") ||
+          authService.getPPidFromJWTToken(payload.authUser.b.b.g);
 
-    if (!employee) {
-      await sleep(3000);
-      employee = await employeesService.getEmployee(employeeId);
-    }
+        if (!ppid)
+          throw new Error("User is not authenticated, please sign in again!");
 
-    if (employee) {
+        await authService.setSessionCookieByPpid(ppid);
+      }
+
+      const { email, user_id: userId } = payload.claims;
+
+      const employeeId = isDevelopment ? email : userId;
+
+      let employee = await employeesService.getEmployee(employeeId);
+      const isAdmin = await employeesService.isAdmin(email);
+
+      if (!employee) {
+        await sleep(3000);
+        employee = await employeesService.getEmployee(employeeId);
+      }
+
+      if (!employee) throw new Error("Employee not found!");
+
+      if (!employee.bridgeUid) {
+        authService.getUserInfo().then((bridgeUid: string) => {
+          employeesService.updateEmployee({
+            ...employee!,
+            bridgeUid,
+          });
+        });
+      }
+
       commit("setEmployee", { employee, isAdmin });
-    } else {
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error(error);
       commit(
         "setErrorMessage",
         "An unexpected error happened while trying to log in"

@@ -47,11 +47,12 @@ export default defineNuxtConfig({
         icons: true,
       },
     ],
-    // https://go.nuxtjs.dev/axios
-    "@nuxtjs/axios",
     // https://go.nuxtjs.dev/pwa
     "@nuxtjs/pwa",
     "@nuxtjs/firebase",
+    // https://go.nuxtjs.dev/axios
+    // load axios before firebase because: https://github.com/nuxt/nuxt.js/issues/7536#issuecomment-648957310
+    "@nuxtjs/axios",
   ],
 
   publicRuntimeConfig: {
@@ -81,7 +82,14 @@ export default defineNuxtConfig({
   },
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
-  axios: {},
+  axios: {
+    proxy: true,
+  },
+
+  proxy: [
+    "https://bridge.hosted-tools.com/api/v1",
+    "https://auth.hosted-tools.com/api/get-token",
+  ],
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
