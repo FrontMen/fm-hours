@@ -132,9 +132,10 @@ export default defineComponent({
       if (!searchTerm.value) return customers.value;
 
       const criteria: "name"|"debtor" = selectedCriteria.value;
+      const term = searchTerm.value?.toLowerCase();
 
       const filtered: Customer[] = customers.value?.filter((customer: Customer) => {
-          return customer[criteria]?.toLowerCase().includes(searchTerm.value?.toLowerCase()) && customer;
+          return customer[criteria]?.toLowerCase().includes(term);
         });
 
       return filtered;
