@@ -16,3 +16,14 @@ export const queryOnString = (target: string, query: string) =>
   normalizeText(target)
     .toUpperCase()
     .includes(normalizeText(query).toUpperCase());
+
+export function debounce(func: any, timeout = 300) {
+  let timer: any;
+  return (...args: any[]) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      // @ts-ignore
+      func.apply(this, args);
+    }, timeout);
+  };
+};

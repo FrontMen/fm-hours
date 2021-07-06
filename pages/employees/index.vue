@@ -5,7 +5,9 @@
         <b-row :no-gutters="true" class="px-3">
           <b-col>
             <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center> + New employee </b-button>
+              <b-button v-b-modal.modal-center>
+                + New employee
+              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -21,7 +23,7 @@
               id="employee-search"
               v-model="searchInput"
               type="search"
-              placeholder='Ex.: "John"'
+              placeholder="Ex.: &quot;John&quot;"
             />
           </b-col>
 
@@ -88,12 +90,14 @@
             {{ employee.name }}
           </div>
 
-          <nuxt-link
-            class="btn btn-info ml-auto"
-            :to="`/employees/${employee.id}`"
-          >
-            Manage employee
-          </nuxt-link>
+          <div class="ml-auto d-flex">
+            <nuxt-link
+              class="btn btn-info"
+              :to="`/employees/${employee.id}`"
+            >
+              Manage employee
+            </nuxt-link>
+          </div>
         </b-row>
       </b-container>
     </div>

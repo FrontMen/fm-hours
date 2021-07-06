@@ -60,6 +60,9 @@
             <h6 class="mb-3">
               Employee Settings
             </h6>
+            <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
+              Admin
+            </b-form-checkbox>
             <b-form-checkbox
               v-model="isTravelAllowed"
               name="check-button"
@@ -169,6 +172,10 @@ export default defineComponent({
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
       }
+
+      if (store.getters["employees/adminList"].length === 0) {
+        store.dispatch("employees/getAdminList");
+      }
     });
 
     watch(
@@ -180,6 +187,15 @@ export default defineComponent({
                 customers.value.find((customer) => customer.id === project)
               )
             : [];
+      },
+      { immediate: true }
+    );
+
+    const isAdmin = ref<boolean>(store.getters["employees/adminList"].includes(employee.value?.email));
+    watch(
+      () => store.getters["employees/adminList"].includes(employee.value?.email),
+      () => {
+        isAdmin.value = store.getters["employees/adminList"].includes(employee.value?.email);
       },
       { immediate: true }
     );
@@ -229,6 +245,25 @@ export default defineComponent({
       }
     })
   
+    const handleAdminToggle = (): void => {
+      let valueChanged = false;
+      let adminList = [...store.getters["employees/adminList"]];
+      const email = employee.value?.email;
+      const alreadyContained = adminList.includes(email);
+      const adminValue = isAdmin.value;
+
+      if (adminValue && !alreadyContained) {
+        adminList.push(email);
+        valueChanged = true;
+      }
+      if (!adminValue && alreadyContained) {
+        adminList = adminList.filter(admin => admin !== email);
+        valueChanged = true;
+      }
+
+      // Only dispatch if value changed. Failsafe for spamming the checkbox.
+      if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
+    }
 
     const saveProjects = () => {
       if (!employee.value) return;
@@ -237,6 +272,8 @@ export default defineComponent({
         errorMessage.value = "Please select an end date"
         return
       }
+      
+      handleAdminToggle();
 
       const newEmployee = {
         ...employee.value,
@@ -265,6 +302,7 @@ export default defineComponent({
     const fields = ["name", "debtor", "delete"];
 
     return {
+      isAdmin,
       employee,
       customerOptions,
       selectedCustomers,
