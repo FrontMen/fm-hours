@@ -1,10 +1,14 @@
 # fm-hours
 
+## Prerequisites
+Node version 12
+
 ## Build Setup
 
 ```bash
 # install dependencies
 $ yarn install
+$ cd functions && yarn install
 
 # serve with hot reload at localhost:3000
 $ yarn dev
