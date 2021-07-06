@@ -91,10 +91,6 @@
           </div>
 
           <div class="ml-auto d-flex">
-            <b-form-checkbox v-if="adminCheck" v-model="adminCheck[employee.email]" switch class="mt-2 mr-3" @change="(checked) => debouncedAdminChange(checked, employee.email)">
-              Admin
-            </b-form-checkbox>
-
             <nuxt-link
               class="btn btn-info"
               :to="`/employees/${employee.id}`"
@@ -146,7 +142,7 @@ import Multiselect from "vue-multiselect";
 import { validateEmail } from "../../helpers/validation";
 import { formatDate } from "~/helpers/dates";
 import { checkEmployeeAvailability } from "~/helpers/employee";
-import { queryOnString, debounce } from "~/helpers/helpers";
+import { queryOnString } from "~/helpers/helpers";
 
 export default defineComponent({
   components: { Multiselect },
@@ -169,10 +165,6 @@ export default defineComponent({
 
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
-      }
-
-      if (store.getters["employees/adminList"].length === 0) {
-        store.dispatch("employees/getAdminList");
       }
     });
 
@@ -239,38 +231,6 @@ export default defineComponent({
       );
     });
 
-    const adminCheck = computed((): {[key:string]: boolean} => {
-      const check: {[key:string]: boolean} = {};
-
-      store.getters["employees/adminList"].forEach((admin: string) => {
-        check[admin] = true;
-      });
-
-      return check;
-    });
-
-    const debouncedAdminChange = debounce((checked: any, email: string) => {
-      return adminChange(checked, email);
-    });
-
-    const adminChange = (checked: any, email: string) => {
-      let valueChanged = false;
-      let adminList = [...store.getters["employees/adminList"]];
-      const alreadyContained = adminList.includes(email);
-
-      if (checked && !alreadyContained) {
-        adminList.push(email);
-        valueChanged = true;
-      }
-      if (!checked && alreadyContained) {
-        adminList = adminList.filter(admin => admin !== email);
-        valueChanged = true;
-      }
-
-      // Only dispatch if value changed. Failsafe for spamming the checkbox.
-      if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
-    }
-
     const newEmployee = ref({
       name: "",
       email: "",
@@ -297,8 +257,6 @@ export default defineComponent({
     };
 
     return {
-      adminCheck,
-      debouncedAdminChange,
       employees,
       newEmployee,
       canAddEmployee,

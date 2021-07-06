@@ -1,14 +1,18 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">Employee not found</div>
+      <div v-if="!employee">
+        Employee not found
+      </div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">Manage Projects</h6>
+            <h6 class="mb-3">
+              Manage Projects
+            </h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -22,9 +26,10 @@
               @input="hasUnsavedChanges = true"
             >
               <template slot="selection" slot-scope="{ values }">
-                <span v-if="values.length" class="multiselect__single"
-                  >{{ values.length }} options selected</span
-                >
+                <span
+                  v-if="values.length"
+                  class="multiselect__single"
+                >{{ values.length }} options selected</span>
               </template>
             </multiselect>
 
@@ -52,7 +57,12 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">Employee Settings</h6>
+            <h6 class="mb-3">
+              Employee Settings
+            </h6>
+            <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
+              Admin
+            </b-form-checkbox>
             <b-form-checkbox
               v-model="isTravelAllowed"
               name="check-button"
@@ -148,6 +158,10 @@ export default defineComponent({
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
       }
+
+      if (store.getters["employees/adminList"].length === 0) {
+        store.dispatch("employees/getAdminList");
+      }
     });
 
     watch(
@@ -159,6 +173,15 @@ export default defineComponent({
                 customers.value.find((customer) => customer.id === project)
               )
             : [];
+      },
+      { immediate: true }
+    );
+
+    const isAdmin = ref<boolean>(store.getters["employees/adminList"].includes(employee.value?.email));
+    watch(
+      () => store.getters["employees/adminList"].includes(employee.value?.email),
+      () => {
+        isAdmin.value = store.getters["employees/adminList"].includes(employee.value?.email);
       },
       { immediate: true }
     );
@@ -194,8 +217,30 @@ export default defineComponent({
       { immediate: true }
     );
 
+    const handleAdminToggle = (): void => {
+      let valueChanged = false;
+      let adminList = [...store.getters["employees/adminList"]];
+      const email = employee.value?.email;
+      const alreadyContained = adminList.includes(email);
+      const adminValue = isAdmin.value;
+
+      if (adminValue && !alreadyContained) {
+        adminList.push(email);
+        valueChanged = true;
+      }
+      if (!adminValue && alreadyContained) {
+        adminList = adminList.filter(admin => admin !== email);
+        valueChanged = true;
+      }
+
+      // Only dispatch if value changed. Failsafe for spamming the checkbox.
+      if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
+    }
+
     const saveProjects = () => {
       if (!employee.value) return;
+
+      handleAdminToggle();
 
       const newEmployee = {
         ...employee.value,
@@ -234,6 +279,7 @@ export default defineComponent({
     const fields = ["name", "debtor", "delete"];
 
     return {
+      isAdmin,
       employee,
       customerOptions,
       selectedCustomers,
