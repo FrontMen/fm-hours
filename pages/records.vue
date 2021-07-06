@@ -228,8 +228,8 @@ export default defineComponent({
 
       const selectableCustomers = customers.filter(
         (x) =>
-          (selectedEmployee.value?.projects.includes(x.id) &&
-            !selectedCustomers.includes(x.id)) ||
+          (selectedEmployee.value?.projects?.includes(x.id) &&
+            !selectedCustomers?.includes(x.id)) ||
           x.isDefault
       );
 
