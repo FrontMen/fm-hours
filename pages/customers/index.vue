@@ -108,6 +108,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
+import { queryOnString } from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -132,10 +133,10 @@ export default defineComponent({
       if (!searchTerm.value) return customers.value;
 
       const criteria: "name"|"debtor" = selectedCriteria.value;
-      const term = searchTerm.value?.toLowerCase();
 
       const filtered: Customer[] = customers.value?.filter((customer: Customer) => {
-          return customer[criteria]?.toLowerCase().includes(term);
+          if (!searchTerm.value || !customer[criteria]) return customer;
+          return queryOnString(customer[criteria], searchTerm.value);
         });
 
       return filtered;
