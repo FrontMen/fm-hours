@@ -1,23 +1,8 @@
 <template>
   <b-sidebar id="sidebar-1" shadow backdrop>
     <b-list-group>
-      <b-list-group-item href="/">
-        <b-icon icon="house" /> Home
-      </b-list-group-item>
-      <b-list-group-item href="/customers">
-        <b-icon icon="building" /> Customers
-      </b-list-group-item>
-      <b-list-group-item href="/employees">
-        <b-icon icon="people" /> Employees
-      </b-list-group-item>
-      <b-list-group-item href="/holidays">
-        <b-icon icon="sun" /> Holidays
-      </b-list-group-item>
-      <b-list-group-item href="/timesheets">
-        <b-icon icon="calendar" /> Timesheets
-      </b-list-group-item>
-      <b-list-group-item href="/reports">
-        <b-icon icon="file-bar-graph" /> Reports
+      <b-list-group-item v-for="(link, index) in links" :key="index" :to="link.href">
+        <b-icon :icon="link.icon" /> {{ link.name }}
       </b-list-group-item>
     </b-list-group>
   </b-sidebar>
@@ -26,5 +11,41 @@
 <script lang="ts">
 import { defineComponent } from "@nuxtjs/composition-api";
 
-export default defineComponent({});
+export default defineComponent({
+  setup() {
+    const links = [
+      {
+        href: "/",
+        name: "Home",
+        icon: "house",
+      },
+      {
+        href: "/customers",
+        name: "Customers",
+        icon: "building",
+      },
+      {
+        href: "/employees",
+        name: "Employees",
+        icon: "people",
+      },
+      {
+        href: "/holidays",
+        name: "Holidays",
+        icon: "sun",
+      },
+      {
+        href: "/timesheets",
+        name: "Timesheets",
+        icon: "calendar",
+      },
+      {
+        href: "/reports",
+        name: "Reports",
+        icon: "file-bar-graph",
+      },
+    ];
+    return {links}
+  }
+});
 </script>
