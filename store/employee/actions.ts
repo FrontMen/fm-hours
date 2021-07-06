@@ -1,6 +1,6 @@
 import { ActionTree } from "vuex";
 import EmployeesService from "~/services/employees-service";
-import ApiService from "~/services/api-service";
+import AuthService from "~/services/auth-service";
 import { sleep } from "~/helpers/helpers";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
@@ -42,17 +42,17 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
     try {
       const employeesService = new EmployeesService(this.$fire);
-      const apiService = new ApiService(this.$fire, this.$axios);
+      const authService = new AuthService(this.$fire, this.$axios);
 
-      if (!apiService.getAuthCookie()) {
+      if (!authService.getAuthCookie()) {
         const ppid =
           localStorage.getItem("@fm-hours/ppid") ||
-          apiService.getPPidFromJWTToken(payload.authUser.b.b.g);
+          authService.getPPidFromJWTToken(payload.authUser.b.b.g);
 
         if (!ppid)
           throw new Error("User is not authenticated, please sign in again!");
 
-        await apiService.setSessionCookieByPpid(ppid);
+        await authService.setSessionCookieByPpid(ppid);
       }
 
       const { email, user_id: userId } = payload.claims;
@@ -70,8 +70,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       if (!employee) throw new Error("Employee not found!");
 
       if (!employee.bridgeUid) {
-        apiService.getUserInfo().then((bridgeUid: string) => {
-          console.log("bridgeUid", bridgeUid);
+        authService.getUserInfo().then((bridgeUid: string) => {
           employeesService.updateEmployee({
             ...employee!,
             bridgeUid,

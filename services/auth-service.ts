@@ -3,7 +3,7 @@ import { NuxtFireInstance } from "@nuxtjs/firebase";
 import Cookies from "js-cookie";
 import jwtDecode from "jwt-decode";
 
-export default class ApiService {
+export default class AuthService {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
   ApiUrl = "/api/v1";
