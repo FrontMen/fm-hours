@@ -1,14 +1,18 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">Employee not found</div>
+      <div v-if="!employee">
+        Employee not found
+      </div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">Manage Projects</h6>
+            <h6 class="mb-3">
+              Manage Projects
+            </h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -22,9 +26,10 @@
               @input="hasUnsavedChanges = true"
             >
               <template slot="selection" slot-scope="{ values }">
-                <span v-if="values.length" class="multiselect__single"
-                  >{{ values.length }} options selected</span
-                >
+                <span
+                  v-if="values.length"
+                  class="multiselect__single"
+                >{{ values.length }} options selected</span>
               </template>
             </multiselect>
 
@@ -52,7 +57,9 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">Employee Settings</h6>
+            <h6 class="mb-3">
+              Employee Settings
+            </h6>
             <b-form-checkbox
               v-model="isTravelAllowed"
               name="check-button"
@@ -61,14 +68,6 @@
             >
               Travel allowance
             </b-form-checkbox>
-            <b-form-checkbox
-              v-model="isEmployeeActive"
-              name="check-button"
-              switch
-              @change="hasUnsavedChanges = true"
-            >
-              Active employee
-            </b-form-checkbox>
             <label class="mt-2" for="start-datepicker">Start date:</label>
             <b-form-datepicker
               id="start-datepicker"
@@ -76,12 +75,33 @@
               class="w-75 mb-2"
               @input="hasUnsavedChanges = true"
             />
+            <b-form-checkbox
+              v-model="hasEndDate"
+              name="check-button"
+              switch
+              @change="hasUnsavedChanges = true"
+            >
+              End date:
+            </b-form-checkbox>
+            <b-form-datepicker
+              id="end-datepicker"
+              v-model="endDate"
+              class="mt-2 w-75 mb-2"
+              :disabled="!hasEndDate"
+              @input="hasUnsavedChanges = true"
+            />
           </b-col>
         </b-row>
-
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
           Save
         </b-button>
+        <b-row>
+          <b-col cols="12" md="5">
+            <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
+              {{ errorMessage }}
+            </b-alert>
+          </b-col>
+        </b-row>
       </div>
     </div>
   </div>
@@ -114,6 +134,7 @@ export default defineComponent({
 
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
+    const errorMessage = ref("")
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -172,15 +193,6 @@ export default defineComponent({
       { immediate: true }
     );
 
-    const isEmployeeActive = ref<boolean>(!employee.value?.endDate);
-    watch(
-      () => employee.value?.endDate,
-      () => {
-        isEmployeeActive.value = !employee.value?.endDate;
-      },
-      { immediate: true }
-    );
-
     const startDate = ref<string>(
       employee.value ? formatDate(getDayOnGMT(employee.value.startDate)) : ""
     );
@@ -194,26 +206,45 @@ export default defineComponent({
       { immediate: true }
     );
 
+    const hasEndDate = ref(!!employee?.value?.endDate);
+    const endDate = ref<string | null>(null);
+
+    watch(() => employee.value, () => {
+      if (employee?.value?.endDate) {
+          hasEndDate.value = true
+          endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
+        } 
+    })
+
+    watch(() => hasEndDate.value, () => {
+      if (!hasEndDate.value) {
+          endDate.value = null
+          errorMessage.value = ""
+        } 
+    })
+
+    watch(() => endDate.value, () => {
+      if (endDate.value) {
+        errorMessage.value = ""
+      }
+    })
+  
+
     const saveProjects = () => {
       if (!employee.value) return;
+
+      if (hasEndDate.value && !endDate.value) {
+        errorMessage.value = "Please select an end date"
+        return
+      }
 
       const newEmployee = {
         ...employee.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
         startDate: new Date(startDate.value).getTime(),
+        endDate: endDate?.value ? new Date(endDate.value).getTime() : null,
       };
-
-      const hasActivationChanged =
-        !!employee.value.endDate === isEmployeeActive.value;
-
-      if (hasActivationChanged && !isEmployeeActive.value) {
-        newEmployee.endDate = new Date().getTime();
-      }
-
-      if (hasActivationChanged && isEmployeeActive.value) {
-        newEmployee.endDate = null;
-      }
 
       store.dispatch("employees/updateEmployee", newEmployee);
 
@@ -240,8 +271,10 @@ export default defineComponent({
       saveProjects,
       hasUnsavedChanges,
       isTravelAllowed,
-      isEmployeeActive,
       startDate,
+      hasEndDate,
+      endDate,
+      errorMessage,
       fields,
       handleProjectDelete,
       defaultCustomers,
