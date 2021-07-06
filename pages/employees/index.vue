@@ -197,7 +197,7 @@ export default defineComponent({
     };
 
     const employeeNameChecker = (employeeName: string, query: string) => {
-      if (!query) return true;
+      if (!query || !employeeName) return true;
 
       return queryOnString(employeeName, query);
     };
@@ -207,7 +207,7 @@ export default defineComponent({
       selectedProjects: Customer[]
     ) => {
       if (!selectedProjects.length) return true;
-      if (!employeeProjectsIds.length) return false;
+      if (!employeeProjectsIds?.length) return false;
 
       return employeeProjectsIds.every((id) =>
         selectedProjects.some((project) => project.id === id)
@@ -224,10 +224,11 @@ export default defineComponent({
         return [...employees.value];
 
       return employees.value.filter(
-        (employee) =>
-          employeeStatusChecker(statusSelected.value, employee) &&
+        (employee) => {
+          return employeeStatusChecker(statusSelected.value, employee) &&
           employeeNameChecker(employee.name, searchInput.value) &&
-          employeeProjectsChecker(employee.projects, selectedCustomers.value)
+          employeeProjectsChecker(employee.projects, selectedCustomers.value);
+        }
       );
     });
 
