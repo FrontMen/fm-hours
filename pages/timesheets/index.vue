@@ -7,11 +7,14 @@
         label-class="font-weight-bold"
         class="filter"
       >
-        <b-form-select id="filter-select" v-model="selected" :options="options" class="filter__select">
+        <b-form-select
+          id="filter-select"
+          v-model="selected"
+          :options="options"
+          class="filter__select"
+        >
           <template #first>
-            <b-form-select-option :value="null"> 
-              All 
-            </b-form-select-option>
+            <b-form-select-option :value="null"> All </b-form-select-option>
           </template>
         </b-form-select>
       </b-form-group>
@@ -67,7 +70,7 @@ import {
 } from "@nuxtjs/composition-api";
 
 import { recordStatus } from "~/helpers/record-status";
-import { TimesheetStatus } from "~/types/enums.ts";
+import { TimesheetStatus } from "~/types/enums";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -79,12 +82,13 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
 
+    const options = Object.entries(TimesheetStatus)
+      .map(([value, text]) => ({
+        value,
+        text,
+      }))
+      .sort((a, b) => a.text.localeCompare(b.text));
 
-    const options = Object.entries(TimesheetStatus).map(([value, text]) => ({
-      value,
-      text,
-    })).sort((a, b) => a.text.localeCompare(b.text))
-    
     const selected = ref(null);
     const getSelected = computed(() => selected.value);
 
@@ -111,10 +115,10 @@ export default defineComponent({
       key: string
     ) => {
       if (key === "id") {
-        return a.name.localeCompare(b.name);
+        return a?.name?.localeCompare(b?.name);
       }
     };
-  
+
     return {
       options,
       selected,
@@ -135,7 +139,7 @@ export default defineComponent({
   }
 
   @media (min-width: 576px) {
-      width: 25%;
+    width: 25%;
   }
 }
 
