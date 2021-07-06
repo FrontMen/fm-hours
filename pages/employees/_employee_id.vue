@@ -176,6 +176,11 @@ export default defineComponent({
       if (store.getters["employees/adminList"].length === 0) {
         store.dispatch("employees/getAdminList");
       }
+
+      if (employee?.value?.endDate) {
+        hasEndDate.value = true
+        endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
+      } 
     });
 
     watch(
