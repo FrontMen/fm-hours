@@ -1,5 +1,4 @@
 import { ActionTree } from "vuex";
-import EmployeesService from "~/services/employees-service";
 
 const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   async getEmployees({ commit }) {
@@ -40,14 +39,12 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   async getAdminList({commit, getters }) {
     if (getters["employees/adminList"]?.length) return; // TODO Vlad maybe move to service?
 
-    const employeesService = new EmployeesService(this.$fire);
-    const adminList = await employeesService.getAdminEmails();
+    const adminList = await this.app.$employeesService.getAdminEmails();
     commit("setAdminList", adminList);
   },
 
   async updateAdminList({commit}, payload: string[]) {
-    const employeesService = new EmployeesService(this.$fire);
-    const adminList = await employeesService.updateAdminEmails(payload);
+    const adminList = await this.app.$employeesService.updateAdminEmails(payload);
     commit("setAdminList", adminList);
   },
 };
