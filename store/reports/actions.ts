@@ -1,4 +1,4 @@
-import { startOfMonth, lastDayOfMonth, startOfISOWeek } from "date-fns";
+import { startOfMonth, addMonths, startOfISOWeek } from "date-fns";
 import { ActionTree } from "vuex";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
@@ -9,8 +9,9 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
   async getMonthlyReportData({ commit }, payload: { startDate: Date }) {
     commit("setIsLoading", { isLoading: true });
 
-    const startDate = getDayOnGMT(startOfMonth(payload.startDate));
-    const endDate = getDayOnGMT(lastDayOfMonth(payload.startDate));
+    const startDate = startOfMonth(payload.startDate);
+    const endDate = startOfMonth(addMonths(payload.startDate, 1));
+ 
 
     const customersPromise = this.app.$customersService.getCustomers();
     const employeesPromise = this.app.$employeesService.getEmployees();

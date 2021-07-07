@@ -38,7 +38,7 @@ export default class RecordsService {
     const snapshot = await this.fire.firestore
       .collection("time_records")
       .where("date", ">=", params.startDate.getTime())
-      .where("date", "<=", params.endDate.getTime())
+      .where("date", "<", params.endDate.getTime())
       .orderBy("date", "asc")
       .get();
 
