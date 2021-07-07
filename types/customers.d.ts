@@ -4,6 +4,8 @@ interface Customer {
   debtor: string;
   isBillable: boolean;
   isDefault: boolean;
+  archived?: boolean;
+  archivedDate?: number
 }
 
 interface CustomerOption {
