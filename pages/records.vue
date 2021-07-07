@@ -221,15 +221,15 @@ export default defineComponent({
     };
 
     const selectableCustomers = computed(() => {
-      const customers = store.state.customers.customers;
+      const customers: Customer[] = store.state.customers.customers;
       const selectedCustomers = timesheet.timesheet.value.projects.map(
         (project) => project.customer.id
       );
 
       const selectableCustomers = customers.filter(
-        (x) =>
+        (x: Customer) =>
           (selectedEmployee.value?.projects?.includes(x.id) &&
-            !selectedCustomers?.includes(x.id)) ||
+            !selectedCustomers?.includes(x.id) && !x.archived) ||
           x.isDefault
       );
 
