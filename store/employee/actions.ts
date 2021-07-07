@@ -24,8 +24,10 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   },
 
   logout({ commit }) {
+    const authService = new AuthService(this.$fire, this.$axios);
+
     localStorage.removeItem("@fm-hours/ppid");
-    this.app.$authService.deleteAuthCookie();
+    authService.deleteAuthCookie();
 
     this.$fire.auth.signOut();
     this.app.router?.push("/");
