@@ -160,9 +160,12 @@ export default defineComponent({
       const criteria: "name"|"debtor" = selectedCriteria.value;
 
       const filtered: Customer[] = customers.value?.
-        filter((customer: Customer) => selectedArchiveOption.value === null || (!!customer.archived === selectedArchiveOption.value)).
         filter((customer: Customer) => {
-          if (!searchTerm.value || !customer[criteria]) return customer;
+          if (selectedArchiveOption.value === null) return true
+          return !!customer.archived === selectedArchiveOption.value
+        }).
+        filter((customer: Customer) => {
+          if (!searchTerm.value || !customer[criteria]) return true;
           return queryOnString(customer[criteria], searchTerm.value);
         });
 
