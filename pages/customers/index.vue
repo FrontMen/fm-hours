@@ -84,7 +84,7 @@
 
           <b-col>
             <div class="font-weight-bold">
-              <b-badge>
+              <b-badge :variant="customer.archived ? 'warning' : 'success'">
                 {{ customer.archived ? "Yes" : "No" }}
               </b-badge>
             </div>

@@ -16,7 +16,7 @@
           @submit.prevent="handleSubmit"
           @change="hasUnsavedChanges = true"
         >
-          <h3 v-if="form.archived">This customer archived at {{ form.archivedDate | formatDate("dd MMMM yyyy") }}</h3>
+          <b-alert :show="form.archived" variant="info">This customer archived at {{ form.archivedDate | formatDate("dd MMMM yyyy") }}</b-alert>
           <b-form-group id="input-group-name" label="Name:" label-for="input-2">
             <b-form-input
               id="input-name"
