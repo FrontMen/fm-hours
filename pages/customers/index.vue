@@ -146,7 +146,7 @@ export default defineComponent({
     const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
 
-    const searchByArchiveOptions: { value: boolean, text: string }[] = [ {value: null, text: "Select"}, {value: false, text: "No"}, {value: true, text: "Yes"}] ;
+    const searchByArchiveOptions: { value: boolean | null, text: string }[] = [ {value: null, text: "Select"}, {value: false, text: "No"}, {value: true, text: "Yes"}] ;
     const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
@@ -159,7 +159,7 @@ export default defineComponent({
     const filteredCustomers = computed(() => {
       const criteria: "name"|"debtor" = selectedCriteria.value;
 
-      const filtered: Customer[] = customers.value?.
+      const filtered: Customer[] | undefined = customers.value?.
         filter((customer: Customer) => {
           if (selectedArchiveOption.value === null) return true
           return !!customer.archived === selectedArchiveOption.value
