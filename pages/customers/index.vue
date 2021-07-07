@@ -3,9 +3,32 @@
     <div class="content-wrapper mt-5">
       <b-container class="mx-0 px-0 mb-3" fluid>
         <b-row :no-gutters="true">
-          <b-col>
+          <b-col cols="3">
+            <label class="employee-status__label" for="status-select">
+              Search by:
+            </label>
+            <b-form-select
+              id="status-select"
+              v-model="selectedCriteria"
+              :options="searchCriteria"
+            />
+          </b-col>
+          <b-col cols="4" class="pl-0">
+            <label class="employee-status__label" for="employee-search">
+              Search:
+            </label>
+            <b-input
+              id="employee-search"
+              v-model="searchTerm"
+              type="search"
+              placeholder="Ex.: &quot;Frontmen&quot;"
+            />
+          </b-col>
+          <b-col class="ml-auto mt-auto">
             <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center> + New customer </b-button>
+              <b-button v-b-modal.modal-center>
+                + New customer
+              </b-button>
             </div>
           </b-col>
         </b-row>
@@ -16,15 +39,27 @@
             <span class="font-weight-bold">Customers</span>
           </b-col>
         </b-row>
+
         <b-row
-          v-for="customer in customers"
+          v-if="!filteredCustomers.length"
+          class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
+        >
+          <b-icon-person-x class="mr-2" />
+          No customers found.
+        </b-row>
+
+        <b-row
+          v-for="customer in filteredCustomers"
+          v-else
           :key="customer.id"
           class="app-table__row py-3"
         >
           <b-col>
             <div class="font-weight-bold">
               {{ customer.name }}
-              <b-badge v-if="customer.isDefault"> Default </b-badge>
+              <b-badge v-if="customer.isDefault">
+                Default
+              </b-badge>
             </div>
             <div>
               {{ customer.debtor }}
@@ -73,6 +108,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
+import { queryOnString } from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -85,6 +121,26 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const customers = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
+
+    const searchTerm = ref<string>("");
+    const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
+      { value: "name", text: "Customer name" },
+      { value: "debtor", text: "Debtor name" },
+    ];
+    const selectedCriteria = ref<"name"|"debtor">(searchCriteria[0].value);
+
+    const filteredCustomers = computed(() => {
+      if (!searchTerm.value) return customers.value;
+
+      const criteria: "name"|"debtor" = selectedCriteria.value;
+
+      const filtered: Customer[] = customers.value?.filter((customer: Customer) => {
+          if (!searchTerm.value || !customer[criteria]) return customer;
+          return queryOnString(customer[criteria], searchTerm.value);
+        });
+
+      return filtered;
+    });
 
     const newCustomer = ref({
       name: "",
@@ -108,7 +164,10 @@ export default defineComponent({
     };
 
     return {
-      customers,
+      filteredCustomers,
+      searchTerm,
+      searchCriteria,
+      selectedCriteria,
       newCustomer,
       canAddCustomer,
       addCustomer,
