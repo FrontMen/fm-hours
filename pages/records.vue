@@ -1,6 +1,6 @@
 <template>
   <div class="content-wrapper mt-5">
-    <b-alert show variant="info" class="mb-3">
+    <b-alert show="!isAdminView" variant="info" class="mb-3">
       To request leave, please visit
       <strong>
         <a href="https://bridge.hosted-tools.com/myprofile/absences" target="_blank" rel="noreferrer">bridge!</a>
