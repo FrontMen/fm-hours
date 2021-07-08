@@ -24,6 +24,16 @@
               placeholder="Ex.: &quot;Frontmen&quot;"
             />
           </b-col>
+          <b-col cols="3">
+            <label class="employee-status__label" for="status-select">
+              Archived ?
+            </label>
+            <b-form-select
+              id="status-select"
+              v-model="selectedArchiveOption"
+              :options="searchByArchiveOptions"
+            />
+          </b-col>
           <b-col class="ml-auto mt-auto">
             <div class="d-flex justify-content-end">
               <b-button v-b-modal.modal-center>
@@ -37,6 +47,12 @@
         <b-row class="app-table__top-row py-3">
           <b-col>
             <span class="font-weight-bold">Customers</span>
+          </b-col>
+          <b-col>
+            <span class="font-weight-bold">Archived</span>
+          </b-col>
+          <b-col class="d-flex justify-content-center">
+            <span class="font-weight-bold">Actions</span>
           </b-col>
         </b-row>
 
@@ -63,6 +79,14 @@
             </div>
             <div>
               {{ customer.debtor }}
+            </div>
+          </b-col>
+
+          <b-col>
+            <div class="font-weight-bold">
+              <b-badge :variant="customer.archived ? 'warning' : 'success'">
+                {{ customer.archived ? "Yes" : "No" }}
+              </b-badge>
             </div>
           </b-col>
 
@@ -119,23 +143,29 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
-    const customers = computed(() => store.state.customers.customers);
+    const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
 
-    const searchTerm = ref<string>("");
+    const searchByArchiveOptions: { value: boolean | null, text: string }[] = [ {value: null, text: "Select"}, {value: false, text: "No"}, {value: true, text: "Yes"}] ;
     const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
     ];
+
+    const searchTerm = ref<string>("");
     const selectedCriteria = ref<"name"|"debtor">(searchCriteria[0].value);
+    const selectedArchiveOption= ref<boolean | null>(searchByArchiveOptions[0].value);
 
     const filteredCustomers = computed(() => {
-      if (!searchTerm.value) return customers.value;
-
       const criteria: "name"|"debtor" = selectedCriteria.value;
 
-      const filtered: Customer[] = customers.value?.filter((customer: Customer) => {
-          if (!searchTerm.value || !customer[criteria]) return customer;
+      const filtered: Customer[] | undefined = customers.value?.
+        filter((customer: Customer) => {
+          if (selectedArchiveOption.value === null) return true
+          return !!customer.archived === selectedArchiveOption.value
+        }).
+        filter((customer: Customer) => {
+          if (!searchTerm.value || !customer[criteria]) return true;
           return queryOnString(customer[criteria], searchTerm.value);
         });
 
@@ -167,6 +197,8 @@ export default defineComponent({
       filteredCustomers,
       searchTerm,
       searchCriteria,
+      searchByArchiveOptions,
+      selectedArchiveOption,
       selectedCriteria,
       newCustomer,
       canAddCustomer,

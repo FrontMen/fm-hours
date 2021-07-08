@@ -142,7 +142,7 @@ export default defineComponent({
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
       customers.value
-        .filter((customer) => !customer.isDefault)
+        .filter((customer) => !customer.isDefault && !customer.archived)
         .map((customer) => ({
           ...customer,
           label: `${customer.name} (${customer.debtor})`,

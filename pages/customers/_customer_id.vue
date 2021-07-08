@@ -16,6 +16,7 @@
           @submit.prevent="handleSubmit"
           @change="hasUnsavedChanges = true"
         >
+          <b-alert :show="form.archived" variant="info">This customer archived at {{ form.archivedDate | formatDate("dd MMMM yyyy") }}</b-alert>
           <b-form-group id="input-group-name" label="Name:" label-for="input-2">
             <b-form-input
               id="input-name"
@@ -55,6 +56,14 @@
               @click="deleteCustomer"
             >
               Delete
+            </b-button>
+            <b-button
+              type="button"
+              variant="warning"
+              class="mr-2"
+              @click="archiveCustomerToggle(!form.archived)"
+            >
+              {{ form.archived ? "Unarchive" : "Archive" }}
             </b-button>
             <b-button
               type="submit"
@@ -99,7 +108,7 @@ export default defineComponent({
 
     const customerId = router.currentRoute.params.customer_id;
     const customers = computed(() => store.state.customers.customers);
-    const customer = computed(() =>
+    const customer: { value: Customer | undefined } = computed(() =>
       customers.value.find((x) => x.id === customerId)
     );
 
@@ -140,6 +149,24 @@ export default defineComponent({
       router.push("/customers");
     };
 
+    const archiveCustomerToggle = (archive: boolean) => {
+      const archiveData = {
+        archived: archive,
+        ...archive ? {archivedDate: Date.now()} : {}
+      }
+
+      const confirmation = confirm(
+        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${customer.value?.name}?`
+      );
+
+      if (!confirmation) return;
+
+      store.dispatch("customers/updateCustomer", {
+        ...customer.value,
+        ...archiveData
+      });
+    };
+
     const handleSubmit = () => {
       if (!hasUnsavedChanges) return;
       store.dispatch("customers/updateCustomer", {
@@ -155,6 +182,7 @@ export default defineComponent({
       customer,
       hasUnsavedChanges,
       form,
+      archiveCustomerToggle,
       deleteCustomer,
       handleSubmit,
     };

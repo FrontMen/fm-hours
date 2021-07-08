@@ -15,6 +15,7 @@ export default (employeeId: string, startTimestamp?: number) => {
   const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
   const recordsState = computed(() => store.state.records);
   const timesheetState = computed(() => store.state.timesheets);
+  const customers = computed(() => store.state.customers);
 
   const timesheetStatus = computed(() =>
     timesheetState.value.timesheets[0]
@@ -128,7 +129,13 @@ export default (employeeId: string, startTimestamp?: number) => {
     });
 
     const newTimesheet = {
-      projects: previousWeekTimesheet.projects.map((project) => ({
+      projects: previousWeekTimesheet.projects.filter((project) => {
+        const projectArchived = (customers.value.customers.find((c) => c.id === project.customer.id)?.archived)
+        if (projectArchived){
+          alert(`${project.customer.name} is already archived. We wont copy it to new timesheet`)
+        }
+        return !projectArchived
+      }).map((project) => ({
         ...project,
         ids: new Array(7).fill(null),
       })),
