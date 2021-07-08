@@ -3,7 +3,7 @@
     <div class="content-wrapper mt-5">
       <b-container class="mx-0 px-0 mb-3" fluid>
         <b-row :no-gutters="true">
-          <b-col cols="3">
+          <b-col cols="6" md="3" class="mb-3">
             <label class="employee-status__label" for="status-select">
               Search by:
             </label>
@@ -13,7 +13,7 @@
               :options="searchCriteria"
             />
           </b-col>
-          <b-col cols="4" class="pl-0">
+          <b-col cols="6" md="4" class="pl-0 mb-3">
             <label class="employee-status__label" for="employee-search">
               Search:
             </label>
@@ -24,7 +24,7 @@
               placeholder="Ex.: &quot;Frontmen&quot;"
             />
           </b-col>
-          <b-col cols="3">
+          <b-col cols="6" md="2" class="mb-3">
             <label class="employee-status__label" for="status-select">
               Archived ?
             </label>
@@ -32,6 +32,16 @@
               id="status-select"
               v-model="selectedArchiveOption"
               :options="searchByArchiveOptions"
+            />
+          </b-col>
+          <b-col cols="6" md="3" class="mb-3">
+            <label class="employee-status__label" for="status-select">
+              Sort:
+            </label>
+            <b-form-select
+              id="status-select"
+              v-model="selectedSortCriteria"
+              :options="sortCriteria"
             />
           </b-col>
           <b-col class="ml-auto mt-auto">
@@ -132,7 +142,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
-import { queryOnString } from "~/helpers/helpers";
+import { queryOnString, sortByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -146,28 +156,43 @@ export default defineComponent({
     const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
 
+    const searchTerm = ref<string>("");
     const searchByArchiveOptions: { value: boolean | null, text: string }[] = [ {value: null, text: "Select"}, {value: false, text: "No"}, {value: true, text: "Yes"}] ;
     const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
     ];
-
-    const searchTerm = ref<string>("");
+    const sortCriteria: { value: string|null; text: string; }[] = [
+      { value: null, text: "None" },
+      { value: "name-asc", text: "Name A->Z" },
+      { value: "name-desc", text: "Name Z->A" },
+      { value: "debtor-asc", text: "Debtor A->Z" },
+      { value: "debtor-desc", text: "Debtor Z->A" },
+    ];
     const selectedCriteria = ref<"name"|"debtor">(searchCriteria[0].value);
+    const selectedSortCriteria = ref<string|null>(null);
     const selectedArchiveOption= ref<boolean | null>(searchByArchiveOptions[0].value);
 
     const filteredCustomers = computed(() => {
       const criteria: "name"|"debtor" = selectedCriteria.value;
 
-      const filtered: Customer[] | undefined = customers.value?.
-        filter((customer: Customer) => {
+      const customerList = customers.value || [];
+
+      const notArchived = customerList.filter((customer: Customer) => {
           if (selectedArchiveOption.value === null) return true
           return !!customer.archived === selectedArchiveOption.value
-        }).
-        filter((customer: Customer) => {
-          if (!searchTerm.value || !customer[criteria]) return true;
+        });
+
+      let filtered: Customer[] = !searchTerm.value ? [...notArchived] : notArchived?.filter((customer: Customer) => {
+          if (!customer[criteria]) return customer;
           return queryOnString(customer[criteria], searchTerm.value);
         });
+
+      if (selectedSortCriteria.value) {
+        const criteria = selectedSortCriteria.value.split("-") as [string, "asc"|"desc"];
+        const [prop, order] = criteria;
+        filtered = filtered.sort((a,b) => sortByProp<Customer>(a, b, prop, order));
+      }
 
       return filtered;
     });
@@ -194,12 +219,14 @@ export default defineComponent({
     };
 
     return {
+      selectedSortCriteria,
       filteredCustomers,
       searchTerm,
       searchCriteria,
       searchByArchiveOptions,
       selectedArchiveOption,
       selectedCriteria,
+      sortCriteria,
       newCustomer,
       canAddCustomer,
       addCustomer,
