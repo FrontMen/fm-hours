@@ -298,10 +298,16 @@ export default defineComponent({
 
     const handleEmployeeDelete = () => {
       const confirmation = confirm(
-        `Are you sure that you want to delete ${employee.value?.name}?`
+        `Are you sure you want to delete ${employee.value?.name}?`
       );
 
       if (!confirmation) return;
+
+      const confirmation2 = confirm(
+        `You won't be able to access the timesheets / reports of ${employee.value?.name} !`
+      );
+
+      if (!confirmation2) return;
 
       store.dispatch("employees/deleteEmployee", employeeId);
       router.push("/employees");
