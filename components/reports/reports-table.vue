@@ -23,7 +23,7 @@ import { defineComponent } from "@vue/composition-api";
 
 export default defineComponent({
   props: {
-    csvFileName: { type: String, default: "export.csv" },
+    csvFileName: { type: String, default: "export" },
   },
   setup(props) {
     const downloadCsv = (csv: any, filename: string) => {
@@ -60,7 +60,7 @@ export default defineComponent({
         csv.push(row.join(","));
       });
 
-      downloadCsv(csv.join("\n"), props.csvFileName);
+      downloadCsv(csv.join("\n"), `${props.csvFileName}.csv`);
     }
 
     return {
