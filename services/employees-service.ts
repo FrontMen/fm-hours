@@ -107,6 +107,10 @@ export default class EmployeesService {
       .set(newEmployee, { merge: true });
   }
 
+  async deleteEmployee(id:string) {
+    return await this.fire.firestore.collection("employees").doc(id).delete()
+  }
+
   public async isAdmin(email: string) {
     const adminEmails = await this.getAdminEmails();
     return adminEmails.includes(email);
