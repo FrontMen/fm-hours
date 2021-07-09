@@ -1,5 +1,11 @@
 <template>
   <div class="content-wrapper mt-5">
+    <b-alert show variant="info" class="mb-3">
+      To request leave, please visit
+      <strong>
+        <a href="https://bridge.hosted-tools.com/myprofile/absences" target="_blank" rel="noreferrer">bridge!</a>
+      </strong>
+    </b-alert>
     <employee-header
       v-if="isAdminView && employee"
       class="mb-5"
@@ -51,7 +57,9 @@
       <template
         v-if="employee && employee.travelAllowance && timesheet.travelProject"
       >
-        <h3 class="mt-5 mb-3">Travel allowance</h3>
+        <h3 class="mt-5 mb-3">
+          Travel allowance
+        </h3>
 
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
           <template #rows>
@@ -221,15 +229,15 @@ export default defineComponent({
     };
 
     const selectableCustomers = computed(() => {
-      const customers = store.state.customers.customers;
+      const customers: Customer[] = store.state.customers.customers;
       const selectedCustomers = timesheet.timesheet.value.projects.map(
         (project) => project.customer.id
       );
 
       const selectableCustomers = customers.filter(
-        (x) =>
+        (x: Customer) =>
           (selectedEmployee.value?.projects?.includes(x.id) &&
-            !selectedCustomers?.includes(x.id)) ||
+            !selectedCustomers?.includes(x.id) && !x.archived) ||
           x.isDefault
       );
 

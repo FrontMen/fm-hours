@@ -15,11 +15,12 @@ export default (employeeId: string, startTimestamp?: number) => {
   const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
   const recordsState = computed(() => store.state.records);
   const timesheetState = computed(() => store.state.timesheets);
+  const customers = computed(() => store.state.customers);
 
-  const timesheetStatus = computed(() =>
-    timesheetState.value.timesheets[0]
+  const timesheetStatus = computed(() => {
+    return timesheetState.value.timesheets[0]
       ? timesheetState.value.timesheets[0].status
-      : (recordStatus.NEW as TimesheetStatus)
+      : (recordStatus.NEW as TimesheetStatus)}
   );
 
   const timesheetDenyMessage = computed(() =>
@@ -55,6 +56,17 @@ export default (employeeId: string, startTimestamp?: number) => {
     () => timesheetState.value?.timesheets[0],
     () => {
       message.value = timesheetState.value?.timesheets[0]?.message;
+    },
+    { immediate: true }
+  );
+
+  /*
+   * Gets message from previous week's timesheet when copying.
+   */
+  watch(
+    () => store.state.timesheets.previousTimesheet,
+    () => {
+      message.value = store.state.timesheets.previousTimesheet?.message || message.value;
     },
     { immediate: true }
   );
@@ -132,6 +144,13 @@ export default (employeeId: string, startTimestamp?: number) => {
     const prevStartDate = subDays(startDate, 7);
     const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
 
+    // Dispatch getter to update message with message present in previous week.
+    store.dispatch("timesheets/getPreviousTimesheet", {
+      startDate: prevStartDate.getTime(),
+      endDate: startDate.getTime(),
+      employeeId,
+    });
+
     const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,
       timeRecords: recordsState.value.timeRecords,
@@ -140,7 +159,13 @@ export default (employeeId: string, startTimestamp?: number) => {
     });
 
     const newTimesheet = {
-      projects: previousWeekTimesheet.projects.map((project) => ({
+      projects: previousWeekTimesheet.projects.filter((project) => {
+        const projectArchived = (customers.value.customers.find((c) => c.id === project.customer.id)?.archived)
+        if (projectArchived){
+          alert(`${project.customer.name} is already archived. We wont copy it to new timesheet`)
+        }
+        return !projectArchived
+      }).map((project) => ({
         ...project,
         ids: new Array(7).fill(null),
       })),

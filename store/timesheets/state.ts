@@ -3,4 +3,5 @@ export default (): TimesheetsStoreState => ({
   selectedEmployeeId: "",
   timesheets: [],
   timesheetTableData: {} as TimesheetTableData,
+  previousTimesheet: null,
 });

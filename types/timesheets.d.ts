@@ -20,6 +20,7 @@ interface TimesheetsStoreState {
   selectedEmployeeId: string;
   timesheets: Timesheet[];
   timesheetTableData: TimesheetTableData;
+  previousTimesheet: Timesheet|null;
 }
 
 interface Timesheet {
