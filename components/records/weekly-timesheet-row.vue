@@ -28,7 +28,7 @@
       <b-form-input
         v-model="project.values[index]"
         class="weekly-timesheet-row__value-input"
-        type="text"
+        type="number"
         :formatter="valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
