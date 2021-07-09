@@ -75,4 +75,9 @@ export default class TimesheetsService {
 
     return { ...newTimesheet, id: newDocument.id };
   }
+
+  async deleteTimesheet(timesheetId: string) {
+    const ref = this.fire.firestore.collection("timesheets");
+    await ref.doc(timesheetId).delete();
+  }
 }
