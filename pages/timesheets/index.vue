@@ -21,6 +21,7 @@
       <b-table
         class="mt-3 app-table timesheet-table"
         responsive
+        head-variant="dark"
         :items="tableData.items"
         :fields="tableData.fields"
         :sort-compare="sortCompare"
@@ -141,14 +142,6 @@ export default defineComponent({
   @media (min-width: 576px) {
     width: 25%;
   }
-}
-
-.timesheet-table > .table.b-table > thead > tr > .table-b-table-default,
-.timesheet-table > .table.b-table > thead > tr > th {
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .container--cell {
