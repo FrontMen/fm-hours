@@ -68,7 +68,6 @@
         <template #cell(archived)="scope">
           <div class="text-center">
             <b-badge :variant="scope.item.archived ? 'warning' : 'success'">
-              {{ scope.item.archived }}
               {{ scope.item.archived ? "Yes" : "No" }}
             </b-badge>
           </div>
