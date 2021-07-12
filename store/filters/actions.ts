@@ -1,6 +1,7 @@
 import { ActionTree } from 'vuex';
 
 const actions: ActionTree<FiltersStoreState, RootStoreState> = {
+  // Customers
   updateCustomerIsArchived({ commit }, payload: boolean) {
     commit('setCustomerIsArchived', payload);
   },
@@ -15,6 +16,14 @@ const actions: ActionTree<FiltersStoreState, RootStoreState> = {
   },
   updateCustomerSortBy({ commit }, payload: string) {
     commit('setCustomerSortBy', payload);
+  },
+
+  // Timesheets
+  updateTimesheetSortDescending({ commit }, payload: boolean) {
+    commit('setTimesheetSortDescending', payload);
+  },
+  updateTimesheetFilterBy({ commit }, payload: string) {
+    commit('setTimesheetFilterBy', payload);
   },
 };
 

@@ -14,7 +14,9 @@
           class="filter__select"
         >
           <template #first>
-            <b-form-select-option :value="null"> All </b-form-select-option>
+            <b-form-select-option :value="null">
+              All
+            </b-form-select-option>
           </template>
         </b-form-select>
       </b-form-group>
@@ -25,6 +27,7 @@
         :items="tableData.items"
         :fields="tableData.fields"
         :sort-compare="sortCompare"
+        :sort-desc.sync="sortDescending"
         :filter="filter"
         sort-by="id"
         no-sort-reset
@@ -90,13 +93,17 @@ export default defineComponent({
       }))
       .sort((a, b) => a.text.localeCompare(b.text));
 
-    const selected = ref(null);
+    const sortDescending= ref<boolean>(store.getters['filters/getTimesheetSortDescending']);
+    const selected = ref(store.getters['filters/getTimesheetFilterBy']);
     const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
     const weeksAfter = 2;
 
-    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const tableData = computed(() => {
+      handleFilterUpdates();
+      return store.state.timesheets.timesheetTableData;
+    });
     store.dispatch("timesheets/getTableData", {
       weeksBefore,
       weeksAfter,
@@ -108,6 +115,15 @@ export default defineComponent({
       startTimestamp: number
     ) => {
       router.push(`/timesheets/${employeeId}/${startTimestamp}`);
+    };
+
+    const handleFilterUpdates = () => {
+      if (store.getters['filters/getTimesheetFilterBy'] !== selected.value) {
+        store.dispatch("filters/updateTimesheetFilterBy", selected.value);
+      }
+      if (store.getters['filters/getTimesheetSortDescending'] !== sortDescending.value) {
+        store.dispatch("filters/updateTimesheetSortDescending", sortDescending.value);
+      }
     };
 
     const sortCompare = (
@@ -124,6 +140,7 @@ export default defineComponent({
       options,
       selected,
       filter: getSelected,
+      sortDescending,
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,

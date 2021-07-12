@@ -7,7 +7,7 @@ export default (): FiltersStoreState => ({
     sortBy: '',
   },
   timesheetFilters: {
-    searchTerm: null,
-    sortBy: '',
+    filterBy: null,
+    sortDescending: false,
   },
 });

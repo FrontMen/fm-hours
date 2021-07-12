@@ -7,7 +7,7 @@ type FiltersStoreState = {
     sortBy: string;
   },
   timesheetFilters: {
-    searchTerm: null|string;
-    sortBy: string;
+    filterBy: null|string;
+    sortDescending: boolean;
   },
 }

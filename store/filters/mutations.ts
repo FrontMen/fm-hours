@@ -1,6 +1,7 @@
 import { MutationTree } from 'vuex';
 
 const mutations: MutationTree<FiltersStoreState> = {
+  // Customers
   setCustomerIsArchived(state, payload: boolean) {
     state.customerFilters.archived = payload;
   },
@@ -15,6 +16,14 @@ const mutations: MutationTree<FiltersStoreState> = {
   },
   setCustomerSortBy(state, payload: string) {
     state.customerFilters.sortBy = payload;
+  },
+
+  // Timesheets
+  setTimesheetFilterBy(state, payload: string) {
+    state.timesheetFilters.filterBy = payload;
+  },
+  setTimesheetSortDescending(state, payload: boolean) {
+    state.timesheetFilters.sortDescending = payload;
   },
 };
 

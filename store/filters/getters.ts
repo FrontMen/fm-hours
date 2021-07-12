@@ -1,6 +1,7 @@
 import { GetterTree } from "vuex";
 
 const getters: GetterTree<FiltersStoreState, RootStoreState> = {
+  // Customers
   getIsCustomerArchived(state) {
     return state.customerFilters.archived;
   },
@@ -18,16 +19,16 @@ const getters: GetterTree<FiltersStoreState, RootStoreState> = {
   },
 
   getCustomerSearchCriteria(state) {
-    console.log("vlad", state);
     return state.customerFilters.searchCriteria;
   },
 
-  getTimesheetSortBy(state) {
-    return state.timesheetFilters.sortBy;
+  // Timesheets
+  getTimesheetFilterBy(state) {
+    return state.timesheetFilters.filterBy;
   },
 
-  getTimesheetSearchTerm(state) {
-    return state.timesheetFilters.searchTerm;
+  getTimesheetSortDescending(state) {
+    return state.timesheetFilters.sortDescending;
   }
 
 }

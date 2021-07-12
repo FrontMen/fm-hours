@@ -164,7 +164,7 @@ export default defineComponent({
       if (store.getters['filters/getCustomerSearchCriteria'] !== selectedCriteria.value) {
         store.dispatch("filters/updateCustomerSearchCriteria", selectedCriteria.value);
       }
-    }
+    };
 
     const filteredCustomers = computed(() => {
       const criteria: "name"|"debtor" = selectedCriteria.value;
