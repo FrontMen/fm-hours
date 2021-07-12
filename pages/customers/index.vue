@@ -43,7 +43,8 @@
         :items="filteredCustomers"
         :fields="fields"
         :sort-compare="sortCompare"
-        sort-by="customers"
+        :sort-desc.sync="sortDescending"
+        :sort-by.sync="sortKey"
         no-sort-reset
       >
         <!-- Only the columns we want to customize need to be added
@@ -130,7 +131,7 @@ export default defineComponent({
     const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
 
-    const searchTerm = ref<string>("");
+    const searchTerm = ref<string>(store.getters['filters/getCustomerSearchTerm']);
     const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
@@ -142,11 +143,33 @@ export default defineComponent({
       { key: 'archived', label: 'Archived', sortable: false },
       { key: 'actions', label: 'Actions', sortable: false }
     ];
-    const selectedCriteria = ref<"name"|"debtor">(searchCriteria[0].value);
-    const selectedArchiveOption= ref<boolean>(false);
+    const selectedCriteria = ref<"name"|"debtor">(store.getters['filters/getCustomerSearchCriteria']);
+    const selectedArchiveOption= ref<boolean>(store.getters['filters/getIsCustomerArchived']);
+    const sortDescending= ref<boolean>(store.getters['filters/getCustomerSortDescending']);
+    const sortKey= ref<boolean>(store.getters['filters/getCustomerSortBy']);
+
+    const handleFilterUpdates = () => {
+      if (store.getters['filters/getIsCustomerArchived'] !== selectedArchiveOption.value) {
+        store.dispatch("filters/updateCustomerIsArchived", selectedArchiveOption.value);
+      }
+      if (store.getters['filters/getCustomerSortBy'] !== sortKey.value) {
+        store.dispatch("filters/updateCustomerSortBy", sortKey.value);
+      }
+      if (store.getters['filters/getCustomerSortDescending'] !== sortDescending.value) {
+        store.dispatch("filters/updateCustomerSortDescending", sortDescending.value);
+      }
+      if (store.getters['filters/getCustomerSearchTerm'] !== searchTerm.value) {
+        store.dispatch("filters/updateCustomerSearchTerm", searchTerm.value);
+      }
+      if (store.getters['filters/getCustomerSearchCriteria'] !== selectedCriteria.value) {
+        store.dispatch("filters/updateCustomerSearchCriteria", selectedCriteria.value);
+      }
+    }
 
     const filteredCustomers = computed(() => {
       const criteria: "name"|"debtor" = selectedCriteria.value;
+
+      handleFilterUpdates();
 
       const customerList = customers.value || [];
 
@@ -190,6 +213,8 @@ export default defineComponent({
     return {
       fields,
       sortCompare,
+      sortDescending,
+      sortKey,
       filteredCustomers,
       searchTerm,
       searchCriteria,
