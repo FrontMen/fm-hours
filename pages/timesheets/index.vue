@@ -14,7 +14,9 @@
           class="filter__select"
         >
           <template #first>
-            <b-form-select-option :value="null"> All </b-form-select-option>
+            <b-form-select-option :value="null">
+              All
+            </b-form-select-option>
           </template>
         </b-form-select>
       </b-form-group>
@@ -37,7 +39,7 @@
           <div class="table-cell-wrapper table-cell-wrapper__heading">
             <p>
               {{
-                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate}`
+                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
               }}
             </p>
           </div>

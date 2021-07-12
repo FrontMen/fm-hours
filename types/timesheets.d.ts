@@ -56,6 +56,7 @@ interface TimesheetTableField {
   isRowHeader?: boolean;
   formatedStartDate?: string;
   formatedEndDate?: string;
+  weekNumber?: number
 }
 
 interface TimesheetTableData {
