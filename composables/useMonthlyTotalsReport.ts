@@ -20,7 +20,7 @@ export default () => {
   };
 
   const getTotalHours = (records: TimeRecord[]): number =>
-    records.reduce((total, currentRecord) => (total += currentRecord.hours), 0);
+    records.reduce((total, currentRecord) => (total += +currentRecord.hours), 0);
 
   const getNonBillableColumns = (
     employee: ReportEmployee,
