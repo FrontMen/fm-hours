@@ -23,7 +23,7 @@
     <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal }}</strong>
+        <strong>{{ +weekTotal.toFixed(2) }}</strong>
       </span>
     </b-col>
   </b-row>

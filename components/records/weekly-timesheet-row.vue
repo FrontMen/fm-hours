@@ -39,7 +39,7 @@
     </b-col>
 
     <b-col cols="1" class="weekly-timesheet-row__total-column">
-      {{ totalValue }}
+      {{ +totalValue.toFixed(2) }}
     </b-col>
   </b-row>
 </template>
