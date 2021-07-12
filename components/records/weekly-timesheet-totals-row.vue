@@ -58,7 +58,7 @@ export default defineComponent({
       props.projects.forEach((project) => {
         total += +project.values
           .reduce((prevValue, value) => prevValue + +value)
-          .toFixed(1);
+          .toFixed(2);
       });
 
       return total;
@@ -76,10 +76,10 @@ export default defineComponent({
         let total = 0;
 
         props.projects.forEach((project) => {
-          total += project.values[index];
+          total += +project.values[index];
         });
 
-        return total;
+        return total.toFixed(2);
       });
     });
 
