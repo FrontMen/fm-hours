@@ -57,7 +57,7 @@ export default () => {
       name: employee.name,
       billable: billableHours,
       nonBillable: nonBillableHours,
-      totalHours: billableHours + nonBillableHours,
+      totalHours: +(billableHours + nonBillableHours).toFixed(2),
       productivity: Math.round(productivity || 0) + "%",
       ...nonBillableColumns,
     };
