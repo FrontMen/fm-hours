@@ -19,6 +19,7 @@
       @previous="goToWeek('previous')"
       @next="goToWeek('next')"
       @current="goToWeek('current')"
+      @goBack="goBack()"
     />
 
     <empty-timesheet
@@ -250,8 +251,17 @@ export default defineComponent({
       ];
     });
 
+    /**
+     * To navigate back to correct position in page where we came from.
+     * Obvious caveat, doesn't really work if navigating directly to this page.
+     */
+    const goBack = () => {
+      router.back();
+    };
+
     return {
       employee: selectedEmployee,
+      goBack,
       selectableCustomers,
       recordsState,
       recordStatus,

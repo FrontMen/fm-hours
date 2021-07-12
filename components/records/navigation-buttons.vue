@@ -6,7 +6,7 @@
         to="/timesheets"
         class="d-flex align-items-center flex-nowrap"
       >
-        <b-button>
+        <b-button @click="handleGoBack">
           <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
           Timesheets
         </b-button>
@@ -40,7 +40,7 @@ import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
 import { getWeekRange, getDateLabel, getDayOnGMT } from "~/helpers/dates";
 
 export default defineComponent({
-  emits: ["previous", "next", "current"],
+  emits: ["previous", "next", "current", "goBack"],
   props: {
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
@@ -55,6 +55,7 @@ export default defineComponent({
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => emit("current");
+    const handleGoBack = () => emit("goBack");
 
     const weekLabel = computed(() => {
       if (!props.selectedWeek.length) return "";
@@ -78,6 +79,7 @@ export default defineComponent({
       handlePreviousClick,
       handleNextClick,
       handleCurrentClick,
+      handleGoBack,
       weekLabel,
       weekDifference,
     };
