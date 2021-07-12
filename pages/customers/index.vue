@@ -108,6 +108,7 @@
       </b-form-checkbox>
     </b-modal>
   </div>
+
 </template>
 
 <script lang="ts">

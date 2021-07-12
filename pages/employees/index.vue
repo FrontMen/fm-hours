@@ -1,106 +1,99 @@
 <template>
-  <div class="page-wrapper pb-5">
-    <div class="content-wrapper mt-5">
-      <b-container class="mb-3" fluid>
-        <b-row :no-gutters="true" class="px-3">
-          <b-col>
-            <div class="d-flex justify-content-end">
-              <b-button v-b-modal.modal-center>
-                + New employee
-              </b-button>
-            </div>
-          </b-col>
-        </b-row>
-      </b-container>
+  <div class="content-wrapper mt-5">
+    <b-container class="mx-0 px-0 mb-3" fluid>
+      <b-row no-gutters="true">
+        <b-col cols="4" class="pl-0">
+          <label class="employee-status__label" for="employee-search">
+            Search by employee name:
+          </label>
+          <b-input
+            id="employee-search"
+            v-model="searchInput"
+            type="search"
+            placeholder="Ex.: &quot;John&quot;"
+          />
+        </b-col>
 
-      <b-container class="mb-3">
-        <b-row>
-          <b-col cols="4" class="pl-0">
-            <label class="employee-status__label" for="employee-search">
-              Search by employee name:
-            </label>
-            <b-input
-              id="employee-search"
-              v-model="searchInput"
-              type="search"
-              placeholder="Ex.: &quot;John&quot;"
-            />
-          </b-col>
+        <b-col cols="3">
+          <label class="employee-status__label" for="status-select">
+            Filter by status:
+          </label>
+          <b-form-select
+            id="status-select"
+            v-model="statusSelected"
+            :options="statusOptions"
+          />
+        </b-col>
 
-          <b-col cols="3">
-            <label class="employee-status__label" for="status-select">
-              Filter by status:
-            </label>
-            <b-form-select
-              id="status-select"
-              v-model="statusSelected"
-              :options="statusOptions"
-            />
-          </b-col>
-
-          <b-col cols="4">
-            <label class="employee-status__label" for="customer-select">
-              Filter by customer:
-            </label>
-            <multiselect
-              id="customer-select"
-              v-model="selectedCustomers"
-              track-by="id"
-              label="label"
-              class="customer-select__wrapper"
-              :options="customerOptions"
-              :close-on-select="false"
-              :multiple="true"
-              :taggable="false"
-              placeholder="Click or search for a customer here"
-            >
-              <template slot="selection" slot-scope="{ values }">
-                <span v-if="values.length">
-                  {{ values.length }} options selected
-                </span>
-              </template>
-            </multiselect>
-          </b-col>
-        </b-row>
-      </b-container>
-      <b-container fluid class="app-table">
-        <b-row class="app-table__top-row py-3">
-          <b-col>
-            <span class="font-weight-bold">Employees</span>
-          </b-col>
-        </b-row>
-
-        <b-row
-          v-if="!filteredEmployees.length"
-          class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
-        >
-          <b-icon-person-x class="mr-2" />
-          No employee found.
-        </b-row>
-
-        <b-row
-          v-for="employee in filteredEmployees"
-          v-else
-          :key="employee.id"
-          class="app-table__row employee-row p-3 mr-0"
-        >
-          <b-avatar :src="employee.picture" />
-
-          <div class="font-weight-bold employee-row__name my-2 mx-3">
-            {{ employee.name }}
+        <b-col cols="4">
+          <label class="employee-status__label" for="customer-select">
+            Filter by customer:
+          </label>
+          <multiselect
+            id="customer-select"
+            v-model="selectedCustomers"
+            track-by="id"
+            label="label"
+            class="customer-select__wrapper"
+            :options="customerOptions"
+            :close-on-select="false"
+            :multiple="true"
+            :taggable="false"
+            placeholder="Click or search for a customer here"
+          >
+            <template slot="selection" slot-scope="{ values }">
+              <span v-if="values.length">
+                {{ values.length }} options selected
+              </span>
+            </template>
+          </multiselect>
+        </b-col>
+        <b-col class="ml-auto mt-auto">
+          <div class="d-flex justify-content-end">
+            <b-button v-b-modal.modal-center>
+              + New employee
+            </b-button>
           </div>
+        </b-col>
+      </b-row>
+    </b-container>
+    <b-container fluid class="app-table">
+      <b-row class="app-table__top-row py-3">
+        <b-col>
+          <span class="font-weight-bold">Employees</span>
+        </b-col>
+      </b-row>
 
-          <div class="ml-auto d-flex">
-            <nuxt-link
-              class="btn btn-info"
-              :to="`/employees/${employee.id}`"
-            >
-              Manage employee
-            </nuxt-link>
-          </div>
-        </b-row>
-      </b-container>
-    </div>
+      <b-row
+        v-if="!filteredEmployees.length"
+        class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
+      >
+        <b-icon-person-x class="mr-2" />
+        No employee found.
+      </b-row>
+
+      <b-row
+        v-for="employee in filteredEmployees"
+        v-else
+        :key="employee.id"
+        class="app-table__row employee-row p-3 mr-0"
+      >
+        <b-avatar :src="employee.picture" />
+
+        <div class="font-weight-bold employee-row__name my-2 mx-3">
+          {{ employee.name }}
+        </div>
+
+        <div class="ml-auto d-flex">
+          <nuxt-link
+            class="btn btn-info"
+            :to="`/employees/${employee.id}`"
+          >
+            Manage employee
+          </nuxt-link>
+        </div>
+      </b-row>
+    </b-container>
     <b-modal
       id="modal-center"
       centered
@@ -297,9 +290,14 @@ export default defineComponent({
 </style>
 
 <style lang="scss">
-.customer-select__wrapper .multiselect__tags {
-  min-height: 38px;
-  padding-top: 6px;
-  border-color: #ced4da;
+.customer-select__wrapper {
+  .multiselect__tags {
+    min-height: 38px;
+    padding-top: 6px;
+    border-color: #ced4da;
+  }
+  .multiselect__placeholder {
+    padding-top: 0px;
+  }
 }
 </style>
