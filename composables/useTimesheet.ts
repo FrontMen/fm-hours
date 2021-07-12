@@ -123,6 +123,18 @@ export default (employeeId: string, startTimestamp?: number) => {
       ),
       travelProject: timesheet.value.travelProject,
     };
+
+    // if deleting the last project, clear the timesheet
+    if (timesheet.value.projects.length <= 1) {
+      store.dispatch("timesheets/deleteTimesheet", {
+        timesheetId: timesheetState.value?.timesheets[0]?.id,
+      });
+      message.value = "";
+    }
+
+    if (!unsavedWeeklyTimesheet.value.projects.length) {
+      hasUnsavedChanges.value = false;
+    }
   };
 
   const copyPreviousWeek = () => {
