@@ -98,6 +98,9 @@
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
           Save
         </b-button>
+        <b-button @click="handleEmployeeDelete" variant="danger">
+          Delete
+        </b-button>
         <b-row>
           <b-col cols="12" md="5">
             <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
@@ -180,7 +183,7 @@ export default defineComponent({
       if (employee?.value?.endDate) {
         hasEndDate.value = true
         endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
-      } 
+      }
     });
 
     watch(
@@ -234,14 +237,14 @@ export default defineComponent({
       if (employee?.value?.endDate) {
           hasEndDate.value = true
           endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
-        } 
+        }
     })
 
     watch(() => hasEndDate.value, () => {
       if (!hasEndDate.value) {
           endDate.value = null
           errorMessage.value = ""
-        } 
+        }
     })
 
     watch(() => endDate.value, () => {
@@ -249,7 +252,7 @@ export default defineComponent({
         errorMessage.value = ""
       }
     })
-  
+
     const handleAdminToggle = (): void => {
       let valueChanged = false;
       let adminList = [...store.getters["employees/adminList"]];
@@ -277,7 +280,7 @@ export default defineComponent({
         errorMessage.value = "Please select an end date"
         return
       }
-      
+
       handleAdminToggle();
 
       const newEmployee = {
@@ -292,6 +295,23 @@ export default defineComponent({
 
       hasUnsavedChanges.value = false;
     };
+
+    const handleEmployeeDelete = () => {
+      const confirmation = confirm(
+        `Are you sure you want to delete ${employee.value?.name}?`
+      );
+
+      if (!confirmation) return;
+
+      const confirmation2 = confirm(
+        `You won't be able to access the timesheets / reports of ${employee.value?.name} !`
+      );
+
+      if (!confirmation2) return;
+
+      store.dispatch("employees/deleteEmployee", employeeId);
+      router.push("/employees");
+    }
 
     const handleProjectDelete = (customerId: string) => {
       selectedCustomers.value = selectedCustomers.value.filter(
@@ -322,6 +342,7 @@ export default defineComponent({
       handleProjectDelete,
       defaultCustomers,
       items,
+      handleEmployeeDelete
     };
   },
 });
