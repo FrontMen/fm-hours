@@ -29,7 +29,7 @@
         v-model="project.values[index]"
         class="weekly-timesheet-row__value-input"
         type="number"
-        :formatter="valueFormatter.formatter"
+        step=".25"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
@@ -84,7 +84,7 @@ export default defineComponent({
       () =>
         +props.project.values
           .reduce((total, current) => total + +current)
-          .toFixed(1)
+          .toFixed(2)
     );
 
     // An array of booleans, one for each day of the selected week, that states
