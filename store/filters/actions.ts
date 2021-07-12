@@ -25,6 +25,17 @@ const actions: ActionTree<FiltersStoreState, RootStoreState> = {
   updateTimesheetFilterBy({ commit }, payload: string) {
     commit('setTimesheetFilterBy', payload);
   },
+
+  // Timesheets
+  updateEmployeeFilterBy({ commit }, payload: string) {
+    commit('setEmployeeFilterBy', payload);
+  },
+  updateEmployeeFilterByCustomer({ commit }, payload: string) {
+    commit('setEmployeeFilterByCustomer', payload);
+  },
+  updateEmployeeSearchTerm({ commit }, payload: string) {
+    commit('setEmployeeSearchTerm', payload);
+  },
 };
 
 export default actions;

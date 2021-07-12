@@ -25,6 +25,17 @@ const mutations: MutationTree<FiltersStoreState> = {
   setTimesheetSortDescending(state, payload: boolean) {
     state.timesheetFilters.sortDescending = payload;
   },
+
+  // Timesheets
+  setEmployeeFilterBy(state, payload: string) {
+    state.employeeFilters.filterBy = payload;
+  },
+  setEmployeeFilterByCustomer(state, payload: string) {
+    state.employeeFilters.filterByCustomer = payload;
+  },
+  setEmployeeSearchTerm(state, payload: string) {
+    state.employeeFilters.searchTerm = payload;
+  },
 };
 
 export default mutations;

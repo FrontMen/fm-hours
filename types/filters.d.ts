@@ -10,4 +10,9 @@ type FiltersStoreState = {
     filterBy: null|string;
     sortDescending: boolean;
   },
+  employeeFilters: {
+    searchTerm: string;
+    filterBy: string;
+    filterByCustomer: string[];
+  },
 }

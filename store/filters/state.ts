@@ -10,4 +10,9 @@ export default (): FiltersStoreState => ({
     filterBy: null,
     sortDescending: false,
   },
+  employeeFilters: {
+    searchTerm: '',
+    filterBy: 'all',
+    filterByCustomer: [],
+  },
 });
