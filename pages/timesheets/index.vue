@@ -14,7 +14,9 @@
           class="filter__select"
         >
           <template #first>
-            <b-form-select-option :value="null"> All </b-form-select-option>
+            <b-form-select-option :value="null">
+              All
+            </b-form-select-option>
           </template>
         </b-form-select>
       </b-form-group>
@@ -50,6 +52,7 @@
         <template #cell()="scope">
           <div
             :class="['container--cell', scope.item[scope.field.key]]"
+            :title="scope.item[scope.field.key]"
             @click="
               openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
             "
@@ -161,6 +164,14 @@ export default defineComponent({
 
 .container--cell.pending {
   background-color: var(--color-alert);
+}
+
+.container--cell.new {
+  background-color: var(--color-success);
+}
+
+.container--cell.denied {
+  background-color: var(--color-danger);
 }
 
 .container--cell.approved {
