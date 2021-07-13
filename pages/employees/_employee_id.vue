@@ -98,7 +98,7 @@
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
           Save
         </b-button>
-        <b-button @click="handleEmployeeDelete" variant="danger">
+        <b-button variant="danger" @click="handleEmployeeDelete">
           Delete
         </b-button>
         <b-row>
