@@ -2,7 +2,7 @@
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row no-gutters="true">
-        <b-col cols="4" class="pl-0">
+        <b-col cols="6" lg="3" class="pl-0">
           <label class="employee-status__label" for="employee-search">
             Search by employee name:
           </label>
@@ -13,19 +13,7 @@
             placeholder="Ex.: &quot;John&quot;"
           />
         </b-col>
-
-        <b-col cols="3">
-          <label class="employee-status__label" for="status-select">
-            Filter by status:
-          </label>
-          <b-form-select
-            id="status-select"
-            v-model="statusSelected"
-            :options="statusOptions"
-          />
-        </b-col>
-
-        <b-col cols="4">
+        <b-col cols="6" lg="4">
           <label class="employee-status__label" for="customer-select">
             Filter by customer:
           </label>
@@ -48,12 +36,20 @@
             </template>
           </multiselect>
         </b-col>
-        <b-col class="ml-auto mt-auto">
-          <div class="d-flex justify-content-end">
-            <b-button v-b-modal.modal-center>
-              + New employee
-            </b-button>
-          </div>
+        <b-col cols="6" lg="3">
+          <label class="employee-status__label" for="status-select">
+            Filter by status:
+          </label>
+          <b-form-select
+            id="status-select"
+            v-model="statusSelected"
+            :options="statusOptions"
+          />
+        </b-col>
+        <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end">
+          <b-button v-b-modal.modal-center >
+            + New employee
+          </b-button>
         </b-col>
       </b-row>
     </b-container>

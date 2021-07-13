@@ -12,67 +12,21 @@
         :options="options"
         class="filter__select"
       >
-        <b-form-select
-          id="filter-select"
-          v-model="selected"
-          :options="options"
-          class="filter__select"
-        >
-          <template #first>
-            <b-form-select-option :value="null">
-              All
-            </b-form-select-option>
-          </template>
-        </b-form-select>
-      </b-form-group>
-      <b-table
-        class="mt-3 app-table timesheet-table"
-        responsive
-        head-variant="dark"
-        :items="tableData.items"
-        :fields="tableData.fields"
-        :sort-compare="sortCompare"
-        :sort-desc.sync="sortDescending"
-        :filter="filter"
-        sort-by="id"
-        no-sort-reset
-      >
-        <template #head(id)="scope">
-          <div>
-            {{ scope.label }}
-          </div>
-        </template>
-        <template #head()="scope">
-          <div class="table-cell-wrapper table-cell-wrapper__heading">
-            <p>
-              {{
-                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
-              }}
-            </p>
-          </div>
-        </template>
-        <template #cell(id)="scope">
-          <div class="table-cell-wrapper table-cell-wrapper__employee">
-            <p>{{ scope.item.name }}</p>
-          </div>
-        </template>
-        <template #cell()="scope">
-          <div
-            :class="['container--cell', scope.item[scope.field.key]]"
-            :title="scope.item[scope.field.key]"
-            @click="
-              openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
-            "
-          />
+        <template #first>
+          <b-form-select-option :value="null">
+            All
+          </b-form-select-option>
         </template>
       </b-form-select>
     </b-form-group>
     <b-table
       class="mt-3 app-table timesheet-table"
       responsive
+      head-variant="dark"
       :items="tableData.items"
       :fields="tableData.fields"
       :sort-compare="sortCompare"
+      :sort-desc.sync="sortDescending"
       :filter="filter"
       sort-by="id"
       no-sort-reset
@@ -86,7 +40,7 @@
         <div class="table-cell-wrapper table-cell-wrapper__heading">
           <p>
             {{
-              `${scope.field.formatedStartDate} ${scope.field.formatedEndDate}`
+              `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
             }}
           </p>
         </div>
@@ -99,6 +53,7 @@
       <template #cell()="scope">
         <div
           :class="['container--cell', scope.item[scope.field.key]]"
+          :title="scope.item[scope.field.key]"
           @click="
             openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
           "
