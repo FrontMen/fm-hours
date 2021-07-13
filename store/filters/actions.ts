@@ -30,7 +30,7 @@ const actions: ActionTree<FiltersStoreState, RootStoreState> = {
   updateEmployeeFilterBy({ commit }, payload: string) {
     commit('setEmployeeFilterBy', payload);
   },
-  updateEmployeeFilterByCustomer({ commit }, payload: string) {
+  updateEmployeeFilterByCustomer({ commit }, payload: string[]) {
     commit('setEmployeeFilterByCustomer', payload);
   },
   updateEmployeeSearchTerm({ commit }, payload: string) {

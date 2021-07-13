@@ -30,8 +30,8 @@ const mutations: MutationTree<FiltersStoreState> = {
   setEmployeeFilterBy(state, payload: string) {
     state.employeeFilters.filterBy = payload;
   },
-  setEmployeeFilterByCustomer(state, payload: string) {
-    state.employeeFilters.filterByCustomer = payload;
+  setEmployeeFilterByCustomer(state, payload: string[]) {
+    state.employeeFilters.filterByCustomer = [...payload];
   },
   setEmployeeSearchTerm(state, payload: string) {
     state.employeeFilters.searchTerm = payload;
