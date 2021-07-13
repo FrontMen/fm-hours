@@ -41,7 +41,7 @@
           <div class="table-cell-wrapper table-cell-wrapper__heading">
             <p>
               {{
-                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate}`
+                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
               }}
             </p>
           </div>

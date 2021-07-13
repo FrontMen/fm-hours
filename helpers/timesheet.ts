@@ -1,4 +1,4 @@
-import { isSameDay, isWithinInterval } from "date-fns";
+import { isSameDay, isWithinInterval, getISOWeek } from "date-fns";
 
 import { recordStatus } from "./record-status";
 import { getDayOnGMT, formatDate } from "./dates";
@@ -271,6 +271,7 @@ export const createTimesheetTableData = (params: {
     timestamp: week.start.date,
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
+    weekNumber: getISOWeek(week.start.date)
   }));
 
   const fields = [
