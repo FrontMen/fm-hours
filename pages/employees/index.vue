@@ -177,16 +177,29 @@ export default defineComponent({
         }))
     );
 
-    const selectedCustomers = ref<Customer[]>([]);
+    const selectedCustomers = ref<Customer[]>(store.getters['filters/getEmployeeFilterByCustomer']);
 
-    const statusSelected = ref<string>("all");
+    const statusSelected = ref<string>(store.getters['filters/getEmployeeFilterBy']);
     const statusOptions = [
       { value: "all", text: "All" },
       { value: "active", text: "Active" },
       { value: "incative", text: "Inactive" },
     ];
 
-    const searchInput = ref<string>("");
+    const searchInput = ref<string>(store.getters['filters/getEmployeeSearchTerm']);
+
+
+    const handleFilterUpdates = () => {
+      if (store.getters['filters/getEmployeeSearchTerm'] !== searchInput.value) {
+        store.dispatch("filters/updateEmployeeSearchTerm", searchInput.value);
+      }
+      if (store.getters['filters/getEmployeeFilterBy'] !== statusSelected.value) {
+        store.dispatch("filters/updateEmployeeFilterBy", statusSelected.value);
+      }
+      if (store.getters['filters/getEmployeeFilterByCustomer'] !== selectedCustomers.value) {
+        store.dispatch("filters/updateEmployeeFilterByCustomer", selectedCustomers.value);
+      }
+    };
 
     const employeeStatusChecker = (status: string, employee: Employee) => {
       if (status === "all") return true;
@@ -222,6 +235,8 @@ export default defineComponent({
         !selectedCustomers.value.length
       )
         return [...employees.value];
+
+      handleFilterUpdates();
 
       return employees.value.filter(
         (employee) => {

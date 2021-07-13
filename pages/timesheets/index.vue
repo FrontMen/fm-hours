@@ -23,9 +23,11 @@
       <b-table
         class="mt-3 app-table timesheet-table"
         responsive
+        head-variant="dark"
         :items="tableData.items"
         :fields="tableData.fields"
         :sort-compare="sortCompare"
+        :sort-desc.sync="sortDescending"
         :filter="filter"
         sort-by="id"
         no-sort-reset
@@ -92,13 +94,17 @@ export default defineComponent({
       }))
       .sort((a, b) => a.text.localeCompare(b.text));
 
-    const selected = ref(null);
+    const sortDescending= ref<boolean>(store.getters['filters/getTimesheetSortDescending']);
+    const selected = ref(store.getters['filters/getTimesheetFilterBy']);
     const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
     const weeksAfter = 2;
 
-    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const tableData = computed(() => {
+      handleFilterUpdates();
+      return store.state.timesheets.timesheetTableData;
+    });
     store.dispatch("timesheets/getTableData", {
       weeksBefore,
       weeksAfter,
@@ -110,6 +116,15 @@ export default defineComponent({
       startTimestamp: number
     ) => {
       router.push(`/timesheets/${employeeId}/${startTimestamp}`);
+    };
+
+    const handleFilterUpdates = () => {
+      if (store.getters['filters/getTimesheetFilterBy'] !== selected.value) {
+        store.dispatch("filters/updateTimesheetFilterBy", selected.value);
+      }
+      if (store.getters['filters/getTimesheetSortDescending'] !== sortDescending.value) {
+        store.dispatch("filters/updateTimesheetSortDescending", sortDescending.value);
+      }
     };
 
     const sortCompare = (
@@ -126,6 +141,7 @@ export default defineComponent({
       options,
       selected,
       filter: getSelected,
+      sortDescending,
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,
@@ -144,14 +160,6 @@ export default defineComponent({
   @media (min-width: 576px) {
     width: 25%;
   }
-}
-
-.timesheet-table > .table.b-table > thead > tr > .table-b-table-default,
-.timesheet-table > .table.b-table > thead > tr > th {
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .container--cell {

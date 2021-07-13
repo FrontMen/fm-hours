@@ -3,7 +3,7 @@
     <div class="content-wrapper mt-5">
       <b-container class="mx-0 px-0 mb-3" fluid>
         <b-row :no-gutters="true">
-          <b-col cols="3">
+          <b-col cols="6" md="3" class="mb-3">
             <label class="employee-status__label" for="status-select">
               Search by:
             </label>
@@ -13,7 +13,7 @@
               :options="searchCriteria"
             />
           </b-col>
-          <b-col cols="4" class="pl-0">
+          <b-col cols="6" md="4" class="pl-0 mb-3">
             <label class="employee-status__label" for="employee-search">
               Search:
             </label>
@@ -24,18 +24,11 @@
               placeholder="Ex.: &quot;Frontmen&quot;"
             />
           </b-col>
-          <b-col cols="3">
-            <label class="employee-status__label" for="status-select">
-              Archived ?
-            </label>
-            <b-form-select
-              id="status-select"
-              v-model="selectedArchiveOption"
-              :options="searchByArchiveOptions"
-            />
-          </b-col>
-          <b-col class="ml-auto mt-auto">
-            <div class="d-flex justify-content-end">
+          <b-col cols="12" md="5" class="ml-auto mt-4">
+            <div class="d-flex justify-content-between align-items-center mt-1">
+              <b-form-checkbox v-model="selectedArchiveOption" switch class=" mr-3 ml-auto">
+                Show archived
+              </b-form-checkbox>
               <b-button v-b-modal.modal-center>
                 + New customer
               </b-button>
@@ -43,63 +36,55 @@
           </b-col>
         </b-row>
       </b-container>
-      <b-container fluid class="app-table mb-5">
-        <b-row class="app-table__top-row py-3">
-          <b-col>
-            <span class="font-weight-bold">Customers</span>
-          </b-col>
-          <b-col>
-            <span class="font-weight-bold">Archived</span>
-          </b-col>
-          <b-col class="d-flex justify-content-center">
-            <span class="font-weight-bold">Actions</span>
-          </b-col>
-        </b-row>
+      <b-table
+        class="mt-3 app-table timesheet-table"
+        responsive
+        head-variant="dark"
+        :items="filteredCustomers"
+        :fields="fields"
+        :sort-compare="sortCompare"
+        :sort-desc.sync="sortDescending"
+        :sort-by.sync="sortKey"
+        no-sort-reset
+      >
+        <!-- Only the columns we want to customize need to be added
+        the ones that are missing are handled by default strategy -->
+        <template #head(archived)="data">
+          <div class="text-center">
+            {{ data.label }}
+          </div>
+        </template>
+        <template #head(actions)="data">
+          <div class="text-right">
+            {{ data.label }}
+          </div>
+        </template>
 
-        <b-row
-          v-if="!filteredCustomers.length"
-          class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
-        >
-          <b-icon-person-x class="mr-2" />
-          No customers found.
-        </b-row>
-
-        <b-row
-          v-for="customer in filteredCustomers"
-          v-else
-          :key="customer.id"
-          class="app-table__row py-3"
-        >
-          <b-col>
-            <div class="font-weight-bold">
-              {{ customer.name }}
-              <b-badge v-if="customer.isDefault">
-                Default
-              </b-badge>
-            </div>
-            <div>
-              {{ customer.debtor }}
-            </div>
-          </b-col>
-
-          <b-col>
-            <div class="font-weight-bold">
-              <b-badge :variant="customer.archived ? 'warning' : 'success'">
-                {{ customer.archived ? "Yes" : "No" }}
-              </b-badge>
-            </div>
-          </b-col>
-
-          <b-col cols-md="4" class="d-flex justify-content-end">
+        <template #cell(customers)="scope">
+          <strong>{{ scope.item.name }}</strong>
+          <b-badge v-if="scope.item.isDefault">
+            Default
+          </b-badge>
+        </template>
+        <template #cell(archived)="scope">
+          <div class="text-center">
+            <b-badge :variant="scope.item.archived ? 'warning' : 'success'">
+              {{ scope.item.archived ? "Yes" : "No" }}
+            </b-badge>
+          </div>
+        </template>
+        <template #cell(actions)="scope">
+          <div class="text-right">
             <nuxt-link
-              :to="`/customers/${customer.id}`"
+              :to="`/customers/${scope.item.id}`"
               class="btn btn-primary align-self-center"
+              title="Manage Customer"
             >
               Manage Customer
             </nuxt-link>
-          </b-col>
-        </b-row>
-      </b-container>
+          </div>
+        </template>
+      </b-table>
     </div>
     <b-modal
       id="modal-center"
@@ -132,7 +117,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
-import { queryOnString } from "~/helpers/helpers";
+import { queryOnString, sortByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -146,26 +131,54 @@ export default defineComponent({
     const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
     store.dispatch("customers/getCustomers");
 
-    const searchByArchiveOptions: { value: boolean | null, text: string }[] = [ {value: null, text: "Select"}, {value: false, text: "No"}, {value: true, text: "Yes"}] ;
+    const searchTerm = ref<string>(store.getters['filters/getCustomerSearchTerm']);
     const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
     ];
 
-    const searchTerm = ref<string>("");
-    const selectedCriteria = ref<"name"|"debtor">(searchCriteria[0].value);
-    const selectedArchiveOption= ref<boolean | null>(searchByArchiveOptions[0].value);
+    const fields = [
+      { key: 'name', label: 'Customers', sortable: true },
+      { key: 'debtor', label: 'Debtors', sortable: true },
+      { key: 'archived', label: 'Archived', sortable: false },
+      { key: 'actions', label: 'Actions', sortable: false }
+    ];
+    const selectedCriteria = ref<"name"|"debtor">(store.getters['filters/getCustomerSearchCriteria']);
+    const selectedArchiveOption= ref<boolean>(store.getters['filters/getIsCustomerArchived']);
+    const sortDescending= ref<boolean>(store.getters['filters/getCustomerSortDescending']);
+    const sortKey= ref<boolean>(store.getters['filters/getCustomerSortBy']);
+
+    const handleFilterUpdates = () => {
+      if (store.getters['filters/getIsCustomerArchived'] !== selectedArchiveOption.value) {
+        store.dispatch("filters/updateCustomerIsArchived", selectedArchiveOption.value);
+      }
+      if (store.getters['filters/getCustomerSortBy'] !== sortKey.value) {
+        store.dispatch("filters/updateCustomerSortBy", sortKey.value);
+      }
+      if (store.getters['filters/getCustomerSortDescending'] !== sortDescending.value) {
+        store.dispatch("filters/updateCustomerSortDescending", sortDescending.value);
+      }
+      if (store.getters['filters/getCustomerSearchTerm'] !== searchTerm.value) {
+        store.dispatch("filters/updateCustomerSearchTerm", searchTerm.value);
+      }
+      if (store.getters['filters/getCustomerSearchCriteria'] !== selectedCriteria.value) {
+        store.dispatch("filters/updateCustomerSearchCriteria", selectedCriteria.value);
+      }
+    };
 
     const filteredCustomers = computed(() => {
       const criteria: "name"|"debtor" = selectedCriteria.value;
 
-      const filtered: Customer[] | undefined = customers.value?.
-        filter((customer: Customer) => {
-          if (selectedArchiveOption.value === null) return true
-          return !!customer.archived === selectedArchiveOption.value
-        }).
-        filter((customer: Customer) => {
-          if (!searchTerm.value || !customer[criteria]) return true;
+      handleFilterUpdates();
+
+      const customerList = customers.value || [];
+
+      const notArchived = selectedArchiveOption.value ? [...customerList] : customerList.filter((customer: Customer) => {
+          return !customer.archived;
+        });
+
+      const filtered: Customer[] = !searchTerm.value ? [...notArchived] : notArchived?.filter((customer: Customer) => {
+          if (!customer[criteria]) return customer;
           return queryOnString(customer[criteria], searchTerm.value);
         });
 
@@ -193,11 +206,18 @@ export default defineComponent({
       newCustomer.value.isDefault = false;
     };
 
+    const sortCompare = (a: Customer, b: Customer, key: "name"|"debtor") => {
+      return sortByProp<Customer>(a, b, key);
+    }
+
     return {
+      fields,
+      sortCompare,
+      sortDescending,
+      sortKey,
       filteredCustomers,
       searchTerm,
       searchCriteria,
-      searchByArchiveOptions,
       selectedArchiveOption,
       selectedCriteria,
       newCustomer,
