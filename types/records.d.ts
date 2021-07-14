@@ -37,14 +37,6 @@ interface WeeklyTimesheet {
   travelProject: TimesheetProject | null;
 }
 
-interface WorkScheme {
-  date: string;
-  theoreticalHours: number;
-  absenceHours: number;
-  workHours: number;
-  holiday: number;
-}
-
 interface RecordsStoreState {
   isLoading: boolean;
   isSaving: boolean;

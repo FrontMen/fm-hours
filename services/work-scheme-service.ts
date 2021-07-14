@@ -1,61 +1,44 @@
+import { format } from "date-fns";
+
+import { NuxtAxiosInstance } from "@nuxtjs/axios";
+
 export default class WorkSchemeService {
-  getWorkScheme(params: {
-    employeeId: string;
+  axios: NuxtAxiosInstance;
+  ApiUrl = "/api/v1";
+
+  constructor(axios: NuxtAxiosInstance) {
+    this.axios = axios;
+  }
+
+  async getWorkScheme(params: {
+    bridgeUid: string;
     startDate: Date;
     endDate: Date;
   }) {
-    console.log("retrieve real data from Intracto API with params", params);
+    const { bridgeUid, startDate, endDate } = params;
 
-    return [
-      {
-        date: "2020-03-08",
-        theoreticalHours: 8,
-        absenceHours: 0,
-        workHours: 8,
-        holiday: 0,
-      },
-      {
-        date: "2020-03-09",
-        theoreticalHours: 8,
-        absenceHours: 4,
-        workHours: 4,
-        holiday: 0,
-      },
-      {
-        date: "2020-03-10",
-        theoreticalHours: 8,
-        absenceHours: 0,
-        workHours: 0,
-        holiday: 8,
-      },
-      {
-        date: "2020-03-11",
-        theoreticalHours: 8,
-        absenceHours: 0,
-        workHours: 8,
-        holiday: 0,
-      },
-      {
-        date: "2020-03-12",
-        theoreticalHours: 8,
-        absenceHours: 0,
-        workHours: 8,
-        holiday: 0,
-      },
-      {
-        date: "2020-03-13",
-        theoreticalHours: 0,
-        absenceHours: 0,
-        workHours: 0,
-        holiday: 0,
-      },
-      {
-        date: "2020-03-14",
-        theoreticalHours: 0,
-        absenceHours: 0,
-        workHours: 0,
-        holiday: 0,
-      },
-    ];
+    try {
+      const response = await this.axios.$get<WorkSchemeResponse>(
+        `${this.ApiUrl}/users/${bridgeUid}/worktime?date_from=${format(
+          startDate,
+          "yyyy-MM-dd"
+        )}&date_to=${format(endDate, "yyyy-MM-dd")}`,
+        {
+          withCredentials: true,
+        }
+      );
+
+      /* map API response to expected format */
+      return response.data.map((ws) => ({
+        date: ws.date,
+        theoreticalHours: ws.theoretical_hours,
+        absenceHours: ws.absence_hours,
+        workHours: ws.work_hours,
+        holiday: ws.holiday,
+      }));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("API error", error);
+    }
   }
 }

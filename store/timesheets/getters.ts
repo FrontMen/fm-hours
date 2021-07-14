@@ -18,14 +18,13 @@ const getters: GetterTree<TimesheetsStoreState, RootStoreState> = {
     return employee ? employee.pendingTravelRecords : [];
   },
 
-  getEmployeePendingWeeks(state, _, rootState) {
+  getEmployeePendingWeeks(state) {
     const employee = state.employees.find(
       (employee) => employee.id === state.selectedEmployeeId
     );
     if (!employee) return [];
 
     const pendingWeeks = [];
-    const holidays = rootState.holidays.holidays;
 
     let pendingRecords = [
       ...employee.pendingTimeRecords,
@@ -38,7 +37,7 @@ const getters: GetterTree<TimesheetsStoreState, RootStoreState> = {
         new Date(firstPendingRecord.date)
       );
 
-      const pendingWeek = buildWeek(firstPendingDate, holidays);
+      const pendingWeek = buildWeek(firstPendingDate);
       const start = new Date(pendingWeek[0].date);
       const end = new Date(pendingWeek[6].date);
 
