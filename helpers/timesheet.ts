@@ -194,7 +194,7 @@ export function generateValueFormatter(min: number, max: number) {
       }
 
       // Validates range and returns a number
-      return +Math.min(Math.max(Number(formatted), min), max).toFixed(1);
+      return +Math.min(Math.max(Number(formatted), min), max).toFixed(2);
     },
   };
 }

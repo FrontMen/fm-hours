@@ -11,7 +11,7 @@ export default () => {
   };
 
   const getTotalHours = (records: TimeRecord[]): number =>
-    records.reduce((total, currentRecord) => (total += currentRecord.hours), 0);
+    records.reduce((total, currentRecord) => (total += +currentRecord.hours), 0);
 
   const createItem = (employee: ReportEmployee, customer: Customer) => {
     const records = employee.billableRecords.filter(

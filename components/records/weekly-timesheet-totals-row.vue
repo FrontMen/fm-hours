@@ -23,7 +23,7 @@
     <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal }}</strong>
+        <strong>{{ +weekTotal.toFixed(2) }}</strong>
       </span>
     </b-col>
   </b-row>
@@ -58,7 +58,6 @@ export default defineComponent({
       props.projects.forEach((project) => {
         total += +project.values
           .reduce((prevValue, value) => prevValue + +value)
-          .toFixed(1);
       });
 
       return total;
@@ -76,7 +75,7 @@ export default defineComponent({
         let total = 0;
 
         props.projects.forEach((project) => {
-          total += project.values[index];
+          total += +project.values[index];
         });
 
         return total;
