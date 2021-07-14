@@ -1,43 +1,41 @@
 <template>
-  <div class="page-wrapper">
-    <div class="my-5 mx-5">
-      <month-navigation-buttons
-        class="mb-4"
-        :selected-date="monthDate"
-        @previous="goToPreviousMonth"
-        @next="goToNextMonth"
-        @current="goToCurrentMonth"
-      />
+  <div class="content-wrapper mt-5">
+    <month-navigation-buttons
+      class="mb-4"
+      :selected-date="monthDate"
+      @previous="goToPreviousMonth"
+      @next="goToNextMonth"
+      @current="goToCurrentMonth"
+    />
 
-      <b-tabs pills card>
-        <b-tab title="Totals" active>
-          <reports-table
-            :busy="isLoading || !totalsItems.length"
-            :items="totalsItems"
-            :fields="totalsFields"
-            :csv-file-name="`totals-${formattedMonthDate}`"
-          />
-        </b-tab>
+    <b-tabs pills card>
+      <b-tab title="Totals" active>
+        <reports-table
+          :busy="isLoading || !totalsItems.length"
+          :items="totalsItems"
+          :fields="totalsFields"
+          :csv-file-name="`totals-${formattedMonthDate}`"
+        />
+      </b-tab>
 
-        <b-tab title="Projects">
-          <reports-table
-            :busy="isLoading || !projectsItems.length"
-            :items="projectsItems"
-            :fields="projectsFields"
-            :csv-file-name="`projects-${formattedMonthDate}`"
-          />
-        </b-tab>
+      <b-tab title="Projects">
+        <reports-table
+          :busy="isLoading || !projectsItems.length"
+          :items="projectsItems"
+          :fields="projectsFields"
+          :csv-file-name="`projects-${formattedMonthDate}`"
+        />
+      </b-tab>
 
-        <b-tab title="Kilometers">
-          <reports-table
-            :busy="isLoading || !kilometersItems.length"
-            :items="kilometersItems"
-            :fields="kilometersFields"
-            :csv-file-name="`kilometers-${formattedMonthDate}`"
-          />
-        </b-tab>
-      </b-tabs>
-    </div>
+      <b-tab title="Kilometers">
+        <reports-table
+          :busy="isLoading || !kilometersItems.length"
+          :items="kilometersItems"
+          :fields="kilometersFields"
+          :csv-file-name="`kilometers-${formattedMonthDate}`"
+        />
+      </b-tab>
+    </b-tabs>
   </div>
 </template>
 
