@@ -33,10 +33,7 @@ export function getDateLabel(startDate: Date, endDate: Date) {
 }
 
 // Build a week based on a startDate.
-export function buildWeek(
-  startDate: string | number | Date,
-  holidays: string[]
-): WeekDate[] {
+export function buildWeek(startDate: string | number | Date): WeekDate[] {
   return [...Array(7)].map((_, index) => {
     const newDate = addDays(startDate, index);
 
@@ -49,7 +46,28 @@ export function buildWeek(
       year: format(newDate, "yyyy"),
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
-      isHoliday: holidays.some((date) => date === formatDate(newDate)),
+      isHoliday: false,
+    };
+  });
+}
+
+export function checkHolidays(
+  days: WeekDate[],
+  customHolidays: string[],
+  workScheme?: WorkScheme[]
+) {
+  return days.map((day) => {
+    const isCustomHoliday = customHolidays.includes(day.date);
+
+    const isPublicHoliday =
+      workScheme &&
+      workScheme.length > 0 &&
+      !day.isWeekend &&
+      workScheme.some((ws) => ws.date === day.date);
+
+    return {
+      ...day,
+      isHoliday: isCustomHoliday || isPublicHoliday,
     };
   });
 }
