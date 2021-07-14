@@ -19,12 +19,11 @@
       <h2 class="navigation-buttons__week-label">
         {{ monthLabel }}
       </h2>
+      <b-button v-if="monthDifference !== 0" @click="handleCurrentClick()">
+        <b-icon icon="calendar2-date" />
+        <span class="ml-2 d-none d-sm-inline">To current month</span>
+      </b-button>
     </div>
-
-    <b-button v-if="monthDifference !== 0" @click="handleCurrentClick()">
-      <b-icon icon="calendar2-date" />
-      <span class="ml-2 d-none d-sm-inline">To current month</span>
-    </b-button>
   </div>
 </template>
 

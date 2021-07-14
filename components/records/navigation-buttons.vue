@@ -1,6 +1,12 @@
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
+      <nuxt-link v-if="!isAdminView" to="month">
+        <b-button>
+          Monthly overview
+        </b-button>
+      </nuxt-link>
+
       <nuxt-link
         v-if="isAdminView"
         to="/timesheets"

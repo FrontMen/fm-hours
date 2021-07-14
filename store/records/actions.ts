@@ -11,7 +11,7 @@ import {
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getRecords(
     { commit, rootState },
-    payload: { employeeId: string; startDate: Date }
+    payload: { employeeId: string; startDate: Date, endDate?: Date }
   ) {
     commit("setLoading", { isLoading: true });
 
@@ -21,7 +21,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
       employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
-      endDate: new Date(selectedWeek[6].date),
+      endDate: payload.endDate || new Date(selectedWeek[6].date),
     });
 
     const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
