@@ -3,9 +3,9 @@
     <b-col class="weekly-timesheet-row__action-column" cols="4">
       <b-button
         v-if="canRemove"
+        :id="project.customer.name"
         class="weekly-timesheet-row__remove-button"
         variant="outline-primary"
-        @click="handleRemoveClick"
       >
         <b-icon icon="x-square" />
       </b-button>
@@ -38,17 +38,39 @@
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
+
+    <b-tooltip
+      id="tooltip-confirmation"
+      ref="tooltip"
+      no-fade
+      :target="project.customer.name"
+      placement="bottom"
+      triggers="click blur"
+      variant="light"
+    >
+      <div class="container m-1">
+        Remove entries from timesheet?
+        <b-row class="justify-content-around">
+          <b-button variant="secondary" @click="closeTooltip">
+            Cancel
+          </b-button>
+          <b-button variant="danger" @click="handleRemoveClick">
+            Delete
+          </b-button>
+        </b-row>
+      </div>
+    </b-tooltip>
   </b-row>
 </template>
 
 <script lang="ts">
+
 import {
   ref,
   computed,
   defineComponent,
   PropType,
   watch,
-  
 } from "@nuxtjs/composition-api";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
@@ -82,8 +104,15 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
+
+    const closeTooltip = () => {
+      tooltip.value.$emit("close")
+    }
+
     const handleRemoveClick = () => {
+      closeTooltip();
       emit("remove", props.project);
     };
 
@@ -142,7 +171,9 @@ export default defineComponent({
     };
 
     return {
+      tooltip,
       canRemove,
+      closeTooltip,
       handleRemoveClick,
       totalValue,
       formattedProjectValues,
