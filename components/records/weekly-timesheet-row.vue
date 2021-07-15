@@ -29,7 +29,6 @@
         v-model="project.values[index]"
         class="weekly-timesheet-row__value-input"
         type="number"
-        pattern="[0-9]*"
         inputmode="decimal"
         :formatter="valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
@@ -37,9 +36,8 @@
         @input="$emit('change')"
       />
     </b-col>
-
     <b-col cols="1" class="weekly-timesheet-row__total-column">
-      {{ +totalValue.toFixed(2) }}
+      {{ totalValue.toFixed(2) }}
     </b-col>
   </b-row>
 </template>
@@ -83,9 +81,8 @@ export default defineComponent({
     };
 
     const totalValue = computed(
-      () =>
-        +props.project.values
-          .reduce((total, current) => total + +current)
+      () => props.project.values
+           .reduce((total, current) => +total + +current)
     );
 
     // An array of booleans, one for each day of the selected week, that states
