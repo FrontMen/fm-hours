@@ -180,29 +180,29 @@ const findRecordByDate = (
 };
 
 
-export function floatToTimeString(decimalTimeString: string | number) {
+export function floatToTimeString(float: number) {
   const n = new Date(0,0);
-  n.setMinutes(+decimalTimeString * 60);
+  n.setMinutes(float * 60);
 
   return n.toTimeString().slice(0, 5);
 };
 
-export function timeStringToFloat(decimalTimeString: string) {
+export function timeStringToFloat(decimalTimeString: string): number {
   const hoursMinutes = decimalTimeString.split(/[:]/);
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
-  
+
   return +(hours + minutes / 60).toFixed(2);
 }
 
-function validateTimeString(timeString: string, max: number) {
+function validateTimeString(timeString: string, max: number): string {
   const float = timeStringToFloat(timeString)
 
   if (float > max) {
     return `${max}:00`
   }
 
-  return floatToTimeString(float)
+  return floatToTimeString(float).toString()
 }
 
 export function timesheetFormatter(min: number, max: number) {
@@ -222,7 +222,7 @@ export function timesheetFormatter(min: number, max: number) {
       if (e.type === 'blur') {
         if (numString === "0") return '0'
         if (!numString.match(/[:]/)) {
-          return floatToTimeString(numString)
+          return floatToTimeString(+numString)
         }
 
         return validateTimeString(numString, max)
@@ -247,6 +247,7 @@ export function kilometerFormatter(min: number, max: number) {
       const numString = formatted.replace(',', '.');
       
       if (e.type === 'blur') {
+        if (numString === "") return '0'
         if (numString.match(/[.]$/)) {
           return numString.slice(0, -1)
         }

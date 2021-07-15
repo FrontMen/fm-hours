@@ -15,7 +15,7 @@
       </span>
     </b-col>
     <b-col
-      v-for="(value, index) in formattedTimesheet"
+      v-for="(value, index) in formattedProjectValues"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -25,7 +25,7 @@
       }"
     >
       <b-form-input
-        v-model="formattedTimesheet[index]"
+        v-model="formattedProjectValues[index]"
         class="weekly-timesheet-row__value-input"
         type="text"
         inputmode="decimal"
@@ -79,28 +79,30 @@ export default defineComponent({
       emit("remove", props.project);
     };
 
-    const formatAllHours = (arr: TimesheetProject['values']) => arr.map((num) => {
-      if (num === 0) {
-        return '0'
-      } else {
-        return floatToTimeString(num)
-      }
-    })
+    // Act as middleware to intercept project values to format it for the view
+    const isTravelAllowance = props.project.customer.name === "Kilometers"
+    const initialState = isTravelAllowance ? 
+      props.project.values.map((val) => val.toString()) 
+      : 
+      props.project.values.map((num) => {
+          if (num === 0) {
+            return '0'
+          } else {
+            return floatToTimeString(num)
+          }
+      })
 
-
-    // Middleware to intercept project values and reformat floats to 24h format for the view
-    const formattedTimesheet = ref(formatAllHours(props.project.values))
-    watch(() => formattedTimesheet.value, () => {
-      const floatIntegers = formattedTimesheet.value.map((val) => timeStringToFloat(val))
+    const formattedProjectValues = ref(initialState)
+    watch(() => formattedProjectValues.value, () => {
+      const floatIntegers = formattedProjectValues.value.map((val) => !isTravelAllowance ? timeStringToFloat(val) : +val)
       props.project.values = floatIntegers
     })
 
-    const totalValue = computed(
-      () =>  
-        props.project.values
-        .reduce((total, current) => +total + +current)
-    );
-  
+   const totalValue = computed(
+        () =>  
+          props.project.values
+          .reduce((total, current) => +total + +current)
+      );
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.
@@ -128,7 +130,7 @@ export default defineComponent({
       canRemove,
       handleRemoveClick,
       totalValue,
-      formattedTimesheet,
+      formattedProjectValues,
       isReadonlyList,
       handleInputFocus,
     };
