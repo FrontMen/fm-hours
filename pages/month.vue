@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper mt-5">
     <b-row>
-      <b-col cols="12" sm="4" md="4">
+      <b-col cols="12" sm="4" md="4" class="hide-print">
         <nuxt-link
           to="/"
           class="d-flex align-items-center flex-nowrap"
@@ -32,14 +32,13 @@
             </p>
           </b-col>
           <b-col cols="12" sm="6">
-            <p><strong>Total</strong></p>
-            <p><strong>hours:</strong> {{ totalHours.total }}</p>
-            <p><strong>billable hours:</strong> {{ totalHours.billable }}</p>
-            <p><strong>selected projects:</strong> {{ totalHours.selected }}</p>
+            <p><strong>Total hours:</strong> {{ totalHours.total }}</p>
+            <p><strong>Total billable hours:</strong> {{ totalHours.billable }}</p>
+            <p><strong>Total for selected projects:</strong> {{ totalHours.selected }}</p>
           </b-col>
         </b-row>
       </b-col>
-      <b-col cols="12" sm="12" md="5" class="mb-3 mt-auto">
+      <b-col cols="12" sm="12" md="5" class="mb-3 mt-auto hide-print">
         <month-navigation-buttons
           :selected-date="monthDate"
           @previous="goToPreviousMonth"
@@ -47,7 +46,7 @@
           @current="goToCurrentMonth"
         />
       </b-col>
-      <b-col cols="4" md="3" class="mb-3 mt-auto">
+      <b-col cols="4" md="3" class="mb-3 mt-auto hide-print">
         <label class="employee-status__label" for="customer-select">
           <strong>Filter by customer:</strong>
         </label>
@@ -70,7 +69,7 @@
           </template>
         </multiselect>
       </b-col>
-      <b-col cols="3" class="mt-auto mb-3">
+      <b-col cols="3" class="mt-auto mb-3 hide-print">
         <b-form-checkbox v-model="onlyBillable" switch class=" mr-3 ml-auto">
           Only billable
         </b-form-checkbox>
@@ -81,22 +80,37 @@
       striped
       head-variant="dark"
       table-variant="light"
+      foot-variant="light"
       sort-by="date"
       :sort-desc="true"
       :items="monthReport"
-      :fields="['customer', 'date', 'hours']"
+      :fields="['customer', 'debtor', 'date', 'hours']"
+      foot-clone
     >
+      <template #head(debtor)="scope">
+        <span class="hide-print">{{ scope.label }}</span>
+      </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
-        <b-badge v-if="scope.item.customer.isBillable" variant="success">
+        <b-badge v-if="scope.item.customer.isBillable" variant="success" class="hide-print">
           Billable
         </b-badge>
+      </template>
+      <template #cell(debtor)="scope">
+        <span class="hide-print">{{ scope.item.customer.debtor }}</span>
       </template>
       <template #cell(date)="scope">
         {{ formatDate(scope.item.date ) }}
       </template>
       <template #cell(hours)="scope">
         {{ parseFloat(scope.item.hours).toPrecision(3) }}
+      </template>
+
+      <template #foot(hours)="scope">
+        <span><strong>Total hours:</strong> {{ totalHours.total }}</span>
+      </template>
+      <template #foot()="scope">
+        &nbsp;
       </template>
     </b-table>
   </div>
@@ -105,9 +119,9 @@
 <script lang="ts">
 import {
   computed,
-  defineComponent, ref, useStore,
+  defineComponent, ref, useStore, watch,
 } from "@nuxtjs/composition-api";
-import { startOfMonth, format, addMonths, subMonths } from "date-fns";
+import { startOfMonth, endOfMonth, format, addMonths, subMonths } from "date-fns";
 import Multiselect from "vue-multiselect";
 
 export default defineComponent({
@@ -118,15 +132,38 @@ export default defineComponent({
   },
 
   setup() {
-    const monthDate = ref<Date>(startOfMonth(new Date()));
-
     const store = useStore<RootStoreState>();
+
     const selectedCustomers = ref<{value: string; label: string;}[]>([]);
     const onlyBillable= ref<boolean>(false);
 
     const employee = computed(() => {
       return store.state.employee.employee;
     });
+
+    const getRecords = () => {
+        const startDate = monthDate.value;
+        const endOfSelectedMonth = endOfMonth(startDate);
+        const now = new Date();
+        const endDate = now.getTime() < endOfSelectedMonth.getTime() ? now : endOfSelectedMonth;
+        console.log("vlad start and end", startDate, endDate);
+        // TODO this doesn't really work, data lost after refresh and not correct interval
+        store.dispatch("records/getMonthlyTimeRecords", {
+          employeeId: store.state.employee.employee!.id,
+          startDate,
+          endDate,
+        });
+    };
+
+    const monthDate = ref<Date>(startOfMonth(new Date()));
+    watch([monthDate, employee],
+      () => {
+        getRecords();
+      },
+      {
+        immediate: true,
+      },
+    );
 
     const monthReport = computed(() => {
       let filteredRecords = store.state.records.timeRecords;
@@ -146,7 +183,7 @@ export default defineComponent({
     const totalHours = computed(() => {
       const records = [...store.state.records.timeRecords];
       const billableRecords = handleFilterBillable(records, true);
-      const selectedBillable = handleSelectedProjects(billableRecords);
+      const selectedBillable = handleSelectedProjects(records);
 
       const totals = {
         billable: getTotals(billableRecords),
@@ -155,25 +192,6 @@ export default defineComponent({
       };
 
       return totals;
-    });
-
-    const totalBillable = computed(() => {
-      const records = [...store.state.records.timeRecords];
-      const billableRecords = handleFilterBillable(records);
-
-      const time = billableRecords.reduce((total, record) => {
-        return total + record.hours;
-      }, 0);
-      return time;
-    });
-
-    const totalForSelectedProjects = computed(() => {
-      const records = [...store.state.records.timeRecords];
-      const selectedProjectTimes = handleSelectedProjects(records);
-      const time = selectedProjectTimes.reduce((total, record) => {
-        return total + record.hours;
-      }, 0);
-      return time;
     });
 
     const projectOptions = computed(() => {
@@ -189,13 +207,6 @@ export default defineComponent({
 
       return mappedProjects;
     });
-
-    // TODO this doesn't really work, data lost after refresh and not correct interval
-    // store.dispatch("records/getRecords", {
-    //   employeedId: store.state.employee.employee!.id,
-    //   startDate,
-    //   endDate,
-    // });
 
     store.dispatch("reports/getMonthlyReportData", {
       startDate: monthDate.value,
@@ -243,8 +254,6 @@ export default defineComponent({
       projectOptions,
       selectedCustomers,
       totalHours,
-      totalBillable,
-      totalForSelectedProjects,
     };
   }
 });
@@ -252,3 +261,16 @@ export default defineComponent({
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style lang="scss">
+  .only-print {
+    display: none;
+  }
+  @media print {
+    .only-print {
+      display: block;
+    }
+    .hide-print {
+      visibility: hidden;
+    }
+  }
+</style>

@@ -19,10 +19,10 @@ const mutations: MutationTree<RecordsStoreState> = {
       workScheme: WorkScheme[]
     }
   ) {
-    state.timeRecords = payload.timeRecords;
-    state.travelRecords = payload.travelRecords;
-    state.selectedWeek = payload.selectedWeek;
-    state.workScheme = payload.workScheme;
+    if (payload.timeRecords) state.timeRecords = payload.timeRecords;
+    if (payload.travelRecords) state.travelRecords = payload.travelRecords;
+    if (payload.selectedWeek) state.selectedWeek = payload.selectedWeek;
+    if (payload.workScheme) state.workScheme = payload.workScheme;
   },
 
   updateRecords(

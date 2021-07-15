@@ -17,11 +17,14 @@ export default class RecordsService {
       .collection("time_records")
       .where("employeeId", "==", params.employeeId);
 
-    if (params.startDate)
-      query.where("date", ">=", new Date(params.startDate).getTime());
+    console.log("Vlad params", query, params.startDate, params.endDate);
+    if (params.startDate){
+      console.log("Vlad where start date", query, params.startDate, params.endDate);
+      query.where("date", ">=", new Date(params.startDate).getTime());}
 
-    if (params.endDate)
-      query.where("date", "<=", new Date(params.endDate).getTime());
+    if (params.endDate){
+      console.log("Vlad where endDate", query, params.startDate, params.endDate);
+      query.where("date", "<=", new Date(params.endDate).getTime());}
 
     const snapshot = await query.get();
 
