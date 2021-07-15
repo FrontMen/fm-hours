@@ -1,6 +1,8 @@
 import { ActionTree } from "vuex";
+
 import EmployeesService from "~/services/employees-service";
 import AuthService from "~/services/auth-service";
+import { generateAvatarURL } from "~/helpers/employee";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   async login({ commit }) {
@@ -63,11 +65,12 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       if (!employee) throw new Error("Employee not found!");
 
-      if (!employee.bridgeUid) {
+      if (!employee.bridgeUid || !employee.picture) {
         authService.getUserInfo().then((bridgeUid: string) => {
           employeesService.updateEmployee({
             ...employee!,
-            bridgeUid,
+            picture: employee.picture || generateAvatarURL(employee.name),
+            bridgeUid: employee.bridgeUid || bridgeUid,
           });
         });
       }
