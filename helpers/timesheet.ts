@@ -180,30 +180,29 @@ const findRecordByDate = (
 };
 
 
-
-function formatDecimalTo24H(decimalTimeString: string) {
+export function floatToTimeString(decimalTimeString: string | number) {
   const n = new Date(0,0);
   n.setMinutes(+decimalTimeString * 60);
 
   return n.toTimeString().slice(0, 5);
 };
 
-function validate24H(timeString: string, max: number) {
-  const hoursMinutes = timeString.split(':')
-  const hours = hoursMinutes[0]
-  const minutes = hoursMinutes[1]
-
-  if (+hours >= max && +minutes > 0) {
-    return `${max}:00`
-  }
-  return timeString
-}
-
 export function timeStringToFloat(decimalTimeString: string) {
   const hoursMinutes = decimalTimeString.split(/[:]/);
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
-  return (hours + minutes / 60).toFixed(2);
+  
+  return +(hours + minutes / 60).toFixed(2);
+}
+
+function validateTimeString(timeString: string, max: number) {
+  const float = timeStringToFloat(timeString)
+
+  if (float > max) {
+    return `${max}:00`
+  }
+
+  return floatToTimeString(float)
 }
 
 export function timesheetFormatter(min: number, max: number) {
@@ -223,17 +222,16 @@ export function timesheetFormatter(min: number, max: number) {
       if (e.type === 'blur') {
         if (numString === "0") return '0'
         if (!numString.match(/[:]/)) {
-          return formatDecimalTo24H(numString)
+          return floatToTimeString(numString)
         }
 
-        return validate24H(numString, max)
+        return validateTimeString(numString, max)
       }
 
       return formatted.slice(0, 5)
     },
   }
 };
-
 
 export function kilometerFormatter(min: number, max: number) {
   return {

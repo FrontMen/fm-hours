@@ -14,9 +14,8 @@
         <strong>{{ project.customer.name }}</strong>
       </span>
     </b-col>
-
     <b-col
-      v-for="(value, index) in project.values"
+      v-for="(value, index) in formattedTimesheet"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -26,7 +25,7 @@
       }"
     >
       <b-form-input
-        v-model="project.values[index]"
+        v-model="formattedTimesheet[index]"
         class="weekly-timesheet-row__value-input"
         type="text"
         inputmode="decimal"
@@ -42,9 +41,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
-
+import { ref, computed, defineComponent, PropType, watch } from "@nuxtjs/composition-api";
 import { checkEmployeeAvailability } from "../../helpers/employee";
+import { floatToTimeString, timeStringToFloat } from "~/helpers/timesheet";
+
 
 export default defineComponent({
   emits: ["remove"],
@@ -71,13 +71,29 @@ export default defineComponent({
     employee: {
       type: Object as PropType<Employee>,
       required: true,
-    },
+    }
   },
   setup(props, { emit }) {
     const canRemove = computed(() => !props.readonly && props.removable);
     const handleRemoveClick = () => {
       emit("remove", props.project);
     };
+
+    const formatAllHours = (arr: TimesheetProject['values']) => arr.map((num) => {
+      if (num === 0) {
+        return '0'
+      } else {
+        return floatToTimeString(num)
+      }
+    })
+
+
+    // Middleware to intercept project values and reformat floats to 24h format for the view
+    const formattedTimesheet = ref(formatAllHours(props.project.values))
+    watch(() => formattedTimesheet.value, () => {
+      const floatIntegers = formattedTimesheet.value.map((val) => timeStringToFloat(val))
+      props.project.values = floatIntegers
+    })
 
     const totalValue = computed(
       () =>  
@@ -112,6 +128,7 @@ export default defineComponent({
       canRemove,
       handleRemoveClick,
       totalValue,
+      formattedTimesheet,
       isReadonlyList,
       handleInputFocus,
     };
