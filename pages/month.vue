@@ -11,6 +11,18 @@
             Back to week view
           </b-button>
         </nuxt-link>
+        <b-button class="mb-3" @click="triggerPrint">
+          <b-icon-printer /> &nbsp;Print
+        </b-button>
+      </b-col>
+      <b-col cols="5" class="only-print mb-3">
+        <img
+          src="@/assets/images/logo.png"
+          alt="frontmen logo"
+          class="mt-0 mb-3 ml-0"
+          width="80pt"
+        >
+        <h4><strong>{{ formatDate(monthDate) }} - {{ formatDate(endDate) }}</strong></h4>
       </b-col>
       <b-col cols="12" md="7" class="ml-auto">
         <b-row>
@@ -118,6 +130,35 @@
         &nbsp;
       </template>
     </b-table>
+
+    <b-row class="no-break only-print">
+      <b-col cols="6">
+        Approved by
+        <br>
+        Date:
+        <br>
+        <br>
+        <br>
+        __________________________________________
+        <br>
+      </b-col>
+      <b-col cols="6" class="mt-auto">
+        <br>
+        <br>
+        <br>
+        <br>
+        __________________________________________
+        <br>
+        {{ employee.name }}
+        <br>
+        <br>
+        <img
+          src="@/assets/images/logo.png"
+          alt="frontmen logo"
+          width="80pt"
+        >
+      </b-col>
+    </b-row>
   </div>
 </template>
 
@@ -148,9 +189,6 @@ export default defineComponent({
 
     const getRecords = () => {
         const startDate = monthDate.value;
-        const endOfSelectedMonth = endOfMonth(startDate);
-        const now = new Date();
-        const endDate = now.getTime() < endOfSelectedMonth.getTime() ? now : endOfSelectedMonth;
 
         store.dispatch("records/getMonthlyTimeRecords", {
           employeeId: store.state.employee.employee!.id,
@@ -160,8 +198,10 @@ export default defineComponent({
     };
 
     const monthDate = ref<Date>(startOfMonth(new Date()));
+    let endDate: Date = endOfMonth(monthDate.value);
     watch([monthDate, employee],
       () => {
+        endDate = endOfMonth(monthDate.value);
         getRecords();
       },
       {
@@ -246,8 +286,13 @@ export default defineComponent({
       monthDate.value = startOfMonth(new Date());
     };
 
+    const triggerPrint = () => {
+      window.print();
+    }
+
     return {
       employee,
+      endDate,
       formatDate,
       goToPreviousMonth,
       goToNextMonth,
@@ -258,6 +303,7 @@ export default defineComponent({
       projectOptions,
       selectedCustomers,
       totalHours,
+      triggerPrint,
     };
   }
 });
@@ -266,15 +312,18 @@ export default defineComponent({
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss" scoped>
-  .only-print {
-    display: none;
+  @media screen{
+    .only-print {
+      display: none;
+    }
   }
   @media print {
-    .only-print {
-      display: block;
+    .no-break {
+      page-break-inside: avoid;
     }
+
     .hide-print {
-      visibility: hidden;
+      display: none;
     }
   }
 </style>
