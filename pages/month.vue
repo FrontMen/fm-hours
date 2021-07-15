@@ -86,9 +86,14 @@
       :items="monthReport"
       :fields="['customer', 'debtor', 'date', 'hours']"
       foot-clone
+      show-empty
     >
       <template #head(debtor)="scope">
         <span class="hide-print">{{ scope.label }}</span>
+      </template>
+
+      <template #empty>
+        <p>No records available for selected month</p>
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
@@ -146,8 +151,7 @@ export default defineComponent({
         const endOfSelectedMonth = endOfMonth(startDate);
         const now = new Date();
         const endDate = now.getTime() < endOfSelectedMonth.getTime() ? now : endOfSelectedMonth;
-        console.log("vlad start and end", startDate, endDate);
-        // TODO this doesn't really work, data lost after refresh and not correct interval
+
         store.dispatch("records/getMonthlyTimeRecords", {
           employeeId: store.state.employee.employee!.id,
           startDate,
@@ -239,7 +243,7 @@ export default defineComponent({
     };
 
     const goToCurrentMonth = () => {
-      monthDate.value = new Date();
+      monthDate.value = startOfMonth(new Date());
     };
 
     return {
@@ -261,7 +265,7 @@ export default defineComponent({
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style lang="scss">
+<style lang="scss" scoped>
   .only-print {
     display: none;
   }

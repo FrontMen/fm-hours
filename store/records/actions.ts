@@ -23,8 +23,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       endDate: payload.endDate.getTime().toString(),
     });
 
-    console.log("vlad requested", new Date(payload.startDate), new Date(payload.endDate), "and got", timeRecords);
-
     commit("setLoading", { isLoading: false });
     commit("setRecords", {
       timeRecords,

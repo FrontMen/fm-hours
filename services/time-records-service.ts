@@ -13,18 +13,15 @@ export default class RecordsService {
     startDate?: string;
     endDate?: string;
   }): Promise<TimeRecord[]> {
-    const query = this.fire.firestore
+    let query = this.fire.firestore
       .collection("time_records")
       .where("employeeId", "==", params.employeeId);
 
-    console.log("Vlad params", query, params.startDate, params.endDate);
     if (params.startDate){
-      console.log("Vlad where start date", query, params.startDate, params.endDate);
-      query.where("date", ">=", new Date(params.startDate).getTime());}
+      query = query.where("date", ">=", new Date(+params.startDate).getTime());}
 
     if (params.endDate){
-      console.log("Vlad where endDate", query, params.startDate, params.endDate);
-      query.where("date", "<=", new Date(params.endDate).getTime());}
+      query = query.where("date", "<=", new Date(+params.endDate).getTime());}
 
     const snapshot = await query.get();
 
