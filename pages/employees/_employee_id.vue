@@ -1,112 +1,114 @@
 <template>
-  <div class="content-wrapper my-5">
-    <div v-if="!employee">
-      Employee not found
-    </div>
+  <div class="page-wrapper">
+    <div class="content-wrapper my-5">
+      <div v-if="!employee">
+        Employee not found
+      </div>
 
-    <div v-else>
-      <employee-header :employee="employee" />
+      <div v-else>
+        <employee-header :employee="employee" />
 
-      <b-row class="my-5">
-        <b-col cols="12" md="5">
-          <h6 class="mb-3">
-            Manage Projects
-          </h6>
-          <multiselect
-            v-model="selectedCustomers"
-            track-by="id"
-            label="label"
-            class="mb-3"
-            :options="customerOptions"
-            :close-on-select="false"
-            :multiple="true"
-            :taggable="false"
-            placeholder="Click or search for a customer here"
-            @input="hasUnsavedChanges = true"
-          >
-            <template slot="selection" slot-scope="{ values }">
-              <span
-                v-if="values.length"
-                class="multiselect__single"
-              >{{ values.length }} options selected</span>
-            </template>
-          </multiselect>
+        <b-row class="my-5">
+          <b-col cols="12" md="5">
+            <h6 class="mb-3">
+              Manage Projects
+            </h6>
+            <multiselect
+              v-model="selectedCustomers"
+              track-by="id"
+              label="label"
+              class="mb-3"
+              :options="customerOptions"
+              :close-on-select="false"
+              :multiple="true"
+              :taggable="false"
+              placeholder="Click or search for a customer here"
+              @input="hasUnsavedChanges = true"
+            >
+              <template slot="selection" slot-scope="{ values }">
+                <span
+                  v-if="values.length"
+                  class="multiselect__single"
+                >{{ values.length }} options selected</span>
+              </template>
+            </multiselect>
 
-          <b-table
-            :items="items"
-            :fields="fields"
-            class="rounded"
-            small
-            striped
-            table-variant="light"
-          >
-            <template #cell(delete)="row">
-              <b-button
-                size="sm"
-                variant="danger"
-                :disabled="row.item.isDefault"
-                @click="handleProjectDelete(row.item.id)"
-              >
-                <b-icon-trash-fill />
-              </b-button>
-            </template>
-          </b-table>
-        </b-col>
+            <b-table
+              :items="items"
+              :fields="fields"
+              class="rounded"
+              small
+              striped
+              table-variant="light"
+            >
+              <template #cell(delete)="row">
+                <b-button
+                  size="sm"
+                  variant="danger"
+                  :disabled="row.item.isDefault"
+                  @click="handleProjectDelete(row.item.id)"
+                >
+                  <b-icon-trash-fill />
+                </b-button>
+              </template>
+            </b-table>
+          </b-col>
 
-        <b-col md="1" />
+          <b-col md="1" />
 
-        <b-col cols="12" md="6">
-          <h6 class="mb-3">
-            Employee Settings
-          </h6>
-          <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
-            Admin
-          </b-form-checkbox>
-          <b-form-checkbox
-            v-model="isTravelAllowed"
-            name="check-button"
-            switch
-            @change="hasUnsavedChanges = true"
-          >
-            Travel allowance
-          </b-form-checkbox>
-          <label class="mt-2" for="start-datepicker">Start date:</label>
-          <b-form-datepicker
-            id="start-datepicker"
-            v-model="startDate"
-            class="w-75 mb-2"
-            @input="hasUnsavedChanges = true"
-          />
-          <b-form-checkbox
-            v-model="hasEndDate"
-            name="check-button"
-            switch
-            @change="hasUnsavedChanges = true"
-          >
-            End date:
-          </b-form-checkbox>
-          <b-form-datepicker
-            id="end-datepicker"
-            v-model="endDate"
-            class="mt-2 w-75 mb-2"
-            :disabled="!hasEndDate"
-            @input="hasUnsavedChanges = true"
-          />
-        </b-col>
-      </b-row>
-      <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
-        Save
-      </b-button>
-      <b-button variant="danger" @click="handleEmployeeDelete">
-        Delete
-      </b-button>
-      <b-row>
-        <b-col cols="12" md="5">
-          <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
-            {{ errorMessage }}
-          </b-alert>
-        </b-col>
-      </b-row>
+          <b-col cols="12" md="6">
+            <h6 class="mb-3">
+              Employee Settings
+            </h6>
+            <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
+              Admin
+            </b-form-checkbox>
+            <b-form-checkbox
+              v-model="isTravelAllowed"
+              name="check-button"
+              switch
+              @change="hasUnsavedChanges = true"
+            >
+              Travel allowance
+            </b-form-checkbox>
+            <label class="mt-2" for="start-datepicker">Start date:</label>
+            <b-form-datepicker
+              id="start-datepicker"
+              v-model="startDate"
+              class="w-75 mb-2"
+              @input="hasUnsavedChanges = true"
+            />
+            <b-form-checkbox
+              v-model="hasEndDate"
+              name="check-button"
+              switch
+              @change="hasUnsavedChanges = true"
+            >
+              End date:
+            </b-form-checkbox>
+            <b-form-datepicker
+              id="end-datepicker"
+              v-model="endDate"
+              class="mt-2 w-75 mb-2"
+              :disabled="!hasEndDate"
+              @input="hasUnsavedChanges = true"
+            />
+          </b-col>
+        </b-row>
+        <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
+          Save
+        </b-button>
+        <b-button variant="danger" @click="handleEmployeeDelete">
+          Delete
+        </b-button>
+        <b-row>
+          <b-col cols="12" md="5">
+            <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
+              {{ errorMessage }}
+            </b-alert>
+          </b-col>
+        </b-row>
+      </div>
     </div>
   </div>
 </template>
@@ -270,6 +272,7 @@ export default defineComponent({
       // Only dispatch if value changed. Failsafe for spamming the checkbox.
       if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
     }
+      console.log(selectedCustomers.value)
 
     const saveProjects = () => {
       if (!employee.value) return;
@@ -280,7 +283,6 @@ export default defineComponent({
       }
 
       handleAdminToggle();
-
       const newEmployee = {
         ...employee.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),

@@ -28,16 +28,15 @@
       <b-form-input
         v-model="project.values[index]"
         class="weekly-timesheet-row__value-input"
-        type="number"
+        type="text"
         inputmode="decimal"
         :formatter="valueFormatter.formatter"
-        :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
     </b-col>
     <b-col cols="1" class="weekly-timesheet-row__total-column">
-      {{ totalValue.toFixed(2) }}
+      {{ +totalValue.toFixed(2) }}
     </b-col>
   </b-row>
 </template>
@@ -81,9 +80,11 @@ export default defineComponent({
     };
 
     const totalValue = computed(
-      () => props.project.values
-           .reduce((total, current) => +total + +current)
+      () =>  
+        props.project.values
+        .reduce((total, current) => +total + +current)
     );
+  
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.

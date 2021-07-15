@@ -179,21 +179,87 @@ const findRecordByDate = (
   });
 };
 
-export function generateValueFormatter(min: number, max: number) {
+
+
+function formatDecimalTo24H(decimalTimeString: string) {
+  const n = new Date(0,0);
+  n.setMinutes(+decimalTimeString * 60);
+
+  return n.toTimeString().slice(0, 5);
+};
+
+function validate24H(timeString: string, max: number) {
+  const hoursMinutes = timeString.split(':')
+  const hours = hoursMinutes[0]
+  const minutes = hoursMinutes[1]
+
+  if (+hours >= max && +minutes > 0) {
+    return `${max}:00`
+  }
+  return timeString
+}
+
+export function timeStringToFloat(decimalTimeString: string) {
+  const hoursMinutes = decimalTimeString.split(/[:]/);
+  const hours = parseInt(hoursMinutes[0], 10);
+  const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+  return (hours + minutes / 60).toFixed(2);
+}
+
+export function timesheetFormatter(min: number, max: number) {
   return {
     formatter: (value: string, e: InputEvent) => {
-      if (value) {
+      const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
+
+      if (formatted) {
+        const num = +value
+        
+        if (num < min) return `${min}:00`
+        if (num > max) return `${max}:00`
+      }
+
+      const numString = formatted.replace(',', '.');
+    
+      if (e.type === 'blur') {
+        if (numString === "0") return '0'
+        if (!numString.match(/[:]/)) {
+          return formatDecimalTo24H(numString)
+        }
+
+        return validate24H(numString, max)
+      }
+
+      return formatted.slice(0, 5)
+    },
+  }
+};
+
+
+export function kilometerFormatter(min: number, max: number) {
+  return {
+    formatter: (value: string, e: InputEvent) => {
+      const formatted = value.replace(/[^0-9.,]+|\.(?=.*\.)/g, "");
+
+      if (formatted) {
         const num = +value
         if (num < min) return min
         if (num > max) return max
       }
 
-      if (e.type === 'blur') return +value.slice(0, 4) || 0
+      const numString = formatted.replace(',', '.');
+      
+      if (e.type === 'blur') {
+        if (numString.match(/[.]$/)) {
+          return numString.slice(0, -1)
+        }
 
-      return value.slice(0, 4)
+        return numString
+      }
+      return formatted.slice(0, 4)
     },
-  };
-}
+  }
+};
+
 
 export const getTimeRecordsToSave = (
   timesheet: WeeklyTimesheet,
