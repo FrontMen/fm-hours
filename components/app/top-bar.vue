@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar" :class="{ 'top-bar__development': isDev }">
+  <div class="top-bar hide-print" :class="{ 'top-bar__development': isDev }">
     <div class="top-bar__inner content-wrapper">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
@@ -9,7 +9,7 @@
                 src="@/assets/images/logo-dark.png"
                 alt="frontmen logo"
                 @click="handleLogoClick"
-              />
+              >
 
               <div
                 v-if="isAdmin"
@@ -80,60 +80,66 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.top-bar {
-  background: var(--color-primary);
-
-  &__development {
-    background-color: var(--dark);
-  }
-
-  img {
-    width: 50px;
-    max-height: 100%;
-    cursor: pointer;
-  }
-
-  .employee__dropdown {
-    button {
-      padding: 0;
-      background-color: transparent !important;
-      border: none;
-      display: flex;
-      align-items: center;
+  @media print {
+    .hide-print {
+      visibility: hidden;
     }
   }
 
-  .employee {
-    color: white;
-  }
+  .top-bar {
+    background: var(--color-primary);
 
-  &__hamburger {
-    border-top: 2px solid white;
-    border-bottom: 2px solid white;
-    border-radius: 0;
-    width: 30px;
-    height: 20px;
-    background: transparent !important;
-    position: relative;
-
-    &:focus {
-      outline: none;
+    &__development {
+      background-color: var(--dark);
     }
 
-    &:before {
-      content: "";
-      position: absolute;
-      top: 50%;
-      left: 0;
-      transform: translateY(-50%);
-      width: 100%;
-      background: white;
-      height: 2px;
+    img {
+      width: 50px;
+      max-height: 100%;
+      cursor: pointer;
+    }
+
+    .employee__dropdown {
+      button {
+        padding: 0;
+        background-color: transparent !important;
+        border: none;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .employee {
+      color: white;
+    }
+
+    &__hamburger {
+      border-top: 2px solid white;
+      border-bottom: 2px solid white;
+      border-radius: 0;
+      width: 30px;
+      height: 20px;
+      background: transparent !important;
+      position: relative;
+
+      &:focus {
+        outline: none;
+      }
+
+      &:before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        width: 100%;
+        background: white;
+        height: 2px;
+      }
+    }
+
+    .development {
+      color: var(--danger);
     }
   }
-
-  .development {
-    color: var(--danger);
-  }
-}
 </style>
