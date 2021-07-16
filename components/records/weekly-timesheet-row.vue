@@ -30,6 +30,7 @@
         type="text"
         inputmode="decimal"
         :formatter="valueFormatter.formatter"
+        :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
@@ -47,7 +48,9 @@ import {
   defineComponent,
   PropType,
   watch,
+  
 } from "@nuxtjs/composition-api";
+
 import { checkEmployeeAvailability } from "../../helpers/employee";
 import { floatTo24TimeString, floatToTotalTimeString, timeStringToFloat } from "~/helpers/timesheet";
 
@@ -86,17 +89,19 @@ export default defineComponent({
 
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.project.customer.name === "Kilometers";
-    const initialState = isTravelAllowance
-      ? props.project.values.map((val) => val.toString())
-      : props.project.values.map((num) => {
+    const getInitialState = (project: TimesheetProject) => {
+      return  isTravelAllowance
+      ? project.values.map((val) => val.toString())
+      : project.values.map((num) => {
           if (num === 0) {
             return "0";
           } else {
             return floatTo24TimeString(num);
           }
         });
+    }
 
-    const formattedProjectValues = ref(initialState);
+    const formattedProjectValues = ref(getInitialState(props.project));
     watch(
       () => formattedProjectValues.value,
       () => {
@@ -108,11 +113,9 @@ export default defineComponent({
     );
 
     const totalValue = computed(() => {
-
       const total = props.project.values.reduce(
         (total, current) => +total + +current
       );
-      console.log("🚀 ~ file: weekly-timesheet-row.vue ~ line 115 ~ totalValue ~ total", total)
       return isTravelAllowance ? total : floatToTotalTimeString(total);
     });
 

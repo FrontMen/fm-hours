@@ -32,7 +32,7 @@
         <template #rows>
           <weekly-timesheet-row
             v-for="(project, index) in timesheet.projects"
-            :key="project.customer.id + index"
+            :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
             :project="timesheet.projects[index]"
             :readonly="!isAdminView && (isReadonly || project.isExternal)"
             :removeable="!isAdminView && !isReadonly && !project.isExternal"
@@ -249,7 +249,7 @@ export default defineComponent({
         })),
       ];
     });
-
+ 
     return {
       employee: selectedEmployee,
       selectableCustomers,
