@@ -64,6 +64,7 @@
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
           <template #rows>
             <weekly-timesheet-row
+              :key="recordsState.selectedWeek[0].date"
               :project="timesheet.travelProject"
               :readonly="!isAdminView && isReadonly"
               :removable="false"
