@@ -184,7 +184,7 @@ export function floatTo24TimeString(float: number) {
   n.setMinutes(Math.round(float * 60));
   const result = n.toTimeString()
   
-  return result !== "Invalid Date" ? result.slice(0, 5) : '';
+  return result !== "Invalid Date" ? result.slice(0, 5) : '0';
 }
 
 export function floatToTotalTimeString(float: number) {
@@ -193,7 +193,7 @@ export function floatToTotalTimeString(float: number) {
     ? +hoursMinutes[0] > 10
       ? hoursMinutes[0]
       : `0${hoursMinutes[0]}`
-    : '';
+    : '00';
 
   const formattedMinutes = Math.round(parseFloat(`0.${hoursMinutes[1]}`) * 60);
   const minutes =
@@ -225,16 +225,13 @@ export function timesheetFormatter(min: number, max: number) {
     formatter: (value: string, e: InputEvent) => {
       const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
 
-      if (formatted) {
-        const num = +value;
+      if (e.type === "blur") {
+        const numString = formatted.replace(",", ".");
+        const num = +numString;
 
         if (num < min) return `0`;
         if (num >= max) return `${max}:00`;
-      }
 
-      const numString = formatted.replace(",", ".");
-
-      if (e.type === "blur") {
         if (numString.match(/^[0]+$/) || numString === '.') return "0";
         if (!numString.match(/[:]/)) {
           return floatTo24TimeString(+numString);

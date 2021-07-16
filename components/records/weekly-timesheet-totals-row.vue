@@ -62,7 +62,7 @@ export default defineComponent({
           .reduce((prevValue, value) => +prevValue + +value)
       });
 
-      return total === 0 ? '0' : floatToTotalTimeString(total);
+      return floatToTotalTimeString(total);
     });
 
     const weekTheoreticalTotal = computed(() => {
