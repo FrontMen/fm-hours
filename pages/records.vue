@@ -32,7 +32,7 @@
         <template #rows>
           <weekly-timesheet-row
             v-for="(project, index) in timesheet.projects"
-            :key="project.customer.id"
+            :key="project.customer.id + index"
             :project="timesheet.projects[index]"
             :readonly="!isAdminView && (isReadonly || project.isExternal)"
             :removeable="!isAdminView && !isReadonly && !project.isExternal"

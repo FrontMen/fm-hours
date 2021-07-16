@@ -23,7 +23,7 @@
     <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal.toFixed(2) }}</strong>
+        <strong>{{ weekTotal }}</strong>
       </span>
     </b-col>
   </b-row>
@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import { floatTo24TimeString, floatToTotalTimeString } from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {
@@ -52,6 +53,7 @@ export default defineComponent({
     },
   },
   setup(props) {
+
     const weekTotal = computed(() => {
       let total = 0;
 
@@ -60,7 +62,7 @@ export default defineComponent({
           .reduce((prevValue, value) => +prevValue + +value)
       });
 
-      return total;
+      return total === 0 ? '0' : floatToTotalTimeString(total);
     });
 
     const weekTheoreticalTotal = computed(() => {
@@ -73,12 +75,12 @@ export default defineComponent({
     const dayTotals = computed(() => {
       return props.selectedWeek.map((_, index) => {
         let total = 0;
-
+        
         props.projects.forEach((project) => {
           total += +project.values[index];
         });
 
-        return total;
+        return total === 0 ? '0' : floatTo24TimeString(total);
       });
     });
 

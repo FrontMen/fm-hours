@@ -35,16 +35,21 @@
       />
     </b-col>
     <b-col cols="1" class="weekly-timesheet-row__total-column">
-      {{ +totalValue.toFixed(2) }}
+      {{ totalValue }}
     </b-col>
   </b-row>
 </template>
 
 <script lang="ts">
-import { ref, computed, defineComponent, PropType, watch } from "@nuxtjs/composition-api";
+import {
+  ref,
+  computed,
+  defineComponent,
+  PropType,
+  watch,
+} from "@nuxtjs/composition-api";
 import { checkEmployeeAvailability } from "../../helpers/employee";
-import { floatToTimeString, timeStringToFloat } from "~/helpers/timesheet";
-
+import { floatTo24TimeString, floatToTotalTimeString, timeStringToFloat } from "~/helpers/timesheet";
 
 export default defineComponent({
   emits: ["remove"],
@@ -71,7 +76,7 @@ export default defineComponent({
     employee: {
       type: Object as PropType<Employee>,
       required: true,
-    }
+    },
   },
   setup(props, { emit }) {
     const canRemove = computed(() => !props.readonly && props.removable);
@@ -80,29 +85,36 @@ export default defineComponent({
     };
 
     // Act as middleware to intercept project values to format it for the view
-    const isTravelAllowance = props.project.customer.name === "Kilometers"
-    const initialState = isTravelAllowance ? 
-      props.project.values.map((val) => val.toString()) 
-      : 
-      props.project.values.map((num) => {
+    const isTravelAllowance = props.project.customer.name === "Kilometers";
+    const initialState = isTravelAllowance
+      ? props.project.values.map((val) => val.toString())
+      : props.project.values.map((num) => {
           if (num === 0) {
-            return '0'
+            return "0";
           } else {
-            return floatToTimeString(num)
+            return floatTo24TimeString(num);
           }
-      })
+        });
 
-    const formattedProjectValues = ref(initialState)
-    watch(() => formattedProjectValues.value, () => {
-      const floatIntegers = formattedProjectValues.value.map((val) => !isTravelAllowance ? timeStringToFloat(val) : +val)
-      props.project.values = floatIntegers
-    })
+    const formattedProjectValues = ref(initialState);
+    watch(
+      () => formattedProjectValues.value,
+      () => {
+        const floatIntegers = formattedProjectValues.value.map((val) =>
+          !isTravelAllowance ? timeStringToFloat(val) : +val
+        );
+        props.project.values = floatIntegers;
+      }
+    );
 
-   const totalValue = computed(
-        () =>  
-          props.project.values
-          .reduce((total, current) => +total + +current)
+    const totalValue = computed(() => {
+
+      const total = props.project.values.reduce(
+        (total, current) => +total + +current
       );
+      console.log("🚀 ~ file: weekly-timesheet-row.vue ~ line 115 ~ totalValue ~ total", total)
+      return isTravelAllowance ? total : floatToTotalTimeString(total);
+    });
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.
