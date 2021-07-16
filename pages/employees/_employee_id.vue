@@ -272,7 +272,6 @@ export default defineComponent({
       // Only dispatch if value changed. Failsafe for spamming the checkbox.
       if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
     }
-      console.log(selectedCustomers.value)
 
     const saveProjects = () => {
       if (!employee.value) return;
