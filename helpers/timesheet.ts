@@ -181,7 +181,7 @@ const findRecordByDate = (
 
 export function floatTo24TimeString(float: number) {
   const n = new Date(0, 0);
-  n.setMinutes(float * 60);
+  n.setMinutes(Math.round(float * 60));
   const result = n.toTimeString()
   
   return result !== "Invalid Date" ? result.slice(0, 5) : '';
@@ -212,7 +212,7 @@ export function timeStringToFloat(timeString: string): number {
 
 function validateTimeString(timeString: string, max: number): string {
   const float = timeStringToFloat(timeString);
-
+ 
   if (float >= max) {
     return `${max}:00`;
   }
