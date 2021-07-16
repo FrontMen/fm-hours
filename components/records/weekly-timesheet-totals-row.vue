@@ -80,7 +80,7 @@ export default defineComponent({
           total += +project.values[index];
         });
 
-        return total === 0 ? '0' : floatTo24TimeString(total);
+        return total === 0 ? '0' : floatToTotalTimeString(total);
       });
     });
 
