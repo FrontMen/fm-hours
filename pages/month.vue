@@ -17,10 +17,10 @@
       </b-col>
       <b-col cols="5" class="only-print mb-3">
         <img
-          src="@/assets/images/logo.png"
+          src="@/assets/images/logo-line.png"
           alt="frontmen logo"
           class="mt-0 mb-3 ml-0"
-          width="80pt"
+          width="250pt"
         >
         <h4><strong>{{ formatDate(monthDate) }} - {{ formatDate(endDate) }}</strong></h4>
       </b-col>
@@ -153,9 +153,9 @@
         <br>
         <br>
         <img
-          src="@/assets/images/logo.png"
+          src="@/assets/images/logo-line.png"
           alt="frontmen logo"
-          width="80pt"
+          width="250pt"
         >
       </b-col>
     </b-row>
