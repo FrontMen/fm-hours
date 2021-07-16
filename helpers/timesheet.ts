@@ -228,14 +228,14 @@ export function timesheetFormatter(min: number, max: number) {
       if (formatted) {
         const num = +value;
 
-        if (num < min) return `${min}:00`;
-        if (num > max) return `${max}:00`;
+        if (num < min) return `0`;
+        if (num >= max) return `${max}:00`;
       }
 
       const numString = formatted.replace(",", ".");
 
       if (e.type === "blur") {
-        if (numString === "0" || numString === '.') return "0";
+        if (numString.match(/^[0]+$/) || numString === '.') return "0";
         if (!numString.match(/[:]/)) {
           return floatTo24TimeString(+numString);
         }
