@@ -14,6 +14,29 @@
         <strong>{{ project.customer.name }}</strong>
       </span>
     </b-col>
+
+    <b-tooltip
+      custom-class="tooltip-opacity"
+      id="tooltip-confirmation"
+      ref="tooltip"
+      :target="project.customer.name"
+      placement="bottom"
+      triggers="click blur"
+      variant="light"
+    >
+      <div class="container">
+        Remove entries from timesheet?
+        <b-row class="justify-content-around mt-2">
+          <b-button variant="secondary" @click="closeTooltip">
+            Cancel
+          </b-button>
+          <b-button variant="danger" @click="handleRemoveClick">
+            Delete
+          </b-button>
+        </b-row>
+      </div>
+    </b-tooltip>
+    
     <b-col
       v-for="(value, index) in formattedProjectValues"
       :key="index"
@@ -38,28 +61,6 @@
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
-
-    <b-tooltip
-      id="tooltip-confirmation"
-      ref="tooltip"
-      no-fade
-      :target="project.customer.name"
-      placement="bottom"
-      triggers="click blur"
-      variant="light"
-    >
-      <div class="container m-1">
-        Remove entries from timesheet?
-        <b-row class="justify-content-around">
-          <b-button variant="secondary" @click="closeTooltip">
-            Cancel
-          </b-button>
-          <b-button variant="danger" @click="handleRemoveClick">
-            Delete
-          </b-button>
-        </b-row>
-      </div>
-    </b-tooltip>
   </b-row>
 </template>
 
@@ -251,5 +252,8 @@ export default defineComponent({
       padding: 0 15px;
     }
   }
+}
+.tooltip-opacity {
+  opacity: 1;
 }
 </style>
