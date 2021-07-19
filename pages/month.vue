@@ -188,13 +188,13 @@ export default defineComponent({
     });
 
     const getRecords = () => {
-        const startDate = monthDate.value;
+      const startDate = monthDate.value;
 
-        store.dispatch("records/getMonthlyTimeRecords", {
-          employeeId: store.state.employee.employee!.id,
-          startDate,
-          endDate,
-        });
+      store.dispatch("records/getMonthlyTimeRecords", {
+        employeeId: store.state.employee.employee!.id,
+        startDate,
+        endDate,
+      });
     };
 
     const monthDate = ref<Date>(startOfMonth(new Date()));
