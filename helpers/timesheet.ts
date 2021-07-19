@@ -182,28 +182,23 @@ const findRecordByDate = (
 export function floatTo24TimeString(float: number): string {
   const n = new Date(0, 0);
   n.setMinutes(Math.round(float * 60));
-  const result = n.toTimeString()
-  
-  return result !== "Invalid Date" ? result.slice(0, 5) : '0';
+  const result = n.toTimeString();
+
+  return result !== "Invalid Date" ? result.slice(0, 5) : "0";
 }
 
 export function floatToTotalTimeString(float: number): string {
-  const hoursMinutes = float.toString().split('.');
-  const hours = +hoursMinutes[0]
-    ? +hoursMinutes[0] > 10
-      ? hoursMinutes[0]
-      : `0${hoursMinutes[0]}`
-    : '00';
+  const hoursMinutes = float.toString().split(".");
+  const hours = +hoursMinutes[0] ? hoursMinutes[0].padStart(2, "0") : "00";
 
   const formattedMinutes = Math.round(parseFloat(`0.${hoursMinutes[1]}`) * 60);
-  const minutes =
-    formattedMinutes > 10 ? formattedMinutes : `0${formattedMinutes}`;
+  const minutes = formattedMinutes.toString().padStart(2, "0");
 
   return `${hours}:${minutes}`;
 }
 
 export function timeStringToFloat(timeString: string): number {
-  const hoursMinutes = timeString.split(':');
+  const hoursMinutes = timeString.split(":");
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
 
@@ -212,7 +207,7 @@ export function timeStringToFloat(timeString: string): number {
 
 function validateTimeString(timeString: string, maxHours: number): string {
   const float = timeStringToFloat(timeString);
- 
+
   if (float >= maxHours) {
     return `${maxHours}:00`;
   }
@@ -229,10 +224,10 @@ export function timesheetFormatter(maxHours: number) {
         const numString = formatted.replace(",", ".");
         const num = +numString;
 
-        if (num <= 0 || numString === '.') return `0`;
+        if (num <= 0 || numString === ".") return `0`;
         if (num >= maxHours) return `${maxHours}:00`;
 
-        if (!numString.includes(':')) {
+        if (!numString.includes(":")) {
           return floatTo24TimeString(num);
         }
 
@@ -342,7 +337,7 @@ export const createTimesheetTableData = (params: {
     timestamp: week.start.date,
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
-    weekNumber: getISOWeek(week.start.date)
+    weekNumber: getISOWeek(week.start.date),
   }));
 
   const fields = [
