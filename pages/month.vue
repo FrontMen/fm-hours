@@ -124,7 +124,7 @@
       </template>
 
       <template #foot(hours)="scope">
-        <span><strong>Total hours:</strong> {{ totalHours.total }}</span>
+        <span><strong>Total hours:</strong> {{ totalHours.selected }}</span>
       </template>
       <template #foot()="scope">
         &nbsp;
@@ -227,7 +227,8 @@ export default defineComponent({
     const totalHours = computed(() => {
       const records = [...store.state.records.timeRecords];
       const billableRecords = handleFilterBillable(records, true);
-      const selectedBillable = handleSelectedProjects(records);
+      const conditionalBillable = handleFilterBillable(records);
+      const selectedBillable = handleSelectedProjects(conditionalBillable);
 
       const totals = {
         billable: getTotals(billableRecords),
