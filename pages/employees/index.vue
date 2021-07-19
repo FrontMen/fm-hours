@@ -47,7 +47,7 @@
           />
         </b-col>
         <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end">
-          <b-button v-b-modal.modal-center >
+          <b-button v-b-modal.modal-center>
             + New employee
           </b-button>
         </b-col>
@@ -78,6 +78,7 @@
 
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
+          <small v-if="employee.team"> - {{ employee.team }}</small>
         </div>
 
         <div class="ml-auto d-flex">
