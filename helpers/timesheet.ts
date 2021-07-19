@@ -229,7 +229,7 @@ export function timesheetFormatter(min: number, max: number) {
         const numString = formatted.replace(",", ".");
         const num = +numString;
 
-        if (num < min) return `0`;
+        if (num <= min) return `0`;
         if (num >= max) return `${max}:00`;
 
         if (numString.match(/^[0]+$/) || numString === '.') return "0";
