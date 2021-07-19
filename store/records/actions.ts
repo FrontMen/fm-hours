@@ -9,9 +9,29 @@ import {
 } from "~/helpers/timesheet";
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
+  async getMonthlyTimeRecords(
+    { commit },
+    payload: { employeeId: string; startDate: Date, endDate: Date }
+  ) {
+    if (!payload.employeeId || !payload.startDate?.getTime() || !payload.endDate?.getTime()) return;
+
+    commit("setLoading", { isLoading: true });
+
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
+      employeeId: payload.employeeId,
+      startDate: payload.startDate.getTime().toString(),
+      endDate: payload.endDate.getTime().toString(),
+    });
+
+    commit("setLoading", { isLoading: false });
+    commit("setRecords", {
+      timeRecords,
+    });
+  },
+
   async getRecords(
     { commit, rootState },
-    payload: { employeeId: string; startDate: Date }
+    payload: { employeeId: string; startDate: Date, endDate?: Date }
   ) {
     commit("setLoading", { isLoading: true });
 
@@ -21,7 +41,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
       employeeId: payload.employeeId,
       startDate: new Date(selectedWeek[0].date),
-      endDate: new Date(selectedWeek[6].date),
+      endDate: payload.endDate || new Date(selectedWeek[6].date),
     });
 
     const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
