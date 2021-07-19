@@ -150,7 +150,7 @@ export default defineComponent({
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref("");
-    const selectedTeam = ref<string | undefined>('');
+    const selectedTeam = ref<string | null>(null);
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -172,9 +172,10 @@ export default defineComponent({
     );
 
     const teamList = computed(() => {
-      return store.getters["employees/teamList"].map((team: string) => {
+      const parsedTeam = store.getters["employees/teamList"].map((team: string) => {
         return { value: team, text: team };
       });
+      return [ { value: null, text: "Select team", }, ...parsedTeam];
     });
 
     const pageTitle = computed(() =>
@@ -204,7 +205,7 @@ export default defineComponent({
     watch(
       () => [employee.value?.team],
       () => {
-        selectedTeam.value = employee.value?.team;
+        selectedTeam.value = employee.value?.team || null;
       },
       { immediate: true }
     );
