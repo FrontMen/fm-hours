@@ -179,7 +179,7 @@ const findRecordByDate = (
   });
 };
 
-export function floatTo24TimeString(float: number) {
+export function floatTo24TimeString(float: number): string {
   const n = new Date(0, 0);
   n.setMinutes(Math.round(float * 60));
   const result = n.toTimeString()
@@ -187,7 +187,7 @@ export function floatTo24TimeString(float: number) {
   return result !== "Invalid Date" ? result.slice(0, 5) : '0';
 }
 
-export function floatToTotalTimeString(float: number) {
+export function floatToTotalTimeString(float: number): string {
   const hoursMinutes = float.toString().split(/[.]/);
   const hours = +hoursMinutes[0]
     ? +hoursMinutes[0] > 10
@@ -222,7 +222,7 @@ function validateTimeString(timeString: string, max: number): string {
 
 export function timesheetFormatter(min: number, max: number) {
   return {
-    formatter: (value: string, e: InputEvent) => {
+    formatter: (value: string, e: InputEvent): string => {
       const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
 
       if (e.type === "blur") {
@@ -247,7 +247,7 @@ export function timesheetFormatter(min: number, max: number) {
 
 export function kilometerFormatter(min: number, max: number) {
   return {
-    formatter: (value: string, e: InputEvent) => {
+    formatter: (value: string, e: InputEvent): string | number => {
       const formatted = value.replace(/[^0-9.,]+|\.(?=.*\.)/g, "");
 
       if (formatted) {
