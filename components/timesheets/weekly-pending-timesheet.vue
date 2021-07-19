@@ -101,7 +101,7 @@ export default defineComponent({
       weekLabel,
       handleDenyClick,
       handleApproveClick,
-      timesheetFormatter: timesheetFormatter(0, 24),
+      timesheetFormatter: timesheetFormatter(24),
       kilometerFormatter: kilometerFormatter(0, 9999),
     };
   },

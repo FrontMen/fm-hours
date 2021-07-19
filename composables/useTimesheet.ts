@@ -304,7 +304,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     deleteProject,
     hasUnsavedChanges,
     timesheet,
-    timesheetFormatter: timesheetFormatter(0, 24),
+    timesheetFormatter: timesheetFormatter(24),
     kilometerFormatter: kilometerFormatter(0, 9999),
     saveTimesheet,
     timesheetStatus,

@@ -188,7 +188,7 @@ export function floatTo24TimeString(float: number): string {
 }
 
 export function floatToTotalTimeString(float: number): string {
-  const hoursMinutes = float.toString().split(/[.]/);
+  const hoursMinutes = float.toString().split('.');
   const hours = +hoursMinutes[0]
     ? +hoursMinutes[0] > 10
       ? hoursMinutes[0]
@@ -203,24 +203,24 @@ export function floatToTotalTimeString(float: number): string {
 }
 
 export function timeStringToFloat(timeString: string): number {
-  const hoursMinutes = timeString.split(/[:]/);
+  const hoursMinutes = timeString.split(':');
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
 
   return +(hours + minutes / 60).toFixed(2);
 }
 
-function validateTimeString(timeString: string, max: number): string {
+function validateTimeString(timeString: string, maxHours: number): string {
   const float = timeStringToFloat(timeString);
  
-  if (float >= max) {
-    return `${max}:00`;
+  if (float >= maxHours) {
+    return `${maxHours}:00`;
   }
 
   return floatTo24TimeString(float);
 }
 
-export function timesheetFormatter(min: number, max: number) {
+export function timesheetFormatter(maxHours: number) {
   return {
     formatter: (value: string, e: InputEvent): string => {
       const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
@@ -229,15 +229,14 @@ export function timesheetFormatter(min: number, max: number) {
         const numString = formatted.replace(",", ".");
         const num = +numString;
 
-        if (num <= min) return `0`;
-        if (num >= max) return `${max}:00`;
+        if (num <= 0 || numString === '.') return `0`;
+        if (num >= maxHours) return `${maxHours}:00`;
 
-        if (numString.match(/^[0]+$/) || numString === '.') return "0";
-        if (!numString.match(/[:]/)) {
-          return floatTo24TimeString(+numString);
+        if (!numString.includes(':')) {
+          return floatTo24TimeString(num);
         }
 
-        return validateTimeString(numString, max);
+        return validateTimeString(numString, maxHours);
       }
 
       return formatted.slice(0, 5);
