@@ -3,9 +3,9 @@
     <b-col class="weekly-timesheet-row__action-column" cols="4">
       <b-button
         v-if="canRemove"
+        :id="project.customer.name"
         class="weekly-timesheet-row__remove-button"
         variant="outline-primary"
-        @click="handleRemoveClick"
       >
         <b-icon icon="x-square" />
       </b-button>
@@ -14,6 +14,29 @@
         <strong>{{ project.customer.name }}</strong>
       </span>
     </b-col>
+
+    <b-tooltip
+      custom-class="tooltip-opacity"
+      id="tooltip-confirmation"
+      ref="tooltip"
+      :target="project.customer.name"
+      placement="bottom"
+      triggers="click blur"
+      variant="light"
+    >
+      <div class="container">
+        Remove entries from timesheet?
+        <b-row class="justify-content-around mt-2">
+          <b-button variant="secondary" @click="closeTooltip">
+            Cancel
+          </b-button>
+          <b-button variant="danger" @click="handleRemoveClick">
+            Delete
+          </b-button>
+        </b-row>
+      </div>
+    </b-tooltip>
+    
     <b-col
       v-for="(value, index) in formattedProjectValues"
       :key="index"
@@ -42,13 +65,13 @@
 </template>
 
 <script lang="ts">
+
 import {
   ref,
   computed,
   defineComponent,
   PropType,
   watch,
-  
 } from "@nuxtjs/composition-api";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
@@ -82,8 +105,15 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
+
+    const closeTooltip = () => {
+      tooltip.value.$emit("close")
+    }
+
     const handleRemoveClick = () => {
+      closeTooltip();
       emit("remove", props.project);
     };
 
@@ -142,7 +172,9 @@ export default defineComponent({
     };
 
     return {
+      tooltip,
       canRemove,
+      closeTooltip,
       handleRemoveClick,
       totalValue,
       formattedProjectValues,
@@ -220,5 +252,8 @@ export default defineComponent({
       padding: 0 15px;
     }
   }
+}
+.tooltip-opacity {
+  opacity: 1;
 }
 </style>
