@@ -14,9 +14,8 @@
         <strong>{{ project.customer.name }}</strong>
       </span>
     </b-col>
-
     <b-col
-      v-for="(value, index) in project.values"
+      v-for="(value, index) in formattedProjectValues"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -26,16 +25,16 @@
       }"
     >
       <b-form-input
-        v-model="project.values[index]"
+        v-model="formattedProjectValues[index]"
         class="weekly-timesheet-row__value-input"
         type="text"
+        inputmode="decimal"
         :formatter="valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
     </b-col>
-
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
@@ -43,9 +42,17 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import {
+  ref,
+  computed,
+  defineComponent,
+  PropType,
+  watch,
+  
+} from "@nuxtjs/composition-api";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
+import { floatTo24TimeString, floatToTotalTimeString, timeStringToFloat } from "~/helpers/timesheet";
 
 export default defineComponent({
   emits: ["remove"],
@@ -80,12 +87,37 @@ export default defineComponent({
       emit("remove", props.project);
     };
 
-    const totalValue = computed(
-      () =>
-        +props.project.values
-          .reduce((total, current) => total + +current)
-          .toFixed(1)
+    // Act as middleware to intercept project values to format it for the view
+    const isTravelAllowance = props.project.customer.name === "Kilometers";
+    const getInitialState = (project: TimesheetProject) => {
+      return  isTravelAllowance
+      ? project.values.map((val) => val.toString())
+      : project.values.map((num) => {
+          if (num === 0) {
+            return "0";
+          } else {
+            return floatTo24TimeString(num);
+          }
+        });
+    }
+
+    const formattedProjectValues = ref(getInitialState(props.project));
+    watch(
+      () => formattedProjectValues.value,
+      () => {
+        const floatIntegers = formattedProjectValues.value.map((val) =>
+          !isTravelAllowance ? timeStringToFloat(val) : +val
+        );
+        props.project.values = floatIntegers;
+      }
     );
+
+    const totalValue = computed(() => {
+      const total = props.project.values.reduce(
+        (total, current) => +total + +current
+      );
+      return isTravelAllowance ? total : floatToTotalTimeString(total);
+    });
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.
@@ -113,6 +145,7 @@ export default defineComponent({
       canRemove,
       handleRemoveClick,
       totalValue,
+      formattedProjectValues,
       isReadonlyList,
       handleInputFocus,
     };

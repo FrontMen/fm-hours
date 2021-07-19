@@ -62,7 +62,7 @@ import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
 
 import { getWeekRange, getDateLabel } from "~/helpers/dates";
-import { generateValueFormatter } from "~/helpers/timesheet";
+import { timesheetFormatter, kilometerFormatter } from "~/helpers/timesheet";
 
 export default defineComponent({
   components: {
@@ -101,8 +101,8 @@ export default defineComponent({
       weekLabel,
       handleDenyClick,
       handleApproveClick,
-      timesheetFormatter: generateValueFormatter(0, 24),
-      kilometerFormatter: generateValueFormatter(0, 9999),
+      timesheetFormatter: timesheetFormatter(24),
+      kilometerFormatter: kilometerFormatter(0, 9999),
     };
   },
 });

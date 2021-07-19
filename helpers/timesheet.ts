@@ -179,22 +179,88 @@ const findRecordByDate = (
   });
 };
 
-export function generateValueFormatter(min: number, max: number) {
-  return {
-    formatter: (value: string, event: FocusEvent | InputEvent) => {
-      // Allows only numbers and a max of 1 dot
-      const formatted = value.replace(/[^0-9.]+|\.(?=.*\.)/g, "");
+export function floatTo24TimeString(float: number): string {
+  const n = new Date(0, 0);
+  n.setMinutes(Math.round(float * 60));
+  const result = n.toTimeString();
 
-      // Don’t convert to number when the string ends with a dot, so we can add
-      // float numbers. In this case a string will be returned.
-      if (formatted.match(/\.$/)) {
-        // On blur, return a number
-        if (event.type === "blur") return +formatted || 0;
-        return formatted;
+  return result !== "Invalid Date" ? result.slice(0, 5) : "0";
+}
+
+export function floatToTotalTimeString(float: number): string {
+  const hoursMinutes = float.toString().split(".");
+  const hours = +hoursMinutes[0] ? hoursMinutes[0].padStart(2, "0") : "00";
+
+  const formattedMinutes = Math.round(parseFloat(`0.${hoursMinutes[1]}`) * 60);
+  const minutes = formattedMinutes.toString().padStart(2, "0");
+
+  return `${hours}:${minutes}`;
+}
+
+export function timeStringToFloat(timeString: string): number {
+  const hoursMinutes = timeString.split(":");
+  const hours = parseInt(hoursMinutes[0], 10);
+  const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
+
+  return +(hours + minutes / 60).toFixed(2);
+}
+
+function validateTimeString(timeString: string, maxHours: number): string {
+  const float = timeStringToFloat(timeString);
+
+  if (float >= maxHours) {
+    return `${maxHours}:00`;
+  }
+
+  return floatTo24TimeString(float);
+}
+
+export function timesheetFormatter(maxHours: number) {
+  return {
+    formatter: (value: string, e: InputEvent): string => {
+      const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
+
+      if (e.type === "blur") {
+        const numString = formatted.replace(",", ".");
+        const num = +numString;
+
+        if (num <= 0 || numString === ".") return `0`;
+        if (num >= maxHours) return `${maxHours}:00`;
+
+        if (!numString.includes(":")) {
+          return floatTo24TimeString(num);
+        }
+
+        return validateTimeString(numString, maxHours);
       }
 
-      // Validates range and returns a number
-      return +Math.min(Math.max(Number(formatted), min), max).toFixed(1);
+      return formatted.slice(0, 5);
+    },
+  };
+}
+
+export function kilometerFormatter(min: number, max: number) {
+  return {
+    formatter: (value: string, e: InputEvent): string | number => {
+      const formatted = value.replace(/[^0-9.,]+|\.(?=.*\.)/g, "");
+
+      if (formatted) {
+        const num = +value;
+        if (num < min) return min;
+        if (num > max) return max;
+      }
+
+      const numString = formatted.replace(",", ".");
+
+      if (e.type === "blur") {
+        if (numString === "") return "0";
+        if (numString.match(/[.]$/)) {
+          return numString.slice(0, -1);
+        }
+
+        return numString;
+      }
+      return formatted.slice(0, 4);
     },
   };
 }
@@ -271,7 +337,7 @@ export const createTimesheetTableData = (params: {
     timestamp: week.start.date,
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
-    weekNumber: getISOWeek(week.start.date)
+    weekNumber: getISOWeek(week.start.date),
   }));
 
   const fields = [

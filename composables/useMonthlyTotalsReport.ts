@@ -20,7 +20,7 @@ export default () => {
   };
 
   const getTotalHours = (records: TimeRecord[]): number =>
-    records.reduce((total, currentRecord) => (total += currentRecord.hours), 0);
+    records.reduce((total, currentRecord) => (total += +currentRecord.hours), 0);
 
   const getNonBillableColumns = (
     employee: ReportEmployee,
@@ -57,7 +57,7 @@ export default () => {
       name: employee.name,
       billable: billableHours,
       nonBillable: nonBillableHours,
-      totalHours: billableHours + nonBillableHours,
+      totalHours: +(billableHours + nonBillableHours).toFixed(2),
       productivity: Math.round(productivity || 0) + "%",
       ...nonBillableColumns,
     };
