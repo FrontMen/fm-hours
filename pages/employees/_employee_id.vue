@@ -11,6 +11,15 @@
         <b-row class="my-5">
           <b-col cols="12" md="5">
             <h6 class="mb-3">
+              Edit team:
+            </h6>
+            <b-form-select
+              v-model="selectedTeam"
+              :options="teamList"
+              class="mb-3"
+              @change="hasUnsavedChanges = true"
+            />
+            <h6 class="mb-3">
               Manage Projects
             </h6>
             <multiselect
@@ -140,7 +149,8 @@ export default defineComponent({
 
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
-    const errorMessage = ref("")
+    const errorMessage = ref("");
+    const selectedTeam = ref<string | null>(null);
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -161,6 +171,13 @@ export default defineComponent({
       employees.value.find((x) => x.id === employeeId)
     );
 
+    const teamList = computed(() => {
+      const parsedTeam = store.getters["employees/teamList"].map((team: string) => {
+        return { value: team, text: team };
+      });
+      return [ { value: null, text: "Select team", }, ...parsedTeam];
+    });
+
     const pageTitle = computed(() =>
       employee.value ? `Employees - ${employee.value?.name}` : "Employees"
     );
@@ -176,15 +193,22 @@ export default defineComponent({
         store.dispatch("customers/getCustomers");
       }
 
-      if (store.getters["employees/adminList"].length === 0) {
-        store.dispatch("employees/getAdminList");
-      }
+      store.dispatch("employees/getAdminList");
+      store.dispatch("employees/getTeamList");
 
       if (employee?.value?.endDate) {
         hasEndDate.value = true
         endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
       }
     });
+
+    watch(
+      () => [employee.value?.team],
+      () => {
+        selectedTeam.value = employee.value?.team || null;
+      },
+      { immediate: true }
+    );
 
     watch(
       () => [employee.value?.projects, customers.value],
@@ -284,6 +308,7 @@ export default defineComponent({
       handleAdminToggle();
       const newEmployee = {
         ...employee.value,
+        team: selectedTeam.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
         startDate: new Date(startDate.value).getTime(),
@@ -330,6 +355,7 @@ export default defineComponent({
       employee,
       customerOptions,
       selectedCustomers,
+      selectedTeam,
       saveProjects,
       hasUnsavedChanges,
       isTravelAllowed,
@@ -341,7 +367,8 @@ export default defineComponent({
       handleProjectDelete,
       defaultCustomers,
       items,
-      handleEmployeeDelete
+      handleEmployeeDelete,
+      teamList,
     };
   },
 });

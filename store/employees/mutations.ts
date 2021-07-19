@@ -5,6 +5,10 @@ const mutations: MutationTree<EmployeesStoreState> = {
     state.adminList = payload;
   },
 
+  setTeamList: (state, payload: string[]) => {
+    state.teamList = payload;
+  },
+
   setEmployees: (state, payload: { employees: Employee[] }) => {
     state.employees = payload.employees;
   },

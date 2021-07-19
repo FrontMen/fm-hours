@@ -124,6 +124,14 @@ export default class EmployeesService {
     return (result as unknown) as string[];
   }
 
+  public async getTeams(): Promise<string[]> {
+    const ref = this.fire.firestore.collection("teams");
+    const snapshot = await ref.get();
+    const result = snapshot.docs[0].data().teams || [];
+
+    return (result as unknown) as string[];
+  }
+
   public async updateAdminEmails(adminList: string[]): Promise<string[]> {
     const docs = await this.fire.firestore.collection("admins").get();
     const docId = await docs.docs[0].id;
