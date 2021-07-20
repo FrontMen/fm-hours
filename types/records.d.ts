@@ -11,6 +11,12 @@ interface WeekDate {
   isLeaveDay: boolean;
 }
 
+interface StandbyRecord {
+  id: string | null;
+  date: number;
+  hours: number;
+  employeeId?: string;
+}
 interface TimeRecord {
   id: string | null;
   date: number;
@@ -48,4 +54,5 @@ interface RecordsStoreState {
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
+  standByRecords?: StandbyRecord[];
 }
