@@ -25,8 +25,11 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const holidays = rootState.holidays.holidays;
-    const selectedWeek = checkHolidays(workWeek, holidays, workSchemeResult);
+    const selectedWeek = checkHolidays(
+      workWeek,
+      rootState.holidays.holidays,
+      workSchemeResult
+    );
 
     const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
       employeeId: payload.employeeId,
@@ -71,8 +74,11 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const holidays = rootState.holidays.holidays;
-    const selectedWeek = checkHolidays(workWeek, holidays, workSchemeResult);
+    const selectedWeek = checkHolidays(
+      workWeek,
+      rootState.holidays.holidays,
+      workSchemeResult
+    );
 
     commit("setSelectedWeek", {
       selectedWeek,
