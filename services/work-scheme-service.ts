@@ -14,7 +14,7 @@ export default class WorkSchemeService {
     bridgeUid: string;
     startDate: Date;
     endDate: Date;
-  }) {
+  }): Promise<WorkScheme[] | undefined> {
     const { bridgeUid, startDate, endDate } = params;
 
     try {
