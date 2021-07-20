@@ -63,7 +63,7 @@
         </weekly-timesheet>
 
         <template
-          v-if="employee && employee.standBy && timesheet.standBy"
+          v-if="employee && employee.standBy && timesheet.standByProject"
         >
           <h3 class="mt-5 mb-3">
             Stand-by hours
@@ -73,39 +73,118 @@
             <template #rows>
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
-                :project="timesheet.standBy"
+                :project="timesheet.standByProject"
                 :readonly="!isAdminView && isReadonly"
                 :removable="false"
                 :selected-week="recordsState.selectedWeek"
                 :value-formatter="timesheetFormatter"
                 :employee="employee"
                 @change="hasUnsavedChanges = true"
+                @remove="deleteProject(timesheet.projects[index])"
               />
-            </template>
-          </weekly-timesheet>
-        </template>
 
-        <template
-          v-if="employee && employee.travelAllowance && timesheet.travelProject"
-        >
-          <h3 class="mt-5 mb-3">
-            Travel allowance
-          </h3>
-
-          <weekly-timesheet :selected-week="recordsState.selectedWeek">
-            <template #rows>
-              <weekly-timesheet-row
-                :key="recordsState.selectedWeek[0].date"
-                :project="timesheet.travelProject"
-                :readonly="!isAdminView && isReadonly"
-                :removable="false"
+              <weekly-timesheet-totals-row
+                :projects="timesheet.projects"
                 :selected-week="recordsState.selectedWeek"
-                :value-formatter="kilometerFormatter"
-                :employee="employee"
-                @change="hasUnsavedChanges = true"
+                :work-scheme="recordsState.workScheme"
+                :show-add-project-button="
+                  !isReadonly && selectableCustomers.length > 0
+                "
               />
             </template>
           </weekly-timesheet>
+
+          <template
+            v-if="employee && employee.standBy && timesheet.standBy"
+          >
+            <h3 class="mt-5 mb-3">
+              Stand-by hours
+            </h3>
+
+            <weekly-timesheet :selected-week="recordsState.selectedWeek">
+              <template #rows>
+                <weekly-timesheet-row
+                  :key="recordsState.selectedWeek[0].date"
+                  :project="timesheet.standBy"
+                  :readonly="!isAdminView && isReadonly"
+                  :removable="false"
+                  :selected-week="recordsState.selectedWeek"
+                  :value-formatter="timesheetFormatter"
+                  :employee="employee"
+                  @change="hasUnsavedChanges = true"
+                />
+              </template>
+            </weekly-timesheet>
+          </template>
+
+          <template
+            v-if="employee && employee.travelAllowance && timesheet.travelProject"
+          >
+            <h3 class="mt-5 mb-3">
+              Travel allowance
+            </h3>
+
+            <weekly-timesheet :selected-week="recordsState.selectedWeek">
+              <template #rows>
+                <weekly-timesheet-row
+                  v-for="(project, index) in timesheet.projects"
+                  :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
+                  :project="timesheet.projects[index]"
+                  :readonly="!isAdminView && (isReadonly || project.isExternal)"
+                  :removeable="!isAdminView && !isReadonly && !project.isExternal"
+                  :selected-week="recordsState.selectedWeek"
+                  :value-formatter="timesheetFormatter"
+                  :employee="employee"
+                  @change="hasUnsavedChanges = true"
+                  @remove="deleteProject(timesheet.projects[index])"
+                />
+
+                <weekly-timesheet-totals-row
+                  :projects="timesheet.projects"
+                  :selected-week="recordsState.selectedWeek"
+                  :work-scheme="recordsState.workScheme"
+                  :show-add-project-button="
+                    !isReadonly && selectableCustomers.length > 0
+                  "
+                />
+              </template>
+            </weekly-timesheet>
+
+            <template
+              v-if="employee && employee.travelAllowance && timesheet.travelProject"
+            >
+              <h3 class="mt-5 mb-3">
+                Travel allowance
+              </h3>
+
+              <weekly-timesheet :selected-week="recordsState.selectedWeek">
+                <template #rows>
+                  <weekly-timesheet-row
+                    :key="recordsState.selectedWeek[0].date"
+                    :project="timesheet.travelProject"
+                    :readonly="!isAdminView && isReadonly"
+                    :removable="false"
+                    :selected-week="recordsState.selectedWeek"
+                    :value-formatter="kilometerFormatter"
+                    :employee="employee"
+                    @change="hasUnsavedChanges = true"
+                  />
+                </template>
+              </weekly-timesheet>
+            </template>
+
+            <b-form-textarea
+              v-if="!isReadonly || message"
+              id="message-textarea"
+              v-model="message"
+              class="mt-4"
+              placeholder="Add a comment here."
+              rows="1"
+              max-rows="4"
+              :plaintext="!isAdminView && isReadonly"
+              @change="hasUnsavedChanges = true"
+            />
+          </template>
         </template>
 
         <template v-if="timesheet.leaveDays" class="mb-3">

@@ -43,6 +43,7 @@ interface WeeklyTimesheet {
   projects: TimesheetProject[];
   leaveDays: TimesheetProject | null;
   travelProject: TimesheetProject | null;
+  standByProject: TimesheetProject | null;
 }
 
 interface RecordsStoreState {
@@ -54,5 +55,5 @@ interface RecordsStoreState {
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
-  standByRecords?: StandbyRecord[];
+  standByRecords: StandbyRecord[];
 }

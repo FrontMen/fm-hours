@@ -8,17 +8,19 @@ export const createWeeklyTimesheet = (params: {
   timeRecords: TimeRecord[];
   leaveDays: TimesheetProject | null;
   travelRecords: TravelRecord[];
+  standByRecords: StandbyRecord[];
   workScheme: WorkScheme[];
 }): WeeklyTimesheet => {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
 
-  const isWithinCurrentWeek = (record: TimeRecord | TravelRecord) =>
-    isWithinInterval(new Date(record.date), {start, end});
+  const isWithinCurrentWeek = (record: TimeRecord | TravelRecord | StandbyRecord) =>
+    isWithinInterval(new Date(record.date), { start, end });
 
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
+  const weeklyStandByRecords = params.standByRecords.filter(isWithinCurrentWeek);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
@@ -32,6 +34,7 @@ export const createWeeklyTimesheet = (params: {
       [],
     leaveDays: params.leaveDays,
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
+    standByProject: createStandByProject(params.week, weeklyStandByRecords),
   };
 };
 
@@ -62,6 +65,36 @@ const createCustomerProjects = (
       isExternal: false,
     };
   });
+};
+
+const createStandByProject = (
+  week: WeekDate[],
+  standByRecords: StandbyRecord[] | null
+): TimesheetProject | null => {
+  if (!standByRecords) return null;
+
+  const values = week.map((weekDay) => {
+    const record = findRecordByDate(weekDay, standByRecords) as StandbyRecord;
+    return record?.hours || 0;
+  });
+
+  const ids = week.map((weekDay) => {
+    const record = findRecordByDate(weekDay, standByRecords) as StandbyRecord;
+    return record?.id || null;
+  });
+
+  return {
+    customer: {
+      id: "standByRecordId",
+      name: "Stand-by Hours",
+      debtor: "Frontmen",
+      isBillable: false,
+      isDefault: false,
+    },
+    ids,
+    values,
+    isExternal: false,
+  };
 };
 
 const createTravelProject = (
@@ -116,7 +149,7 @@ const findLeaveHoursByDate = (leaveDay: WeekDate, workScheme: WorkScheme[]): num
 
 const findRecordByDate = (
   weekDay: WeekDate,
-  records: Array<TimeRecord | TravelRecord>
+  records: Array<TimeRecord | TravelRecord | StandbyRecord>
 ) => {
   return records.find((record) => {
     const weekDate = new Date(weekDay.date);

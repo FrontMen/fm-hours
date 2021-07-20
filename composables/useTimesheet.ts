@@ -44,6 +44,7 @@ export default (
     projects: [],
     leaveDays: null,
     travelProject: null,
+    standByProject: null,
   });
 
   const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
@@ -129,6 +130,7 @@ export default (
       ),
       leaveDays: timesheet.value.leaveDays,
       travelProject: timesheet.value.travelProject,
+      standByProject: timesheet.value.standByProject,
     };
 
     // if deleting the last project, clear the timesheet
@@ -139,7 +141,7 @@ export default (
       message.value = '';
     }
 
-    if (!unsavedWeeklyTimesheet.value.projects.length) {
+    if (!unsavedWeeklyTimesheet.value?.projects.length) {
       hasUnsavedChanges.value = false;
     }
   };
@@ -164,6 +166,7 @@ export default (
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
+      standByRecords: recordsState.value.standByRecords,
     });
 
     const newTimesheet = {
@@ -188,6 +191,10 @@ export default (
         ...previousWeekTimesheet.travelProject!,
         ids: new Array(7).fill(null),
       },
+      standByProject: {
+        ...previousWeekTimesheet.standByProject!,
+        ids: new Array(7).fill(null),
+      },
     };
 
     timesheet.value = newTimesheet;
@@ -200,13 +207,14 @@ export default (
       recordsState.value.selectedWeek,
       recordsState.value.timeRecords,
       recordsState.value.travelRecords,
+      recordsState.value.standByRecords,
     ],
     () => {
       if (!timesheet.value) {
         hasUnsavedChanges.value = false;
       }
 
-      store.dispatch('timesheets/getTimesheets', {
+      store.dispatch("timesheets/getTimesheets", {
         date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
         employeeId,
       });
@@ -216,6 +224,7 @@ export default (
         leaveDays: createLeaveProject(recordsState.value.selectedWeek, recordsState.value.workScheme),
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
+        standByRecords: recordsState.value.standByRecords,
         workScheme: recordsState.value.workScheme,
       });
 
