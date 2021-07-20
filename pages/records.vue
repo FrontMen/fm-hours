@@ -63,6 +63,29 @@
         </weekly-timesheet>
 
         <template
+          v-if="employee && employee.standBy && timesheet.standBy"
+        >
+          <h3 class="mt-5 mb-3">
+            Stand-by hours
+          </h3>
+
+          <weekly-timesheet :selected-week="recordsState.selectedWeek">
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.standBy"
+                :readonly="!isAdminView && isReadonly"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="timesheetFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
+
+        <template
           v-if="employee && employee.travelAllowance && timesheet.travelProject"
         >
           <h3 class="mt-5 mb-3">
