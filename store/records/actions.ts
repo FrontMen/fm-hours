@@ -6,6 +6,7 @@ import {buildWeek, checkNonWorkingDays, getDayOnGMT} from '~/helpers/dates';
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
+  getStandByRecordsToSave,
 } from '~/helpers/timesheet';
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
@@ -60,12 +61,15 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       employeeId: payload.employeeId,
     });
 
-    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay)
+    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay);
 
-    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords(
-      {
-        employeeId: payload.employeeId,
-      });
+    const standByRecords = await this.app.$standByRecordsService.getEmployeeRecords({
+      employeeId: payload.employeeId,
+    });
+
+    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords({
+      employeeId: payload.employeeId,
+    });
 
     commit('setLoading', {isLoading: false});
     commit('setRecords', {
@@ -74,6 +78,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       leaveDays,
       selectedWeek,
       workScheme: workSchemeResult || [],
+      standByRecords,
     });
   },
 
@@ -126,7 +131,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const start = new Date(payload.week[0].date);
     const end = new Date(payload.week[6].date);
 
-    const isNotWithinSavedWeek = (record: TimeRecord | TravelRecord) =>
+    const isNotWithinSavedWeek = (record: TimeRecord | TravelRecord | StandbyRecord) =>
       !isWithinInterval(new Date(record.date), {start, end});
 
     const timeRecordsToSave = getTimeRecordsToSave(
@@ -139,16 +144,25 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.week
     );
 
+    const standByRecordsToSave = getStandByRecordsToSave(
+      payload.timesheet,
+      payload.week
+    );
+
     const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
       employeeId: payload.employeeId,
       timeRecords: timeRecordsToSave,
     });
 
-    const travelRecords =
-      await this.app.$travelRecordsService.saveEmployeeRecords({
-        employeeId: payload.employeeId,
-        travelRecords: travelRecordsToSave,
-      });
+    const standByRecords = await this.app.$standByRecordsService.saveEmployeeRecords({
+      employeeId: payload.employeeId,
+      standByRecords: standByRecordsToSave,
+    });
+
+    const travelRecords = await this.app.$travelRecordsService.saveEmployeeRecords({
+      employeeId: payload.employeeId,
+      travelRecords: travelRecordsToSave,
+    });
 
     commit('setSaving', {isSaving: false});
     commit('updateRecords', {
@@ -159,6 +173,10 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       travelRecords: [
         ...state.travelRecords.filter(isNotWithinSavedWeek),
         ...travelRecords,
+      ],
+      standByRecords: [
+        ...state.standByRecords.filter(isNotWithinSavedWeek),
+        ...standByRecords,
       ],
     });
   },

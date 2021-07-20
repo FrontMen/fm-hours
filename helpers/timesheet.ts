@@ -267,6 +267,23 @@ export const getTimeRecordsToSave = (
   return timeRecordsToSave;
 };
 
+export const getStandByRecordsToSave = (
+  timesheet: WeeklyTimesheet,
+  week: WeekDate[]
+): StandbyRecord[] => {
+  const standByRecordsToSave: StandbyRecord[] = [];
+
+  timesheet.standByProject?.values.forEach((value, index) => {
+    standByRecordsToSave.push({
+      id: timesheet.standByProject?.ids[index] || null,
+      date: new Date(week[index].date).getTime(),
+      hours: value,
+    });
+  });
+
+  return standByRecordsToSave;
+};
+
 export const getTravelRecordsToSave = (
   timesheet: WeeklyTimesheet,
   week: WeekDate[]
