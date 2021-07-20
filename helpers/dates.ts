@@ -63,7 +63,7 @@ export function checkHolidays(
       workScheme &&
       workScheme.length > 0 &&
       !day.isWeekend &&
-      workScheme.some((ws) => ws.date === day.date);
+      !workScheme.some((ws) => ws.date === day.date);
 
     return {
       ...day,
