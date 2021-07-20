@@ -45,6 +45,7 @@
               :selected-week="recordsState.selectedWeek"
               :value-formatter="timesheetFormatter"
               :employee="employee"
+              @save="saveTimesheet(recordStatus.NEW)"
               @change="hasUnsavedChanges = true"
               @remove="deleteProject(timesheet.projects[index])"
             />
