@@ -26,27 +26,11 @@ export const createWeeklyTimesheet = (params: {
   });
 
   return {
-    projects: createTimesheetProjects(
-      params.week,
-      weeklyCustomers,
-      weeklyTimeRecords
-    ),
+    projects:
+      createCustomerProjects(params.week, weeklyCustomers, weeklyTimeRecords) ||
+      [],
     travelProject: createTravelProject(params.week, weeklyTravelRecords),
   };
-};
-
-const createTimesheetProjects = (
-  week: WeekDate[],
-  customers: Customer[],
-  timeRecords: TimeRecord[]
-): TimesheetProject[] => {
-  const projects: TimesheetProject[] = [];
-
-  const customerProjects = createCustomerProjects(week, customers, timeRecords);
-
-  if (customerProjects.length > 0) projects.push(...customerProjects);
-
-  return projects;
 };
 
 const createCustomerProjects = (
