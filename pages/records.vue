@@ -63,10 +63,11 @@
         </weekly-timesheet>
 
         <template
-          v-if="employee && employee.standBy && timesheet.standByProject"
+          v-if="employee && (employee.standBy || isAdminView) && timesheet.standByProject"
         >
           <h3 class="mt-5 mb-3">
             Stand-by hours
+            <small v-if="!employee.standBy" class="text-danger">- not active for employee</small>
           </h3>
 
           <weekly-timesheet :selected-week="recordsState.selectedWeek">
@@ -118,10 +119,11 @@
           </template>
 
           <template
-            v-if="employee && employee.travelAllowance && timesheet.travelProject"
+            v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
           >
             <h3 class="mt-5 mb-3">
               Travel allowance
+              <small v-if="!employee.travelAllowance" class="text-danger">- not active for employee</small>
             </h3>
 
             <weekly-timesheet :selected-week="recordsState.selectedWeek">
