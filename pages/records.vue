@@ -60,7 +60,7 @@
             />
           </template>
         </weekly-timesheet>
-
+        
         <template
           v-if="employee && employee.travelAllowance && timesheet.travelProject"
         >
@@ -92,6 +92,7 @@
           max-rows="4"
           :plaintext="!isAdminView && isReadonly"
           @change="hasUnsavedChanges = true"
+          @blur="handleBlur"
         />
       </form>
 
@@ -172,6 +173,9 @@ import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-tota
 
 import useTimesheet from "~/composables/useTimesheet";
 import { recordStatus } from "~/helpers/record-status";
+import {debounce} from "~/helpers/helpers";
+
+let self:any;
 
 export default defineComponent({
   components: {
@@ -187,7 +191,11 @@ export default defineComponent({
 
   head: {},
 
-  setup() {
+  created() {
+    self = this;
+    self.autoSave = debounce(self.autoSave, 5000)
+  },
+  setup(_, {emit}) {
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
@@ -240,6 +248,10 @@ export default defineComponent({
       timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
     };
 
+    const handleBlur = () => {
+      self.autoSave();
+    }
+
     const selectableCustomers = computed(() => {
       const customers: Customer[] = store.state.customers.customers;
       const selectedCustomers = timesheet.timesheet.value.projects.map(
@@ -263,13 +275,19 @@ export default defineComponent({
       ];
     });
 
+    function autoSave() {
+      emit("save");
+    }
+
     return {
+      autoSave,
       employee: selectedEmployee,
       selectableCustomers,
       recordsState,
       recordStatus,
       isAdminView,
       reasonOfDenial,
+      handleBlur,
       handleDeny,
       ...timesheet,
     };
