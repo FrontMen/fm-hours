@@ -57,6 +57,7 @@
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
+        @blur="handleBlur"
       />
     </b-col>
     <b-col cols="1" class="weekly-timesheet-row__total-column">
@@ -80,9 +81,12 @@ import {
   floatToTotalTimeString,
   timeStringToFloat,
 } from "~/helpers/timesheet";
+import { debounce } from "~/helpers/helpers";
+
+let self:any;
 
 export default defineComponent({
-  emits: ["remove"],
+  emits: ["remove", "save"],
   props: {
     project: {
       type: Object as PropType<TimesheetProject>,
@@ -108,6 +112,10 @@ export default defineComponent({
       required: true,
     },
   },
+  created() {
+    self = this;
+    self.autoSave = debounce(self.autoSave, 5000)
+  },
   setup(props, { emit }) {
     const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
@@ -120,6 +128,14 @@ export default defineComponent({
       closeTooltip();
       emit("remove", props.project);
     };
+
+    function autoSave() {
+      emit("save");
+    }
+
+    const handleBlur = () => {
+      self.autoSave();
+    }
 
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.project.customer.name === "Kilometers";
@@ -178,6 +194,8 @@ export default defineComponent({
     return {
       tooltip,
       canRemove,
+      autoSave,
+      handleBlur,
       closeTooltip,
       handleRemoveClick,
       totalValue,

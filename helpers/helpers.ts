@@ -19,9 +19,9 @@ export const queryOnString = (target: string, query: string) =>
 
 export function debounce(func: any, timeout = 300) {
   let timer: any;
-  return (...args: any[]) => {
+  return function (...args: any[]) {
     clearTimeout(timer);
-    timer = setTimeout(() => {
+    timer = setTimeout(function () {
       // @ts-ignore
       func.apply(this, args);
     }, timeout);
