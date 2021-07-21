@@ -50,27 +50,27 @@ export default class RecordsService {
     }));
   }
 
-  async saveEmployeeRecords(params: {
+  async saveEmployeeRecords<RecordType extends { id: string|null, hours: number }>(params: {
     employeeId: string;
-    timeRecords: TimeRecord[];
-  }) {
-    const ref = this.fire.firestore.collection('time_records');
+    timeRecords: RecordType[];
+  }, collection: string = 'time_records') {
+    const ref = this.fire.firestore.collection(collection);
 
     const updatedRecords = await Promise.all(
-      params.timeRecords.map(async (timeRecord) => {
-        return await this.updateRecord(ref, params.employeeId, timeRecord);
+      params.timeRecords.map(async (timeRecord: RecordType) => {
+        return await this.updateRecord<RecordType>(ref, params.employeeId, timeRecord);
       })
     );
 
     return updatedRecords.filter((x) => !!x.id);
   }
 
-  private async updateRecord(
+  private async updateRecord<RecordType extends { id: string|null, hours: number }>(
     ref: any,
     employeeId: string,
-    record: TimeRecord
-  ): Promise<TimeRecord> {
-    const {id, hours} = record;
+    record: RecordType
+  ): Promise<RecordType> {
+    const { id, hours } = record;
 
     const newRecord: any = {...record};
     delete newRecord.id;

@@ -149,15 +149,15 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.week
     );
 
-    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
+    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
       employeeId: payload.employeeId,
       timeRecords: timeRecordsToSave,
     });
 
-    const standByRecords = await this.app.$standByRecordsService.saveEmployeeRecords({
+    const standByRecords = await this.app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>({
       employeeId: payload.employeeId,
-      standByRecords: standByRecordsToSave,
-    });
+      timeRecords: standByRecordsToSave,
+    }, "standby_records");
 
     const travelRecords = await this.app.$travelRecordsService.saveEmployeeRecords({
       employeeId: payload.employeeId,
