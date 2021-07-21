@@ -2,7 +2,7 @@
 import { addDays, startOfISOWeek, subDays, isWithinInterval } from "date-fns";
 import { ActionTree } from "vuex";
 
-import { buildWeek, checkHolidays, getDayOnGMT } from "~/helpers/dates";
+import { buildWeek, checkNonWorkingDays, getDayOnGMT } from "~/helpers/dates";
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
@@ -50,7 +50,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const selectedWeek = checkHolidays(
+    const selectedWeek = checkNonWorkingDays(
       workWeek,
       rootState.holidays.holidays,
       workSchemeResult
@@ -99,7 +99,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const selectedWeek = checkHolidays(
+    const selectedWeek = checkNonWorkingDays(
       workWeek,
       rootState.holidays.holidays,
       workSchemeResult

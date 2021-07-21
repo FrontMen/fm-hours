@@ -45,6 +45,7 @@
       :class="{
         weekend: selectedWeek[index].isWeekend,
         holiday: selectedWeek[index].isHoliday,
+        leave: selectedWeek[index].isLeaveDay,
       }"
     >
       <b-form-input
@@ -230,7 +231,8 @@ export default defineComponent({
     }
 
     &.holiday,
-    &.weekend {
+    &.weekend,
+    &.leave {
       background-color: #999;
     }
   }

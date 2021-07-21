@@ -8,6 +8,7 @@ interface WeekDate {
   isWeekend: boolean;
   isToday: boolean;
   isHoliday: boolean;
+  isLeaveDay: boolean;
 }
 
 interface TimeRecord {

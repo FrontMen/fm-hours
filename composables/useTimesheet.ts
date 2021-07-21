@@ -83,11 +83,9 @@ export default (
       return project.values.reduce((acc, value, index) => {
         if (!value) return acc;
 
-        return (
-          index === 5 ||
-          index === 6 ||
-          recordsState.value.selectedWeek[index].isHoliday
-        );
+        const day = recordsState.value.selectedWeek[index];
+
+        return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
       }, false);
     }, false);
   });

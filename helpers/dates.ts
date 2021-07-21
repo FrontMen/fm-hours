@@ -55,11 +55,12 @@ export function buildWeek(startDate: string | number | Date): WeekDate[] {
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
       isHoliday: false,
+      isLeaveDay: false,
     };
   });
 }
 
-export function checkHolidays(
+export function checkNonWorkingDays(
   days: WeekDate[],
   customHolidays: string[],
   workScheme?: WorkScheme[]
@@ -67,12 +68,14 @@ export function checkHolidays(
   return days.map((day) => {
     const isCustomHoliday = customHolidays.includes(day.date);
 
-    const isPublicHoliday = !!workScheme?.find((ws) => ws.date === day.date)
-      ?.holiday;
+    const workSchemeDay = workScheme?.find((ws) => ws.date === day.date);
+    const isPublicHoliday = !!workSchemeDay?.holiday;
+    const isLeaveDay = !!workSchemeDay?.absenceHours;
 
     return {
       ...day,
       isHoliday: isCustomHoliday || isPublicHoliday,
+      isLeaveDay,
     };
   });
 }

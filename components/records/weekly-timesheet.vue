@@ -10,7 +10,11 @@
           :key="date.weekDay"
           cols="1"
           class="weekly-timesheet__date-column"
-          :class="{ today: date.isToday, holiday: date.isHoliday }"
+          :class="{
+            today: date.isToday,
+            holiday: date.isHoliday,
+            leave: date.isLeaveDay,
+          }"
         >
           <strong class="d-block">
             <span class="d-md-none">{{ date.weekDayShort }}</span>
@@ -72,7 +76,8 @@ export default defineComponent({
     }
 
     &.today::after,
-    &.holiday::after {
+    &.holiday::after,
+    &.leave::after {
       position: absolute;
       top: -17px;
       right: 0;
@@ -98,6 +103,14 @@ export default defineComponent({
 
     &.holiday::after {
       content: "HOLIDAY";
+    }
+
+    &.leave::after {
+      content: "LEAVE";
+    }
+
+    &.today.leave::after {
+      content: "TDY/LVD";
     }
 
     &.today.holiday::after {
