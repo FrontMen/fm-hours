@@ -173,7 +173,7 @@ import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-tota
 
 import useTimesheet from "~/composables/useTimesheet";
 import { recordStatus } from "~/helpers/record-status";
-import {debounce} from "~/helpers/helpers";
+import { debounce } from "~/helpers/helpers";
 
 let self:any;
 
@@ -276,7 +276,7 @@ export default defineComponent({
     });
 
     function autoSave() {
-      emit("save");
+      timesheet.saveTimesheet(recordStatus.NEW as TimesheetStatus);
     }
 
     return {
