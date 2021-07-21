@@ -81,7 +81,9 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       console.error(error);
       commit(
         "setErrorMessage",
-        "An unexpected error happened while trying to log in"
+        error.response
+          ? "An unexpected error happened while trying to log in"
+          : error.message
       );
       dispatch("logout");
     }
