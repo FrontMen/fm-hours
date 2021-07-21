@@ -20,7 +20,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
         endDate: endDate.getTime(),
       }
     );
-    const timeRecordsPromise = this.app.$timeRecordsService.getRecords({
+    const timeRecordsPromise = this.app.$timeRecordsService.getRecords<TimeRecord>({
       startDate,
       endDate,
     });
