@@ -1,9 +1,10 @@
 <template>
-  <div class="weekly-timesheet-footer">
+  <div class="weekly-timesheet-footer mb-3">
     <div>
-      <span v-if="lastSaved" class="mr-3"
-        >Last saved: {{ lastSavedLabel }}</span
-      >
+      <span
+        v-if="lastSaved"
+        class="mr-3"
+      >Last saved: {{ lastSavedLabel }}</span>
       <b-spinner v-if="isSaving" small />
 
       <b-button
@@ -37,6 +38,14 @@
 
     <template v-else>
       <template v-if="isApproved">
+        <b-button
+          class="mr-3 ml-3"
+          variant="danger"
+          :disabled="isSaving"
+          @click="handleUndoApproveClick"
+        >
+          Undo approval
+        </b-button>
         <strong>APPROVED</strong>
         <b-icon class="ml-1" icon="check-circle-fill" variant="success" />
       </template>
@@ -87,6 +96,7 @@ export default defineComponent({
 
     const handleSaveClick = () => emit("save");
     const handleApproveClick = () => emit("approve");
+    const handleUndoApproveClick = () => emit("unapprove");
 
     const isApproved = computed(() => props.status === recordStatus.APPROVED);
     const isDenied = computed(() => props.status === recordStatus.DENIED);
@@ -114,6 +124,7 @@ export default defineComponent({
     return {
       handleSaveClick,
       handleApproveClick,
+      handleUndoApproveClick,
       isClosed,
       isApproved,
       isDenied,

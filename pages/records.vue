@@ -98,6 +98,7 @@
         :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.PENDING)"
         @approve="saveTimesheet(recordStatus.APPROVED)"
+        @unapprove="saveTimesheet(recordStatus.NEW)"
       />
 
       <weekly-timesheet-footer
@@ -250,7 +251,7 @@ export default defineComponent({
         })),
       ];
     });
- 
+
     return {
       employee: selectedEmployee,
       selectableCustomers,
