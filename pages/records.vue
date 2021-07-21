@@ -151,20 +151,7 @@
                 />
               </template>
             </weekly-timesheet>
-
-            <b-form-textarea
-              v-if="!isReadonly || message"
-              id="message-textarea"
-              v-model="message"
-              class="mt-4"
-              placeholder="Add a comment here."
-              rows="1"
-              max-rows="4"
-              :plaintext="!isAdminView && isReadonly"
-              @change="hasUnsavedChanges = true"
-            />
           </template>
-        </template>
 
         <template v-if="timesheet.leaveDays" class="mb-3">
           <h3 class="mt-5 mb-3">
@@ -187,19 +174,19 @@
             </weekly-timesheet>
           </div>
         </template>
-
-        <b-form-textarea
-          v-if="!isReadonly || message"
-          id="message-textarea"
-          v-model="message"
-          class="mt-4"
-          placeholder="Add a comment here."
-          rows="1"
-          max-rows="4"
-          :plaintext="!isAdminView && isReadonly"
-          @change="hasUnsavedChanges = true"
-          @blur="handleBlur"
-        />
+          <b-form-textarea
+            v-if="!isReadonly || message"
+            id="message-textarea"
+            v-model="message"
+            class="mt-4"
+            placeholder="Add a comment here."
+            rows="1"
+            max-rows="4"
+            :plaintext="!isAdminView && isReadonly"
+            @change="hasUnsavedChanges = true"
+            @blur="handleBlur"
+          />
+        </template>
       </form>
 
       <weekly-timesheet-admin-footer
