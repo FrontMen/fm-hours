@@ -129,6 +129,10 @@ export default defineComponent({
       emit("remove", props.project);
     };
 
+    function autoSave() {
+      emit("save");
+    }
+
     const handleBlur = () => {
       self.autoSave();
     }

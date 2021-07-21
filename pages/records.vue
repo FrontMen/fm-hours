@@ -60,7 +60,7 @@
             />
           </template>
         </weekly-timesheet>
-        
+
         <template
           v-if="employee && employee.travelAllowance && timesheet.travelProject"
         >
