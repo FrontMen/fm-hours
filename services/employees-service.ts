@@ -21,7 +21,9 @@ export default class EmployeesService {
   }
 
   async getEmployee(employeeId: string): Promise<Employee | null> {
-    const doc: DocumentSnapshot | null = await this.getEmployeeInformation(employeeId);
+    const doc: DocumentSnapshot | null = await this.getEmployeeInformation(
+      employeeId
+    );
 
     if (doc !== null && doc.exists) {
       const {
@@ -53,7 +55,9 @@ export default class EmployeesService {
     return null;
   }
 
-  async getEmployeeInformation(employeeId: string): Promise<DocumentSnapshot | null> {
+  async getEmployeeInformation(
+    employeeId: string
+  ): Promise<DocumentSnapshot | null> {
     const { isDevelopment }: any = config.publicRuntimeConfig;
     let ref;
     let snapshot: QuerySnapshot;
@@ -107,8 +111,8 @@ export default class EmployeesService {
       .set(newEmployee, { merge: true });
   }
 
-  async deleteEmployee(id:string) {
-    return await this.fire.firestore.collection("employees").doc(id).delete()
+  async deleteEmployee(id: string) {
+    return await this.fire.firestore.collection("employees").doc(id).delete();
   }
 
   public async isAdmin(email: string) {
@@ -120,6 +124,14 @@ export default class EmployeesService {
     const ref = this.fire.firestore.collection("admins");
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
+
+    return (result as unknown) as string[];
+  }
+
+  public async getTeams(): Promise<string[]> {
+    const ref = this.fire.firestore.collection("teams");
+    const snapshot = await ref.get();
+    const result = snapshot.docs[0].data().teams || [];
 
     return (result as unknown) as string[];
   }

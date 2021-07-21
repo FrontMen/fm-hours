@@ -20,7 +20,7 @@ interface TimesheetsStoreState {
   selectedEmployeeId: string;
   timesheets: Timesheet[];
   timesheetTableData: TimesheetTableData;
-  previousTimesheet: Timesheet|null;
+  previousTimesheet: Timesheet | null;
 }
 
 interface Timesheet {
@@ -56,6 +56,7 @@ interface TimesheetTableField {
   isRowHeader?: boolean;
   formatedStartDate?: string;
   formatedEndDate?: string;
+  weekNumber?: number;
 }
 
 interface TimesheetTableData {

@@ -5,6 +5,10 @@ const mutations: MutationTree<EmployeesStoreState> = {
     state.adminList = payload;
   },
 
+  setTeamList: (state, payload: string[]) => {
+    state.teamList = payload;
+  },
+
   setEmployees: (state, payload: { employees: Employee[] }) => {
     state.employees = payload.employees;
   },
@@ -22,7 +26,6 @@ const mutations: MutationTree<EmployeesStoreState> = {
   deleteEmployeeSuccess: (state, deletedId: string) => {
     state.employees = state.employees.filter((i) => i.id !== deletedId);
   },
-
 };
 
 export default mutations;

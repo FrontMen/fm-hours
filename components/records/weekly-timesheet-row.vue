@@ -3,9 +3,9 @@
     <b-col class="weekly-timesheet-row__action-column" cols="4">
       <b-button
         v-if="canRemove"
+        :id="project.customer.name"
         class="weekly-timesheet-row__remove-button"
         variant="outline-primary"
-        @click="handleRemoveClick"
       >
         <b-icon icon="x-square" />
       </b-button>
@@ -15,8 +15,30 @@
       </span>
     </b-col>
 
+    <b-tooltip
+      id="tooltip-confirmation"
+      ref="tooltip"
+      custom-class="tooltip-opacity"
+      :target="project.customer.name"
+      placement="bottom"
+      triggers="click blur"
+      variant="light"
+    >
+      <div class="container">
+        Remove entries from timesheet?
+        <b-row class="justify-content-around mt-2">
+          <b-button variant="secondary" @click="closeTooltip">
+            Cancel
+          </b-button>
+          <b-button variant="danger" @click="handleRemoveClick">
+            Delete
+          </b-button>
+        </b-row>
+      </div>
+    </b-tooltip>
+
     <b-col
-      v-for="(value, index) in project.values"
+      v-for="(value, index) in formattedProjectValues"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -26,16 +48,16 @@
       }"
     >
       <b-form-input
-        v-model="project.values[index]"
+        v-model="formattedProjectValues[index]"
         class="weekly-timesheet-row__value-input"
         type="text"
+        inputmode="decimal"
         :formatter="valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
     </b-col>
-
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
@@ -43,9 +65,20 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import {
+  ref,
+  computed,
+  defineComponent,
+  PropType,
+  watch,
+} from "@nuxtjs/composition-api";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
+import {
+  floatTo24TimeString,
+  floatToTotalTimeString,
+  timeStringToFloat,
+} from "~/helpers/timesheet";
 
 export default defineComponent({
   emits: ["remove"],
@@ -75,17 +108,49 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
+    const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
+
+    const closeTooltip = () => {
+      tooltip.value.$emit("close");
+    };
+
     const handleRemoveClick = () => {
+      closeTooltip();
       emit("remove", props.project);
     };
 
-    const totalValue = computed(
-      () =>
-        +props.project.values
-          .reduce((total, current) => total + +current)
-          .toFixed(1)
+    // Act as middleware to intercept project values to format it for the view
+    const isTravelAllowance = props.project.customer.name === "Kilometers";
+    const getInitialState = (project: TimesheetProject) => {
+      return isTravelAllowance
+        ? project.values.map((val) => val.toString())
+        : project.values.map((num) => {
+            if (num === 0) {
+              return "0";
+            } else {
+              return floatTo24TimeString(num);
+            }
+          });
+    };
+
+    const formattedProjectValues = ref(getInitialState(props.project));
+    watch(
+      () => formattedProjectValues.value,
+      () => {
+        const floatIntegers = formattedProjectValues.value.map((val) =>
+          !isTravelAllowance ? timeStringToFloat(val) : +val
+        );
+        props.project.values = floatIntegers;
+      }
     );
+
+    const totalValue = computed(() => {
+      const total = props.project.values.reduce(
+        (total, current) => +total + +current
+      );
+      return isTravelAllowance ? total : floatToTotalTimeString(total);
+    });
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.
@@ -110,9 +175,12 @@ export default defineComponent({
     };
 
     return {
+      tooltip,
       canRemove,
+      closeTooltip,
       handleRemoveClick,
       totalValue,
+      formattedProjectValues,
       isReadonlyList,
       handleInputFocus,
     };
@@ -187,5 +255,8 @@ export default defineComponent({
       padding: 0 15px;
     }
   }
+}
+.tooltip-opacity {
+  opacity: 1;
 }
 </style>

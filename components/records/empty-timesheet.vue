@@ -2,7 +2,7 @@
   <div class="empty-timesheet">
     <p>There are no hours registered for this week.</p>
 
-    <template v-if="!isAdminView">
+    <template>
       <b-button v-b-modal.modal-add-project> Add a project </b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 

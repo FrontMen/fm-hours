@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar" :class="{ 'top-bar__development': isDev }">
+  <div class="top-bar hide-print" :class="{ 'top-bar__development': isDev }">
     <div class="top-bar__inner content-wrapper">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
@@ -80,6 +80,12 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+@media print {
+  .hide-print {
+    visibility: hidden;
+  }
+}
+
 .top-bar {
   background: var(--color-primary);
 

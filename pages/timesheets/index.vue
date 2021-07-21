@@ -1,65 +1,63 @@
 <template>
-  <div class="page-wrapper">
-    <div class="my-5 content-wrapper">
-      <b-form-group
-        label="Filter by:"
-        label-for="filter-select"
-        label-class="font-weight-bold"
-        class="filter"
+  <div class="my-5 content-wrapper">
+    <b-form-group
+      label="Filter by:"
+      label-for="filter-select"
+      label-class="font-weight-bold"
+      class="filter"
+    >
+      <b-form-select
+        id="filter-select"
+        v-model="selected"
+        :options="options"
+        class="filter__select"
       >
-        <b-form-select
-          id="filter-select"
-          v-model="selected"
-          :options="options"
-          class="filter__select"
-        >
-          <template #first>
-            <b-form-select-option :value="null">
-              All
-            </b-form-select-option>
-          </template>
-        </b-form-select>
-      </b-form-group>
-      <b-table
-        class="mt-3 app-table timesheet-table"
-        responsive
-        :items="tableData.items"
-        :fields="tableData.fields"
-        :sort-compare="sortCompare"
-        :filter="filter"
-        sort-by="id"
-        no-sort-reset
-      >
-        <template #head(id)="scope">
-          <div>
-            {{ scope.label }}
-          </div>
+        <template #first>
+          <b-form-select-option :value="null"> All </b-form-select-option>
         </template>
-        <template #head()="scope">
-          <div class="table-cell-wrapper table-cell-wrapper__heading">
-            <p>
-              {{
-                `${scope.field.formatedStartDate} ${scope.field.formatedEndDate}`
-              }}
-            </p>
-          </div>
-        </template>
-        <template #cell(id)="scope">
-          <div class="table-cell-wrapper table-cell-wrapper__employee">
-            <p>{{ scope.item.name }}</p>
-          </div>
-        </template>
-        <template #cell()="scope">
-          <div
-            :class="['container--cell', scope.item[scope.field.key]]"
-            :title="scope.item[scope.field.key]"
-            @click="
-              openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
-            "
-          />
-        </template>
-      </b-table>
-    </div>
+      </b-form-select>
+    </b-form-group>
+    <b-table
+      class="mt-3 app-table timesheet-table"
+      responsive
+      head-variant="dark"
+      :items="tableData.items"
+      :fields="tableData.fields"
+      :sort-compare="sortCompare"
+      :sort-desc.sync="sortDescending"
+      :filter="filter"
+      sort-by="id"
+      no-sort-reset
+    >
+      <template #head(id)="scope">
+        <div>
+          {{ scope.label }}
+        </div>
+      </template>
+      <template #head()="scope">
+        <div class="table-cell-wrapper table-cell-wrapper__heading">
+          <p>
+            {{
+              `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
+            }}
+          </p>
+        </div>
+      </template>
+      <template #cell(id)="scope">
+        <div class="table-cell-wrapper table-cell-wrapper__employee">
+          <p>{{ scope.item.name }}</p>
+        </div>
+      </template>
+      <template #cell()="scope">
+        <div
+          :class="['container--cell', scope.item[scope.field.key]]"
+          :title="scope.item[scope.field.key]"
+          @click="
+            openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
+          "
+        />
+      </template>
+    </b-table>
   </div>
 </template>
 
@@ -92,13 +90,19 @@ export default defineComponent({
       }))
       .sort((a, b) => a.text.localeCompare(b.text));
 
-    const selected = ref(null);
+    const sortDescending = ref<boolean>(
+      store.getters["filters/getTimesheetSortDescending"]
+    );
+    const selected = ref(store.getters["filters/getTimesheetFilterBy"]);
     const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
     const weeksAfter = 2;
 
-    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const tableData = computed(() => {
+      handleFilterUpdates();
+      return store.state.timesheets.timesheetTableData;
+    });
     store.dispatch("timesheets/getTableData", {
       weeksBefore,
       weeksAfter,
@@ -110,6 +114,21 @@ export default defineComponent({
       startTimestamp: number
     ) => {
       router.push(`/timesheets/${employeeId}/${startTimestamp}`);
+    };
+
+    const handleFilterUpdates = () => {
+      if (store.getters["filters/getTimesheetFilterBy"] !== selected.value) {
+        store.dispatch("filters/updateTimesheetFilterBy", selected.value);
+      }
+      if (
+        store.getters["filters/getTimesheetSortDescending"] !==
+        sortDescending.value
+      ) {
+        store.dispatch(
+          "filters/updateTimesheetSortDescending",
+          sortDescending.value
+        );
+      }
     };
 
     const sortCompare = (
@@ -126,6 +145,7 @@ export default defineComponent({
       options,
       selected,
       filter: getSelected,
+      sortDescending,
       recordStatus,
       openEmployeeTimesheetPage,
       tableData,
@@ -144,14 +164,6 @@ export default defineComponent({
   @media (min-width: 576px) {
     width: 25%;
   }
-}
-
-.timesheet-table > .table.b-table > thead > tr > .table-b-table-default,
-.timesheet-table > .table.b-table > thead > tr > th {
-  background: var(--color-primary);
-  color: var(--color-primary-text);
-  padding-top: 1rem;
-  padding-bottom: 1rem;
 }
 
 .container--cell {

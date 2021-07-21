@@ -5,7 +5,8 @@ import { buildWeek, getDayOnGMT } from "~/helpers/dates";
 import { recordStatus } from "~/helpers/record-status";
 import {
   createWeeklyTimesheet,
-  generateValueFormatter,
+  timesheetFormatter,
+  kilometerFormatter,
 } from "~/helpers/timesheet";
 import { buildEmailData } from "~/helpers/email";
 
@@ -315,8 +316,8 @@ export default (
     deleteProject,
     hasUnsavedChanges,
     timesheet,
-    timesheetFormatter: generateValueFormatter(0, 24),
-    kilometerFormatter: generateValueFormatter(0, 9999),
+    timesheetFormatter: timesheetFormatter(24),
+    kilometerFormatter: kilometerFormatter(0, 9999),
     saveTimesheet,
     timesheetStatus,
     isReadonly,

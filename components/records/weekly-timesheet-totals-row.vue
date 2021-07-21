@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import { floatToTotalTimeString } from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {
@@ -56,12 +57,12 @@ export default defineComponent({
       let total = 0;
 
       props.projects.forEach((project) => {
-        total += +project.values
-          .reduce((prevValue, value) => prevValue + +value)
-          .toFixed(1);
+        total += +project.values.reduce(
+          (prevValue, value) => +prevValue + +value
+        );
       });
 
-      return total;
+      return floatToTotalTimeString(total);
     });
 
     const weekTheoreticalTotal = computed(() => {
@@ -76,10 +77,10 @@ export default defineComponent({
         let total = 0;
 
         props.projects.forEach((project) => {
-          total += project.values[index];
+          total += +project.values[index];
         });
 
-        return total;
+        return total === 0 ? "0" : floatToTotalTimeString(total);
       });
     });
 

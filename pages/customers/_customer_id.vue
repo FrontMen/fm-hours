@@ -1,22 +1,23 @@
 <template>
-  <div class="page-wrapper">
-    <div class="content-wrapper my-5">
-      <div v-if="!customer">Customer not found</div>
+  <div class="content-wrapper my-5">
+    <div v-if="!customer">Customer not found</div>
 
-      <template v-else>
-        <b-container class="mb-5">
-          <b-row>
-            <nuxt-link to="/customers" class="btn btn-primary">
-              <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-              Customers
-            </nuxt-link>
-          </b-row>
-        </b-container>
+    <template v-else>
+      <b-container class="mb-5">
+        <div class="mb-5">
+          <nuxt-link to="/customers" class="btn btn-primary">
+            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
+            Customers
+          </nuxt-link>
+        </div>
         <b-form
           @submit.prevent="handleSubmit"
           @change="hasUnsavedChanges = true"
         >
-          <b-alert :show="form.archived" variant="info">This customer archived at {{ form.archivedDate | formatDate("dd MMMM yyyy") }}</b-alert>
+          <b-alert :show="form.archived" variant="info">
+            This customer archived at
+            {{ form.archivedDate | formatDate("dd MMMM yyyy") }}
+          </b-alert>
           <b-form-group id="input-group-name" label="Name:" label-for="input-2">
             <b-form-input
               id="input-name"
@@ -74,8 +75,8 @@
             </b-button>
           </div>
         </b-form>
-      </template>
-    </div>
+      </b-container>
+    </template>
   </div>
 </template>
 
@@ -152,18 +153,20 @@ export default defineComponent({
     const archiveCustomerToggle = (archive: boolean) => {
       const archiveData = {
         archived: archive,
-        ...archive ? {archivedDate: Date.now()} : {}
-      }
+        ...(archive ? { archivedDate: Date.now() } : {}),
+      };
 
       const confirmation = confirm(
-        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${customer.value?.name}?`
+        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${
+          customer.value?.name
+        }?`
       );
 
       if (!confirmation) return;
 
       store.dispatch("customers/updateCustomer", {
         ...customer.value,
-        ...archiveData
+        ...archiveData,
       });
     };
 

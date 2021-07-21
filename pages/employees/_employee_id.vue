@@ -1,18 +1,21 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">
-        Employee not found
-      </div>
+      <div v-if="!employee">Employee not found</div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">
-              Manage Projects
-            </h6>
+            <h6 class="mb-3">Edit team:</h6>
+            <b-form-select
+              v-model="selectedTeam"
+              :options="teamList"
+              class="mb-3"
+              @change="hasUnsavedChanges = true"
+            />
+            <h6 class="mb-3">Manage Projects</h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -26,10 +29,9 @@
               @input="hasUnsavedChanges = true"
             >
               <template slot="selection" slot-scope="{ values }">
-                <span
-                  v-if="values.length"
-                  class="multiselect__single"
-                >{{ values.length }} options selected</span>
+                <span v-if="values.length" class="multiselect__single"
+                  >{{ values.length }} options selected</span
+                >
               </template>
             </multiselect>
 
@@ -57,10 +59,13 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">
-              Employee Settings
-            </h6>
-            <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
+            <h6 class="mb-3">Employee Settings</h6>
+            <b-form-checkbox
+              v-model="isAdmin"
+              switch
+              class="mt-2 mr-3"
+              @change="hasUnsavedChanges = true"
+            >
               Admin
             </b-form-checkbox>
             <b-form-checkbox
@@ -98,7 +103,7 @@
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
           Save
         </b-button>
-        <b-button @click="handleEmployeeDelete" variant="danger">
+        <b-button variant="danger" @click="handleEmployeeDelete">
           Delete
         </b-button>
         <b-row>
@@ -140,7 +145,8 @@ export default defineComponent({
 
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
-    const errorMessage = ref("")
+    const errorMessage = ref("");
+    const selectedTeam = ref<string | null>(null);
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -161,6 +167,15 @@ export default defineComponent({
       employees.value.find((x) => x.id === employeeId)
     );
 
+    const teamList = computed(() => {
+      const parsedTeam = store.getters["employees/teamList"].map(
+        (team: string) => {
+          return { value: team, text: team };
+        }
+      );
+      return [{ value: null, text: "Select team" }, ...parsedTeam];
+    });
+
     const pageTitle = computed(() =>
       employee.value ? `Employees - ${employee.value?.name}` : "Employees"
     );
@@ -176,15 +191,22 @@ export default defineComponent({
         store.dispatch("customers/getCustomers");
       }
 
-      if (store.getters["employees/adminList"].length === 0) {
-        store.dispatch("employees/getAdminList");
-      }
+      store.dispatch("employees/getAdminList");
+      store.dispatch("employees/getTeamList");
 
       if (employee?.value?.endDate) {
-        hasEndDate.value = true
-        endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
+        hasEndDate.value = true;
+        endDate.value = formatDate(getDayOnGMT(employee.value.endDate));
       }
     });
+
+    watch(
+      () => [employee.value?.team],
+      () => {
+        selectedTeam.value = employee.value?.team || null;
+      },
+      { immediate: true }
+    );
 
     watch(
       () => [employee.value?.projects, customers.value],
@@ -199,11 +221,16 @@ export default defineComponent({
       { immediate: true }
     );
 
-    const isAdmin = ref<boolean>(store.getters["employees/adminList"].includes(employee.value?.email));
+    const isAdmin = ref<boolean>(
+      store.getters["employees/adminList"].includes(employee.value?.email)
+    );
     watch(
-      () => store.getters["employees/adminList"].includes(employee.value?.email),
+      () =>
+        store.getters["employees/adminList"].includes(employee.value?.email),
       () => {
-        isAdmin.value = store.getters["employees/adminList"].includes(employee.value?.email);
+        isAdmin.value = store.getters["employees/adminList"].includes(
+          employee.value?.email
+        );
       },
       { immediate: true }
     );
@@ -233,25 +260,34 @@ export default defineComponent({
     const hasEndDate = ref(!!employee?.value?.endDate);
     const endDate = ref<string | null>(null);
 
-    watch(() => employee.value, () => {
-      if (employee?.value?.endDate) {
-          hasEndDate.value = true
-          endDate.value = formatDate(getDayOnGMT(employee.value.endDate))
+    watch(
+      () => employee.value,
+      () => {
+        if (employee?.value?.endDate) {
+          hasEndDate.value = true;
+          endDate.value = formatDate(getDayOnGMT(employee.value.endDate));
         }
-    })
-
-    watch(() => hasEndDate.value, () => {
-      if (!hasEndDate.value) {
-          endDate.value = null
-          errorMessage.value = ""
-        }
-    })
-
-    watch(() => endDate.value, () => {
-      if (endDate.value) {
-        errorMessage.value = ""
       }
-    })
+    );
+
+    watch(
+      () => hasEndDate.value,
+      () => {
+        if (!hasEndDate.value) {
+          endDate.value = null;
+          errorMessage.value = "";
+        }
+      }
+    );
+
+    watch(
+      () => endDate.value,
+      () => {
+        if (endDate.value) {
+          errorMessage.value = "";
+        }
+      }
+    );
 
     const handleAdminToggle = (): void => {
       let valueChanged = false;
@@ -265,26 +301,26 @@ export default defineComponent({
         valueChanged = true;
       }
       if (!adminValue && alreadyContained) {
-        adminList = adminList.filter(admin => admin !== email);
+        adminList = adminList.filter((admin) => admin !== email);
         valueChanged = true;
       }
 
       // Only dispatch if value changed. Failsafe for spamming the checkbox.
       if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
-    }
+    };
 
     const saveProjects = () => {
       if (!employee.value) return;
 
       if (hasEndDate.value && !endDate.value) {
-        errorMessage.value = "Please select an end date"
-        return
+        errorMessage.value = "Please select an end date";
+        return;
       }
 
       handleAdminToggle();
-
       const newEmployee = {
         ...employee.value,
+        team: selectedTeam.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
         startDate: new Date(startDate.value).getTime(),
@@ -311,7 +347,7 @@ export default defineComponent({
 
       store.dispatch("employees/deleteEmployee", employeeId);
       router.push("/employees");
-    }
+    };
 
     const handleProjectDelete = (customerId: string) => {
       selectedCustomers.value = selectedCustomers.value.filter(
@@ -331,6 +367,7 @@ export default defineComponent({
       employee,
       customerOptions,
       selectedCustomers,
+      selectedTeam,
       saveProjects,
       hasUnsavedChanges,
       isTravelAllowed,
@@ -342,7 +379,8 @@ export default defineComponent({
       handleProjectDelete,
       defaultCustomers,
       items,
-      handleEmployeeDelete
+      handleEmployeeDelete,
+      teamList,
     };
   },
 });
