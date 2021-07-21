@@ -150,29 +150,6 @@
               </template>
             </weekly-timesheet>
 
-            <template
-              v-if="employee && employee.travelAllowance && timesheet.travelProject"
-            >
-              <h3 class="mt-5 mb-3">
-                Travel allowance
-              </h3>
-
-              <weekly-timesheet :selected-week="recordsState.selectedWeek">
-                <template #rows>
-                  <weekly-timesheet-row
-                    :key="recordsState.selectedWeek[0].date"
-                    :project="timesheet.travelProject"
-                    :readonly="!isAdminView && isReadonly"
-                    :removable="false"
-                    :selected-week="recordsState.selectedWeek"
-                    :value-formatter="kilometerFormatter"
-                    :employee="employee"
-                    @change="hasUnsavedChanges = true"
-                  />
-                </template>
-              </weekly-timesheet>
-            </template>
-
             <b-form-textarea
               v-if="!isReadonly || message"
               id="message-textarea"
