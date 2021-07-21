@@ -1,7 +1,5 @@
 import { NuxtFireInstance } from "@nuxtjs/firebase";
-import { QuerySnapshot, DocumentSnapshot } from "@firebase/firestore-types";
-
-import config from "~/nuxt.config";
+import { DocumentSnapshot } from "@firebase/firestore-types";
 
 export default class EmployeesService {
   fire: NuxtFireInstance;
@@ -56,24 +54,15 @@ export default class EmployeesService {
   }
 
   async getEmployeeInformation(
-    employeeId: string
+    email: string
   ): Promise<DocumentSnapshot | null> {
-    const { isDevelopment }: any = config.publicRuntimeConfig;
-    let ref;
-    let snapshot: QuerySnapshot;
+    const ref = this.fire.firestore
+      .collection("employees")
+      .where("email", "==", email);
 
-    if (isDevelopment) {
-      const ref = this.fire.firestore
-        .collection("employees")
-        .where("email", "==", employeeId);
+    const snapshot = await ref.get();
 
-      snapshot = await ref.get();
-
-      if (!snapshot.empty) return snapshot.docs[0];
-    } else {
-      ref = this.fire.firestore.collection("employees");
-      return await ref.doc(employeeId).get();
-    }
+    if (!snapshot.empty) return snapshot.docs[0];
 
     return null;
   }
