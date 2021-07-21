@@ -1,7 +1,8 @@
 import { ActionTree } from "vuex";
+
 import EmployeesService from "~/services/employees-service";
 import AuthService from "~/services/auth-service";
-import { sleep } from "~/helpers/helpers";
+import { generateAvatarURL } from "~/helpers/employee";
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   async login({ commit }) {
@@ -41,7 +42,6 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     payload: { authUser?: any; claims?: any }
   ) {
     if (!payload.authUser) return;
-    const { isDevelopment } = this.app.$config;
 
     try {
       const employeesService = new EmployeesService(this.$fire);
@@ -58,25 +58,19 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         await authService.setSessionCookieByPpid(ppid);
       }
 
-      const { email, user_id: userId } = payload.claims;
+      const { email } = payload.claims;
 
-      const employeeId = isDevelopment ? email : userId;
-
-      let employee = await employeesService.getEmployee(employeeId);
+      const employee = await employeesService.getEmployee(email);
       const isAdmin = await employeesService.isAdmin(email);
-
-      if (!employee) {
-        await sleep(3000);
-        employee = await employeesService.getEmployee(employeeId);
-      }
 
       if (!employee) throw new Error("Employee not found!");
 
-      if (!employee.bridgeUid) {
+      if (!employee.bridgeUid || !employee.picture) {
         authService.getUserInfo().then((bridgeUid: string) => {
           employeesService.updateEmployee({
             ...employee!,
-            bridgeUid,
+            picture: employee.picture || generateAvatarURL(employee.name),
+            bridgeUid: employee.bridgeUid || bridgeUid,
           });
         });
       }
@@ -87,7 +81,9 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       console.error(error);
       commit(
         "setErrorMessage",
-        "An unexpected error happened while trying to log in"
+        error.response
+          ? "An unexpected error happened while trying to log in"
+          : error.message
       );
       dispatch("logout");
     }
