@@ -59,11 +59,8 @@ export function checkHolidays(
   return days.map((day) => {
     const isCustomHoliday = customHolidays.includes(day.date);
 
-    const isPublicHoliday =
-      workScheme &&
-      workScheme.length > 0 &&
-      !day.isWeekend &&
-      !workScheme.some((ws) => ws.date === day.date);
+    const isPublicHoliday = !!workScheme?.find((ws) => ws.date === day.date)
+      ?.holiday;
 
     return {
       ...day,
