@@ -6,11 +6,15 @@ import { recordStatus } from "~/helpers/record-status";
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
-  kilometerFormatter
+  kilometerFormatter,
 } from "~/helpers/timesheet";
 import { buildEmailData } from "~/helpers/email";
 
-export default (employeeId: string, startTimestamp?: number) => {
+export default (
+  employeeId: string,
+  startTimestamp?: number,
+  bridgeUid?: string
+) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
   const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
@@ -21,8 +25,8 @@ export default (employeeId: string, startTimestamp?: number) => {
   const timesheetStatus = computed(() => {
     return timesheetState.value.timesheets[0]
       ? timesheetState.value.timesheets[0].status
-      : (recordStatus.NEW as TimesheetStatus)}
-  );
+      : (recordStatus.NEW as TimesheetStatus);
+  });
 
   const timesheetDenyMessage = computed(() =>
     timesheetState.value.timesheets[0]
@@ -46,6 +50,7 @@ export default (employeeId: string, startTimestamp?: number) => {
   store.dispatch("records/getRecords", {
     employeeId,
     startDate: initialDate,
+    bridgeUid,
   });
 
   const message = ref<string>(
@@ -67,7 +72,8 @@ export default (employeeId: string, startTimestamp?: number) => {
   watch(
     () => store.state.timesheets.previousTimesheet,
     () => {
-      message.value = store.state.timesheets.previousTimesheet?.message || message.value;
+      message.value =
+        store.state.timesheets.previousTimesheet?.message || message.value;
     },
     { immediate: true }
   );
@@ -77,11 +83,9 @@ export default (employeeId: string, startTimestamp?: number) => {
       return project.values.reduce((acc, value, index) => {
         if (!value) return acc;
 
-        return (
-          index === 5 ||
-          index === 6 ||
-          recordsState.value.selectedWeek[index].isHoliday
-        );
+        const day = recordsState.value.selectedWeek[index];
+
+        return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
       }, false);
     }, false);
   });
@@ -96,7 +100,7 @@ export default (employeeId: string, startTimestamp?: number) => {
     }
 
     unsavedWeeklyTimesheet.value = undefined;
-    store.dispatch("records/goToWeek", { employeeId, to });
+    store.dispatch("records/goToWeek", { bridgeUid, to });
   };
 
   const addProject = (id: string) => {
@@ -143,7 +147,7 @@ export default (employeeId: string, startTimestamp?: number) => {
       getDayOnGMT(recordsState.value.selectedWeek[0].date)
     );
     const prevStartDate = subDays(startDate, 7);
-    const previousWeek = buildWeek(startOfISOWeek(prevStartDate), []);
+    const previousWeek = buildWeek(startOfISOWeek(prevStartDate));
 
     // Dispatch getter to update message with message present in previous week.
     store.dispatch("timesheets/getPreviousTimesheet", {
@@ -160,16 +164,22 @@ export default (employeeId: string, startTimestamp?: number) => {
     });
 
     const newTimesheet = {
-      projects: previousWeekTimesheet.projects.filter((project) => {
-        const projectArchived = (customers.value.customers.find((c) => c.id === project.customer.id)?.archived)
-        if (projectArchived){
-          alert(`${project.customer.name} is already archived. We wont copy it to new timesheet`)
-        }
-        return !projectArchived
-      }).map((project) => ({
-        ...project,
-        ids: new Array(7).fill(null),
-      })),
+      projects: previousWeekTimesheet.projects
+        .filter((project) => {
+          const projectArchived = customers.value.customers.find(
+            (c) => c.id === project.customer.id
+          )?.archived;
+          if (projectArchived) {
+            alert(
+              `${project.customer.name} is already archived. We wont copy it to new timesheet`
+            );
+          }
+          return !projectArchived;
+        })
+        .map((project) => ({
+          ...project,
+          ids: new Array(7).fill(null),
+        })),
       travelProject: {
         ...previousWeekTimesheet.travelProject!,
         ids: new Array(7).fill(null),

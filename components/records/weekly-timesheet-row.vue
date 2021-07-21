@@ -16,9 +16,9 @@
     </b-col>
 
     <b-tooltip
-      custom-class="tooltip-opacity"
       id="tooltip-confirmation"
       ref="tooltip"
+      custom-class="tooltip-opacity"
       :target="project.customer.name"
       placement="bottom"
       triggers="click blur"
@@ -36,7 +36,7 @@
         </b-row>
       </div>
     </b-tooltip>
-    
+
     <b-col
       v-for="(value, index) in formattedProjectValues"
       :key="index"
@@ -45,6 +45,7 @@
       :class="{
         weekend: selectedWeek[index].isWeekend,
         holiday: selectedWeek[index].isHoliday,
+        leave: selectedWeek[index].isLeaveDay,
       }"
     >
       <b-form-input
@@ -65,7 +66,6 @@
 </template>
 
 <script lang="ts">
-
 import {
   ref,
   computed,
@@ -75,7 +75,11 @@ import {
 } from "@nuxtjs/composition-api";
 
 import { checkEmployeeAvailability } from "../../helpers/employee";
-import { floatTo24TimeString, floatToTotalTimeString, timeStringToFloat } from "~/helpers/timesheet";
+import {
+  floatTo24TimeString,
+  floatToTotalTimeString,
+  timeStringToFloat,
+} from "~/helpers/timesheet";
 
 export default defineComponent({
   emits: ["remove"],
@@ -109,8 +113,8 @@ export default defineComponent({
     const canRemove = computed(() => !props.readonly && props.removable);
 
     const closeTooltip = () => {
-      tooltip.value.$emit("close")
-    }
+      tooltip.value.$emit("close");
+    };
 
     const handleRemoveClick = () => {
       closeTooltip();
@@ -120,16 +124,16 @@ export default defineComponent({
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.project.customer.name === "Kilometers";
     const getInitialState = (project: TimesheetProject) => {
-      return  isTravelAllowance
-      ? project.values.map((val) => val.toString())
-      : project.values.map((num) => {
-          if (num === 0) {
-            return "0";
-          } else {
-            return floatTo24TimeString(num);
-          }
-        });
-    }
+      return isTravelAllowance
+        ? project.values.map((val) => val.toString())
+        : project.values.map((num) => {
+            if (num === 0) {
+              return "0";
+            } else {
+              return floatTo24TimeString(num);
+            }
+          });
+    };
 
     const formattedProjectValues = ref(getInitialState(props.project));
     watch(
@@ -227,7 +231,8 @@ export default defineComponent({
     }
 
     &.holiday,
-    &.weekend {
+    &.weekend,
+    &.leave {
       background-color: #999;
     }
   }

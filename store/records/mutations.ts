@@ -6,7 +6,7 @@ const mutations: MutationTree<RecordsStoreState> = {
   },
 
   setSaving(state, payload: { isSaving: boolean }) {
-    state.lastSaved = !payload.isSaving ? new Date() : state.lastSaved
+    state.lastSaved = !payload.isSaving ? new Date() : state.lastSaved;
     state.isSaving = payload.isSaving;
   },
 
@@ -16,7 +16,7 @@ const mutations: MutationTree<RecordsStoreState> = {
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
       selectedWeek: WeekDate[];
-      workScheme: WorkScheme[]
+      workScheme: WorkScheme[];
     }
   ) {
     if (payload.timeRecords) state.timeRecords = payload.timeRecords;
@@ -32,8 +32,8 @@ const mutations: MutationTree<RecordsStoreState> = {
       travelRecords?: TravelRecord[];
     }
   ) {
-    state.timeRecords = payload.timeRecords
-    state.travelRecords = payload.travelRecords || state.travelRecords
+    state.timeRecords = payload.timeRecords;
+    state.travelRecords = payload.travelRecords || state.travelRecords;
   },
 
   setSelectedWeek(

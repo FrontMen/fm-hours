@@ -3,7 +3,12 @@
     <b-alert show variant="info" class="mb-3">
       To request leave, please visit
       <strong>
-        <a href="https://bridge.hosted-tools.com/myprofile/absences" target="_blank" rel="noreferrer">bridge!</a>
+        <a
+          href="https://bridge.hosted-tools.com/myprofile/absences"
+          target="_blank"
+          rel="noreferrer"
+          >bridge!</a
+        >
       </strong>
     </b-alert>
     <employee-header
@@ -58,9 +63,7 @@
         <template
           v-if="employee && employee.travelAllowance && timesheet.travelProject"
         >
-          <h3 class="mt-5 mb-3">
-            Travel allowance
-          </h3>
+          <h3 class="mt-5 mb-3">Travel allowance</h3>
 
           <weekly-timesheet :selected-week="recordsState.selectedWeek">
             <template #rows>
@@ -222,7 +225,11 @@ export default defineComponent({
 
     const startTimestamp = router.currentRoute.params.start_timestamp;
 
-    const timesheet = useTimesheet(employeeId, Number(startTimestamp));
+    const timesheet = useTimesheet(
+      employeeId,
+      Number(startTimestamp),
+      selectedEmployee.value?.bridgeUid
+    );
 
     const reasonOfDenial = ref("");
 
@@ -241,7 +248,8 @@ export default defineComponent({
       const selectableCustomers = customers.filter(
         (x: Customer) =>
           (selectedEmployee.value?.projects?.includes(x.id) &&
-            !selectedCustomers?.includes(x.id) && !x.archived) ||
+            !selectedCustomers?.includes(x.id) &&
+            !x.archived) ||
           x.isDefault
       );
 

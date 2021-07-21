@@ -26,12 +26,17 @@ export function debounce(func: any, timeout = 300) {
       func.apply(this, args);
     }, timeout);
   };
-};
+}
 
-export const sortByProp = <T>(a: T, b: T, prop: string, order: 'asc' | 'desc' = 'asc'): number => {
+export const sortByProp = <T>(
+  a: T,
+  b: T,
+  prop: string,
+  order: "asc" | "desc" = "asc"
+): number => {
   // @ts-ignore
-  if (a[prop] > b[prop]) return order === 'asc' ? 1 : -1;
+  if (a[prop] > b[prop]) return order === "asc" ? 1 : -1;
   // @ts-ignore
-  if (a[prop] < b[prop]) return order === 'asc' ? -1 : 1;
+  if (a[prop] < b[prop]) return order === "asc" ? -1 : 1;
   return 0;
 };

@@ -41,22 +41,24 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit("deleteEmployeeSuccess", id);
   },
 
-  async getAdminList({commit, getters }) {
+  async getAdminList({ commit, getters }) {
     if (getters["employees/adminList"]?.length) return;
 
     const adminList = await this.app.$employeesService.getAdminEmails();
     commit("setAdminList", adminList);
   },
 
-  async getTeamList({commit, getters }) {
+  async getTeamList({ commit, getters }) {
     if (getters["employees/teamList"]?.length) return;
 
     const teamList = await this.app.$employeesService.getTeams();
     commit("setTeamList", teamList);
   },
 
-  async updateAdminList({commit}, payload: string[]) {
-    const adminList = await this.app.$employeesService.updateAdminEmails(payload);
+  async updateAdminList({ commit }, payload: string[]) {
+    const adminList = await this.app.$employeesService.updateAdminEmails(
+      payload
+    );
     commit("setAdminList", adminList);
   },
 };

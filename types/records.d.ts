@@ -8,6 +8,7 @@ interface WeekDate {
   isWeekend: boolean;
   isToday: boolean;
   isHoliday: boolean;
+  isLeaveDay: boolean;
 }
 
 interface TimeRecord {
@@ -35,14 +36,6 @@ interface TimesheetProject {
 interface WeeklyTimesheet {
   projects: TimesheetProject[];
   travelProject: TimesheetProject | null;
-}
-
-interface WorkScheme {
-  date: string;
-  theoreticalHours: number;
-  absenceHours: number;
-  workHours: number;
-  holiday: number;
 }
 
 interface RecordsStoreState {

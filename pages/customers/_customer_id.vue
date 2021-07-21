@@ -1,8 +1,6 @@
 <template>
   <div class="content-wrapper my-5">
-    <div v-if="!customer">
-      Customer not found
-    </div>
+    <div v-if="!customer">Customer not found</div>
 
     <template v-else>
       <b-container class="mb-5">
@@ -17,7 +15,8 @@
           @change="hasUnsavedChanges = true"
         >
           <b-alert :show="form.archived" variant="info">
-            This customer archived at {{ form.archivedDate | formatDate("dd MMMM yyyy") }}
+            This customer archived at
+            {{ form.archivedDate | formatDate("dd MMMM yyyy") }}
           </b-alert>
           <b-form-group id="input-group-name" label="Name:" label-for="input-2">
             <b-form-input
@@ -154,18 +153,20 @@ export default defineComponent({
     const archiveCustomerToggle = (archive: boolean) => {
       const archiveData = {
         archived: archive,
-        ...archive ? {archivedDate: Date.now()} : {}
-      }
+        ...(archive ? { archivedDate: Date.now() } : {}),
+      };
 
       const confirmation = confirm(
-        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${customer.value?.name}?`
+        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${
+          customer.value?.name
+        }?`
       );
 
       if (!confirmation) return;
 
       store.dispatch("customers/updateCustomer", {
         ...customer.value,
-        ...archiveData
+        ...archiveData,
       });
     };
 

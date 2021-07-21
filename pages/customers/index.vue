@@ -20,17 +20,19 @@
             id="employee-search"
             v-model="searchTerm"
             type="search"
-            placeholder="Ex.: &quot;Frontmen&quot;"
+            placeholder='Ex.: "Frontmen"'
           />
         </b-col>
         <b-col cols="12" md="5" class="ml-auto mt-4">
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <b-form-checkbox v-model="selectedArchiveOption" switch class=" mr-3 ml-auto">
+            <b-form-checkbox
+              v-model="selectedArchiveOption"
+              switch
+              class="mr-3 ml-auto"
+            >
               Show archived
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center>
-              + New customer
-            </b-button>
+            <b-button v-b-modal.modal-center> + New customer </b-button>
           </div>
         </b-col>
       </b-row>
@@ -61,9 +63,7 @@
 
       <template #cell(customers)="scope">
         <strong>{{ scope.item.name }}</strong>
-        <b-badge v-if="scope.item.isDefault">
-          Default
-        </b-badge>
+        <b-badge v-if="scope.item.isDefault"> Default </b-badge>
       </template>
       <template #cell(archived)="scope">
         <div class="text-center">
@@ -126,59 +126,91 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
-    const customers: {value: Customer[] | undefined} = computed(() => store.state.customers.customers);
+    const customers: { value: Customer[] | undefined } = computed(
+      () => store.state.customers.customers
+    );
     store.dispatch("customers/getCustomers");
 
-    const searchTerm = ref<string>(store.getters['filters/getCustomerSearchTerm']);
-    const searchCriteria: { value: "name"|"debtor"; text: string; }[] = [
+    const searchTerm = ref<string>(
+      store.getters["filters/getCustomerSearchTerm"]
+    );
+    const searchCriteria: { value: "name" | "debtor"; text: string }[] = [
       { value: "name", text: "Customer name" },
       { value: "debtor", text: "Debtor name" },
     ];
 
     const fields = [
-      { key: 'name', label: 'Customers', sortable: true },
-      { key: 'debtor', label: 'Debtors', sortable: true },
-      { key: 'archived', label: 'Archived', sortable: false },
-      { key: 'actions', label: 'Actions', sortable: false }
+      { key: "name", label: "Customers", sortable: true },
+      { key: "debtor", label: "Debtors", sortable: true },
+      { key: "archived", label: "Archived", sortable: false },
+      { key: "actions", label: "Actions", sortable: false },
     ];
-    const selectedCriteria = ref<"name"|"debtor">(store.getters['filters/getCustomerSearchCriteria']);
-    const selectedArchiveOption= ref<boolean>(store.getters['filters/getIsCustomerArchived']);
-    const sortDescending= ref<boolean>(store.getters['filters/getCustomerSortDescending']);
-    const sortKey= ref<boolean>(store.getters['filters/getCustomerSortBy']);
+    const selectedCriteria = ref<"name" | "debtor">(
+      store.getters["filters/getCustomerSearchCriteria"]
+    );
+    const selectedArchiveOption = ref<boolean>(
+      store.getters["filters/getIsCustomerArchived"]
+    );
+    const sortDescending = ref<boolean>(
+      store.getters["filters/getCustomerSortDescending"]
+    );
+    const sortKey = ref<boolean>(store.getters["filters/getCustomerSortBy"]);
 
     const handleFilterUpdates = () => {
-      if (store.getters['filters/getIsCustomerArchived'] !== selectedArchiveOption.value) {
-        store.dispatch("filters/updateCustomerIsArchived", selectedArchiveOption.value);
+      if (
+        store.getters["filters/getIsCustomerArchived"] !==
+        selectedArchiveOption.value
+      ) {
+        store.dispatch(
+          "filters/updateCustomerIsArchived",
+          selectedArchiveOption.value
+        );
       }
-      if (store.getters['filters/getCustomerSortBy'] !== sortKey.value) {
+      if (store.getters["filters/getCustomerSortBy"] !== sortKey.value) {
         store.dispatch("filters/updateCustomerSortBy", sortKey.value);
       }
-      if (store.getters['filters/getCustomerSortDescending'] !== sortDescending.value) {
-        store.dispatch("filters/updateCustomerSortDescending", sortDescending.value);
+      if (
+        store.getters["filters/getCustomerSortDescending"] !==
+        sortDescending.value
+      ) {
+        store.dispatch(
+          "filters/updateCustomerSortDescending",
+          sortDescending.value
+        );
       }
-      if (store.getters['filters/getCustomerSearchTerm'] !== searchTerm.value) {
+      if (store.getters["filters/getCustomerSearchTerm"] !== searchTerm.value) {
         store.dispatch("filters/updateCustomerSearchTerm", searchTerm.value);
       }
-      if (store.getters['filters/getCustomerSearchCriteria'] !== selectedCriteria.value) {
-        store.dispatch("filters/updateCustomerSearchCriteria", selectedCriteria.value);
+      if (
+        store.getters["filters/getCustomerSearchCriteria"] !==
+        selectedCriteria.value
+      ) {
+        store.dispatch(
+          "filters/updateCustomerSearchCriteria",
+          selectedCriteria.value
+        );
       }
     };
 
     const filteredCustomers = computed(() => {
-      const criteria: "name"|"debtor" = selectedCriteria.value;
+      const criteria: "name" | "debtor" = selectedCriteria.value;
 
       handleFilterUpdates();
 
       const customerList = customers.value || [];
 
-      const notArchived = selectedArchiveOption.value ? [...customerList] : customerList.filter((customer: Customer) => {
-          return !customer.archived;
-        });
+      const notArchived = selectedArchiveOption.value
+        ? [...customerList]
+        : customerList.filter((customer: Customer) => {
+            return !customer.archived;
+          });
 
-      const filtered: Customer[] = !searchTerm.value ? [...notArchived] : notArchived?.filter((customer: Customer) => {
-          if (!customer[criteria]) return customer;
-          return queryOnString(customer[criteria], searchTerm.value);
-        });
+      const filtered: Customer[] = !searchTerm.value
+        ? [...notArchived]
+        : notArchived?.filter((customer: Customer) => {
+            if (!customer[criteria]) return customer;
+            return queryOnString(customer[criteria], searchTerm.value);
+          });
 
       return filtered;
     });
@@ -204,9 +236,9 @@ export default defineComponent({
       newCustomer.value.isDefault = false;
     };
 
-    const sortCompare = (a: Customer, b: Customer, key: "name"|"debtor") => {
+    const sortCompare = (a: Customer, b: Customer, key: "name" | "debtor") => {
       return sortByProp<Customer>(a, b, key);
-    }
+    };
 
     return {
       fields,

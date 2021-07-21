@@ -43,6 +43,6 @@ const getters: GetterTree<FiltersStoreState, RootStoreState> = {
   getEmployeeSearchTerm(state) {
     return state.employeeFilters.searchTerm;
   },
-}
+};
 
 export default getters;

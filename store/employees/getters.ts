@@ -1,4 +1,3 @@
-
 import { GetterTree } from "vuex";
 
 const getters: GetterTree<EmployeesStoreState, RootStoreState> = {

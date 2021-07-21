@@ -1,4 +1,11 @@
-import { format, isToday, isWeekend, startOfISOWeek, addWeeks, getISOWeek } from "date-fns";
+import {
+  format,
+  isToday,
+  isWeekend,
+  startOfISOWeek,
+  addWeeks,
+  getISOWeek,
+} from "date-fns";
 
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
@@ -34,10 +41,7 @@ export function getDateLabel(startDate: Date, endDate: Date) {
 }
 
 // Build a week based on a startDate.
-export function buildWeek(
-  startDate: string | number | Date,
-  holidays: string[]
-): WeekDate[] {
+export function buildWeek(startDate: string | number | Date): WeekDate[] {
   return [...Array(7)].map((_, index) => {
     const newDate = addDays(startDate, index);
 
@@ -50,7 +54,28 @@ export function buildWeek(
       year: format(newDate, "yyyy"),
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
-      isHoliday: holidays.some((date) => date === formatDate(newDate)),
+      isHoliday: false,
+      isLeaveDay: false,
+    };
+  });
+}
+
+export function checkNonWorkingDays(
+  days: WeekDate[],
+  customHolidays: string[],
+  workScheme?: WorkScheme[]
+) {
+  return days.map((day) => {
+    const isCustomHoliday = customHolidays.includes(day.date);
+
+    const workSchemeDay = workScheme?.find((ws) => ws.date === day.date);
+    const isPublicHoliday = !!workSchemeDay?.holiday;
+    const isLeaveDay = !!workSchemeDay?.absenceHours;
+
+    return {
+      ...day,
+      isHoliday: isCustomHoliday || isPublicHoliday,
+      isLeaveDay,
     };
   });
 }

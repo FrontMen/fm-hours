@@ -1,10 +1,9 @@
 <template>
   <div class="weekly-timesheet-footer mb-3">
     <div>
-      <span
-        v-if="lastSaved"
-        class="mr-3"
-      >Last saved: {{ lastSavedLabel }}</span>
+      <span v-if="lastSaved" class="mr-3"
+        >Last saved: {{ lastSavedLabel }}</span
+      >
       <b-spinner v-if="isSaving" small />
 
       <b-button

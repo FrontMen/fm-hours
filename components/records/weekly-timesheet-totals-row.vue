@@ -53,13 +53,13 @@ export default defineComponent({
     },
   },
   setup(props) {
-
     const weekTotal = computed(() => {
       let total = 0;
 
       props.projects.forEach((project) => {
-        total += +project.values
-          .reduce((prevValue, value) => +prevValue + +value)
+        total += +project.values.reduce(
+          (prevValue, value) => +prevValue + +value
+        );
       });
 
       return floatToTotalTimeString(total);
@@ -75,12 +75,12 @@ export default defineComponent({
     const dayTotals = computed(() => {
       return props.selectedWeek.map((_, index) => {
         let total = 0;
-        
+
         props.projects.forEach((project) => {
           total += +project.values[index];
         });
 
-        return total === 0 ? '0' : floatToTotalTimeString(total);
+        return total === 0 ? "0" : floatToTotalTimeString(total);
       });
     });
 

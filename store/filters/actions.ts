@@ -1,40 +1,40 @@
-import { ActionTree } from 'vuex';
+import { ActionTree } from "vuex";
 
 const actions: ActionTree<FiltersStoreState, RootStoreState> = {
   // Customers
   updateCustomerIsArchived({ commit }, payload: boolean) {
-    commit('setCustomerIsArchived', payload);
+    commit("setCustomerIsArchived", payload);
   },
   updateCustomerSearchTerm({ commit }, payload: string) {
-    commit('setCustomerSearchTerm', payload);
+    commit("setCustomerSearchTerm", payload);
   },
-  updateCustomerSearchCriteria({ commit }, payload: 'name'|'debtor') {
-    commit('setCustomerSearchCriteria', payload);
+  updateCustomerSearchCriteria({ commit }, payload: "name" | "debtor") {
+    commit("setCustomerSearchCriteria", payload);
   },
   updateCustomerSortDescending({ commit }, payload: boolean) {
-    commit('setCustomerSortDescending', payload);
+    commit("setCustomerSortDescending", payload);
   },
   updateCustomerSortBy({ commit }, payload: string) {
-    commit('setCustomerSortBy', payload);
+    commit("setCustomerSortBy", payload);
   },
 
   // Timesheets
   updateTimesheetSortDescending({ commit }, payload: boolean) {
-    commit('setTimesheetSortDescending', payload);
+    commit("setTimesheetSortDescending", payload);
   },
   updateTimesheetFilterBy({ commit }, payload: string) {
-    commit('setTimesheetFilterBy', payload);
+    commit("setTimesheetFilterBy", payload);
   },
 
   // Timesheets
   updateEmployeeFilterBy({ commit }, payload: string) {
-    commit('setEmployeeFilterBy', payload);
+    commit("setEmployeeFilterBy", payload);
   },
   updateEmployeeFilterByCustomer({ commit }, payload: string[]) {
-    commit('setEmployeeFilterByCustomer', payload);
+    commit("setEmployeeFilterByCustomer", payload);
   },
   updateEmployeeSearchTerm({ commit }, payload: string) {
-    commit('setEmployeeSearchTerm', payload);
+    commit("setEmployeeSearchTerm", payload);
   },
 };
 

@@ -17,11 +17,13 @@ export default class RecordsService {
       .collection("time_records")
       .where("employeeId", "==", params.employeeId);
 
-    if (params.startDate){
-      query = query.where("date", ">=", new Date(+params.startDate).getTime());}
+    if (params.startDate) {
+      query = query.where("date", ">=", new Date(+params.startDate).getTime());
+    }
 
-    if (params.endDate){
-      query = query.where("date", "<=", new Date(+params.endDate).getTime());}
+    if (params.endDate) {
+      query = query.where("date", "<=", new Date(+params.endDate).getTime());
+    }
 
     const snapshot = await query.get();
 

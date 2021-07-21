@@ -2,7 +2,7 @@
 import { addDays, startOfISOWeek, subDays, isWithinInterval } from "date-fns";
 import { ActionTree } from "vuex";
 
-import { buildWeek, getDayOnGMT } from "~/helpers/dates";
+import { buildWeek, checkNonWorkingDays, getDayOnGMT } from "~/helpers/dates";
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
@@ -11,9 +11,14 @@ import {
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getMonthlyTimeRecords(
     { commit },
-    payload: { employeeId: string; startDate: Date, endDate: Date }
+    payload: { employeeId: string; startDate: Date; endDate: Date }
   ) {
-    if (!payload.employeeId || !payload.startDate?.getTime() || !payload.endDate?.getTime()) return;
+    if (
+      !payload.employeeId ||
+      !payload.startDate?.getTime() ||
+      !payload.endDate?.getTime()
+    )
+      return;
 
     commit("setLoading", { isLoading: true });
 
@@ -31,18 +36,25 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
   async getRecords(
     { commit, rootState },
-    payload: { employeeId: string; startDate: Date, endDate?: Date }
+    payload: { employeeId: string; startDate: Date; bridgeUid?: string }
   ) {
     commit("setLoading", { isLoading: true });
 
-    const holidays = rootState.holidays.holidays;
+    const workWeek = buildWeek(startOfISOWeek(payload.startDate));
+    let workSchemeResult: WorkScheme[] | undefined;
+    if (payload.bridgeUid) {
+      workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
+        bridgeUid: payload.bridgeUid,
+        startDate: new Date(workWeek[0].date),
+        endDate: new Date(workWeek[6].date),
+      });
+    }
 
-    const selectedWeek = buildWeek(startOfISOWeek(payload.startDate), holidays);
-    const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      employeeId: payload.employeeId,
-      startDate: new Date(selectedWeek[0].date),
-      endDate: payload.endDate || new Date(selectedWeek[6].date),
-    });
+    const selectedWeek = checkNonWorkingDays(
+      workWeek,
+      rootState.holidays.holidays,
+      workSchemeResult
+    );
 
     const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
       employeeId: payload.employeeId,
@@ -59,13 +71,13 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       timeRecords,
       travelRecords,
       selectedWeek,
-      workScheme: workSchemeResult,
+      workScheme: workSchemeResult || [],
     });
   },
 
   async goToWeek(
     { commit, state, rootState },
-    payload: { employeeId: string; to: "current" | "next" | "previous" }
+    payload: { to: "current" | "next" | "previous"; bridgeUid?: string }
   ) {
     const currentStartDate = state.selectedWeek[0].date;
     let newStartDate = new Date();
@@ -76,18 +88,26 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       newStartDate = addDays(getDayOnGMT(currentStartDate), 7);
     }
 
-    const holidays = rootState.holidays.holidays;
+    const workWeek = buildWeek(startOfISOWeek(newStartDate));
 
-    const selectedWeek = buildWeek(startOfISOWeek(newStartDate), holidays);
-    const workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-      employeeId: payload.employeeId,
-      startDate: new Date(selectedWeek[0].date),
-      endDate: new Date(selectedWeek[6].date),
-    });
+    let workSchemeResult: WorkScheme[] | undefined;
+    if (payload.bridgeUid) {
+      workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
+        bridgeUid: payload.bridgeUid,
+        startDate: new Date(workWeek[0].date),
+        endDate: new Date(workWeek[6].date),
+      });
+    }
+
+    const selectedWeek = checkNonWorkingDays(
+      workWeek,
+      rootState.holidays.holidays,
+      workSchemeResult
+    );
 
     commit("setSelectedWeek", {
       selectedWeek,
-      workScheme: workSchemeResult,
+      workScheme: workSchemeResult || [],
     });
   },
 
@@ -144,7 +164,11 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
   async deleteProjectRecords(
     { commit, state },
-    payload: { employeeId: string; week: WeekDate[]; project: TimesheetProject }
+    payload: {
+      employeeId: string;
+      week: WeekDate[];
+      project: TimesheetProject;
+    }
   ) {
     commit("setSaving", { isSaving: true });
 

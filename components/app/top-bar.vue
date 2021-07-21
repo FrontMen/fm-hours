@@ -9,7 +9,7 @@
                 src="@/assets/images/logo-dark.png"
                 alt="frontmen logo"
                 @click="handleLogoClick"
-              >
+              />
 
               <div
                 v-if="isAdmin"
@@ -80,66 +80,66 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-  @media print {
-    .hide-print {
-      visibility: hidden;
+@media print {
+  .hide-print {
+    visibility: hidden;
+  }
+}
+
+.top-bar {
+  background: var(--color-primary);
+
+  &__development {
+    background-color: var(--dark);
+  }
+
+  img {
+    width: 50px;
+    max-height: 100%;
+    cursor: pointer;
+  }
+
+  .employee__dropdown {
+    button {
+      padding: 0;
+      background-color: transparent !important;
+      border: none;
+      display: flex;
+      align-items: center;
     }
   }
 
-  .top-bar {
-    background: var(--color-primary);
+  .employee {
+    color: white;
+  }
 
-    &__development {
-      background-color: var(--dark);
+  &__hamburger {
+    border-top: 2px solid white;
+    border-bottom: 2px solid white;
+    border-radius: 0;
+    width: 30px;
+    height: 20px;
+    background: transparent !important;
+    position: relative;
+
+    &:focus {
+      outline: none;
     }
 
-    img {
-      width: 50px;
-      max-height: 100%;
-      cursor: pointer;
-    }
-
-    .employee__dropdown {
-      button {
-        padding: 0;
-        background-color: transparent !important;
-        border: none;
-        display: flex;
-        align-items: center;
-      }
-    }
-
-    .employee {
-      color: white;
-    }
-
-    &__hamburger {
-      border-top: 2px solid white;
-      border-bottom: 2px solid white;
-      border-radius: 0;
-      width: 30px;
-      height: 20px;
-      background: transparent !important;
-      position: relative;
-
-      &:focus {
-        outline: none;
-      }
-
-      &:before {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-        width: 100%;
-        background: white;
-        height: 2px;
-      }
-    }
-
-    .development {
-      color: var(--danger);
+    &:before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      width: 100%;
+      background: white;
+      height: 2px;
     }
   }
+
+  .development {
+    color: var(--danger);
+  }
+}
 </style>

@@ -1,9 +1,7 @@
 <template>
   <div class="reports-table">
     <div class="reports-table__btn mb-4">
-      <b-btn @click="exportToCsv">
-        Export
-      </b-btn>
+      <b-btn @click="exportToCsv"> Export </b-btn>
     </div>
 
     <b-table

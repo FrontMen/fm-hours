@@ -26,9 +26,7 @@
     </weekly-timesheet>
 
     <template v-if="timesheet.travelProject">
-      <h3 class="my-4">
-        Travel allowance
-      </h3>
+      <h3 class="my-4">Travel allowance</h3>
 
       <weekly-timesheet :selected-week="week">
         <template #rows>
@@ -90,7 +88,7 @@ export default defineComponent({
 
       const firstDate = props.week[0].date;
       const { start, end } = getWeekRange(firstDate);
-    
+
       return getDateLabel(start, end);
     });
 

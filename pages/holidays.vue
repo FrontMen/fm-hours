@@ -4,9 +4,7 @@
       <b-row :no-gutters="true">
         <b-col>
           <div class="d-flex justify-content-end">
-            <b-button v-b-modal.modal-center>
-              + Add holiday
-            </b-button>
+            <b-button v-b-modal.modal-center> + Add holiday </b-button>
           </div>
         </b-col>
       </b-row>
@@ -29,9 +27,7 @@
         </b-col>
 
         <b-col cols-md="4" class="d-flex justify-content-end">
-          <b-button @click="deleteHoliday(date)">
-            Delete
-          </b-button>
+          <b-button @click="deleteHoliday(date)"> Delete </b-button>
         </b-col>
       </b-row>
     </b-container>

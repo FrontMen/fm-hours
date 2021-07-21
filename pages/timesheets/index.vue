@@ -13,9 +13,7 @@
         class="filter__select"
       >
         <template #first>
-          <b-form-select-option :value="null">
-            All
-          </b-form-select-option>
+          <b-form-select-option :value="null"> All </b-form-select-option>
         </template>
       </b-form-select>
     </b-form-group>
@@ -92,8 +90,10 @@ export default defineComponent({
       }))
       .sort((a, b) => a.text.localeCompare(b.text));
 
-    const sortDescending= ref<boolean>(store.getters['filters/getTimesheetSortDescending']);
-    const selected = ref(store.getters['filters/getTimesheetFilterBy']);
+    const sortDescending = ref<boolean>(
+      store.getters["filters/getTimesheetSortDescending"]
+    );
+    const selected = ref(store.getters["filters/getTimesheetFilterBy"]);
     const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
@@ -117,11 +117,17 @@ export default defineComponent({
     };
 
     const handleFilterUpdates = () => {
-      if (store.getters['filters/getTimesheetFilterBy'] !== selected.value) {
+      if (store.getters["filters/getTimesheetFilterBy"] !== selected.value) {
         store.dispatch("filters/updateTimesheetFilterBy", selected.value);
       }
-      if (store.getters['filters/getTimesheetSortDescending'] !== sortDescending.value) {
-        store.dispatch("filters/updateTimesheetSortDescending", sortDescending.value);
+      if (
+        store.getters["filters/getTimesheetSortDescending"] !==
+        sortDescending.value
+      ) {
+        store.dispatch(
+          "filters/updateTimesheetSortDescending",
+          sortDescending.value
+        );
       }
     };
 

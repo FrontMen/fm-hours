@@ -10,7 +10,7 @@
             id="employee-search"
             v-model="searchInput"
             type="search"
-            placeholder="Ex.: &quot;John&quot;"
+            placeholder='Ex.: "John"'
           />
         </b-col>
         <b-col cols="6" lg="4">
@@ -46,10 +46,12 @@
             :options="statusOptions"
           />
         </b-col>
-        <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end">
-          <b-button v-b-modal.modal-center>
-            + New employee
-          </b-button>
+        <b-col
+          cols="6"
+          lg="2"
+          class="d-flex align-items-end justify-content-end"
+        >
+          <b-button v-b-modal.modal-center> + New employee </b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -82,10 +84,7 @@
         </div>
 
         <div class="ml-auto d-flex">
-          <nuxt-link
-            class="btn btn-info"
-            :to="`/employees/${employee.id}`"
-          >
+          <nuxt-link class="btn btn-info" :to="`/employees/${employee.id}`">
             Manage employee
           </nuxt-link>
         </div>
@@ -167,27 +166,42 @@ export default defineComponent({
         }))
     );
 
-    const selectedCustomers = ref<Customer[]>(store.getters['filters/getEmployeeFilterByCustomer']);
+    const selectedCustomers = ref<Customer[]>(
+      store.getters["filters/getEmployeeFilterByCustomer"]
+    );
 
-    const statusSelected = ref<string>(store.getters['filters/getEmployeeFilterBy']);
+    const statusSelected = ref<string>(
+      store.getters["filters/getEmployeeFilterBy"]
+    );
     const statusOptions = [
       { value: "all", text: "All" },
       { value: "active", text: "Active" },
       { value: "incative", text: "Inactive" },
     ];
 
-    const searchInput = ref<string>(store.getters['filters/getEmployeeSearchTerm']);
-
+    const searchInput = ref<string>(
+      store.getters["filters/getEmployeeSearchTerm"]
+    );
 
     const handleFilterUpdates = () => {
-      if (store.getters['filters/getEmployeeSearchTerm'] !== searchInput.value) {
+      if (
+        store.getters["filters/getEmployeeSearchTerm"] !== searchInput.value
+      ) {
         store.dispatch("filters/updateEmployeeSearchTerm", searchInput.value);
       }
-      if (store.getters['filters/getEmployeeFilterBy'] !== statusSelected.value) {
+      if (
+        store.getters["filters/getEmployeeFilterBy"] !== statusSelected.value
+      ) {
         store.dispatch("filters/updateEmployeeFilterBy", statusSelected.value);
       }
-      if (store.getters['filters/getEmployeeFilterByCustomer'] !== selectedCustomers.value) {
-        store.dispatch("filters/updateEmployeeFilterByCustomer", selectedCustomers.value);
+      if (
+        store.getters["filters/getEmployeeFilterByCustomer"] !==
+        selectedCustomers.value
+      ) {
+        store.dispatch(
+          "filters/updateEmployeeFilterByCustomer",
+          selectedCustomers.value
+        );
       }
     };
 
@@ -228,13 +242,13 @@ export default defineComponent({
 
       handleFilterUpdates();
 
-      return employees.value.filter(
-        (employee) => {
-          return employeeStatusChecker(statusSelected.value, employee) &&
+      return employees.value.filter((employee) => {
+        return (
+          employeeStatusChecker(statusSelected.value, employee) &&
           employeeNameChecker(employee.name, searchInput.value) &&
-          employeeProjectsChecker(employee.projects, selectedCustomers.value);
-        }
-      );
+          employeeProjectsChecker(employee.projects, selectedCustomers.value)
+        );
+      });
     });
 
     const newEmployee = ref({
