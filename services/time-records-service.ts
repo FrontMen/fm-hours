@@ -8,13 +8,13 @@ export default class RecordsService {
     this.fire = fire;
   }
 
-  async getEmployeeRecords(params: {
+  async getEmployeeRecords<RecordType>(params: {
     employeeId: string;
     startDate?: string;
     endDate?: string;
-  }): Promise<TimeRecord[]> {
+  }, collection: string = 'time_records'): Promise<RecordType[]> {
     let query = this.fire.firestore
-      .collection('time_records')
+      .collection(collection)
       .where('employeeId', '==', params.employeeId);
 
     if (params.startDate) {
@@ -29,7 +29,7 @@ export default class RecordsService {
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as TimeRecord),
+      ...(doc.data() as RecordType),
     }));
   }
 

@@ -23,7 +23,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     commit('setLoading', {isLoading: true});
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
       employeeId: payload.employeeId,
       startDate: payload.startDate.getTime().toString(),
       endDate: payload.endDate.getTime().toString(),
@@ -57,15 +57,15 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       workSchemeResult
     );
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
       employeeId: payload.employeeId,
     });
 
     const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay);
 
-    const standByRecords = await this.app.$standByRecordsService.getEmployeeRecords({
+    const standByRecords = await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({
       employeeId: payload.employeeId,
-    });
+    }, "standby_records");
 
     const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords({
       employeeId: payload.employeeId,
