@@ -9,13 +9,19 @@
                 src="@/assets/images/logo-dark.png"
                 alt="frontmen logo"
                 @click="handleLogoClick"
-              />
+              >
 
               <div
                 v-if="isAdmin"
                 v-b-toggle.sidebar-1
                 class="top-bar__hamburger ml-4"
               />
+
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
+                target="_blank"
+                class="text-white ml-3"
+              >Feedback</a>
             </div>
           </b-col>
 
