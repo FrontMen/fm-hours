@@ -277,7 +277,9 @@ export default defineComponent({
     });
 
     function autoSave() {
-      timesheet.saveTimesheet(recordStatus.NEW as TimesheetStatus);
+      if (timesheet.hasUnsavedChanges){
+        timesheet.saveTimesheet(recordStatus.NEW as TimesheetStatus);
+      }
     }
 
     return {
