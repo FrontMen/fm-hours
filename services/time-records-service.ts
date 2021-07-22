@@ -1,5 +1,6 @@
+import { NuxtFireInstance } from '@nuxtjs/firebase';
+import { Collections } from './../types/enums';
 /* eslint-disable camelcase */
-import {NuxtFireInstance} from '@nuxtjs/firebase';
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -12,7 +13,7 @@ export default class RecordsService {
     employeeId: string;
     startDate?: string;
     endDate?: string;
-  }, collection: string = 'time_records'): Promise<RecordType[]> {
+  }, collection: string = Collections.TIMREC): Promise<RecordType[]> {
     let query = this.fire.firestore
       .collection(collection)
       .where('employeeId', '==', params.employeeId);
@@ -36,7 +37,7 @@ export default class RecordsService {
   async getRecords<RecordType>(params: {
     startDate: Date;
     endDate: Date;
-  }, collection: string = 'time_records'): Promise<RecordType[]> {
+  }, collection: string = Collections.TIMREC): Promise<RecordType[]> {
     const snapshot = await this.fire.firestore
       .collection(collection)
       .where('date', '>=', params.startDate.getTime())
@@ -53,7 +54,11 @@ export default class RecordsService {
   async saveEmployeeRecords<RecordType extends { id: string|null, hours: number }>(params: {
     employeeId: string;
     timeRecords: RecordType[];
+<<<<<<< HEAD
   }, collection: string = 'time_records') {
+=======
+  }, collection: string = Collections.TIMREC) {
+>>>>>>> 9774444 (Add enum value for default collection in time records)
     const ref = this.fire.firestore.collection(collection);
 
     const updatedRecords = await Promise.all(
@@ -101,7 +106,7 @@ export default class RecordsService {
 
   async deleteEmployeeRecords<RecordType extends { id: string|null}>(params: {
     recordsToDelete: RecordType[];
-  }, collection: string = 'time_records'): Promise<void> {
+  }, collection: string = Collections.TIMREC): Promise<void> {
     const batch = this.fire.firestore.batch();
 
     params.recordsToDelete.forEach((record) => {
