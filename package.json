@@ -9,17 +9,21 @@
     "generate": "nuxt-ts generate",
     "test": "jest",
     "test:types": "tsc --noEmit",
-    "lint:eslint": "eslint --ext .js,.vue . --ignore-path .gitignore .",
-    "lint:prettier": "prettier \"**/*.js\" \"**/*.vue\" --check --ignore-path .gitignore .",
+    "lint:eslint": "eslint --ext .js,.vue --ignore-path .eslintignore .",
+    "lint:eslint:hook": "eslint --ext .js,.vue --ignore-path .eslintignore",
+    "lint:prettier": "prettier \"**/*.js\" \"**/*.vue\" --check --ignore-path .eslintignore .",
+    "lint:prettier:hook": "prettier --write",
     "lint": "npm run lint:eslint && npm run lint:prettier",
-    "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .gitignore .",
-    "format:prettier": "prettier \"**/*.js\" \"**/*.vue\" --write --ignore-path .gitignore .",
+    "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
+    "format:prettier": "prettier \"**/*.js\" \"**/*.vue\" --write --ignore-path .eslintignore .",
     "format": "npm run format:eslint && npm run format:prettier"
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
-      "eslint --fix",
-      "prettier --write"
+      "npm run lint:eslint:hook"
+    ],
+    "*.{js, ts}": [
+      "npm run test:types"
     ]
   },
   "eslintConfig": {
@@ -32,7 +36,7 @@
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-commit": "tsc --noEmit && lint-staged"
+      "pre-commit": "lint-staged"
     }
   },
   "dependencies": {

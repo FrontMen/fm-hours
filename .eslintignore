@@ -1,2 +1,10 @@
-functions/**/*
-node_modules/**/*
+# ignore the firebase functions
+functions
+
+# ignore node modules
+node_modules
+
+# ignore build files and configs
+dist
+static
+.nuxt
