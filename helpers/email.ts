@@ -31,3 +31,5 @@ export const buildEmailData = ({
     html,
   };
 };
+
+export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

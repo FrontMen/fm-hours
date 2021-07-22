@@ -1,21 +1,27 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">Employee not found</div>
+      <div v-if="!employee">
+        Employee not found
+      </div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">Edit team:</h6>
+            <h6 class="mb-3">
+              Edit team:
+            </h6>
             <b-form-select
               v-model="selectedTeam"
               :options="teamList"
               class="mb-3"
               @change="hasUnsavedChanges = true"
             />
-            <h6 class="mb-3">Manage Projects</h6>
+            <h6 class="mb-3">
+              Manage Projects
+            </h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -29,9 +35,10 @@
               @input="hasUnsavedChanges = true"
             >
               <template slot="selection" slot-scope="{ values }">
-                <span v-if="values.length" class="multiselect__single"
-                  >{{ values.length }} options selected</span
-                >
+                <span
+                  v-if="values.length"
+                  class="multiselect__single"
+                >{{ values.length }} options selected</span>
               </template>
             </multiselect>
 
@@ -59,7 +66,32 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">Employee Settings</h6>
+            <h6 class="mb-3">
+              Employee Settings
+            </h6>
+
+            Name:
+            <b-form-input
+              v-model="name"
+              type="text"
+              class="mt-2 w-75 mb-2"
+              placeholder="Employee name"
+              :trim="true"
+              :state="nameValidationState"
+              @change="(nameTouched = true), (hasUnsavedChanges = true)"
+            />
+
+            Email:
+            <b-form-input
+              v-model="email"
+              type="email"
+              class="mt-2 w-75 mb-2"
+              placeholder="Employee email"
+              :state="emailValidationState"
+              :trim="true"
+              @change="(emailTouched = true), (hasUnsavedChanges = true)"
+            />
+
             <b-form-checkbox
               v-model="isAdmin"
               switch
@@ -134,6 +166,7 @@ import { BIconTrashFill } from "bootstrap-vue";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
 import { formatDate, getDayOnGMT } from "~/helpers/dates";
+import { emailRegex } from "~/helpers/email";
 
 export default defineComponent({
   components: { EmployeeHeader, Multiselect, BIconTrashFill },
@@ -147,6 +180,8 @@ export default defineComponent({
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref("");
     const selectedTeam = ref<string | null>(null);
+    const emailTouched = ref<boolean | null>(null);
+    const nameTouched = ref<boolean | null>(null);
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -180,6 +215,26 @@ export default defineComponent({
       employee.value ? `Employees - ${employee.value?.name}` : "Employees"
     );
 
+    const emailValidationState = computed(() => {
+      if (!emailTouched.value) {
+        return null;
+      } else if (!email.value?.match(emailRegex)) {
+        return false;
+      }
+
+      return true;
+    });
+
+    const nameValidationState = computed(() => {
+      if (!nameTouched.value) {
+        return null;
+      } else if (!name.value) {
+        return false;
+      }
+
+      return true;
+    });
+
     useMeta(() => ({ title: pageTitle.value }));
 
     onMounted(() => {
@@ -201,7 +256,7 @@ export default defineComponent({
     });
 
     watch(
-      () => [employee.value?.team],
+      () => employee.value?.team,
       () => {
         selectedTeam.value = employee.value?.team || null;
       },
@@ -289,6 +344,22 @@ export default defineComponent({
       }
     );
 
+    const name = ref<String | undefined>(employee.value?.name);
+    watch(
+      () => employee.value?.name,
+      () => {
+        name.value = employee.value?.name;
+      }
+    );
+
+    const email = ref<String | undefined>(employee.value?.email);
+    watch(
+      () => employee.value?.email,
+      () => {
+        email.value = employee.value?.email;
+      }
+    );
+
     const handleAdminToggle = (): void => {
       let valueChanged = false;
       let adminList = [...store.getters["employees/adminList"]];
@@ -317,9 +388,16 @@ export default defineComponent({
         return;
       }
 
+      if (!name.value || !email.value) {
+        errorMessage.value = "Please set the employee name and email";
+        return;
+      }
+
       handleAdminToggle();
       const newEmployee = {
         ...employee.value,
+        name: name.value,
+        email: email.value,
         team: selectedTeam.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
@@ -330,6 +408,8 @@ export default defineComponent({
       store.dispatch("employees/updateEmployee", newEmployee);
 
       hasUnsavedChanges.value = false;
+      nameTouched.value = null;
+      emailTouched.value = null;
     };
 
     const handleEmployeeDelete = () => {
@@ -381,6 +461,12 @@ export default defineComponent({
       items,
       handleEmployeeDelete,
       teamList,
+      name,
+      nameValidationState,
+      nameTouched,
+      email,
+      emailValidationState,
+      emailTouched,
     };
   },
 });

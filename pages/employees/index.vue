@@ -1,7 +1,7 @@
 <template>
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
-      <b-row no-gutters="true">
+      <b-row :no-gutters="true">
         <b-col cols="6" lg="3" class="pl-0">
           <label class="employee-status__label" for="employee-search">
             Search by employee name:
