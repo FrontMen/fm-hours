@@ -129,25 +129,14 @@
             <weekly-timesheet :selected-week="recordsState.selectedWeek">
               <template #rows>
                 <weekly-timesheet-row
-                  v-for="(project, index) in timesheet.projects"
-                  :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
-                  :project="timesheet.projects[index]"
-                  :readonly="!isAdminView && (isReadonly || project.isExternal)"
-                  :removeable="!isAdminView && !isReadonly && !project.isExternal"
+                  :key="recordsState.selectedWeek[0].date"
+                  :project="timesheet.travelProject"
+                  :readonly="!isAdminView && isReadonly"
+                  :removable="false"
                   :selected-week="recordsState.selectedWeek"
-                  :value-formatter="timesheetFormatter"
+                  :value-formatter="kilometerFormatter"
                   :employee="employee"
                   @change="hasUnsavedChanges = true"
-                  @remove="deleteProject(timesheet.projects[index])"
-                />
-
-                <weekly-timesheet-totals-row
-                  :projects="timesheet.projects"
-                  :selected-week="recordsState.selectedWeek"
-                  :work-scheme="recordsState.workScheme"
-                  :show-add-project-button="
-                    !isReadonly && selectableCustomers.length > 0
-                  "
                 />
               </template>
             </weekly-timesheet>

@@ -1,5 +1,6 @@
-/* eslint-disable camelcase */
 import { NuxtFireInstance } from "@nuxtjs/firebase";
+import { Collections } from '~/types/enums';
+/* eslint-disable camelcase */
 
 export default class StandByRecordsService {
   fire: NuxtFireInstance;
@@ -14,7 +15,7 @@ export default class StandByRecordsService {
     endDate?: string;
   }): Promise<StandbyRecord[]> {
     let query = this.fire.firestore
-      .collection("standby_records")
+      .collection(Collections.STANDBYREC)
       .where("employeeId", "==", params.employeeId);
 
     if (params.startDate){
@@ -36,7 +37,7 @@ export default class StandByRecordsService {
     endDate: Date;
   }): Promise<StandbyRecord[]> {
     const snapshot = await this.fire.firestore
-      .collection("standby_records")
+      .collection(Collections.STANDBYREC)
       .where("date", ">=", params.startDate.getTime())
       .where("date", "<", params.endDate.getTime())
       .orderBy("date", "asc")
@@ -52,7 +53,7 @@ export default class StandByRecordsService {
     employeeId: string;
     standByRecords: StandbyRecord[];
   }) {
-    const ref = this.fire.firestore.collection("standby_records");
+    const ref = this.fire.firestore.collection(Collections.STANDBYREC);
 
     const updatedRecords = await Promise.all(
       params.standByRecords.map(async (standByRecord) => {
@@ -105,7 +106,7 @@ export default class StandByRecordsService {
     params.recordsToDelete.forEach((record) => {
       if (record.id) {
         const ref = this.fire.firestore
-          .collection("standby_records")
+          .collection(Collections.STANDBYREC)
           .doc(record.id!);
 
         batch.delete(ref);

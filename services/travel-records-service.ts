@@ -1,5 +1,6 @@
+import { NuxtFireInstance } from '@nuxtjs/firebase';
+import { Collections } from '~/types/enums';
 /* eslint-disable camelcase */
-import {NuxtFireInstance} from '@nuxtjs/firebase';
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -14,7 +15,7 @@ export default class RecordsService {
     endDate?: string;
   }): Promise<TravelRecord[]> {
     const query = await this.fire.firestore
-      .collection('travel_records')
+      .collection(Collections.TRAVELREC)
       .where('employeeId', '==', params.employeeId);
 
     if (params.startDate)
@@ -36,7 +37,7 @@ export default class RecordsService {
     endDate: Date;
   }): Promise<TimeRecord[]> {
     const snapshot = await this.fire.firestore
-      .collection('travel_records')
+      .collection(Collections.TRAVELREC)
       .where('date', '>=', params.startDate.getTime())
       .where('date', '<=', params.endDate.getTime())
       .orderBy('date', 'asc')
@@ -52,7 +53,7 @@ export default class RecordsService {
     employeeId: string;
     travelRecords: TravelRecord[];
   }) {
-    const ref = this.fire.firestore.collection('travel_records');
+    const ref = this.fire.firestore.collection(Collections.TRAVELREC);
 
     const updatedRecords = await Promise.all(
       params.travelRecords.map(async (record) => {

@@ -2,7 +2,6 @@ import CustomersService from '~/services/customers-service';
 import HolidaysService from '~/services/holidays-service';
 import TimeRecordsService from '~/services/time-records-service';
 import TravelRecordsService from '~/services/travel-records-service';
-import StandByRecordsService from '~/services/standby-records-service';
 import EmployeesService from '~/services/employees-service';
 import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
@@ -14,7 +13,6 @@ declare module '@nuxt/types' {
     $customersService: CustomersService;
     $holidaysService: HolidaysService;
     $timeRecordsService: TimeRecordsService;
-    $standByRecordsService: StandByRecordsService;
     $travelRecordsService: TravelRecordsService;
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;
@@ -27,7 +25,6 @@ declare module '@nuxt/types' {
     $customersService: CustomersService;
     $holidaysService: HolidaysService;
     $timeRecordsService: TimeRecordsService;
-    $standByRecordsService: StandByRecordsService;
     $travelRecordsService: TravelRecordsService;
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;

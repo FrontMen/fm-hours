@@ -1,4 +1,5 @@
-import {NuxtFireInstance} from '@nuxtjs/firebase';
+import { NuxtFireInstance } from '@nuxtjs/firebase';
+import { Collections } from '~/types/enums';
 
 export default class CustomersService {
   fire: NuxtFireInstance;
@@ -8,7 +9,7 @@ export default class CustomersService {
   }
 
   async getCustomers() {
-    const ref = this.fire.firestore.collection('customers');
+    const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
@@ -18,8 +19,8 @@ export default class CustomersService {
   }
 
   async addCustomer(customer: Omit<Customer, 'id'>) {
-    const ref = this.fire.firestore.collection('customers');
-    const {id} = await ref.add(customer);
+    const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
+    const { id } = await ref.add(customer);
 
     return {
       ...customer,
@@ -29,7 +30,7 @@ export default class CustomersService {
 
   async getCustomersAvailableToAll() {
     const ref = this.fire.firestore
-      .collection('customers')
+      .collection(Collections.CUSTOMERS)
       .where('availableToAll', '==', true);
     const snapshot = await ref.get();
 
@@ -44,12 +45,12 @@ export default class CustomersService {
     delete newCustomer.id;
 
     return await this.fire.firestore
-      .collection('customers')
+      .collection(Collections.CUSTOMERS)
       .doc(customer.id)
       .update(newCustomer);
   }
 
   deleteCustomer(id: string) {
-    return this.fire.firestore.collection('customers').doc(id).delete();
+    return this.fire.firestore.collection(Collections.CUSTOMERS).doc(id).delete();
   }
 }
