@@ -199,7 +199,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       customer: payload.project.customer,
     }));
 
-    await this.app.$timeRecordsService.deleteEmployeeRecords({
+    await this.app.$timeRecordsService.deleteEmployeeRecords<TimeRecord>({
       recordsToDelete,
     });
 

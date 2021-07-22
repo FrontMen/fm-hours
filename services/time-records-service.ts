@@ -99,15 +99,15 @@ export default class RecordsService {
     return record;
   }
 
-  async deleteEmployeeRecords(params: {
-    recordsToDelete: TimeRecord[];
-  }): Promise<void> {
+  async deleteEmployeeRecords<RecordType extends { id: string|null}>(params: {
+    recordsToDelete: RecordType[];
+  }, collection: string = 'time_records'): Promise<void> {
     const batch = this.fire.firestore.batch();
 
     params.recordsToDelete.forEach((record) => {
       if (record.id) {
         const ref = this.fire.firestore
-          .collection('time_records')
+          .collection(collection)
           .doc(record.id!);
 
         batch.delete(ref);
