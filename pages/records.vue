@@ -65,12 +65,7 @@
         <template
           v-if="employee && (employee.standBy || isAdminView) && timesheet.standByProject"
         >
-          <h3 class="mt-5 mb-3">
-            Stand-by hours
-            <small v-if="!employee.standBy" class="text-danger">- not active for employee</small>
-          </h3>
-
-          <weekly-timesheet :selected-week="recordsState.selectedWeek">
+          <weekly-timesheet :selected-week="recordsState.selectedWeek" :active="employee.standBy" :title="'Stand-by hours'">
             <template #rows>
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
@@ -94,6 +89,7 @@
               />
             </template>
           </weekly-timesheet>
+        </template>
 
           <template
             v-if="employee && employee.standBy && timesheet.standBy"
@@ -175,7 +171,37 @@
             @change="hasUnsavedChanges = true"
             @blur="handleBlur"
           />
+        <template
+          v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
+        >
+          <weekly-timesheet :selected-week="recordsState.selectedWeek" :active="employee.travelAllowance" :title="'Travel allowance'">
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.travelProject"
+                :readonly="!isAdminView && isReadonly"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="kilometerFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+              />
+            </template>
+          </weekly-timesheet>
         </template>
+
+        <b-form-textarea
+          v-if="!isReadonly || message"
+          id="message-textarea"
+          v-model="message"
+          class="mt-4"
+          placeholder="Add a comment here."
+          rows="1"
+          max-rows="4"
+          :plaintext="!isAdminView && isReadonly"
+          @change="hasUnsavedChanges = true"
+          @blur="handleBlur"
+        />
       </form>
 
       <weekly-timesheet-admin-footer
@@ -209,29 +235,29 @@
       >
         {{ timesheetDenyMessage }}
       </b-alert>
-    </template>
 
-    <select-project-dialog
-      :projects="selectableCustomers"
-      @project-selected="addProject"
-    />
-
-    <b-modal
-      id="deny-modal"
-      centered
-      title="Reason of denial"
-      cancel-variant="danger"
-      :ok-disabled="!reasonOfDenial"
-      @hidden="reasonOfDenial = ''"
-      @ok="handleDeny()"
-    >
-      <b-form-textarea
-        id="textarea"
-        v-model="reasonOfDenial"
-        placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
-        rows="3"
+      <select-project-dialog
+        :projects="selectableCustomers"
+        @project-selected="addProject"
       />
-    </b-modal>
+
+      <b-modal
+        id="deny-modal"
+        centered
+        title="Reason of denial"
+        cancel-variant="danger"
+        :ok-disabled="!reasonOfDenial"
+        @hidden="reasonOfDenial = ''"
+        @ok="handleDeny()"
+      >
+        <b-form-textarea
+          id="textarea"
+          v-model="reasonOfDenial"
+          placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
+          rows="3"
+        />
+      </b-modal>
+    </template>
   </div>
 </template>
 

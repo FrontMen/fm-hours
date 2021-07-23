@@ -1,37 +1,43 @@
 <template>
-  <div class="weekly-timesheet">
-    <b-container fluid>
-      <b-row cols="14">
-        <!-- TODO: could be auto? -->
-        <b-col class="weekly-timesheet__action-column" cols="4" />
+  <div>
+    <h3 v-if="title" class="mt-5 mb-3 d-inline-block" :class="{ 'inactive-section text-danger': !active }" title="Not active for employee">
+      {{ title }}
+      <b-icon-exclamation-triangle v-if="!active" variant="danger" />
+    </h3>
+    <div class="weekly-timesheet" :class="{ 'inactive-section': !active }">
+      <b-container fluid>
+        <b-row cols="14">
+          <!-- TODO: could be auto? -->
+          <b-col class="weekly-timesheet__action-column" cols="4" />
 
-        <b-col
-          v-for="date in selectedWeek"
-          :key="date.weekDay"
-          cols="1"
-          class="weekly-timesheet__date-column"
-          :class="{
-            today: date.isToday,
-            holiday: date.isHoliday,
-            leave: date.isLeaveDay,
-          }"
-        >
-          <strong class="d-block">
-            <span class="d-md-none">{{ date.weekDayShort }}</span>
-            <span class="d-none d-md-block">{{ date.weekDay }}</span>
-          </strong>
+          <b-col
+            v-for="date in selectedWeek"
+            :key="date.weekDay"
+            cols="1"
+            class="weekly-timesheet__date-column"
+            :class="{
+              today: date.isToday,
+              holiday: date.isHoliday,
+              leave: date.isLeaveDay,
+            }"
+          >
+            <strong class="d-block">
+              <span class="d-md-none">{{ date.weekDayShort }}</span>
+              <span class="d-none d-md-block">{{ date.weekDay }}</span>
+            </strong>
 
-          <small>
-            <span>{{ date.monthDay }}</span>
-            <span class="d-none d-md-inline">{{ date.month }}</span>
-          </small>
-        </b-col>
+            <small>
+              <span>{{ date.monthDay }}</span>
+              <span class="d-none d-md-inline">{{ date.month }}</span>
+            </small>
+          </b-col>
 
-        <b-col cols="1" />
-      </b-row>
+          <b-col cols="1" />
+        </b-row>
 
-      <slot name="rows" />
-    </b-container>
+        <slot name="rows" />
+      </b-container>
+    </div>
   </div>
 </template>
 
@@ -40,6 +46,14 @@ import {defineComponent, PropType} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   props: {
+    title: {
+      type: String,
+      default: null,
+    },
+    active: {
+      type: Boolean,
+      default: true,
+    },
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
       default: () => [],
@@ -49,6 +63,9 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.inactive-section {
+  opacity: 0.5;
+}
 .weekly-timesheet {
   background-color: var(--color-primary);
   color: var(--color-primary-text);

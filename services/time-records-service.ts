@@ -54,11 +54,7 @@ export default class RecordsService {
   async saveEmployeeRecords<RecordType extends { id: string|null, hours: number }>(params: {
     employeeId: string;
     timeRecords: RecordType[];
-<<<<<<< HEAD
-  }, collection: string = 'time_records') {
-=======
   }, collection: string = Collections.TIMREC) {
->>>>>>> 9774444 (Add enum value for default collection in time records)
     const ref = this.fire.firestore.collection(collection);
 
     const updatedRecords = await Promise.all(
