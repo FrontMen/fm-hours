@@ -11,7 +11,7 @@ type JWTResponse = {
   email_verified: boolean;
   firebase: {
     sign_in_attributes: {
-      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier": string;
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier': string;
     };
   };
 };

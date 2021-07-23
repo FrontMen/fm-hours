@@ -1,5 +1,5 @@
-import { NuxtFireInstance } from "@nuxtjs/firebase";
-import { DocumentSnapshot } from "@firebase/firestore-types";
+import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {DocumentSnapshot} from '@firebase/firestore-types';
 
 export default class EmployeesService {
   fire: NuxtFireInstance;
@@ -9,7 +9,7 @@ export default class EmployeesService {
   }
 
   async getEmployees() {
-    const ref = this.fire.firestore.collection("employees");
+    const ref = this.fire.firestore.collection('employees');
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
@@ -57,8 +57,8 @@ export default class EmployeesService {
     email: string
   ): Promise<DocumentSnapshot | null> {
     const ref = this.fire.firestore
-      .collection("employees")
-      .where("email", "==", email);
+      .collection('employees')
+      .where('email', '==', email);
 
     const snapshot = await ref.get();
 
@@ -75,7 +75,7 @@ export default class EmployeesService {
   }): Promise<Employee> {
     const newEmployee = {
       name: params.name,
-      picture: "",
+      picture: '',
       email: params.email,
       projects: [],
       travelAllowance: params.travelAllowance,
@@ -84,24 +84,24 @@ export default class EmployeesService {
       created: new Date().getTime(),
     };
 
-    const ref = this.fire.firestore.collection("employees");
-    const { id } = await ref.add(newEmployee);
+    const ref = this.fire.firestore.collection('employees');
+    const {id} = await ref.add(newEmployee);
 
-    return { ...newEmployee, id };
+    return {...newEmployee, id};
   }
 
   async updateEmployee(employee: Employee) {
-    const newEmployee = { ...employee } as any;
+    const newEmployee = {...employee} as any;
     delete newEmployee.id;
 
     return await this.fire.firestore
-      .collection("employees")
+      .collection('employees')
       .doc(employee.id)
-      .set(newEmployee, { merge: true });
+      .set(newEmployee, {merge: true});
   }
 
   async deleteEmployee(id: string) {
-    return await this.fire.firestore.collection("employees").doc(id).delete();
+    return await this.fire.firestore.collection('employees').doc(id).delete();
   }
 
   public async isAdmin(email: string) {
@@ -110,27 +110,27 @@ export default class EmployeesService {
   }
 
   public async getAdminEmails(): Promise<string[]> {
-    const ref = this.fire.firestore.collection("admins");
+    const ref = this.fire.firestore.collection('admins');
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
 
-    return (result as unknown) as string[];
+    return result as unknown as string[];
   }
 
   public async getTeams(): Promise<string[]> {
-    const ref = this.fire.firestore.collection("teams");
+    const ref = this.fire.firestore.collection('teams');
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().teams || [];
 
-    return (result as unknown) as string[];
+    return result as unknown as string[];
   }
 
   public async updateAdminEmails(adminList: string[]): Promise<string[]> {
-    const docs = await this.fire.firestore.collection("admins").get();
+    const docs = await this.fire.firestore.collection('admins').get();
     const docId = await docs.docs[0].id;
-    const ref = await this.fire.firestore.collection("admins").doc(docId);
+    const ref = await this.fire.firestore.collection('admins').doc(docId);
 
-    await ref.update({ admins: adminList });
+    await ref.update({admins: adminList});
     return adminList;
   }
 }

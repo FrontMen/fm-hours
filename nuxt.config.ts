@@ -1,31 +1,31 @@
-import { defineNuxtConfig } from "@nuxtjs/composition-api";
+import {defineNuxtConfig} from '@nuxtjs/composition-api';
 
 export default defineNuxtConfig({
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
   ssr: false,
 
   // Target (https://go.nuxtjs.dev/config-target)
-  target: "static",
+  target: 'static',
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: "Frontmen - Hours",
+    title: 'Frontmen - Hours',
     meta: [
-      { charset: "utf-8" },
+      {charset: 'utf-8'},
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1, user-scalable=no",
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1, user-scalable=no',
       },
-      { hid: "description", name: "description", content: "" },
+      {hid: 'description', name: 'description', content: ''},
     ],
-    link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+    link: [{rel: 'icon', type: 'image/x-icon', href: '/favicon.ico'}],
   },
 
   // Global CSS (https://go.nuxtjs.dev/config-css)
-  css: ["@/assets/scss/index.scss"],
+  css: ['@/assets/scss/index.scss'],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ["~plugins/filters", "~/plugins/services"],
+  plugins: ['~plugins/filters', '~/plugins/services'],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: true,
@@ -33,26 +33,26 @@ export default defineNuxtConfig({
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
     // https://go.nuxtjs.dev/typescript
-    "@nuxt/typescript-build",
+    '@nuxt/typescript-build',
     // https://composition-api.nuxtjs.org/
-    "@nuxtjs/composition-api",
+    '@nuxtjs/composition-api',
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     [
-      "bootstrap-vue/nuxt",
+      'bootstrap-vue/nuxt',
       {
         icons: true,
       },
     ],
     // https://go.nuxtjs.dev/pwa
-    "@nuxtjs/pwa",
-    "@nuxtjs/firebase",
+    '@nuxtjs/pwa',
+    '@nuxtjs/firebase',
     // https://go.nuxtjs.dev/axios
     // load axios before firebase because: https://github.com/nuxt/nuxt.js/issues/7536#issuecomment-648957310
-    "@nuxtjs/axios",
+    '@nuxtjs/axios',
   ],
 
   publicRuntimeConfig: {
@@ -68,14 +68,14 @@ export default defineNuxtConfig({
       projectId: process.env.FB_PROJECT_ID!,
       storageBucket: process.env.FB_STORAGE_BUCKET!,
       messagingSenderId: process.env.FB_MESSAGING_SENDER_ID!,
-      measurementId: process.env.FB_MESSAGING_ID || "",
+      measurementId: process.env.FB_MESSAGING_ID || '',
       appId: process.env.FB_APP_ID!,
     },
     services: {
       firestore: true,
       auth: {
         initialize: {
-          onAuthStateChangedAction: "employee/onAuthStateChanged",
+          onAuthStateChangedAction: 'employee/onAuthStateChanged',
         },
       },
     },
@@ -87,8 +87,8 @@ export default defineNuxtConfig({
   },
 
   proxy: [
-    "https://bridge.hosted-tools.com/api/v1",
-    "https://auth.hosted-tools.com/api/get-token",
+    'https://bridge.hosted-tools.com/api/v1',
+    'https://auth.hosted-tools.com/api/get-token',
   ],
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)

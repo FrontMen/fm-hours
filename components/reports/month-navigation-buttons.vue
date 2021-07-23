@@ -28,8 +28,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from "@nuxtjs/composition-api";
-import { differenceInCalendarMonths, format } from "date-fns";
+import {computed, defineComponent} from "@nuxtjs/composition-api";
+import {differenceInCalendarMonths, format} from "date-fns";
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -39,7 +39,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => emit("current");

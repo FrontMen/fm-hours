@@ -1,12 +1,12 @@
-import Vue from "vue";
-import { format } from "date-fns";
+import Vue from 'vue';
+import {format} from 'date-fns';
 
-import { getDayOnGMT } from "~/helpers/dates";
+import {getDayOnGMT} from '~/helpers/dates';
 
-Vue.filter("formatDate", (value: string, formatString: string) => {
-  if (!value) return "";
+Vue.filter('formatDate', (value: string, formatString: string) => {
+  if (!value) return '';
 
-  formatString = formatString || "";
+  formatString = formatString || '';
   const date = getDayOnGMT(value);
 
   return format(date, formatString);

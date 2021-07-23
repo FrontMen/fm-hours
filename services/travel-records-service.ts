@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { NuxtFireInstance } from "@nuxtjs/firebase";
+import {NuxtFireInstance} from '@nuxtjs/firebase';
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -14,14 +14,14 @@ export default class RecordsService {
     endDate?: string;
   }): Promise<TravelRecord[]> {
     const query = await this.fire.firestore
-      .collection("travel_records")
-      .where("employeeId", "==", params.employeeId);
+      .collection('travel_records')
+      .where('employeeId', '==', params.employeeId);
 
     if (params.startDate)
-      query.where("date", ">=", new Date(params.startDate).getTime());
+      query.where('date', '>=', new Date(params.startDate).getTime());
 
     if (params.endDate)
-      query.where("date", "<=", new Date(params.endDate).getTime());
+      query.where('date', '<=', new Date(params.endDate).getTime());
 
     const snapshot = await query.get();
 
@@ -36,10 +36,10 @@ export default class RecordsService {
     endDate: Date;
   }): Promise<TimeRecord[]> {
     const snapshot = await this.fire.firestore
-      .collection("travel_records")
-      .where("date", ">=", params.startDate.getTime())
-      .where("date", "<=", params.endDate.getTime())
-      .orderBy("date", "asc")
+      .collection('travel_records')
+      .where('date', '>=', params.startDate.getTime())
+      .where('date', '<=', params.endDate.getTime())
+      .orderBy('date', 'asc')
       .get();
 
     return snapshot.docs.map((doc) => ({
@@ -52,7 +52,7 @@ export default class RecordsService {
     employeeId: string;
     travelRecords: TravelRecord[];
   }) {
-    const ref = this.fire.firestore.collection("travel_records");
+    const ref = this.fire.firestore.collection('travel_records');
 
     const updatedRecords = await Promise.all(
       params.travelRecords.map(async (record) => {
@@ -68,9 +68,9 @@ export default class RecordsService {
     employeeId: string,
     record: TravelRecord
   ): Promise<TravelRecord> {
-    const { id, kilometers } = record;
+    const {id, kilometers} = record;
 
-    const newRecord: any = { ...record };
+    const newRecord: any = {...record};
     delete newRecord.id;
 
     if (id) {
@@ -86,7 +86,7 @@ export default class RecordsService {
     }
 
     if (kilometers > 0) {
-      const newDocument = await ref.add({ employeeId, ...newRecord });
+      const newDocument = await ref.add({employeeId, ...newRecord});
 
       return {
         ...newRecord,

@@ -1,27 +1,21 @@
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">
-        Employee not found
-      </div>
+      <div v-if="!employee">Employee not found</div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">
-              Edit team:
-            </h6>
+            <h6 class="mb-3">Edit team:</h6>
             <b-form-select
               v-model="selectedTeam"
               :options="teamList"
               class="mb-3"
               @change="hasUnsavedChanges = true"
             />
-            <h6 class="mb-3">
-              Manage Projects
-            </h6>
+            <h6 class="mb-3">Manage Projects</h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -34,11 +28,10 @@
               placeholder="Click or search for a customer here"
               @input="hasUnsavedChanges = true"
             >
-              <template slot="selection" slot-scope="{ values }">
-                <span
-                  v-if="values.length"
-                  class="multiselect__single"
-                >{{ values.length }} options selected</span>
+              <template slot="selection" slot-scope="{values}">
+                <span v-if="values.length" class="multiselect__single">
+                  {{ values.length }} options selected
+                </span>
               </template>
             </multiselect>
 
@@ -66,9 +59,7 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">
-              Employee Settings
-            </h6>
+            <h6 class="mb-3">Employee Settings</h6>
 
             Name:
             <b-form-input
@@ -162,14 +153,14 @@ import {
   ref,
 } from "@nuxtjs/composition-api";
 import Multiselect from "vue-multiselect";
-import { BIconTrashFill } from "bootstrap-vue";
+import {BIconTrashFill} from "bootstrap-vue";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
-import { formatDate, getDayOnGMT } from "~/helpers/dates";
-import { emailRegex } from "~/helpers/email";
+import {formatDate, getDayOnGMT} from "~/helpers/dates";
+import {emailRegex} from "~/helpers/email";
 
 export default defineComponent({
-  components: { EmployeeHeader, Multiselect, BIconTrashFill },
+  components: {EmployeeHeader, Multiselect, BIconTrashFill},
   middleware: ["isAdmin"],
   head: {},
   setup() {
@@ -205,10 +196,10 @@ export default defineComponent({
     const teamList = computed(() => {
       const parsedTeam = store.getters["employees/teamList"].map(
         (team: string) => {
-          return { value: team, text: team };
+          return {value: team, text: team};
         }
       );
-      return [{ value: null, text: "Select team" }, ...parsedTeam];
+      return [{value: null, text: "Select team"}, ...parsedTeam];
     });
 
     const pageTitle = computed(() =>
@@ -235,7 +226,7 @@ export default defineComponent({
       return true;
     });
 
-    useMeta(() => ({ title: pageTitle.value }));
+    useMeta(() => ({title: pageTitle.value}));
 
     onMounted(() => {
       if (employees.value.length === 0) {
@@ -260,7 +251,7 @@ export default defineComponent({
       () => {
         selectedTeam.value = employee.value?.team || null;
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     watch(
@@ -273,7 +264,7 @@ export default defineComponent({
               )
             : [];
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     const isAdmin = ref<boolean>(
@@ -287,7 +278,7 @@ export default defineComponent({
           employee.value?.email
         );
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     const isTravelAllowed = ref<boolean>(!!employee.value?.travelAllowance);
@@ -296,7 +287,7 @@ export default defineComponent({
       () => {
         isTravelAllowed.value = !!employee.value?.travelAllowance;
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     const startDate = ref<string>(
@@ -309,7 +300,7 @@ export default defineComponent({
           ? formatDate(getDayOnGMT(employee.value.startDate))
           : "";
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     const hasEndDate = ref(!!employee?.value?.endDate);

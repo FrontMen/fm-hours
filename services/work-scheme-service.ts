@@ -1,10 +1,10 @@
-import { format } from "date-fns";
+import {format} from 'date-fns';
 
-import { NuxtAxiosInstance } from "@nuxtjs/axios";
+import {NuxtAxiosInstance} from '@nuxtjs/axios';
 
 export default class WorkSchemeService {
   axios: NuxtAxiosInstance;
-  ApiUrl = "/api/v1";
+  ApiUrl = '/api/v1';
 
   constructor(axios: NuxtAxiosInstance) {
     this.axios = axios;
@@ -15,14 +15,14 @@ export default class WorkSchemeService {
     startDate: Date;
     endDate: Date;
   }): Promise<WorkScheme[] | undefined> {
-    const { bridgeUid, startDate, endDate } = params;
+    const {bridgeUid, startDate, endDate} = params;
 
     try {
       const response = await this.axios.$get<WorkSchemeResponse>(
         `${this.ApiUrl}/users/${bridgeUid}/worktime?date_from=${format(
           startDate,
-          "yyyy-MM-dd"
-        )}&date_to=${format(endDate, "yyyy-MM-dd")}`,
+          'yyyy-MM-dd'
+        )}&date_to=${format(endDate, 'yyyy-MM-dd')}`,
         {
           withCredentials: true,
         }
@@ -38,7 +38,7 @@ export default class WorkSchemeService {
       }));
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error("API error", error);
+      console.error('API error', error);
     }
   }
 }

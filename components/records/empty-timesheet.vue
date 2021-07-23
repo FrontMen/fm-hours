@@ -3,7 +3,7 @@
     <p>There are no hours registered for this week.</p>
 
     <template>
-      <b-button v-b-modal.modal-add-project> Add a project </b-button>
+      <b-button v-b-modal.modal-add-project>Add a project</b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 
       <b-button @click="handleCopyPreviousWeekClick">
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@nuxtjs/composition-api";
+import {defineComponent} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emits: ["copy-previous-week"],
@@ -24,7 +24,7 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(_, { emit }) {
+  setup(_, {emit}) {
     return {
       handleCopyPreviousWeekClick: () => emit("copy-previous-week"),
     };

@@ -9,7 +9,8 @@
           </b-button>
         </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
-          <b-icon-printer /> &nbsp;Print
+          <b-icon-printer />
+          &nbsp;Print
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
@@ -20,19 +21,24 @@
           width="250pt"
         />
         <h4>
-          <strong
-            >{{ formatDate(monthDate) }} - {{ formatDate(endDate) }}</strong
-          >
+          <strong>
+            {{ formatDate(monthDate) }} - {{ formatDate(endDate) }}
+          </strong>
         </h4>
       </b-col>
       <b-col cols="12" md="7" class="ml-auto">
         <b-row>
           <b-col cols="12" sm="6">
-            <p><strong>Employee:</strong> {{ employee.name }}</p>
             <p>
-              <strong v-if="selectedCustomers && selectedCustomers.length !== 1"
-                >Projects:</strong
+              <strong>Employee:</strong>
+              {{ employee.name }}
+            </p>
+            <p>
+              <strong
+                v-if="selectedCustomers && selectedCustomers.length !== 1"
               >
+                Projects:
+              </strong>
               <strong v-else>Project:</strong>
               <span v-if="selectedCustomers && selectedCustomers.length">
                 <span
@@ -40,16 +46,15 @@
                   :key="project.value"
                 >
                   {{ project.value
-                  }}<span v-if="i !== selectedCustomers.length - 1"
-                    >,&nbsp;</span
-                  >
+                  }}
+                  <span v-if="i !== selectedCustomers.length - 1">,&nbsp;</span>
                 </span>
               </span>
               <span
                 v-if="
                   !(selectedCustomers && selectedCustomers.length) &&
-                  projectOptions &&
-                  projectOptions.length
+                    projectOptions &&
+                    projectOptions.length
                 "
               >
                 <span
@@ -57,15 +62,20 @@
                   :key="project.value"
                 >
                   {{ project.value
-                  }}<span v-if="i !== projectOptions.length - 1">,&nbsp;</span>
+                  }}
+                  <span v-if="i !== projectOptions.length - 1">,&nbsp;</span>
                 </span>
               </span>
             </p>
           </b-col>
           <b-col cols="12" sm="6">
-            <p><strong>Total hours:</strong> {{ totalHours.total }}</p>
             <p>
-              <strong>Total billable hours:</strong> {{ totalHours.billable }}
+              <strong>Total hours:</strong>
+              {{ totalHours.total }}
+            </p>
+            <p>
+              <strong>Total billable hours:</strong>
+              {{ totalHours.billable }}
             </p>
             <p>
               <strong>Total for selected projects:</strong>
@@ -98,7 +108,7 @@
           :taggable="false"
           placeholder="Select projects"
         >
-          <template slot="selection" slot-scope="{ values }">
+          <template slot="selection" slot-scope="{values}">
             <span v-if="values.length">
               {{ values.length }} options selected
             </span>
@@ -152,9 +162,12 @@
       </template>
 
       <template #foot(hours)="">
-        <span><strong>Total hours:</strong> {{ totalHours.selected }}</span>
+        <span>
+          <strong>Total hours:</strong>
+          {{ totalHours.selected }}
+        </span>
       </template>
-      <template #foot()=""> &nbsp; </template>
+      <template #foot()="">&nbsp;</template>
     </b-table>
 
     <b-row class="no-break only-print">
@@ -196,17 +209,11 @@ import {
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
-import {
-  startOfMonth,
-  endOfMonth,
-  format,
-  addMonths,
-  subMonths,
-} from "date-fns";
+import {startOfMonth, endOfMonth, format, addMonths, subMonths} from "date-fns";
 import Multiselect from "vue-multiselect";
 
 export default defineComponent({
-  components: { Multiselect },
+  components: {Multiselect},
   middleware: ["isAuthenticated"],
   head: {
     title: "Monthly report",
@@ -215,7 +222,7 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
 
-    const selectedCustomers = ref<{ value: string; label: string }[]>([]);
+    const selectedCustomers = ref<{value: string; label: string}[]>([]);
     const onlyBillable = ref<boolean>(false);
 
     const employee = computed(() => {
@@ -286,7 +293,7 @@ export default defineComponent({
       });
 
       const mappedProjects = projects.map((project) => {
-        return { value: project, label: project };
+        return {value: project, label: project};
       });
 
       return mappedProjects;

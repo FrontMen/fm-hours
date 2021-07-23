@@ -27,9 +27,7 @@
       <div class="container">
         Remove entries from timesheet?
         <b-row class="justify-content-around mt-2">
-          <b-button variant="secondary" @click="closeTooltip">
-            Cancel
-          </b-button>
+          <b-button variant="secondary" @click="closeTooltip">Cancel</b-button>
           <b-button variant="danger" @click="handleRemoveClick">
             Delete
           </b-button>
@@ -75,15 +73,15 @@ import {
   watch,
 } from "@nuxtjs/composition-api";
 
-import { checkEmployeeAvailability } from "../../helpers/employee";
+import {checkEmployeeAvailability} from "../../helpers/employee";
 import {
   floatTo24TimeString,
   floatToTotalTimeString,
   timeStringToFloat,
 } from "~/helpers/timesheet";
-import { debounce } from "~/helpers/helpers";
+import {debounce} from "~/helpers/helpers";
 
-let self:any;
+let self: any;
 
 export default defineComponent({
   emits: ["remove", "save"],
@@ -105,7 +103,7 @@ export default defineComponent({
       required: true,
     },
     valueFormatter: {
-      type: Object as PropType<{ min: number; max: number; formatter(): void }>,
+      type: Object as PropType<{min: number; max: number; formatter(): void}>,
     },
     employee: {
       type: Object as PropType<Employee>,
@@ -114,9 +112,9 @@ export default defineComponent({
   },
   created() {
     self = this;
-    self.autoSave = debounce(self.autoSave, 5000)
+    self.autoSave = debounce(self.autoSave, 5000);
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
 
@@ -135,7 +133,7 @@ export default defineComponent({
 
     const handleBlur = () => {
       self.autoSave();
-    }
+    };
 
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.project.customer.name === "Kilometers";

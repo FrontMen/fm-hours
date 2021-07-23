@@ -1,17 +1,16 @@
-import { startOfMonth, addMonths, startOfISOWeek } from "date-fns";
-import { ActionTree } from "vuex";
+import {startOfMonth, addMonths, startOfISOWeek} from 'date-fns';
+import {ActionTree} from 'vuex';
 
-import { checkEmployeeAvailability } from "../../helpers/employee";
-import { filterApprovedRecords } from "~/helpers/record-status";
-import { getDayOnGMT } from "~/helpers/dates";
+import {checkEmployeeAvailability} from '../../helpers/employee';
+import {filterApprovedRecords} from '~/helpers/record-status';
+import {getDayOnGMT} from '~/helpers/dates';
 
 const actions: ActionTree<ReportsStoreState, RootStoreState> = {
-  async getMonthlyReportData({ commit }, payload: { startDate: Date }) {
-    commit("setIsLoading", { isLoading: true });
+  async getMonthlyReportData({commit}, payload: {startDate: Date}) {
+    commit('setIsLoading', {isLoading: true});
 
     const startDate = startOfMonth(payload.startDate);
     const endDate = startOfMonth(addMonths(payload.startDate, 1));
- 
 
     const customersPromise = this.app.$customersService.getCustomers();
     const employeesPromise = this.app.$employeesService.getEmployees();
@@ -30,19 +29,14 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       endDate,
     });
 
-    const [
-      customers,
-      employees,
-      timesheets,
-      timeRecords,
-      travelRecords,
-    ] = await Promise.all([
-      customersPromise,
-      employeesPromise,
-      timesheetsPromise,
-      timeRecordsPromise,
-      travelRecordsPromise,
-    ]);
+    const [customers, employees, timesheets, timeRecords, travelRecords] =
+      await Promise.all([
+        customersPromise,
+        employeesPromise,
+        timesheetsPromise,
+        timeRecordsPromise,
+        travelRecordsPromise,
+      ]);
 
     const approvedTimeRecords = filterApprovedRecords(timeRecords, timesheets);
 
@@ -55,8 +49,8 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       checkEmployeeAvailability(employee, startDate, endDate)
     );
 
-    commit("setIsLoading", { isLoading: false });
-    commit("createMonthlyReportData", {
+    commit('setIsLoading', {isLoading: false});
+    commit('createMonthlyReportData', {
       employees: activeEmployees,
       customers,
       timeRecords: approvedTimeRecords,

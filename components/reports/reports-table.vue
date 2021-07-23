@@ -1,7 +1,7 @@
 <template>
   <div class="reports-table">
     <div class="reports-table__btn mb-4">
-      <b-btn @click="exportToCsv"> Export </b-btn>
+      <b-btn @click="exportToCsv">Export</b-btn>
     </div>
 
     <b-table
@@ -19,15 +19,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api";
+import {defineComponent} from "@vue/composition-api";
 
 export default defineComponent({
   props: {
-    csvFileName: { type: String, default: "export" },
+    csvFileName: {type: String, default: "export"},
   },
   setup(props) {
     const downloadCsv = (csv: any, filename: string) => {
-      const csvFile = new Blob([csv], { type: "text/csv" });
+      const csvFile = new Blob([csv], {type: "text/csv"});
       const downloadLink = document.createElement("a");
 
       downloadLink.download = filename;

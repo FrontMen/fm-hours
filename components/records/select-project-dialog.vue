@@ -44,7 +44,7 @@ export default defineComponent({
       default: () => [],
     },
   },
-  setup(_, { emit, refs }) {
+  setup(_, {emit, refs}) {
     const selectState = ref(null);
     const selectedProject = ref(null);
 

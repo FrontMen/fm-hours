@@ -1,8 +1,8 @@
 export default () => {
   const createKilometersFields = () => {
     return [
-      { key: "name", sortable: true },
-      { key: "kilometers", sortable: true },
+      {key: 'name', sortable: true},
+      {key: 'kilometers', sortable: true},
     ];
   };
 
@@ -29,5 +29,5 @@ export default () => {
     return items;
   };
 
-  return { createKilometersFields, createKilometersItems };
+  return {createKilometersFields, createKilometersItems};
 };

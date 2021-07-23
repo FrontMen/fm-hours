@@ -1,13 +1,13 @@
-import { isSameISOWeek } from "date-fns";
+import {isSameISOWeek} from 'date-fns';
 
-import { getDayOnGMT } from "./dates";
+import {getDayOnGMT} from './dates';
 
 export const recordStatus = {
-  NEW: "new",
-  PENDING: "pending",
-  APPROVED: "approved",
-  DENIED: "denied",
-  EMPTY: "empty",
+  NEW: 'new',
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  DENIED: 'denied',
+  EMPTY: 'empty',
 };
 
 export function filterApprovedRecords<T extends TimeRecord | TravelRecord>(
