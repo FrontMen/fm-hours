@@ -65,7 +65,9 @@
         <template
           v-if="employee && employee.travelAllowance && timesheet.travelProject"
         >
-          <h3 class="mt-5 mb-3">Travel allowance</h3>
+          <h3 class="mt-5 mb-3">
+            Travel allowance
+          </h3>
 
           <weekly-timesheet :selected-week="recordsState.selectedWeek">
             <template #rows>
@@ -128,6 +130,28 @@
       >
         {{ timesheetDenyMessage }}
       </b-alert>
+    </template>
+
+    <template v-if="timesheet.leaveDays" class="mb-3">
+      <h3 class="mt-5 mb-3">
+        Leave days
+      </h3>
+      <div class="pb-5">
+        <weekly-timesheet :selected-week="recordsState.selectedWeek">
+          <template #rows>
+            <weekly-timesheet-row
+              :key="recordsState.selectedWeek[0].date"
+              :project="timesheet.leaveDays"
+              :readonly="true"
+              :removable="false"
+              :selected-week="recordsState.selectedWeek"
+              :value-formatter="timesheetFormatter"
+              :employee="employee"
+              @change="hasUnsavedChanges = true"
+            />
+          </template>
+        </weekly-timesheet>
+      </div>
     </template>
 
     <select-project-dialog

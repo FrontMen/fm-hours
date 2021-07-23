@@ -15,6 +15,7 @@ const mutations: MutationTree<RecordsStoreState> = {
     payload: {
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
+      leaveDays: WeekDate[];
       selectedWeek: WeekDate[];
       workScheme: WorkScheme[];
     }
@@ -23,6 +24,7 @@ const mutations: MutationTree<RecordsStoreState> = {
     if (payload.travelRecords) state.travelRecords = payload.travelRecords;
     if (payload.selectedWeek) state.selectedWeek = payload.selectedWeek;
     if (payload.workScheme) state.workScheme = payload.workScheme;
+    if (payload.leaveDays) state.leaveDays = payload.leaveDays;
   },
 
   updateRecords(

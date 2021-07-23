@@ -60,8 +60,10 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       employeeId: payload.employeeId,
     });
 
-    const travelRecords =
-      await this.app.$travelRecordsService.getEmployeeRecords({
+    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay)
+
+    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords(
+      {
         employeeId: payload.employeeId,
       });
 
@@ -69,6 +71,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     commit('setRecords', {
       timeRecords,
       travelRecords,
+      leaveDays,
       selectedWeek,
       workScheme: workSchemeResult || [],
     });

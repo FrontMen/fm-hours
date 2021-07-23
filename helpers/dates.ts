@@ -64,7 +64,7 @@ export function checkNonWorkingDays(
   days: WeekDate[],
   customHolidays: string[],
   workScheme?: WorkScheme[]
-) {
+): WeekDate[] {
   return days.map((day) => {
     const isCustomHoliday = customHolidays.includes(day.date);
 

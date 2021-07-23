@@ -6,9 +6,9 @@ import {recordStatus} from '~/helpers/record-status';
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
-  kilometerFormatter,
-} from '~/helpers/timesheet';
-import {buildEmailData} from '~/helpers/email';
+  kilometerFormatter, createLeaveProject,
+} from "~/helpers/timesheet";
+import { buildEmailData } from "~/helpers/email";
 
 export default (
   employeeId: string,
@@ -42,6 +42,7 @@ export default (
 
   const timesheet = ref<WeeklyTimesheet>({
     projects: [],
+    leaveDays: null,
     travelProject: null,
   });
 
@@ -126,6 +127,7 @@ export default (
       projects: timesheet.value.projects.filter(
         (proj) => proj.customer.id !== project.customer.id
       ),
+      leaveDays: timesheet.value.leaveDays,
       travelProject: timesheet.value.travelProject,
     };
 
@@ -158,6 +160,7 @@ export default (
 
     const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,
+      leaveDays: createLeaveProject(recordsState.value.selectedWeek, recordsState.value.workScheme),
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
@@ -180,6 +183,7 @@ export default (
           ...project,
           ids: new Array(7).fill(null),
         })),
+      leaveDays: previousWeekTimesheet.leaveDays,
       travelProject: {
         ...previousWeekTimesheet.travelProject!,
         ids: new Array(7).fill(null),
@@ -194,6 +198,7 @@ export default (
   watch(
     () => [
       recordsState.value.selectedWeek,
+      recordsState.value.leaveDays,
       recordsState.value.timeRecords,
       recordsState.value.travelRecords,
     ],
@@ -209,6 +214,7 @@ export default (
 
       const newTimesheet = createWeeklyTimesheet({
         week: recordsState.value.selectedWeek,
+        leaveDays: createLeaveProject(recordsState.value.selectedWeek, recordsState.value.workScheme),
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
         workScheme: recordsState.value.workScheme,
