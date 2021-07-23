@@ -46,6 +46,7 @@
         weekend: selectedWeek[index].isWeekend,
         holiday: selectedWeek[index].isHoliday,
         leave: selectedWeek[index].isLeaveDay,
+        'part-time': selectedWeek[index].isPartTime,
       }"
     >
       <b-form-input
@@ -73,20 +74,20 @@ import {
   defineComponent,
   PropType,
   watch,
-} from "@nuxtjs/composition-api";
+} from '@nuxtjs/composition-api'
 
-import { checkEmployeeAvailability } from "../../helpers/employee";
+import { checkEmployeeAvailability } from '../../helpers/employee'
 import {
   floatTo24TimeString,
   floatToTotalTimeString,
   timeStringToFloat,
-} from "~/helpers/timesheet";
-import { debounce } from "~/helpers/helpers";
+} from '~/helpers/timesheet'
+import { debounce } from '~/helpers/helpers'
 
-let self:any;
+let self: any
 
 export default defineComponent({
-  emits: ["remove", "save"],
+  emits: ['remove', 'save'],
   props: {
     project: {
       type: Object as PropType<TimesheetProject>,
@@ -113,83 +114,83 @@ export default defineComponent({
     },
   },
   created() {
-    self = this;
+    self = this
     self.autoSave = debounce(self.autoSave, 5000)
   },
   setup(props, { emit }) {
-    const tooltip = ref();
-    const canRemove = computed(() => !props.readonly && props.removable);
+    const tooltip = ref()
+    const canRemove = computed(() => !props.readonly && props.removable)
 
     const closeTooltip = () => {
-      tooltip.value.$emit("close");
-    };
+      tooltip.value.$emit('close')
+    }
 
     const handleRemoveClick = () => {
-      closeTooltip();
-      emit("remove", props.project);
-    };
+      closeTooltip()
+      emit('remove', props.project)
+    }
 
     function autoSave() {
-      emit("save");
+      emit('save')
     }
 
     const handleBlur = () => {
-      self.autoSave();
+      self.autoSave()
     }
 
     // Act as middleware to intercept project values to format it for the view
-    const isTravelAllowance = props.project.customer.name === "Kilometers";
+    const isTravelAllowance = props.project.customer.name === 'Kilometers'
     const getInitialState = (project: TimesheetProject) => {
       return isTravelAllowance
-        ? project.values.map((val) => val.toString())
-        : project.values.map((num) => {
+        ? project.values.map(val => val.toString())
+        : project.values.map(num => {
             if (num === 0) {
-              return "0";
+              return '0'
             } else {
-              return floatTo24TimeString(num);
+              return floatTo24TimeString(num)
             }
-          });
-    };
+          })
+    }
 
-    const formattedProjectValues = ref(getInitialState(props.project));
+    const formattedProjectValues = ref(getInitialState(props.project))
     watch(
       () => formattedProjectValues.value,
       () => {
-        const floatIntegers = formattedProjectValues.value.map((val) =>
-          !isTravelAllowance ? timeStringToFloat(val) : +val
-        );
-        props.project.values = floatIntegers;
-      }
-    );
+        const floatIntegers = formattedProjectValues.value.map(val =>
+          !isTravelAllowance ? timeStringToFloat(val) : +val,
+        )
+        props.project.values = floatIntegers
+      },
+    )
 
     const totalValue = computed(() => {
       const total = props.project.values.reduce(
-        (total, current) => +total + +current
-      );
-      return isTravelAllowance ? total : floatToTotalTimeString(total);
-    });
+        (total, current) => +total + +current,
+      )
+      return isTravelAllowance ? total : floatToTotalTimeString(total)
+    })
 
     // An array of booleans, one for each day of the selected week, that states
     // if the input for that respective day is readonly or not.
     const isReadonlyList = computed(() =>
-      props.selectedWeek.map((day) => {
+      props.selectedWeek.map(day => {
         if (props.readonly) {
-          return true;
+          return true
         }
 
         const isEmployeeActive = props.employee.endDate
           ? checkEmployeeAvailability(props.employee, new Date(day.date))
-          : true;
+          : true
 
-        return !isEmployeeActive;
-      })
-    );
+        return !isEmployeeActive
+      }),
+    )
 
     const handleInputFocus = ($input: HTMLInputElement, dayIndex: number) => {
       if (!isReadonlyList.value[dayIndex]) {
-        $input.select();
+        $input.select()
       }
-    };
+    }
 
     return {
       tooltip,
@@ -202,9 +203,9 @@ export default defineComponent({
       formattedProjectValues,
       isReadonlyList,
       handleInputFocus,
-    };
+    }
   },
-});
+})
 </script>
 
 <style lang="scss" scoped>
@@ -246,6 +247,10 @@ export default defineComponent({
 
     @media (min-width: 768px) {
       padding: 8px;
+    }
+
+    &.part-time {
+      background-color: #dedede;
     }
 
     &.holiday,
