@@ -17,13 +17,12 @@
       cols="1"
       class="weekly-timesheet-totals-row__column"
     >
-      <span>{{ value }} / {{ dayTheoreticalHours[index] }}</span>
+      <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
     </b-col>
 
-    <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal }} / {{ weekTheoreticalTotal }}</strong>
+        <strong>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</strong>
       </span>
     </b-col>
   </b-row>
@@ -31,7 +30,6 @@
 
 <script lang="ts">
 import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
-import {floatToTotalTimeString} from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {
@@ -65,8 +63,8 @@ export default defineComponent({
       return total;
     });
 
-    const weekTheoreticalTotal = computed(() => props.workScheme.reduce(
-        (prevValue, scheme) => prevValue + scheme.theoreticalHours,
+    const weekWorkSchemeHoursTotal = computed(() => props.workScheme.reduce(
+        (prevValue, scheme) => prevValue + scheme.workHours,
         0
       ));
 
@@ -82,15 +80,15 @@ export default defineComponent({
       });
     });
 
-    const dayTheoreticalHours = computed(() => {
-      return props.workScheme.map((scheme) => scheme.theoreticalHours);
+    const dayWorkSchemeHoursTotal = computed(() => {
+      return props.workScheme.map((scheme) => scheme.workHours);
     });
 
     return {
       weekTotal,
-      weekTheoreticalTotal,
+      weekWorkSchemeHoursTotal,
       dayTotals,
-      dayTheoreticalHours,
+      dayWorkSchemeHoursTotal,
     };
   },
 });
