@@ -30,6 +30,7 @@
 <script lang="ts">
 import {computed, defineComponent} from "@nuxtjs/composition-api";
 import {differenceInCalendarMonths, format} from "date-fns";
+import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -38,6 +39,10 @@ export default defineComponent({
       type: Date,
       required: true,
     },
+  },
+  beforeDestroy() {
+    // Somehow, correctly only unbinds specifically "*". If other components, in a shared scope, use it, it will unbind it. Does not unbind other keys.
+    hotkeys.unbind('*');
   },
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
@@ -51,6 +56,12 @@ export default defineComponent({
     const monthDifference = computed(() => {
       const today = new Date();
       return differenceInCalendarMonths(props.selectedDate, today);
+    });
+
+    // TODO see if can be updated later. "ArrowLeft" binds to "a" key. Filled an issue with the plugin.
+    hotkeys('*', function(ev) {
+      if (ev.key === "ArrowRight" && monthDifference.value < 0) handleNextClick();
+      if (ev.key === "ArrowLeft") handlePreviousClick();
     });
 
     return {
