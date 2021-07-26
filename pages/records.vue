@@ -67,7 +67,7 @@
         >
           <weekly-timesheet
             :selected-week="recordsState.selectedWeek"
-            :active="employee.standBy"
+            :active="!!employee.standBy"
             :title="'Stand-by hours'"
           >
             <template #rows>
@@ -171,7 +171,7 @@
         >
           <weekly-timesheet
             :selected-week="recordsState.selectedWeek"
-            :active="employee.travelAllowance"
+            :active="!!employee.travelAllowance"
             :title="'Travel allowance'"
           >
             <template #rows>

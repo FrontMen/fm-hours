@@ -12,7 +12,6 @@
     <div class="weekly-timesheet" :class="{ 'inactive-section': !active }">
       <b-container fluid>
         <b-row cols="14">
-          <!-- TODO: could be auto? -->
           <b-col class="weekly-timesheet__action-column" cols="4" />
 
           <b-col
