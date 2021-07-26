@@ -34,10 +34,12 @@ const mutations: MutationTree<RecordsStoreState> = {
     payload: {
       timeRecords: TimeRecord[];
       travelRecords?: TravelRecord[];
+      standByRecords?: StandbyRecord[];
     }
   ) {
     state.timeRecords = payload.timeRecords;
     state.travelRecords = payload.travelRecords || state.travelRecords;
+    state.standByRecords = payload.standByRecords || state.standByRecords;
   },
 
   setSelectedWeek(

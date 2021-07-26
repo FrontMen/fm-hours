@@ -8,6 +8,7 @@ import {
   getTravelRecordsToSave,
   getStandByRecordsToSave,
 } from '~/helpers/timesheet';
+import {Collections} from '~/types/enums';
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getMonthlyTimeRecords(
@@ -164,7 +165,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
           employeeId: payload.employeeId,
           timeRecords: standByRecordsToSave,
         },
-        'standby_records'
+        Collections.STANDBYREC
       );
 
     const travelRecords =
