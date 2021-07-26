@@ -1,6 +1,11 @@
 <template>
   <div>
-    <h3 v-if="title" class="mt-5 mb-3 d-inline-block" :class="{ 'inactive-section text-danger': !active }" title="Not active for employee">
+    <h3
+      v-if="title"
+      class="mt-5 mb-3 d-inline-block"
+      :class="{ 'inactive-section text-danger': !active }"
+      title="Not active for employee"
+    >
       {{ title }}
       <b-icon-exclamation-triangle v-if="!active" variant="danger" />
     </h3>

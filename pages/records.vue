@@ -65,7 +65,11 @@
         <template
           v-if="employee && (employee.standBy || isAdminView) && timesheet.standByProject"
         >
-          <weekly-timesheet :selected-week="recordsState.selectedWeek" :active="employee.standBy" :title="'Stand-by hours'">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="employee.standBy"
+            :title="'Stand-by hours'"
+          >
             <template #rows>
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
@@ -174,7 +178,11 @@
         <template
           v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
         >
-          <weekly-timesheet :selected-week="recordsState.selectedWeek" :active="employee.travelAllowance" :title="'Travel allowance'">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="employee.travelAllowance"
+            :title="'Travel allowance'"
+          >
             <template #rows>
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
@@ -236,11 +244,6 @@
         {{ timesheetDenyMessage }}
       </b-alert>
 
-      <select-project-dialog
-        :projects="selectableCustomers"
-        @project-selected="addProject"
-      />
-
       <b-modal
         id="deny-modal"
         centered
@@ -258,6 +261,11 @@
         />
       </b-modal>
     </template>
+
+    <select-project-dialog
+      :projects="selectableCustomers"
+      @project-selected="addProject"
+    />
   </div>
 </template>
 

@@ -14,13 +14,15 @@ export const createWeeklyTimesheet = (params: {
   const start = new Date(params.week[0].date);
   const end = new Date(params.week[6].date);
 
-  const isWithinCurrentWeek = (record: TimeRecord | TravelRecord | StandbyRecord) =>
-    isWithinInterval(new Date(record.date), { start, end });
+  const isWithinCurrentWeek = (
+    record: TimeRecord | TravelRecord | StandbyRecord
+  ) => isWithinInterval(new Date(record.date), {start, end});
 
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStandByRecords = params.standByRecords.filter(isWithinCurrentWeek);
+  const weeklyStandByRecords =
+    params.standByRecords.filter(isWithinCurrentWeek);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
@@ -85,9 +87,9 @@ const createStandByProject = (
 
   return {
     customer: {
-      id: "standByRecordId",
-      name: "Stand-by Hours",
-      debtor: "Frontmen",
+      id: 'standByRecordId',
+      name: 'Stand-by Hours',
+      debtor: 'Frontmen',
       isBillable: false,
       isDefault: false,
     },

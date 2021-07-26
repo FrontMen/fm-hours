@@ -1,6 +1,6 @@
-import { NuxtFireInstance } from '@nuxtjs/firebase';
-import { compareAsc } from 'date-fns';
-import { Collections } from '~/types/enums';
+import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {compareAsc} from 'date-fns';
+import {Collections} from '~/types/enums';
 
 export default class HolidaysService {
   fire: NuxtFireInstance;
@@ -9,8 +9,10 @@ export default class HolidaysService {
     this.fire = fire;
   }
 
-  async getHolidays(): Promise<{ docId: string; dates: string[] }> {
-    const snapshot = await this.fire.firestore.collection(Collections.HOLIDAYS).get();
+  async getHolidays(): Promise<{docId: string; dates: string[]}> {
+    const snapshot = await this.fire.firestore
+      .collection(Collections.HOLIDAYS)
+      .get();
     const data = snapshot.docs[0].data();
 
     return {
@@ -28,7 +30,7 @@ export default class HolidaysService {
     );
 
     const ref = this.fire.firestore.collection(Collections.HOLIDAYS).doc(docId);
-    await ref.set({ dates: sortedDates });
+    await ref.set({dates: sortedDates});
 
     return newDates;
   }
@@ -38,7 +40,7 @@ export default class HolidaysService {
     const newDates = dates.filter((holidayDate) => date !== holidayDate);
 
     const ref = this.fire.firestore.collection(Collections.HOLIDAYS).doc(docId);
-    await ref.set({ dates: newDates });
+    await ref.set({dates: newDates});
 
     return newDates;
   }

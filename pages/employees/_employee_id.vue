@@ -99,7 +99,12 @@
             >
               Travel allowance
             </b-form-checkbox>
-            <b-form-checkbox v-model="standbyAllowed" switch class="mt-2 mr-3" @change="hasUnsavedChanges = true">
+            <b-form-checkbox
+              v-model="standbyAllowed"
+              switch
+              class="mt-2 mr-3"
+              @change="hasUnsavedChanges = true"
+            >
               Standby
             </b-form-checkbox>
             <label class="mt-2" for="start-datepicker">Start date:</label>

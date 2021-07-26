@@ -1,5 +1,5 @@
-import { NuxtFireInstance } from '@nuxtjs/firebase';
-import { Collections } from '~/types/enums';
+import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {Collections} from '~/types/enums';
 
 export default class CustomersService {
   fire: NuxtFireInstance;
@@ -20,7 +20,7 @@ export default class CustomersService {
 
   async addCustomer(customer: Omit<Customer, 'id'>) {
     const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
-    const { id } = await ref.add(customer);
+    const {id} = await ref.add(customer);
 
     return {
       ...customer,
@@ -51,6 +51,9 @@ export default class CustomersService {
   }
 
   deleteCustomer(id: string) {
-    return this.fire.firestore.collection(Collections.CUSTOMERS).doc(id).delete();
+    return this.fire.firestore
+      .collection(Collections.CUSTOMERS)
+      .doc(id)
+      .delete();
   }
 }

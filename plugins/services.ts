@@ -10,7 +10,7 @@ import TimesheetsService from '~/services/timesheets-service';
 import MailService from '~/services/mail-service';
 import AuthService from '~/services/auth-service';
 
-export default defineNuxtPlugin(({ $fire, $axios }, inject) => {
+export default defineNuxtPlugin(({$fire, $axios}, inject) => {
   inject('customersService', new CustomersService($fire));
   inject('holidaysService', new HolidaysService($fire));
   inject('timeRecordsService', new TimeRecordsService($fire));

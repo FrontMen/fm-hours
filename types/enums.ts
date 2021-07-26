@@ -7,13 +7,13 @@ export enum TimesheetStatus {
 }
 
 export enum Collections {
-  TIMREC = "time_records",
-  STANDBYREC = "standby_records",
-  CUSTOMERS = "customers",
-  ADMINS = "admins",
-  EMPLOYEES = "employees",
-  HOLIDAYS = "holidays",
-  TEAMS = "teams",
-  TIMESHEETS = "timesheets",
-  TRAVELREC = "travel_records",
+  TIMREC = 'time_records',
+  STANDBYREC = 'standby_records',
+  CUSTOMERS = 'customers',
+  ADMINS = 'admins',
+  EMPLOYEES = 'employees',
+  HOLIDAYS = 'holidays',
+  TEAMS = 'teams',
+  TIMESHEETS = 'timesheets',
+  TRAVELREC = 'travel_records',
 }

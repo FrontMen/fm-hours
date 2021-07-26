@@ -214,7 +214,7 @@ export default (
         hasUnsavedChanges.value = false;
       }
 
-      store.dispatch("timesheets/getTimesheets", {
+      store.dispatch('timesheets/getTimesheets', {
         date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
         employeeId,
       });

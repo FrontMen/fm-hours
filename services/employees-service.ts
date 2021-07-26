@@ -1,7 +1,6 @@
-import { NuxtFireInstance } from '@nuxtjs/firebase';
-import { DocumentSnapshot } from '@firebase/firestore-types';
-import { Collections } from '~/types/enums';
-
+import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {DocumentSnapshot} from '@firebase/firestore-types';
+import {Collections} from '~/types/enums';
 
 export default class EmployeesService {
   fire: NuxtFireInstance;
@@ -89,7 +88,7 @@ export default class EmployeesService {
     };
 
     const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
-    const { id } = await ref.add(newEmployee);
+    const {id} = await ref.add(newEmployee);
 
     return {...newEmployee, id};
   }
@@ -105,7 +104,10 @@ export default class EmployeesService {
   }
 
   async deleteEmployee(id: string) {
-    return await this.fire.firestore.collection(Collections.EMPLOYEES).doc(id).delete();
+    return await this.fire.firestore
+      .collection(Collections.EMPLOYEES)
+      .doc(id)
+      .delete();
   }
 
   public async isAdmin(email: string) {
@@ -132,7 +134,9 @@ export default class EmployeesService {
   public async updateAdminEmails(adminList: string[]): Promise<string[]> {
     const docs = await this.fire.firestore.collection(Collections.ADMINS).get();
     const docId = await docs.docs[0].id;
-    const ref = await this.fire.firestore.collection(Collections.ADMINS).doc(docId);
+    const ref = await this.fire.firestore
+      .collection(Collections.ADMINS)
+      .doc(docId);
 
     await ref.update({admins: adminList});
     return adminList;
