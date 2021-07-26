@@ -11,20 +11,19 @@
       </b-button>
     </b-col>
 
-    <!-- TODO: use classes and show {{ value / dayTheoraticalTotals[index] }} when `workSchem` API is implemented -->
     <b-col
       v-for="(value, index) in dayTotals"
       :key="index"
       cols="1"
       class="weekly-timesheet-totals-row__column"
     >
-      <span>{{ value }}</span>
+      <span>{{ value }} / {{ dayTheoreticalHours[index] }}</span>
     </b-col>
 
     <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal }}</strong>
+        <strong>{{ weekTotal }} / {{ weekTheoreticalTotal }}</strong>
       </span>
     </b-col>
   </b-row>
@@ -67,10 +66,11 @@ export default defineComponent({
     });
 
     const weekTheoreticalTotal = computed(() => {
-      return props.workScheme.reduce(
+      const total = props.workScheme.reduce(
         (prevValue, scheme) => prevValue + scheme.theoreticalHours,
         0
       );
+      return total === 0 ? "-" : floatToTotalTimeString(total);
     });
 
     const dayTotals = computed(() => {
@@ -81,12 +81,12 @@ export default defineComponent({
           total += +project.values[index];
         });
 
-        return total === 0 ? "0" : floatToTotalTimeString(total);
+        return total === 0 ? "-" : floatToTotalTimeString(total);
       });
     });
 
     const dayTheoreticalHours = computed(() => {
-      return props.workScheme.map((scheme) => scheme.theoreticalHours);
+      return props.workScheme.map((scheme) => scheme.theoreticalHours === 0 ? "-" : floatToTotalTimeString(scheme.theoreticalHours));
     });
 
     return {
