@@ -198,7 +198,6 @@ export default (
   watch(
     () => [
       recordsState.value.selectedWeek,
-      recordsState.value.leaveDays,
       recordsState.value.timeRecords,
       recordsState.value.travelRecords,
     ],
