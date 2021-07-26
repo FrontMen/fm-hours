@@ -131,7 +131,6 @@ export default defineComponent({
   }
 
   &__week-column {
-    padding-right: 16px;
     text-align: right;
     padding: 0 4px;
 
