@@ -62,16 +62,13 @@ export default defineComponent({
         );
       });
 
-      return floatToTotalTimeString(total);
+      return total;
     });
 
-    const weekTheoreticalTotal = computed(() => {
-      const total = props.workScheme.reduce(
+    const weekTheoreticalTotal = computed(() => props.workScheme.reduce(
         (prevValue, scheme) => prevValue + scheme.theoreticalHours,
         0
-      );
-      return total === 0 ? "-" : floatToTotalTimeString(total);
-    });
+      ));
 
     const dayTotals = computed(() => {
       return props.selectedWeek.map((_, index) => {
@@ -81,12 +78,12 @@ export default defineComponent({
           total += +project.values[index];
         });
 
-        return total === 0 ? "-" : floatToTotalTimeString(total);
+        return total;
       });
     });
 
     const dayTheoreticalHours = computed(() => {
-      return props.workScheme.map((scheme) => scheme.theoreticalHours === 0 ? "-" : floatToTotalTimeString(scheme.theoreticalHours));
+      return props.workScheme.map((scheme) => scheme.theoreticalHours);
     });
 
     return {
