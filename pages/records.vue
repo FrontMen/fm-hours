@@ -82,15 +82,6 @@
                 @change="hasUnsavedChanges = true"
                 @remove="deleteProject(timesheet.projects[index])"
               />
-
-              <weekly-timesheet-totals-row
-                :projects="timesheet.projects"
-                :selected-week="recordsState.selectedWeek"
-                :work-scheme="recordsState.workScheme"
-                :show-add-project-button="
-                  !isReadonly && selectableCustomers.length > 0
-                "
-              />
             </template>
           </weekly-timesheet>
         </template>
