@@ -40,6 +40,7 @@
 <script lang="ts">
 import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
+import hotkeys from 'hotkeys-js';
 
 import {getWeekRange, getDateLabel, getDayOnGMT} from "~/helpers/dates";
 
@@ -54,6 +55,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  beforeDestroy() {
+    // Somehow, correctly only unbinds specifically "*". If other components, in a shared scope, use it, it will unbind it. Does not unbind other keys.
+    hotkeys.unbind('*');
   },
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
@@ -76,6 +81,12 @@ export default defineComponent({
       const startDate = getDayOnGMT(props.selectedWeek[0].date);
 
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
+    });
+
+    // TODO see if can be updated later. "ArrowLeft" binds to "a" key. Filled an issue with the plugin.
+    hotkeys('*', function(ev) {
+      if (ev.key === "ArrowRight" && weekDifference.value <= 3) handleNextClick();
+      if (ev.key === "ArrowLeft") handlePreviousClick();
     });
 
     return {
