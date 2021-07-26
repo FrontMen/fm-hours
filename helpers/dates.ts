@@ -5,14 +5,14 @@ import {
   startOfISOWeek,
   addWeeks,
   getISOWeek,
-} from "date-fns";
+} from 'date-fns';
 
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
 
   const yyyy = String(date.getFullYear());
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const dd = String(date.getDate()).padStart(2, '0');
 
   return `${yyyy}-${mm}-${dd}`;
 }
@@ -26,17 +26,17 @@ export function addDays(dirtyDate: string | number | Date, days: number) {
 
 // based on a date, create a label with the begin and enddate of that week
 export function getDateLabel(startDate: Date, endDate: Date) {
-  let label = format(startDate, "dd");
+  let label = format(startDate, 'dd');
 
   if (startDate.getMonth() !== endDate.getMonth()) {
-    label += ` ${format(startDate, "MMM")}`;
+    label += ` ${format(startDate, 'MMM')}`;
 
     if (startDate.getFullYear() !== endDate.getFullYear()) {
-      label += ` ${format(startDate, "yyyy")}`;
+      label += ` ${format(startDate, 'yyyy')}`;
     }
   }
 
-  label += ` - ${format(endDate, "dd MMM yyyy")}`;
+  label += ` - ${format(endDate, 'dd MMM yyyy')}`;
   return `${label} (week: ${getISOWeek(startDate)})`;
 }
 
@@ -47,11 +47,11 @@ export function buildWeek(startDate: string | number | Date): WeekDate[] {
 
     return {
       date: formatDate(newDate),
-      weekDay: format(newDate, "E"),
-      weekDayShort: format(newDate, "EEEEEE"),
-      monthDay: format(newDate, "dd"),
-      month: format(newDate, "MMM"),
-      year: format(newDate, "yyyy"),
+      weekDay: format(newDate, 'E'),
+      weekDayShort: format(newDate, 'EEEEEE'),
+      monthDay: format(newDate, 'dd'),
+      month: format(newDate, 'MMM'),
+      year: format(newDate, 'yyyy'),
       isWeekend: isWeekend(newDate),
       isToday: isToday(newDate),
       isHoliday: false,
@@ -86,7 +86,7 @@ export function checkNonWorkingDays(
 export function getWeekRange(beginDate: string) {
   const start = startOfISOWeek(getDayOnGMT(beginDate));
   const end = addDays(start, 6);
-  return { start, end };
+  return {start, end};
 }
 
 function buildWeekSpan(startDate: Date) {
@@ -96,12 +96,12 @@ function buildWeekSpan(startDate: Date) {
   return {
     start: {
       date: start.getTime(),
-      formatedDate: format(start, "dd/MMM"),
+      formatedDate: format(start, 'dd/MMM'),
       ISO: formatDate(start),
     },
     end: {
       date: end.getTime(),
-      formatedDate: format(end, "dd/MMM"),
+      formatedDate: format(end, 'dd/MMM'),
       ISO: formatDate(end),
     },
   };

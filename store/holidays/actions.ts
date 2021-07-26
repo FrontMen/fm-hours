@@ -1,19 +1,19 @@
-import { ActionTree } from "vuex";
+import {ActionTree} from 'vuex';
 
 const actions: ActionTree<HolidaysStoreState, RootStoreState> = {
-  async getHolidays({ commit }) {
-    const { dates } = await this.app.$holidaysService.getHolidays();
-    commit("setHolidays", { holidays: dates });
+  async getHolidays({commit}) {
+    const {dates} = await this.app.$holidaysService.getHolidays();
+    commit('setHolidays', {holidays: dates});
   },
 
-  async addHoliday({ commit }, payload: string) {
+  async addHoliday({commit}, payload: string) {
     const dates = await this.app.$holidaysService.saveHoliday(payload);
-    commit("setHolidays", { holidays: dates });
+    commit('setHolidays', {holidays: dates});
   },
 
-  async deleteHoliday({ commit }, payload) {
+  async deleteHoliday({commit}, payload) {
     const dates = await this.app.$holidaysService.deleteHoliday(payload);
-    commit("setHolidays", { holidays: dates });
+    commit('setHolidays', {holidays: dates});
   },
 };
 

@@ -41,9 +41,7 @@
             />
           </b-form-group>
 
-          <b-form-checkbox v-model="form.isBillable">
-            Billable
-          </b-form-checkbox>
+          <b-form-checkbox v-model="form.isBillable">Billable</b-form-checkbox>
 
           <b-form-checkbox v-model="form.isDefault">
             Available to all employeees
@@ -109,7 +107,7 @@ export default defineComponent({
 
     const customerId = router.currentRoute.params.customer_id;
     const customers = computed(() => store.state.customers.customers);
-    const customer: { value: Customer | undefined } = computed(() =>
+    const customer: {value: Customer | undefined} = computed(() =>
       customers.value.find((x) => x.id === customerId)
     );
 
@@ -123,7 +121,7 @@ export default defineComponent({
       () => customer.value,
       () => {
         form.value = customer.value
-          ? { ...customer.value }
+          ? {...customer.value}
           : {
               name: "",
               debtor: "",
@@ -131,13 +129,13 @@ export default defineComponent({
               isDefault: false,
             };
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     const pageTitle = computed(() =>
       customer.value ? `Customers - ${customer.value.name}` : "Customers"
     );
-    useMeta(() => ({ title: pageTitle.value }));
+    useMeta(() => ({title: pageTitle.value}));
 
     const deleteCustomer = () => {
       const confirmation = confirm(
@@ -153,7 +151,7 @@ export default defineComponent({
     const archiveCustomerToggle = (archive: boolean) => {
       const archiveData = {
         archived: archive,
-        ...(archive ? { archivedDate: Date.now() } : {}),
+        ...(archive ? {archivedDate: Date.now()} : {}),
       };
 
       const confirmation = confirm(

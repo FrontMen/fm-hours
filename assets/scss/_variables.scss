@@ -11,11 +11,11 @@
 }
 
 $theme-colors: (
-  "primary": #201e33,
-  "secondary": #201e33,
+  'primary': #201e33,
+  'secondary': #201e33,
 );
 
 // Bootstrap and its default variables
-@import "../../node_modules/bootstrap/scss/bootstrap";
+@import '../../node_modules/bootstrap/scss/bootstrap';
 // BootstrapVue and its default variables
-@import "../../node_modules/bootstrap-vue/src/index.scss";
+@import '../../node_modules/bootstrap-vue/src/index.scss';

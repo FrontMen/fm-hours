@@ -1,7 +1,7 @@
-import { MutationTree } from "vuex";
+import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<ReportsStoreState> = {
-  setIsLoading(state, payload: { isLoading: boolean }) {
+  setIsLoading(state, payload: {isLoading: boolean}) {
     state.isLoading = payload.isLoading;
   },
 
@@ -14,7 +14,7 @@ const mutations: MutationTree<ReportsStoreState> = {
       travelRecords: TravelRecord[];
     }
   ) {
-    const { employees, timeRecords, travelRecords } = payload;
+    const {employees, timeRecords, travelRecords} = payload;
     const nonBillableProjects = payload.customers.filter(
       (customer) => !customer.isBillable
     );

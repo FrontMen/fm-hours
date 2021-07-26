@@ -39,8 +39,8 @@ import {
   ref,
   watch,
 } from "@nuxtjs/composition-api";
-import { formatDistanceToNow } from "date-fns";
-import { recordStatus } from "~/helpers/record-status";
+import {formatDistanceToNow} from "date-fns";
+import {recordStatus} from "~/helpers/record-status";
 
 export default defineComponent({
   emits: ["submit", "save", "unsubmit"],
@@ -62,7 +62,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const lastSavedLabel = ref("");
     let intervalHandle: NodeJS.Timeout;
 
@@ -107,7 +107,7 @@ export default defineComponent({
         updateLastSavedLabel();
         setIntervalHandle();
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     onBeforeUnmount(() => clearInterval(intervalHandle));

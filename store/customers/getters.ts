@@ -1,4 +1,4 @@
-import { GetterTree } from "vuex";
+import {GetterTree} from 'vuex';
 
 const getters: GetterTree<CustomersStoreState, RootStoreState> = {
   defaultCustomers(state): Customer[] {

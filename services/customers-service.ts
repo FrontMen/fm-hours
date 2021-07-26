@@ -1,4 +1,4 @@
-import { NuxtFireInstance } from "@nuxtjs/firebase";
+import {NuxtFireInstance} from '@nuxtjs/firebase';
 
 export default class CustomersService {
   fire: NuxtFireInstance;
@@ -8,7 +8,7 @@ export default class CustomersService {
   }
 
   async getCustomers() {
-    const ref = this.fire.firestore.collection("customers");
+    const ref = this.fire.firestore.collection('customers');
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
@@ -17,9 +17,9 @@ export default class CustomersService {
     }));
   }
 
-  async addCustomer(customer: Omit<Customer, "id">) {
-    const ref = this.fire.firestore.collection("customers");
-    const { id } = await ref.add(customer);
+  async addCustomer(customer: Omit<Customer, 'id'>) {
+    const ref = this.fire.firestore.collection('customers');
+    const {id} = await ref.add(customer);
 
     return {
       ...customer,
@@ -29,8 +29,8 @@ export default class CustomersService {
 
   async getCustomersAvailableToAll() {
     const ref = this.fire.firestore
-      .collection("customers")
-      .where("availableToAll", "==", true);
+      .collection('customers')
+      .where('availableToAll', '==', true);
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
@@ -40,16 +40,16 @@ export default class CustomersService {
   }
 
   async updateCustomer(customer: Customer) {
-    const newCustomer = { ...customer } as any;
+    const newCustomer = {...customer} as any;
     delete newCustomer.id;
 
     return await this.fire.firestore
-      .collection("customers")
+      .collection('customers')
       .doc(customer.id)
       .update(newCustomer);
   }
 
   deleteCustomer(id: string) {
-    return this.fire.firestore.collection("customers").doc(id).delete();
+    return this.fire.firestore.collection('customers').doc(id).delete();
   }
 }

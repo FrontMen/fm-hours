@@ -7,8 +7,9 @@
           href="https://bridge.hosted-tools.com/myprofile/absences"
           target="_blank"
           rel="noreferrer"
-          >bridge!</a
         >
+          Bridge!
+        </a>
       </strong>
     </b-alert>
     <employee-header
@@ -172,10 +173,10 @@ import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
 
 import useTimesheet from "~/composables/useTimesheet";
-import { recordStatus } from "~/helpers/record-status";
-import { debounce } from "~/helpers/helpers";
+import {recordStatus} from "~/helpers/record-status";
+import {debounce} from "~/helpers/helpers";
 
-let self:any;
+let self: any;
 
 export default defineComponent({
   components: {
@@ -193,9 +194,9 @@ export default defineComponent({
 
   created() {
     self = this;
-    self.autoSave = debounce(self.autoSave, 5000)
+    self.autoSave = debounce(self.autoSave, 5000);
   },
-  setup(_, {emit}) {
+  setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
@@ -250,7 +251,7 @@ export default defineComponent({
 
     const handleBlur = () => {
       self.autoSave();
-    }
+    };
 
     const selectableCustomers = computed(() => {
       const customers: Customer[] = store.state.customers.customers;
@@ -267,7 +268,7 @@ export default defineComponent({
       );
 
       return [
-        { text: "Choose project", disabled: true },
+        {text: "Choose project", disabled: true},
         ...selectableCustomers.map((entry) => ({
           value: entry.id,
           text: entry.name,

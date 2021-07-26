@@ -3,7 +3,7 @@
     <b-card align="center">
       <img src="@/assets/images/logo.png" alt="Frontmen logo" />
       <h1>Login</h1>
-      <b-card-text> Login to use the hours registration tool </b-card-text>
+      <b-card-text>Login to use the hours registration tool</b-card-text>
 
       <b-button :disabled="isLoading" class="login-button" @click="login()">
         <b-spinner v-if="isLoading" class="mr-2" small />

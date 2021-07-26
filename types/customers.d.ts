@@ -5,7 +5,7 @@ interface Customer {
   isBillable: boolean;
   isDefault: boolean;
   archived?: boolean;
-  archivedDate?: number
+  archivedDate?: number;
 }
 
 interface CustomerOption {

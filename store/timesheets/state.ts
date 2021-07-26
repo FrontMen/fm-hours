@@ -1,6 +1,6 @@
 export default (): TimesheetsStoreState => ({
   employees: [],
-  selectedEmployeeId: "",
+  selectedEmployeeId: '',
   timesheets: [],
   timesheetTableData: {} as TimesheetTableData,
   previousTimesheet: null,

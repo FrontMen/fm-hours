@@ -13,7 +13,7 @@
         class="filter__select"
       >
         <template #first>
-          <b-form-select-option :value="null"> All </b-form-select-option>
+          <b-form-select-option :value="null">All</b-form-select-option>
         </template>
       </b-form-select>
     </b-form-group>
@@ -70,8 +70,8 @@ import {
   useStore,
 } from "@nuxtjs/composition-api";
 
-import { recordStatus } from "~/helpers/record-status";
-import { TimesheetStatus } from "~/types/enums";
+import {recordStatus} from "~/helpers/record-status";
+import {TimesheetStatus} from "~/types/enums";
 
 export default defineComponent({
   middleware: ["isAdmin"],

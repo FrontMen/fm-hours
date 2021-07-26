@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { NuxtFireInstance } from "@nuxtjs/firebase";
+import {NuxtFireInstance} from '@nuxtjs/firebase';
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -14,15 +14,15 @@ export default class RecordsService {
     endDate?: string;
   }): Promise<TimeRecord[]> {
     let query = this.fire.firestore
-      .collection("time_records")
-      .where("employeeId", "==", params.employeeId);
+      .collection('time_records')
+      .where('employeeId', '==', params.employeeId);
 
     if (params.startDate) {
-      query = query.where("date", ">=", new Date(+params.startDate).getTime());
+      query = query.where('date', '>=', new Date(+params.startDate).getTime());
     }
 
     if (params.endDate) {
-      query = query.where("date", "<=", new Date(+params.endDate).getTime());
+      query = query.where('date', '<=', new Date(+params.endDate).getTime());
     }
 
     const snapshot = await query.get();
@@ -38,10 +38,10 @@ export default class RecordsService {
     endDate: Date;
   }): Promise<TimeRecord[]> {
     const snapshot = await this.fire.firestore
-      .collection("time_records")
-      .where("date", ">=", params.startDate.getTime())
-      .where("date", "<", params.endDate.getTime())
-      .orderBy("date", "asc")
+      .collection('time_records')
+      .where('date', '>=', params.startDate.getTime())
+      .where('date', '<', params.endDate.getTime())
+      .orderBy('date', 'asc')
       .get();
 
     return snapshot.docs.map((doc) => ({
@@ -54,7 +54,7 @@ export default class RecordsService {
     employeeId: string;
     timeRecords: TimeRecord[];
   }) {
-    const ref = this.fire.firestore.collection("time_records");
+    const ref = this.fire.firestore.collection('time_records');
 
     const updatedRecords = await Promise.all(
       params.timeRecords.map(async (timeRecord) => {
@@ -70,9 +70,9 @@ export default class RecordsService {
     employeeId: string,
     record: TimeRecord
   ): Promise<TimeRecord> {
-    const { id, hours } = record;
+    const {id, hours} = record;
 
-    const newRecord: any = { ...record };
+    const newRecord: any = {...record};
     delete newRecord.id;
 
     if (id) {
@@ -88,7 +88,7 @@ export default class RecordsService {
     }
 
     if (hours > 0) {
-      const newDocument = await ref.add({ employeeId, ...newRecord });
+      const newDocument = await ref.add({employeeId, ...newRecord});
 
       return {
         ...newRecord,
@@ -107,7 +107,7 @@ export default class RecordsService {
     params.recordsToDelete.forEach((record) => {
       if (record.id) {
         const ref = this.fire.firestore
-          .collection("time_records")
+          .collection('time_records')
           .doc(record.id!);
 
         batch.delete(ref);

@@ -1,7 +1,7 @@
-import { MutationTree } from "vuex";
+import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<HolidaysStoreState> = {
-  setHolidays(state, payload: { holidays: string[] }) {
+  setHolidays(state, payload: {holidays: string[]}) {
     state.holidays = payload.holidays;
   },
 };

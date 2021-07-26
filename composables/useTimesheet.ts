@@ -1,14 +1,14 @@
-import { computed, useStore, ref, watch } from "@nuxtjs/composition-api";
-import { startOfISOWeek, subDays } from "date-fns";
+import {computed, useStore, ref, watch} from '@nuxtjs/composition-api';
+import {startOfISOWeek, subDays} from 'date-fns';
 
-import { buildWeek, getDayOnGMT } from "~/helpers/dates";
-import { recordStatus } from "~/helpers/record-status";
+import {buildWeek, getDayOnGMT} from '~/helpers/dates';
+import {recordStatus} from '~/helpers/record-status';
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
   kilometerFormatter,
-} from "~/helpers/timesheet";
-import { buildEmailData } from "~/helpers/email";
+} from '~/helpers/timesheet';
+import {buildEmailData} from '~/helpers/email';
 
 export default (
   employeeId: string,
@@ -31,7 +31,7 @@ export default (
   const timesheetDenyMessage = computed(() =>
     timesheetState.value.timesheets[0]
       ? timesheetState.value.timesheets[0].reasonOfDenial
-      : ""
+      : ''
   );
 
   const isReadonly = computed(
@@ -47,7 +47,7 @@ export default (
 
   const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
 
-  store.dispatch("records/getRecords", {
+  store.dispatch('records/getRecords', {
     employeeId,
     startDate: initialDate,
     bridgeUid,
@@ -56,14 +56,14 @@ export default (
   const message = ref<string>(
     timesheetState.value?.timesheets[0]
       ? timesheetState.value?.timesheets[0].message
-      : ""
+      : ''
   );
   watch(
     () => timesheetState.value?.timesheets[0],
     () => {
       message.value = timesheetState.value?.timesheets[0]?.message;
     },
-    { immediate: true }
+    {immediate: true}
   );
 
   /*
@@ -75,7 +75,7 @@ export default (
       message.value =
         store.state.timesheets.previousTimesheet?.message || message.value;
     },
-    { immediate: true }
+    {immediate: true}
   );
 
   const hasRestDayHours = computed(() => {
@@ -90,17 +90,17 @@ export default (
     }, false);
   });
 
-  const goToWeek = (to: "current" | "previous" | "next") => {
+  const goToWeek = (to: 'current' | 'previous' | 'next') => {
     if (hasUnsavedChanges.value) {
       const confirmation = confirm(
-        "You have unsaved changes, are you sure you want to switch to another week?"
+        'You have unsaved changes, are you sure you want to switch to another week?'
       );
 
       if (!confirmation) return;
     }
 
     unsavedWeeklyTimesheet.value = undefined;
-    store.dispatch("records/goToWeek", { bridgeUid, to });
+    store.dispatch('records/goToWeek', {bridgeUid, to});
   };
 
   const addProject = (id: string) => {
@@ -116,7 +116,7 @@ export default (
   };
 
   const deleteProject = (project: TimesheetProject) => {
-    store.dispatch("records/deleteProjectRecords", {
+    store.dispatch('records/deleteProjectRecords', {
       week: recordsState.value.selectedWeek,
       project,
       employeeId,
@@ -131,10 +131,10 @@ export default (
 
     // if deleting the last project, clear the timesheet
     if (timesheet.value.projects.length <= 1) {
-      store.dispatch("timesheets/deleteTimesheet", {
+      store.dispatch('timesheets/deleteTimesheet', {
         timesheetId: timesheetState.value?.timesheets[0]?.id,
       });
-      message.value = "";
+      message.value = '';
     }
 
     if (!unsavedWeeklyTimesheet.value.projects.length) {
@@ -150,7 +150,7 @@ export default (
     const previousWeek = buildWeek(startOfISOWeek(prevStartDate));
 
     // Dispatch getter to update message with message present in previous week.
-    store.dispatch("timesheets/getPreviousTimesheet", {
+    store.dispatch('timesheets/getPreviousTimesheet', {
       startDate: prevStartDate.getTime(),
       endDate: startDate.getTime(),
       employeeId,
@@ -202,7 +202,7 @@ export default (
         hasUnsavedChanges.value = false;
       }
 
-      store.dispatch("timesheets/getTimesheets", {
+      store.dispatch('timesheets/getTimesheets', {
         date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
         employeeId,
       });
@@ -220,7 +220,7 @@ export default (
 
       unsavedWeeklyTimesheet.value = undefined;
     },
-    { deep: true }
+    {deep: true}
   );
 
   const saveTimesheet = (
@@ -229,7 +229,7 @@ export default (
   ) => {
     if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
       const confirmation = confirm(
-        "You have add hours on weekends or holidays, are you sure you want to save this timesheet?"
+        'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
       );
 
       if (!confirmation) return;
@@ -237,20 +237,20 @@ export default (
 
     unsavedWeeklyTimesheet.value = undefined;
 
-    store.dispatch("records/saveTimesheet", {
+    store.dispatch('records/saveTimesheet', {
       employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
     });
 
-    let reasonOfDenial = "";
+    let reasonOfDenial = '';
     if (timesheetState.value.timesheets[0]) {
       reasonOfDenial = timesheetState.value.timesheets[0].reasonOfDenial;
     }
     if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
       reasonOfDenial = denialMessage;
     } else if (newTimesheetStatus === recordStatus.PENDING) {
-      reasonOfDenial = "";
+      reasonOfDenial = '';
     }
 
     const newTimesheet = timesheetState.value.timesheets[0]
@@ -258,17 +258,17 @@ export default (
           ...timesheetState.value.timesheets[0],
           status: newTimesheetStatus,
           reasonOfDenial,
-          message: message.value || "",
+          message: message.value || '',
         }
       : {
           employeeId,
           date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
           status: newTimesheetStatus,
           reasonOfDenial,
-          message: message.value || "",
+          message: message.value || '',
         };
 
-    store.dispatch("timesheets/saveTimesheet", newTimesheet);
+    store.dispatch('timesheets/saveTimesheet', newTimesheet);
 
     hasUnsavedChanges.value = false;
   };
@@ -280,7 +280,7 @@ export default (
     if (!selectedTimesheet || selectedTimesheet.status !== recordStatus.PENDING)
       return;
 
-    store.dispatch("records/saveTimesheet", {
+    store.dispatch('records/saveTimesheet', {
       employeeId,
       week: recordsState.value.selectedWeek,
       timesheet: timesheet.value,
@@ -290,7 +290,7 @@ export default (
       ...selectedTimesheet,
       status: recordStatus.DENIED,
       denialMessage,
-      message: message.value || "",
+      message: message.value || '',
     };
 
     const emailData = buildEmailData({
@@ -299,7 +299,7 @@ export default (
       denialMessage,
     });
 
-    store.dispatch("timesheets/denyTimesheet", {
+    store.dispatch('timesheets/denyTimesheet', {
       timesheet: newTimesheet,
       emailData,
     });

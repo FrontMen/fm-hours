@@ -1,9 +1,9 @@
 export default () => {
   const createTotalsFields = (reportData: MonthlyReportData | null) => {
     const leftFields = [
-      { key: "name", sortable: true },
-      { key: "billable", sortable: true, variant: "success" },
-      { key: "nonBillable", sortable: true, variant: "warning" },
+      {key: 'name', sortable: true},
+      {key: 'billable', sortable: true, variant: 'success'},
+      {key: 'nonBillable', sortable: true, variant: 'warning'},
     ];
 
     const middleFields = reportData?.nonBillableProjects.map((project) => ({
@@ -12,8 +12,8 @@ export default () => {
     }));
 
     const rightFields = [
-      { key: "totalHours", sortable: true, variant: "info" },
-      { key: "productivity", sortable: true, variant: "info" },
+      {key: 'totalHours', sortable: true, variant: 'info'},
+      {key: 'productivity', sortable: true, variant: 'info'},
     ];
 
     return [...leftFields, ...(middleFields || []), ...rightFields];
@@ -29,7 +29,7 @@ export default () => {
     employee: ReportEmployee,
     nonBillableProjects: Customer[]
   ) => {
-    const { nonBillableRecords } = employee;
+    const {nonBillableRecords} = employee;
 
     return nonBillableProjects.reduce((total: any, currentProject) => {
       const records = nonBillableRecords.filter(
@@ -61,7 +61,7 @@ export default () => {
       billable: billableHours,
       nonBillable: nonBillableHours,
       totalHours: +(billableHours + nonBillableHours).toFixed(2),
-      productivity: Math.round(productivity || 0) + "%",
+      productivity: Math.round(productivity || 0) + '%',
       ...nonBillableColumns,
     };
   };
@@ -72,5 +72,5 @@ export default () => {
     );
   };
 
-  return { createTotalsFields, createTotalsItems };
+  return {createTotalsFields, createTotalsItems};
 };
