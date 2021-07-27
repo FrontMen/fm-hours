@@ -1,57 +1,57 @@
 interface WeekDate {
-  date: string
-  weekDay: string
-  weekDayShort: string
-  monthDay: string
-  month: string
-  year: string
-  isWeekend: boolean
-  isToday: boolean
-  isHoliday: boolean
-  isLeaveDay: boolean
-  isPartTime: Boolean
+  date: string;
+  weekDay: string;
+  weekDayShort: string;
+  monthDay: string;
+  month: string;
+  year: string;
+  isWeekend: boolean;
+  isToday: boolean;
+  isHoliday: boolean;
+  isLeaveDay: boolean;
+  isPartTime: Boolean;
 }
 
 interface TimeRecord {
-  id: string | null
-  date: number
-  customer: Customer
-  hours: number
-  employeeId?: string
+  id: string | null;
+  date: number;
+  customer: Customer;
+  hours: number;
+  employeeId?: string;
 }
 
 interface TravelRecord {
-  id: string | null
-  date: number
-  kilometers: number
-  employeeId?: string
+  id: string | null;
+  date: number;
+  kilometers: number;
+  employeeId?: string;
 }
 
 interface TimesheetProject {
-  customer: Customer
-  values: number[]
-  ids: Array<string | null>
-  isExternal: boolean
+  customer: Customer;
+  values: number[];
+  ids: Array<string | null>;
+  isExternal: boolean;
 }
 
 interface WeeklyTimesheet {
-  projects: TimesheetProject[]
-  travelProject: TimesheetProject | null
+  projects: TimesheetProject[];
+  travelProject: TimesheetProject | null;
 }
 
 interface RecordsStoreState {
-  isLoading: boolean
-  isSaving: boolean
-  lastSaved: Date | null
-  selectedWeek: WeekDate[]
-  timeRecords: TimeRecord[]
-  travelRecords: TravelRecord[]
-  workScheme: WorkScheme[]
+  isLoading: boolean;
+  isSaving: boolean;
+  lastSaved: Date | null;
+  selectedWeek: WeekDate[];
+  timeRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
+  workScheme: WorkScheme[];
 }
 
 interface RecordDayStatus {
-  prop: string
-  SHORT: string
-  MID: string
-  LONG: string
+  prop: string;
+  SHORT: string;
+  MID: string;
+  LONG: string;
 }
