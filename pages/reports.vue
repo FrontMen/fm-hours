@@ -35,6 +35,15 @@
           :csv-file-name="`kilometers-${formattedMonthDate}`"
         />
       </b-tab>
+
+      <b-tab title="Stand-by">
+        <reports-table
+          :busy="isLoading || !standByItems.length"
+          :items="standByItems"
+          :fields="standByFields"
+          :csv-file-name="`stand-by-${formattedMonthDate}`"
+        />
+      </b-tab>
     </b-tabs>
   </div>
 </template>
@@ -52,6 +61,7 @@ import {format, addMonths, subMonths} from "date-fns";
 import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
 import useMonthlyProjectsReport from "~/composables/useMonthlyProjectsReport";
 import useMonthlyKilometersReport from "~/composables/useMonthlyKilometersReport";
+import useMonthlyStandByReport from "~/composables/useMonthlyStandbyReport";
 
 import ReportsTable from "~/components/reports/reports-table.vue";
 
@@ -69,6 +79,7 @@ export default defineComponent({
       createProjectsFields,
       createProjectsItems,
     } = useMonthlyProjectsReport();
+    const { createStandByFields, createStandByItems } = useMonthlyStandByReport();
 
     const {
       createKilometersFields,
@@ -78,7 +89,9 @@ export default defineComponent({
     const monthDate = ref<Date>(new Date());
 
     const store = useStore<RootStoreState>();
-    const reportData = computed(() => store.state.reports.reportData);
+    const reportData = computed(() => {
+      return store.state.reports.reportData;
+    });
     const isLoading = computed(() => store.state.reports.isLoading);
 
     const totalsFields = computed(() => createTotalsFields(reportData.value));
@@ -86,6 +99,9 @@ export default defineComponent({
 
     const projectsFields = createProjectsFields();
     const projectsItems = computed(() => createProjectsItems(reportData.value));
+
+    const standByFields = computed(() => createStandByFields());
+    const standByItems = computed(() => createStandByItems(reportData.value));
 
     const kilometersFields = createKilometersFields();
     const kilometersItems = computed(() =>
@@ -125,6 +141,8 @@ export default defineComponent({
       totalsItems,
       projectsFields,
       projectsItems,
+      standByFields,
+      standByItems,
       kilometersFields,
       kilometersItems,
       isLoading,
