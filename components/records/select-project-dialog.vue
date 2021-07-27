@@ -35,6 +35,7 @@ import {
   PropType,
   ref,
 } from "@nuxtjs/composition-api";
+import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
   emits: ["project-selected"],
@@ -43,6 +44,9 @@ export default defineComponent({
       type: Array as PropType<Customer[]>,
       default: () => [],
     },
+  },
+  beforeDestroy() {
+    hotkeys.unbind("n");
   },
   setup(_, {emit, refs}) {
     const selectState = ref(null);
@@ -73,6 +77,11 @@ export default defineComponent({
       event.preventDefault();
       handleSubmit();
     };
+
+    hotkeys('n', () => {
+      // @ts-ignore (BFormGroup does not have proper typing)
+      refs.modal.show("modal-add-project");
+    });
 
     return {
       selectState,
