@@ -62,14 +62,58 @@
           </template>
         </weekly-timesheet>
 
-        <template
-          v-if="employee && employee.travelAllowance && timesheet.travelProject"
-        >
-          <h3 class="mt-5 mb-3">
-            Travel allowance
-          </h3>
+        <template v-if="timesheet.leaveDays">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :title="'Leave days'"
+          >
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.leaveDays"
+                :readonly="true"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="timesheetFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
 
-          <weekly-timesheet :selected-week="recordsState.selectedWeek">
+        <template
+          v-if="employee && (employee.standBy || isAdminView) && timesheet.standByProject"
+        >
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="!!employee.standBy"
+            :title="'Stand-by hours'"
+          >
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.standByProject"
+                :readonly="!isAdminView && isReadonly"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="timesheetFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+                @remove="deleteProject(timesheet.projects[index])"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
+
+        <template
+          v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
+        >
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="!!employee.travelAllowance"
+            :title="'Travel allowance'"
+          >
             <template #rows>
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
@@ -83,28 +127,6 @@
               />
             </template>
           </weekly-timesheet>
-        </template>
-
-        <template v-if="timesheet.leaveDays" class="mb-3">
-          <h3 class="mt-5 mb-3">
-            Leave days
-          </h3>
-          <div class="pb-5">
-            <weekly-timesheet :selected-week="recordsState.selectedWeek">
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.leaveDays"
-                  :readonly="true"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="timesheetFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                />
-              </template>
-            </weekly-timesheet>
-          </div>
         </template>
 
         <b-form-textarea
@@ -152,29 +174,29 @@
       >
         {{ timesheetDenyMessage }}
       </b-alert>
+
+      <b-modal
+        id="deny-modal"
+        centered
+        title="Reason of denial"
+        cancel-variant="danger"
+        :ok-disabled="!reasonOfDenial"
+        @hidden="reasonOfDenial = ''"
+        @ok="handleDeny()"
+      >
+        <b-form-textarea
+          id="textarea"
+          v-model="reasonOfDenial"
+          placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
+          rows="3"
+        />
+      </b-modal>
     </template>
 
     <select-project-dialog
       :projects="selectableCustomers"
       @project-selected="addProject"
     />
-
-    <b-modal
-      id="deny-modal"
-      centered
-      title="Reason of denial"
-      cancel-variant="danger"
-      :ok-disabled="!reasonOfDenial"
-      @hidden="reasonOfDenial = ''"
-      @ok="handleDeny()"
-    >
-      <b-form-textarea
-        id="textarea"
-        v-model="reasonOfDenial"
-        placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
-        rows="3"
-      />
-    </b-modal>
   </div>
 </template>
 

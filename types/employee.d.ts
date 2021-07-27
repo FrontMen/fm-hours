@@ -10,6 +10,7 @@ interface Employee {
   created: number;
   bridgeUid?: string;
   team?: string;
+  standBy?: boolean;
 }
 
 interface EmployeeStoreState {

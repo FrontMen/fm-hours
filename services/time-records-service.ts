@@ -1,5 +1,6 @@
-/* eslint-disable camelcase */
 import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {Collections} from './../types/enums';
+/* eslint-disable camelcase */
 
 export default class RecordsService {
   fire: NuxtFireInstance;
@@ -8,13 +9,16 @@ export default class RecordsService {
     this.fire = fire;
   }
 
-  async getEmployeeRecords(params: {
-    employeeId: string;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<TimeRecord[]> {
+  async getEmployeeRecords<RecordType>(
+    params: {
+      employeeId: string;
+      startDate?: string;
+      endDate?: string;
+    },
+    collection: string = Collections.TIMREC
+  ): Promise<RecordType[]> {
     let query = this.fire.firestore
-      .collection('time_records')
+      .collection(collection)
       .where('employeeId', '==', params.employeeId);
 
     if (params.startDate) {
@@ -29,16 +33,19 @@ export default class RecordsService {
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as TimeRecord),
+      ...(doc.data() as RecordType),
     }));
   }
 
-  async getRecords(params: {
-    startDate: Date;
-    endDate: Date;
-  }): Promise<TimeRecord[]> {
+  async getRecords<RecordType>(
+    params: {
+      startDate: Date;
+      endDate: Date;
+    },
+    collection: string = Collections.TIMREC
+  ): Promise<RecordType[]> {
     const snapshot = await this.fire.firestore
-      .collection('time_records')
+      .collection(collection)
       .where('date', '>=', params.startDate.getTime())
       .where('date', '<', params.endDate.getTime())
       .orderBy('date', 'asc')
@@ -46,30 +53,37 @@ export default class RecordsService {
 
     return snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as TimeRecord),
+      ...(doc.data() as RecordType),
     }));
   }
 
-  async saveEmployeeRecords(params: {
-    employeeId: string;
-    timeRecords: TimeRecord[];
-  }) {
-    const ref = this.fire.firestore.collection('time_records');
+  async saveEmployeeRecords<
+    RecordType extends {id: string | null; hours: number}
+  >(
+    params: {
+      employeeId: string;
+      timeRecords: RecordType[];
+    },
+    collection: string = Collections.TIMREC
+  ) {
+    const ref = this.fire.firestore.collection(collection);
 
     const updatedRecords = await Promise.all(
-      params.timeRecords.map(async (timeRecord) => {
-        return await this.updateRecord(ref, params.employeeId, timeRecord);
+      params.timeRecords.map(async (timeRecord: RecordType) => {
+        return await this.updateRecord<RecordType>(
+          ref,
+          params.employeeId,
+          timeRecord
+        );
       })
     );
 
     return updatedRecords.filter((x) => !!x.id);
   }
 
-  private async updateRecord(
-    ref: any,
-    employeeId: string,
-    record: TimeRecord
-  ): Promise<TimeRecord> {
+  private async updateRecord<
+    RecordType extends {id: string | null; hours: number}
+  >(ref: any, employeeId: string, record: RecordType): Promise<RecordType> {
     const {id, hours} = record;
 
     const newRecord: any = {...record};
@@ -99,16 +113,17 @@ export default class RecordsService {
     return record;
   }
 
-  async deleteEmployeeRecords(params: {
-    recordsToDelete: TimeRecord[];
-  }): Promise<void> {
+  async deleteEmployeeRecords<RecordType extends {id: string | null}>(
+    params: {
+      recordsToDelete: RecordType[];
+    },
+    collection: string = Collections.TIMREC
+  ): Promise<void> {
     const batch = this.fire.firestore.batch();
 
     params.recordsToDelete.forEach((record) => {
       if (record.id) {
-        const ref = this.fire.firestore
-          .collection('time_records')
-          .doc(record.id!);
+        const ref = this.fire.firestore.collection(collection).doc(record.id!);
 
         batch.delete(ref);
       }

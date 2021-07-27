@@ -17,6 +17,7 @@ const mutations: MutationTree<RecordsStoreState> = {
       travelRecords: TravelRecord[];
       leaveDays: WeekDate[];
       selectedWeek: WeekDate[];
+      standByRecords: StandbyRecord[];
       workScheme: WorkScheme[];
     }
   ) {
@@ -25,6 +26,7 @@ const mutations: MutationTree<RecordsStoreState> = {
     if (payload.selectedWeek) state.selectedWeek = payload.selectedWeek;
     if (payload.workScheme) state.workScheme = payload.workScheme;
     if (payload.leaveDays) state.leaveDays = payload.leaveDays;
+    if (payload.standByRecords) state.standByRecords = payload.standByRecords;
   },
 
   updateRecords(
@@ -32,10 +34,12 @@ const mutations: MutationTree<RecordsStoreState> = {
     payload: {
       timeRecords: TimeRecord[];
       travelRecords?: TravelRecord[];
+      standByRecords?: StandbyRecord[];
     }
   ) {
     state.timeRecords = payload.timeRecords;
     state.travelRecords = payload.travelRecords || state.travelRecords;
+    state.standByRecords = payload.standByRecords || state.standByRecords;
   },
 
   setSelectedWeek(

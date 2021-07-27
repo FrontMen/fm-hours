@@ -99,6 +99,14 @@
             >
               Travel allowance
             </b-form-checkbox>
+            <b-form-checkbox
+              v-model="standbyAllowed"
+              switch
+              class="mt-2 mr-3"
+              @change="hasUnsavedChanges = true"
+            >
+              Standby
+            </b-form-checkbox>
             <label class="mt-2" for="start-datepicker">Start date:</label>
             <b-form-datepicker
               id="start-datepicker"
@@ -281,6 +289,16 @@ export default defineComponent({
       {immediate: true}
     );
 
+    const standbyAllowed = ref<boolean>(!!employee.value?.standBy);
+    watch(
+      () => employee.value?.standBy,
+      () => {
+        standbyAllowed.value = !!employee.value?.standBy;
+      },
+      { immediate: true }
+    );
+
+
     const isTravelAllowed = ref<boolean>(!!employee.value?.travelAllowance);
     watch(
       () => employee.value?.travelAllowance,
@@ -390,6 +408,7 @@ export default defineComponent({
         name: name.value,
         email: email.value,
         team: selectedTeam.value,
+        standBy: standbyAllowed.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
         travelAllowance: isTravelAllowed.value,
         startDate: new Date(startDate.value).getTime(),
@@ -451,6 +470,7 @@ export default defineComponent({
       defaultCustomers,
       items,
       handleEmployeeDelete,
+      standbyAllowed,
       teamList,
       name,
       nameValidationState,

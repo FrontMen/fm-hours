@@ -6,7 +6,9 @@ import {buildWeek, checkNonWorkingDays, getDayOnGMT} from '~/helpers/dates';
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
+  getStandByRecordsToSave,
 } from '~/helpers/timesheet';
+import {Collections} from '~/types/enums';
 
 const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   async getMonthlyTimeRecords(
@@ -22,11 +24,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     commit('setLoading', {isLoading: true});
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
-      employeeId: payload.employeeId,
-      startDate: payload.startDate.getTime().toString(),
-      endDate: payload.endDate.getTime().toString(),
-    });
+    const timeRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
+        employeeId: payload.employeeId,
+        startDate: payload.startDate.getTime().toString(),
+        endDate: payload.endDate.getTime().toString(),
+      });
 
     commit('setLoading', {isLoading: false});
     commit('setRecords', {
@@ -56,14 +59,18 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       workSchemeResult
     );
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
       employeeId: payload.employeeId,
     });
 
-    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay)
+    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay);
 
-    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords(
-      {
+    const standByRecords = await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({
+      employeeId: payload.employeeId,
+    }, "standby_records");
+
+    const travelRecords =
+      await this.app.$travelRecordsService.getEmployeeRecords({
         employeeId: payload.employeeId,
       });
 
@@ -74,6 +81,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       leaveDays,
       selectedWeek,
       workScheme: workSchemeResult || [],
+      standByRecords,
     });
   },
 
@@ -126,8 +134,9 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const start = new Date(payload.week[0].date);
     const end = new Date(payload.week[6].date);
 
-    const isNotWithinSavedWeek = (record: TimeRecord | TravelRecord) =>
-      !isWithinInterval(new Date(record.date), {start, end});
+    const isNotWithinSavedWeek = (
+      record: TimeRecord | TravelRecord | StandbyRecord
+    ) => !isWithinInterval(new Date(record.date), {start, end});
 
     const timeRecordsToSave = getTimeRecordsToSave(
       payload.timesheet,
@@ -139,10 +148,25 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.week
     );
 
-    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords({
-      employeeId: payload.employeeId,
-      timeRecords: timeRecordsToSave,
-    });
+    const standByRecordsToSave = getStandByRecordsToSave(
+      payload.timesheet,
+      payload.week
+    );
+
+    const timeRecords =
+      await this.app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
+        employeeId: payload.employeeId,
+        timeRecords: timeRecordsToSave,
+      });
+
+    const standByRecords =
+      await this.app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>(
+        {
+          employeeId: payload.employeeId,
+          timeRecords: standByRecordsToSave,
+        },
+        Collections.STANDBYREC
+      );
 
     const travelRecords =
       await this.app.$travelRecordsService.saveEmployeeRecords({
@@ -159,6 +183,10 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       travelRecords: [
         ...state.travelRecords.filter(isNotWithinSavedWeek),
         ...travelRecords,
+      ],
+      standByRecords: [
+        ...state.standByRecords.filter(isNotWithinSavedWeek),
+        ...standByRecords,
       ],
     });
   },
@@ -181,7 +209,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       customer: payload.project.customer,
     }));
 
-    await this.app.$timeRecordsService.deleteEmployeeRecords({
+    await this.app.$timeRecordsService.deleteEmployeeRecords<TimeRecord>({
       recordsToDelete,
     });
 
