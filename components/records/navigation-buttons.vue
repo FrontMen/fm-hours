@@ -57,8 +57,8 @@ export default defineComponent({
     },
   },
   beforeDestroy() {
-    // Somehow, correctly only unbinds specifically "*". If other components, in a shared scope, use it, it will unbind it. Does not unbind other keys.
-    hotkeys.unbind('*');
+    hotkeys.unbind('right');
+    hotkeys.unbind('left');
   },
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
@@ -83,11 +83,10 @@ export default defineComponent({
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
 
-    // TODO see if can be updated later. "ArrowLeft" binds to "a" key. Filled an issue with the plugin.
-    hotkeys('*', function(ev) {
-      if (ev.key === "ArrowRight" && weekDifference.value <= 3) handleNextClick();
-      if (ev.key === "ArrowLeft") handlePreviousClick();
+    hotkeys('right', () => {
+      if (weekDifference.value <= 3) handleNextClick();
     });
+    hotkeys('left', handlePreviousClick);
 
     return {
       handlePreviousClick,
