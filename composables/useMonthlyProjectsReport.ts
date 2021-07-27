@@ -1,12 +1,12 @@
-import { uniqueByKey } from "~/helpers/helpers";
+import {uniqueByKey} from '~/helpers/helpers';
 
 export default () => {
   const createProjectsFields = () => {
     return [
-      { key: "name", sortable: true },
-      { key: "project", sortable: true },
-      { key: "debtor", sortable: true },
-      { key: "billable", sortable: true, variant: "success" },
+      {key: 'name', sortable: true},
+      {key: 'project', sortable: true},
+      {key: 'debtor', sortable: true},
+      {key: 'billable', sortable: true, variant: 'success'},
     ];
   };
 
@@ -34,7 +34,7 @@ export default () => {
 
     report?.employees.forEach((employee) => {
       const customers = employee.billableRecords.map((x) => x.customer);
-      const uniqueCustomers = uniqueByKey(customers, "id");
+      const uniqueCustomers = uniqueByKey(customers, 'id');
 
       uniqueCustomers.forEach((customer) => {
         items.push(createItem(employee, customer));
@@ -44,5 +44,5 @@ export default () => {
     return items;
   };
 
-  return { createProjectsFields, createProjectsItems };
+  return {createProjectsFields, createProjectsItems};
 };

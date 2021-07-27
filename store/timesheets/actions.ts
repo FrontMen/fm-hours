@@ -1,12 +1,12 @@
 /* eslint-disable camelcase */
-import { ActionTree } from "vuex";
+import {ActionTree} from 'vuex';
 
-import { createTimesheetTableData } from "~/helpers/timesheet";
-import { getWeeksSpan } from "~/helpers/dates";
+import {createTimesheetTableData} from '~/helpers/timesheet';
+import {getWeeksSpan} from '~/helpers/dates';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   async getTimesheets(
-    { commit },
+    {commit},
     payload: {
       startDate?: number;
       endDate?: number;
@@ -16,7 +16,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   ) {
     const timesheets = await this.app.$timesheetsService.getTimesheets(payload);
 
-    commit("setTimesheets", { timesheets });
+    commit('setTimesheets', {timesheets});
   },
 
   /**
@@ -24,7 +24,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
    * Used in copying previous week, to perpetuate the comment. Payload params mandatory for accuracy in search.
    */
   async getPreviousTimesheet(
-    { commit },
+    {commit},
     payload: {
       startDate: number;
       endDate: number;
@@ -32,11 +32,11 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     }
   ) {
     const timesheets = await this.app.$timesheetsService.getTimesheets(payload);
-    commit("setPreviousTimesheet", { timesheet: timesheets[0] });
+    commit('setPreviousTimesheet', {timesheet: timesheets[0]});
   },
 
   async getTableData(
-    { commit },
+    {commit},
     payload: {
       weeksBefore: number;
       weeksAfter: number;
@@ -63,31 +63,31 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       weeksSpan,
     });
 
-    commit("setTimesheetsTableData", { tableData });
+    commit('setTimesheetsTableData', {tableData});
   },
 
-  selectEmployee({ commit }, payload: { employeeId: string }) {
-    commit("setSelectedEmployeeId", { employeeId: payload.employeeId });
+  selectEmployee({commit}, payload: {employeeId: string}) {
+    commit('setSelectedEmployeeId', {employeeId: payload.employeeId});
   },
 
-  async saveTimesheet({ commit }, payload: Optional<Timesheet, "id">) {
+  async saveTimesheet({commit}, payload: Optional<Timesheet, 'id'>) {
     const timesheet = await this.app.$timesheetsService.saveTimesheet(payload);
-    commit("setTimesheets", { timesheets: [timesheet] });
+    commit('setTimesheets', {timesheets: [timesheet]});
   },
 
   async denyTimesheet(
-    { commit },
-    payload: { timesheet: Optional<Timesheet, "id">; emailData: EmailData }
+    {commit},
+    payload: {timesheet: Optional<Timesheet, 'id'>; emailData: EmailData}
   ) {
     await this.app.$mailService.sendMail(payload.emailData);
     const timesheet = await this.app.$timesheetsService.saveTimesheet(
       payload.timesheet
     );
 
-    commit("setTimesheets", { timesheets: [timesheet] });
+    commit('setTimesheets', {timesheets: [timesheet]});
   },
 
-  async deleteTimesheet({ commit, state }, payload: { timesheetId: string }) {
+  async deleteTimesheet({commit, state}, payload: {timesheetId: string}) {
     if (!payload.timesheetId) return;
 
     await this.app.$timesheetsService.deleteTimesheet(payload.timesheetId);
@@ -95,7 +95,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     const newTimesheets = state.timesheets.filter(
       (timesheet) => timesheet.id !== payload.timesheetId
     );
-    commit("setTimesheets", { timesheets: newTimesheets });
+    commit('setTimesheets', {timesheets: newTimesheets});
   },
 };
 

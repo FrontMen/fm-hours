@@ -54,13 +54,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
 
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
 
-import { getWeekRange, getDateLabel } from "~/helpers/dates";
-import { timesheetFormatter, kilometerFormatter } from "~/helpers/timesheet";
+import {getWeekRange, getDateLabel} from "~/helpers/dates";
+import {timesheetFormatter, kilometerFormatter} from "~/helpers/timesheet";
 
 export default defineComponent({
   components: {
@@ -82,12 +82,12 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const weekLabel = computed(() => {
       if (!props.week.length) return "";
 
       const firstDate = props.week[0].date;
-      const { start, end } = getWeekRange(firstDate);
+      const {start, end} = getWeekRange(firstDate);
 
       return getDateLabel(start, end);
     });

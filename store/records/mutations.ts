@@ -1,11 +1,11 @@
-import { MutationTree } from "vuex";
+import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<RecordsStoreState> = {
-  setLoading(state, payload: { isLoading: boolean }) {
+  setLoading(state, payload: {isLoading: boolean}) {
     state.isLoading = payload.isLoading;
   },
 
-  setSaving(state, payload: { isSaving: boolean }) {
+  setSaving(state, payload: {isSaving: boolean}) {
     state.lastSaved = !payload.isSaving ? new Date() : state.lastSaved;
     state.isSaving = payload.isSaving;
   },

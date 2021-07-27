@@ -1,7 +1,7 @@
-import { isSameDay, isWithinInterval, getISOWeek } from "date-fns";
+import {isSameDay, isWithinInterval, getISOWeek} from 'date-fns';
 
-import { recordStatus } from "./record-status";
-import { getDayOnGMT, formatDate } from "./dates";
+import {recordStatus} from './record-status';
+import {getDayOnGMT, formatDate} from './dates';
 
 export const createWeeklyTimesheet = (params: {
   week: WeekDate[];
@@ -13,7 +13,7 @@ export const createWeeklyTimesheet = (params: {
   const end = new Date(params.week[6].date);
 
   const isWithinCurrentWeek = (record: TimeRecord | TravelRecord) =>
-    isWithinInterval(new Date(record.date), { start, end });
+    isWithinInterval(new Date(record.date), {start, end});
 
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
@@ -78,9 +78,9 @@ const createTravelProject = (
 
   return {
     customer: {
-      id: "travelProjectId",
-      name: "Kilometers",
-      debtor: "Frontmen",
+      id: 'travelProjectId',
+      name: 'Kilometers',
+      debtor: 'Frontmen',
       isBillable: false,
       isDefault: false,
     },
@@ -107,21 +107,21 @@ export function floatTo24TimeString(float: number): string {
   n.setMinutes(Math.round(float * 60));
   const result = n.toTimeString();
 
-  return result !== "Invalid Date" ? result.slice(0, 5) : "0";
+  return result !== 'Invalid Date' ? result.slice(0, 5) : '0';
 }
 
 export function floatToTotalTimeString(float: number): string {
-  const hoursMinutes = float.toString().split(".");
-  const hours = +hoursMinutes[0] ? hoursMinutes[0].padStart(2, "0") : "00";
+  const hoursMinutes = float.toString().split('.');
+  const hours = +hoursMinutes[0] ? hoursMinutes[0].padStart(2, '0') : '00';
 
   const formattedMinutes = Math.round(parseFloat(`0.${hoursMinutes[1]}`) * 60);
-  const minutes = formattedMinutes.toString().padStart(2, "0");
+  const minutes = formattedMinutes.toString().padStart(2, '0');
 
   return `${hours}:${minutes}`;
 }
 
 export function timeStringToFloat(timeString: string): number {
-  const hoursMinutes = timeString.split(":");
+  const hoursMinutes = timeString.split(':');
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
 
@@ -141,16 +141,16 @@ function validateTimeString(timeString: string, maxHours: number): string {
 export function timesheetFormatter(maxHours: number) {
   return {
     formatter: (value: string, e: InputEvent): string => {
-      const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, "");
+      const formatted = value.replace(/[^0-9.,:]+|\.(?=.*\.)/g, '');
 
-      if (e.type === "blur") {
-        const numString = formatted.replace(",", ".");
+      if (e.type === 'blur') {
+        const numString = formatted.replace(',', '.');
         const num = +numString;
 
-        if (num <= 0 || numString === ".") return `0`;
+        if (num <= 0 || numString === '.') return `0`;
         if (num >= maxHours) return `${maxHours}:00`;
 
-        if (!numString.includes(":")) {
+        if (!numString.includes(':')) {
           return floatTo24TimeString(num);
         }
 
@@ -165,7 +165,7 @@ export function timesheetFormatter(maxHours: number) {
 export function kilometerFormatter(min: number, max: number) {
   return {
     formatter: (value: string, e: InputEvent): string | number => {
-      const formatted = value.replace(/[^0-9.,]+|\.(?=.*\.)/g, "");
+      const formatted = value.replace(/[^0-9.,]+|\.(?=.*\.)/g, '');
 
       if (formatted) {
         const num = +value;
@@ -173,10 +173,10 @@ export function kilometerFormatter(min: number, max: number) {
         if (num > max) return max;
       }
 
-      const numString = formatted.replace(",", ".");
+      const numString = formatted.replace(',', '.');
 
-      if (e.type === "blur") {
-        if (numString === "") return "0";
+      if (e.type === 'blur') {
+        if (numString === '') return '0';
         if (numString.match(/[.]$/)) {
           return numString.slice(0, -1);
         }
@@ -232,12 +232,12 @@ export const createTimesheetTableData = (params: {
   timesheets: Timesheet[];
   weeksSpan: WeekSpan[];
 }) => {
-  const { employees, timesheets, weeksSpan } = params;
+  const {employees, timesheets, weeksSpan} = params;
 
   const weekItemsMap = weeksSpan.reduce((acc, week) => {
     acc[week.start.ISO] = recordStatus.EMPTY as TimesheetStatus;
     return acc;
-  }, {} as { [isoDate: string]: TimesheetStatus });
+  }, {} as {[isoDate: string]: TimesheetStatus});
 
   const items = employees.map(
     (employee) =>
@@ -265,8 +265,8 @@ export const createTimesheetTableData = (params: {
 
   const fields = [
     {
-      key: "id",
-      label: "Employee",
+      key: 'id',
+      label: 'Employee',
       stickyColumn: true,
       isRowHeader: true,
       sortable: true,
@@ -274,5 +274,5 @@ export const createTimesheetTableData = (params: {
     ...weekFields,
   ];
 
-  return { items, fields };
+  return {items, fields};
 };

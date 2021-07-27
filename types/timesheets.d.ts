@@ -1,9 +1,9 @@
 declare enum TimesheetStatus {
-  NEW = "new",
-  PENDING = "pending",
-  APPROVED = "approved",
-  DENIED = "denied",
-  EMPTY = "empty",
+  NEW = 'new',
+  PENDING = 'pending',
+  APPROVED = 'approved',
+  DENIED = 'denied',
+  EMPTY = 'empty',
 }
 interface TimesheetEmployee extends Employee {
   status: TimesheetStatus;

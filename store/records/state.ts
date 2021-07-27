@@ -6,4 +6,4 @@ export default (): RecordsStoreState => ({
   timeRecords: [],
   travelRecords: [],
   workScheme: [],
-})
+});

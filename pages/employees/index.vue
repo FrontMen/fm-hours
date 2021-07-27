@@ -29,7 +29,7 @@
             :taggable="false"
             placeholder="Click or search for a customer here"
           >
-            <template slot="selection" slot-scope="{ values }">
+            <template slot="selection" slot-scope="{values}">
               <span v-if="values.length">
                 {{ values.length }} options selected
               </span>
@@ -51,7 +51,7 @@
           lg="2"
           class="d-flex align-items-end justify-content-end"
         >
-          <b-button v-b-modal.modal-center> + New employee </b-button>
+          <b-button v-b-modal.modal-center>+ New employee</b-button>
         </b-col>
       </b-row>
     </b-container>
@@ -80,7 +80,7 @@
 
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
-          <small v-if="employee.team"> - {{ employee.team }}</small>
+          <small v-if="employee.team">- {{ employee.team }}</small>
         </div>
 
         <div class="ml-auto d-flex">
@@ -128,13 +128,13 @@ import {
 } from "@nuxtjs/composition-api";
 import Multiselect from "vue-multiselect";
 
-import { validateEmail } from "../../helpers/validation";
-import { formatDate } from "~/helpers/dates";
-import { checkEmployeeAvailability } from "~/helpers/employee";
-import { queryOnString } from "~/helpers/helpers";
+import {validateEmail} from "../../helpers/validation";
+import {formatDate} from "~/helpers/dates";
+import {checkEmployeeAvailability} from "~/helpers/employee";
+import {queryOnString} from "~/helpers/helpers";
 
 export default defineComponent({
-  components: { Multiselect },
+  components: {Multiselect},
 
   middleware: ["isAdmin"],
 
@@ -174,9 +174,9 @@ export default defineComponent({
       store.getters["filters/getEmployeeFilterBy"]
     );
     const statusOptions = [
-      { value: "all", text: "All" },
-      { value: "active", text: "Active" },
-      { value: "incative", text: "Inactive" },
+      {value: "all", text: "All"},
+      {value: "active", text: "Active"},
+      {value: "incative", text: "Inactive"},
     ];
 
     const searchInput = ref<string>(
@@ -259,7 +259,7 @@ export default defineComponent({
     });
 
     const canAddEmployee = computed(() => {
-      const { name, email } = newEmployee.value;
+      const {name, email} = newEmployee.value;
       return name && validateEmail(email);
     });
 

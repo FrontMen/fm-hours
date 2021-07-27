@@ -9,7 +9,7 @@ export const sleep = (milliseconds: number) => {
 
 // Remove accents from strings
 export const normalizeText = (text: string) =>
-  text.normalize("NFD").replace(/[\u0300-\u036F]/g, "");
+  text.normalize('NFD').replace(/[\u0300-\u036F]/g, '');
 
 // Return if a target string is or isn't a match for a seach (query) value
 export const queryOnString = (target: string, query: string) =>
@@ -32,11 +32,11 @@ export const sortByProp = <T>(
   a: T,
   b: T,
   prop: string,
-  order: "asc" | "desc" = "asc"
+  order: 'asc' | 'desc' = 'asc'
 ): number => {
   // @ts-ignore
-  if (a[prop] > b[prop]) return order === "asc" ? 1 : -1;
+  if (a[prop] > b[prop]) return order === 'asc' ? 1 : -1;
   // @ts-ignore
-  if (a[prop] < b[prop]) return order === "asc" ? -1 : 1;
+  if (a[prop] < b[prop]) return order === 'asc' ? -1 : 1;
   return 0;
 };

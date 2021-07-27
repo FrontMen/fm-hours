@@ -1,4 +1,4 @@
-import { MutationTree } from "vuex";
+import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<FiltersStoreState> = {
   // Customers
@@ -8,7 +8,7 @@ const mutations: MutationTree<FiltersStoreState> = {
   setCustomerSearchTerm(state, payload: string) {
     state.customerFilters.searchTerm = payload;
   },
-  setCustomerSearchCriteria(state, payload: "name" | "debtor") {
+  setCustomerSearchCriteria(state, payload: 'name' | 'debtor') {
     state.customerFilters.searchCriteria = payload;
   },
   setCustomerSortDescending(state, payload: boolean) {

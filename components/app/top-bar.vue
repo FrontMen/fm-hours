@@ -1,5 +1,5 @@
 <template>
-  <div class="top-bar hide-print" :class="{ 'top-bar__development': isDev }">
+  <div class="top-bar hide-print" :class="{'top-bar__development': isDev}">
     <div class="top-bar__inner content-wrapper">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
@@ -16,6 +16,14 @@
                 v-b-toggle.sidebar-1
                 class="top-bar__hamburger ml-4"
               />
+
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
+                target="_blank"
+                class="text-white ml-3"
+              >
+                Feedback
+              </a>
             </div>
           </b-col>
 
@@ -47,7 +55,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, useRouter } from "@nuxtjs/composition-api";
+import {defineComponent, PropType, useRouter} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emit: ["logout"],
@@ -65,7 +73,7 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(_, { emit }) {
+  setup(_, {emit}) {
     const router = useRouter();
 
     const handleLogoClick = () => router.push("/records");

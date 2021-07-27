@@ -32,7 +32,7 @@
             >
               Show archived
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center> + New customer </b-button>
+            <b-button v-b-modal.modal-center>+ New customer</b-button>
           </div>
         </b-col>
       </b-row>
@@ -63,7 +63,7 @@
 
       <template #cell(customers)="scope">
         <strong>{{ scope.item.name }}</strong>
-        <b-badge v-if="scope.item.isDefault"> Default </b-badge>
+        <b-badge v-if="scope.item.isDefault">Default</b-badge>
       </template>
       <template #cell(archived)="scope">
         <div class="text-center">
@@ -115,7 +115,7 @@ import {
   ref,
   useStore,
 } from "@nuxtjs/composition-api";
-import { queryOnString, sortByProp } from "~/helpers/helpers";
+import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -126,7 +126,7 @@ export default defineComponent({
 
   setup() {
     const store = useStore<RootStoreState>();
-    const customers: { value: Customer[] | undefined } = computed(
+    const customers: {value: Customer[] | undefined} = computed(
       () => store.state.customers.customers
     );
     store.dispatch("customers/getCustomers");
@@ -134,16 +134,16 @@ export default defineComponent({
     const searchTerm = ref<string>(
       store.getters["filters/getCustomerSearchTerm"]
     );
-    const searchCriteria: { value: "name" | "debtor"; text: string }[] = [
-      { value: "name", text: "Customer name" },
-      { value: "debtor", text: "Debtor name" },
+    const searchCriteria: {value: "name" | "debtor"; text: string}[] = [
+      {value: "name", text: "Customer name"},
+      {value: "debtor", text: "Debtor name"},
     ];
 
     const fields = [
-      { key: "name", label: "Customers", sortable: true },
-      { key: "debtor", label: "Debtors", sortable: true },
-      { key: "archived", label: "Archived", sortable: false },
-      { key: "actions", label: "Actions", sortable: false },
+      {key: "name", label: "Customers", sortable: true},
+      {key: "debtor", label: "Debtors", sortable: true},
+      {key: "archived", label: "Archived", sortable: false},
+      {key: "actions", label: "Actions", sortable: false},
     ];
     const selectedCriteria = ref<"name" | "debtor">(
       store.getters["filters/getCustomerSearchCriteria"]
@@ -223,12 +223,12 @@ export default defineComponent({
     });
 
     const canAddCustomer = computed(() => {
-      const { name, debtor } = newCustomer.value;
+      const {name, debtor} = newCustomer.value;
       return name && debtor;
     });
 
     const addCustomer = () => {
-      store.dispatch("customers/addNewCustomer", { ...newCustomer.value });
+      store.dispatch("customers/addNewCustomer", {...newCustomer.value});
 
       newCustomer.value.name = "";
       newCustomer.value.debtor = "";

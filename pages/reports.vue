@@ -47,7 +47,7 @@ import {
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
-import { format, addMonths, subMonths } from "date-fns";
+import {format, addMonths, subMonths} from "date-fns";
 
 import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
 import useMonthlyProjectsReport from "~/composables/useMonthlyProjectsReport";
@@ -56,7 +56,7 @@ import useMonthlyKilometersReport from "~/composables/useMonthlyKilometersReport
 import ReportsTable from "~/components/reports/reports-table.vue";
 
 export default defineComponent({
-  components: { ReportsTable },
+  components: {ReportsTable},
   middleware: ["isAdmin"],
 
   head: {
@@ -64,7 +64,7 @@ export default defineComponent({
   },
 
   setup() {
-    const { createTotalsFields, createTotalsItems } = useMonthlyTotalsReport();
+    const {createTotalsFields, createTotalsItems} = useMonthlyTotalsReport();
     const {
       createProjectsFields,
       createProjectsItems,
@@ -115,7 +115,7 @@ export default defineComponent({
           startDate: monthDate.value,
         });
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     return {

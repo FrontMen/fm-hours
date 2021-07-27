@@ -3,5 +3,5 @@ export default (): EmployeeStoreState => ({
   isAdmin: false,
   isLoading: false,
   employee: null,
-  errorMessage: "",
+  errorMessage: '',
 });

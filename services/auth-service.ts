@@ -1,12 +1,12 @@
-import { NuxtAxiosInstance } from "@nuxtjs/axios";
-import { NuxtFireInstance } from "@nuxtjs/firebase";
-import Cookies from "js-cookie";
-import jwtDecode from "jwt-decode";
+import {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {NuxtFireInstance} from '@nuxtjs/firebase';
+import Cookies from 'js-cookie';
+import jwtDecode from 'jwt-decode';
 
 export default class AuthService {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
-  ApiUrl = "/api/v1";
+  ApiUrl = '/api/v1';
 
   constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
     this.fire = fire;
@@ -14,19 +14,19 @@ export default class AuthService {
   }
 
   setAuthCookie(cookieData: string, expires: Date): void {
-    Cookies.set("hosted-tools-api-auth-2", cookieData, {
+    Cookies.set('hosted-tools-api-auth-2', cookieData, {
       expires,
-      path: "",
+      path: '',
       secure: true,
     });
   }
 
   getAuthCookie() {
-    return Cookies.get("hosted-tools-api-auth-2");
+    return Cookies.get('hosted-tools-api-auth-2');
   }
 
   deleteAuthCookie() {
-    return Cookies.remove("hosted-tools-api-auth-2");
+    return Cookies.remove('hosted-tools-api-auth-2');
   }
 
   decodeAuthResponseToken(token: string): JWTResponse {
@@ -36,16 +36,16 @@ export default class AuthService {
   getPPidFromJWTToken(responseToken: string) {
     const ppid = this.decodeAuthResponseToken(responseToken).firebase
       .sign_in_attributes[
-      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier"
+      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier'
     ];
 
-    localStorage.setItem("@fm-hours/ppid", ppid);
+    localStorage.setItem('@fm-hours/ppid', ppid);
     return ppid;
   }
 
   getToken(ppid: string): Promise<GetTokenResponse> {
     return this.axios.$post(
-      "https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/" +
+      'https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/' +
         ppid
     );
   }

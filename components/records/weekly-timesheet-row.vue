@@ -27,9 +27,7 @@
       <div class="container">
         Remove entries from timesheet?
         <b-row class="justify-content-around mt-2">
-          <b-button variant="secondary" @click="closeTooltip">
-            Cancel
-          </b-button>
+          <b-button variant="secondary" @click="closeTooltip">Cancel</b-button>
           <b-button variant="danger" @click="handleRemoveClick">
             Delete
           </b-button>
@@ -106,7 +104,7 @@ export default defineComponent({
       required: true,
     },
     valueFormatter: {
-      type: Object as PropType<{ min: number; max: number; formatter(): void }>,
+      type: Object as PropType<{min: number; max: number; formatter(): void}>,
     },
     employee: {
       type: Object as PropType<Employee>,

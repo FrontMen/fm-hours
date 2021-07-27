@@ -2,7 +2,7 @@
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <nuxt-link v-if="!isAdminView" to="month">
-        <b-button> Monthly overview </b-button>
+        <b-button>Monthly overview</b-button>
       </nuxt-link>
 
       <nuxt-link
@@ -38,10 +38,10 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
 
-import { getWeekRange, getDateLabel, getDayOnGMT } from "~/helpers/dates";
+import {getWeekRange, getDateLabel, getDayOnGMT} from "~/helpers/dates";
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -55,7 +55,7 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => emit("current");
@@ -64,7 +64,7 @@ export default defineComponent({
       if (!props.selectedWeek.length) return "";
 
       const firstDate = props.selectedWeek[0].date;
-      const { start, end } = getWeekRange(firstDate);
+      const {start, end} = getWeekRange(firstDate);
 
       return getDateLabel(start, end);
     });
@@ -75,7 +75,7 @@ export default defineComponent({
       const today = new Date();
       const startDate = getDayOnGMT(props.selectedWeek[0].date);
 
-      return differenceInCalendarWeeks(startDate, today, { weekStartsOn: 1 });
+      return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
 
     return {

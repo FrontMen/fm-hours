@@ -2,7 +2,7 @@ type FiltersStoreState = {
   customerFilters: {
     archived: boolean;
     searchTerm: null | string;
-    searchCriteria: "name" | "debtor";
+    searchCriteria: 'name' | 'debtor';
     sortDescending: boolean;
     sortBy: string;
   };

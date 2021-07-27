@@ -1,9 +1,9 @@
 <template>
   <div class="weekly-timesheet-footer mb-3">
     <div>
-      <span v-if="lastSaved" class="mr-3"
-        >Last saved: {{ lastSavedLabel }}</span
-      >
+      <span v-if="lastSaved" class="mr-3">
+        Last saved: {{ lastSavedLabel }}
+      </span>
       <b-spinner v-if="isSaving" small />
 
       <b-button
@@ -66,8 +66,8 @@ import {
   ref,
   watch,
 } from "@nuxtjs/composition-api";
-import { formatDistanceToNow } from "date-fns";
-import { recordStatus } from "~/helpers/record-status";
+import {formatDistanceToNow} from "date-fns";
+import {recordStatus} from "~/helpers/record-status";
 
 export default defineComponent({
   emits: ["submit", "save", "unsubmit"],
@@ -89,7 +89,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props, {emit}) {
     const lastSavedLabel = ref("");
     let intervalHandle: NodeJS.Timeout;
 
@@ -115,7 +115,7 @@ export default defineComponent({
         updateLastSavedLabel();
         setIntervalHandle();
       },
-      { immediate: true }
+      {immediate: true}
     );
 
     onBeforeUnmount(() => clearInterval(intervalHandle));

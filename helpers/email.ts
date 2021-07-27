@@ -27,7 +27,7 @@ export const buildEmailData = ({
 
   return {
     to: `${employee.name} ${employee.email}`,
-    subject: "Timesheet denied",
+    subject: 'Timesheet denied',
     html,
   };
 };

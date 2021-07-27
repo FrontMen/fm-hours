@@ -8,7 +8,7 @@
     "start": "nuxt-ts start",
     "generate": "nuxt-ts generate",
     "test": "jest",
-    "test:types": "tsc --noEmit",
+    "test:types": "tsc -p tsconfig.json --noEmit ",
     "lint:eslint": "eslint --ext .js,.vue --ignore-path .eslintignore .",
     "lint:eslint:hook": "eslint --ext .js,.vue --ignore-path .eslintignore",
     "lint:prettier": "prettier \"**/*.js\" \"**/*.vue\" --check --ignore-path .eslintignore .",
@@ -20,10 +20,12 @@
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
+      "npm run format:eslint",
+      "npm run format:prettier",
       "npm run lint:eslint:hook"
     ],
     "*.{js, ts}": [
-      "npm run test:types"
+      "bash -c 'npm run test:types'"
     ]
   },
   "eslintConfig": {
@@ -71,13 +73,13 @@
     "babel-eslint": "^10.1.0",
     "babel-jest": "^26.5.0",
     "eslint": "^7.10.0",
-    "eslint-config-prettier": "^6.12.0",
+    "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-nuxt": "^1.0.0",
     "eslint-plugin-prettier": "^3.1.4",
     "husky": "^4.3.0",
     "jest": "^26.5.0",
     "lint-staged": "^10.4.0",
-    "prettier": "^2.1.2",
+    "prettier": "^2.3.2",
     "sass": "^1.29.0",
     "sass-loader": "^10.0.5",
     "ts-jest": "^26.4.1",

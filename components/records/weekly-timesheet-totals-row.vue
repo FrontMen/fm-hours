@@ -6,7 +6,8 @@
         v-b-modal.modal-add-project
         variant="primary"
       >
-        <b-icon icon="plus-square-fill" class="mr-1" /> Project
+        <b-icon icon="plus-square-fill" class="mr-1" />
+        Project
       </b-button>
     </b-col>
 
@@ -30,8 +31,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType } from "@nuxtjs/composition-api";
-import { floatToTotalTimeString } from "~/helpers/timesheet";
+import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
+import {floatToTotalTimeString} from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {

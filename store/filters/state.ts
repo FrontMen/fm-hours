@@ -2,17 +2,17 @@ export default (): FiltersStoreState => ({
   customerFilters: {
     archived: false,
     searchTerm: null,
-    searchCriteria: "name",
+    searchCriteria: 'name',
     sortDescending: false,
-    sortBy: "",
+    sortBy: '',
   },
   timesheetFilters: {
     filterBy: null,
     sortDescending: false,
   },
   employeeFilters: {
-    searchTerm: "",
-    filterBy: "all",
+    searchTerm: '',
+    filterBy: 'all',
     filterByCustomer: [],
   },
 });

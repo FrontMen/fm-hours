@@ -1,4 +1,4 @@
-import { isAfter, endOfDay } from "date-fns";
+import {isAfter, endOfDay} from 'date-fns';
 
 // Check if employee has already started and is yet active in a given date or time span
 export function checkEmployeeAvailability(
@@ -20,9 +20,9 @@ export function checkEmployeeAvailability(
 }
 
 export function generateAvatarURL(employeeName: string) {
-  if (!employeeName) return "";
+  if (!employeeName) return '';
 
-  const normalizedName = employeeName.replace(" ", "+");
+  const normalizedName = employeeName.replace(' ', '+');
 
   return `https://eu.ui-avatars.com/api/?name=${normalizedName}&background=201e33&color=ffffff`;
 }
