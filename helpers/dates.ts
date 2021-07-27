@@ -74,7 +74,7 @@ export function checkNonWorkingDays(
     const isLeaveDay = !!workSchemeDay?.absenceHours;
 
     const isPartTime =
-      !isPublicHoliday && workSchemeDay && workSchemeDay.theoreticalHours < 8;
+      !isPublicHoliday && !!workSchemeDay && workSchemeDay.theoreticalHours < 8;
 
     return {
       ...day,
