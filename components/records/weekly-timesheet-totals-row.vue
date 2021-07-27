@@ -11,20 +11,18 @@
       </b-button>
     </b-col>
 
-    <!-- TODO: use classes and show {{ value / dayTheoraticalTotals[index] }} when `workSchem` API is implemented -->
     <b-col
       v-for="(value, index) in dayTotals"
       :key="index"
       cols="1"
       class="weekly-timesheet-totals-row__column"
     >
-      <span>{{ value }}</span>
+      <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
     </b-col>
 
-    <!-- TODO: use classes and show {{ weekTotal / weekTheoraticalTotal }} when `workSchem` API is implemented -->
     <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
-        <strong>{{ weekTotal }}</strong>
+        <strong>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</strong>
       </span>
     </b-col>
   </b-row>
@@ -32,7 +30,6 @@
 
 <script lang="ts">
 import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
-import {floatToTotalTimeString} from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {
@@ -63,15 +60,13 @@ export default defineComponent({
         );
       });
 
-      return floatToTotalTimeString(total);
+      return total;
     });
 
-    const weekTheoreticalTotal = computed(() => {
-      return props.workScheme.reduce(
-        (prevValue, scheme) => prevValue + scheme.theoreticalHours,
+    const weekWorkSchemeHoursTotal = computed(() => props.workScheme.reduce(
+        (prevValue, scheme) => prevValue + scheme.workHours,
         0
-      );
-    });
+      ));
 
     const dayTotals = computed(() => {
       return props.selectedWeek.map((_, index) => {
@@ -81,19 +76,20 @@ export default defineComponent({
           total += +project.values[index];
         });
 
-        return total === 0 ? "0" : floatToTotalTimeString(total);
+        return total;
       });
     });
 
-    const dayTheoreticalHours = computed(() => {
-      return props.workScheme.map((scheme) => scheme.theoreticalHours);
-    });
+    const dayWorkSchemeHoursTotal = computed(() =>
+      props.selectedWeek.map((_, index) =>
+        props.workScheme?.[index] ? props.workScheme[index].workHours : "-")
+    );
 
     return {
       weekTotal,
-      weekTheoreticalTotal,
+      weekWorkSchemeHoursTotal,
       dayTotals,
-      dayTheoreticalHours,
+      dayWorkSchemeHoursTotal,
     };
   },
 });
@@ -134,7 +130,6 @@ export default defineComponent({
   }
 
   &__week-column {
-    padding-right: 16px;
     text-align: right;
     padding: 0 4px;
 
