@@ -5,5 +5,6 @@ export default (): RecordsStoreState => ({
   selectedWeek: [],
   timeRecords: [],
   travelRecords: [],
+  leaveDays: [],
   workScheme: [],
 });

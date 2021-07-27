@@ -35,6 +35,7 @@ interface TimesheetProject {
 
 interface WeeklyTimesheet {
   projects: TimesheetProject[];
+  leaveDays: TimesheetProject | null;
   travelProject: TimesheetProject | null;
 }
 
@@ -43,6 +44,7 @@ interface RecordsStoreState {
   isSaving: boolean;
   lastSaved: Date | null;
   selectedWeek: WeekDate[];
+  leaveDays: WeekDate[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
