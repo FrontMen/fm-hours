@@ -43,10 +43,9 @@
       cols="1"
       class="weekly-timesheet-row__date-column"
       :class="{
-        weekend: selectedWeek[index].isWeekend,
-        holiday: selectedWeek[index].isHoliday,
-        leave: selectedWeek[index].isLeaveDay,
-        'part-time': selectedWeek[index].isPartTime,
+        'weekly-timesheet-row__date-column--dark': shouldShowDarkBG(
+          selectedWeek[index],
+        ),
       }"
     >
       <b-form-input
@@ -83,6 +82,7 @@ import {
   timeStringToFloat,
 } from '~/helpers/timesheet'
 import { debounce } from '~/helpers/helpers'
+import { recordDayStatusProps } from '~/helpers/record-status'
 
 let self: any
 
@@ -192,6 +192,9 @@ export default defineComponent({
       }
     }
 
+    const shouldShowDarkBG = (day: WeekDate) =>
+      recordDayStatusProps.some(prop => day[prop]) || day.isWeekend
+
     return {
       tooltip,
       canRemove,
@@ -203,6 +206,7 @@ export default defineComponent({
       formattedProjectValues,
       isReadonlyList,
       handleInputFocus,
+      shouldShowDarkBG,
     }
   },
 })
@@ -249,13 +253,7 @@ export default defineComponent({
       padding: 8px;
     }
 
-    &.part-time {
-      background-color: #dedede;
-    }
-
-    &.holiday,
-    &.weekend,
-    &.leave {
+    &--dark {
       background-color: #999;
     }
   }

@@ -1,30 +1,61 @@
-import { isSameISOWeek } from "date-fns";
+import { isSameISOWeek } from 'date-fns'
 
-import { getDayOnGMT } from "./dates";
+import { getDayOnGMT } from './dates'
 
 export const recordStatus = {
-  NEW: "new",
-  PENDING: "pending",
-  APPROVED: "approved",
-  DENIED: "denied",
-  EMPTY: "empty",
-};
+  NEW: 'new',
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  DENIED: 'denied',
+  EMPTY: 'empty',
+}
 
 export function filterApprovedRecords<T extends TimeRecord | TravelRecord>(
   records: T[],
-  timesheets: Timesheet[]
+  timesheets: Timesheet[],
 ) {
   return records.reduce((approveds, record) => {
     const recordTimesheet = timesheets.find(
-      (timesheet) =>
+      timesheet =>
         record.employeeId === timesheet.employeeId &&
-        isSameISOWeek(getDayOnGMT(record.date), getDayOnGMT(timesheet.date))
-    );
+        isSameISOWeek(getDayOnGMT(record.date), getDayOnGMT(timesheet.date)),
+    )
 
     if (recordTimesheet && recordTimesheet.status === recordStatus.APPROVED) {
-      approveds.push(record);
+      approveds.push(record)
     }
 
-    return approveds;
-  }, [] as T[]);
+    return approveds
+  }, [] as T[])
 }
+
+export const recordDayStatus: RecordDayStatus[] = [
+  {
+    prop: 'isToday',
+    SHORT: 'T',
+    MID: 'TDY',
+    LONG: 'TODAY',
+  },
+  {
+    prop: 'isHoliday',
+    SHORT: 'H',
+    MID: 'HOLI',
+    LONG: 'HOLIDAY',
+  },
+  {
+    prop: 'isLeaveDay',
+    SHORT: 'L',
+    MID: 'LVD',
+    LONG: 'LEAVE',
+  },
+  {
+    prop: 'isPartTime',
+    SHORT: 'P',
+    MID: 'PTD',
+    LONG: 'PART-TIME',
+  },
+]
+
+export const recordDayStatusProps = recordDayStatus.map(
+  status => status.prop,
+) as Array<keyof WeekDate>

@@ -48,3 +48,10 @@ interface RecordsStoreState {
   travelRecords: TravelRecord[]
   workScheme: WorkScheme[]
 }
+
+interface RecordDayStatus {
+  prop: string
+  SHORT: string
+  MID: string
+  LONG: string
+}
