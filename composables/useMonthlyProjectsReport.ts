@@ -1,4 +1,4 @@
-import {uniqueByKey} from '~/helpers/helpers';
+import {getTotalsByProp, uniqueByKey} from '~/helpers/helpers';
 
 export default () => {
   const createProjectsFields = () => {
@@ -10,12 +10,6 @@ export default () => {
     ];
   };
 
-  const getTotalHours = (records: TimeRecord[]): number =>
-    records.reduce(
-      (total, currentRecord) => (total += +currentRecord.hours),
-      0
-    );
-
   const createItem = (employee: ReportEmployee, customer: Customer) => {
     const records = employee.billableRecords.filter(
       (record) => record.customer.id === customer.id
@@ -23,7 +17,7 @@ export default () => {
 
     return {
       name: employee.name,
-      billable: getTotalHours(records) || 0,
+      billable: getTotalsByProp<TimeRecord>(records, 'hours') || 0,
       project: customer.name,
       debtor: customer.debtor,
     };

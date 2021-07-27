@@ -1,3 +1,5 @@
+import {getTotalsByProp} from '~/helpers/helpers';
+
 export default () => {
   const createStandByFields = () => {
     return [
@@ -6,17 +8,11 @@ export default () => {
     ];
   };
 
-  // TODO Vlad generic in helpers ?
-  const getTotalHours = (records: StandbyRecord[]): number =>
-    records.reduce(
-      (total, currentRecord) => (total += +currentRecord.hours),
-      0
-    );
-
   const createItem = (employee: ReportEmployee) => {
     return {
       name: employee.name,
-      hours: getTotalHours(employee.standByRecords) || 0,
+      hours:
+        getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
     };
   };
 

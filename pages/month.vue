@@ -211,6 +211,7 @@ import {
 } from "@nuxtjs/composition-api";
 import {startOfMonth, endOfMonth, format, addMonths, subMonths} from "date-fns";
 import Multiselect from "vue-multiselect";
+import { getTotalsByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   components: {Multiselect},
@@ -261,12 +262,6 @@ export default defineComponent({
       return filteredRecords;
     });
 
-    const getTotals = (records: TimeRecord[]): number => {
-      return records.reduce((total, record) => {
-        return total + record.hours;
-      }, 0);
-    };
-
     const totalHours = computed(() => {
       const records = [...store.state.records.timeRecords];
       const billableRecords = handleFilterBillable(records, true);
@@ -274,9 +269,9 @@ export default defineComponent({
       const selectedBillable = handleSelectedProjects(conditionalBillable);
 
       const totals = {
-        billable: getTotals(billableRecords),
-        selected: getTotals(selectedBillable),
-        total: getTotals(records),
+        billable: getTotalsByProp<TimeRecord>(billableRecords, "hours"),
+        selected: getTotalsByProp<TimeRecord>(selectedBillable, "hours"),
+        total: getTotalsByProp<TimeRecord>(records, "hours"),
       };
 
       return totals;
