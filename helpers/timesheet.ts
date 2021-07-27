@@ -128,26 +128,36 @@ const createTravelProject = (
 };
 
 export const createLeaveProject = (
-  week: WeekDate[]
-  , workScheme: WorkScheme[]): TimesheetProject | null => {
-  const hours = week.map((leaveDay) => findLeaveHoursByDate(leaveDay, workScheme));
-  const noHolidays: boolean = hours.every(value => value === 0)
-  return !noHolidays ?{
-    customer: {
-      id: "leaveProjectId",
-      name: "Days",
-      debtor: "Frontmen",
-      isBillable: false,
-      isDefault: false,
-    },
-    ids: new Array(hours.length).fill(null),
-    values: hours,
-    isExternal: false,
-  }: null;
+  week: WeekDate[],
+  workScheme: WorkScheme[]
+): TimesheetProject | null => {
+  const hours = week.map((leaveDay) =>
+    findLeaveHoursByDate(leaveDay, workScheme)
+  );
+  const noHolidays: boolean = hours.every((value) => value === 0);
+  return !noHolidays
+    ? {
+        customer: {
+          id: 'leaveProjectId',
+          name: 'Days',
+          debtor: 'Frontmen',
+          isBillable: false,
+          isDefault: false,
+        },
+        ids: new Array(hours.length).fill(null),
+        values: hours,
+        isExternal: false,
+      }
+    : null;
 };
 
-const findLeaveHoursByDate = (leaveDay: WeekDate, workScheme: WorkScheme[]): number =>
-  workScheme.find((workSchemeDate: WorkScheme) => workSchemeDate.date === leaveDay.date)?.absenceHours ?? 0
+const findLeaveHoursByDate = (
+  leaveDay: WeekDate,
+  workScheme: WorkScheme[]
+): number =>
+  workScheme.find(
+    (workSchemeDate: WorkScheme) => workSchemeDate.date === leaveDay.date
+  )?.absenceHours ?? 0;
 
 const findRecordByDate = (
   weekDay: WeekDate,

@@ -2,6 +2,7 @@ import {startOfMonth, addMonths, startOfISOWeek} from 'date-fns';
 import {ActionTree} from 'vuex';
 
 import {checkEmployeeAvailability} from '../../helpers/employee';
+import {Collections} from '~/types/enums';
 import {filterApprovedRecords} from '~/helpers/record-status';
 import {getDayOnGMT} from '~/helpers/dates';
 
@@ -25,21 +26,40 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
         startDate,
         endDate,
       });
+    const standByRecordsPromise =
+      this.app.$timeRecordsService.getRecords<StandbyRecord>(
+        {
+          startDate,
+          endDate,
+        },
+        Collections.STANDBYREC
+      );
     const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
       startDate,
       endDate,
     });
 
-    const [customers, employees, timesheets, timeRecords, travelRecords] =
-      await Promise.all([
-        customersPromise,
-        employeesPromise,
-        timesheetsPromise,
-        timeRecordsPromise,
-        travelRecordsPromise,
-      ]);
+    const [
+      customers,
+      employees,
+      timesheets,
+      timeRecords,
+      travelRecords,
+      standByRecords,
+    ] = await Promise.all([
+      customersPromise,
+      employeesPromise,
+      timesheetsPromise,
+      timeRecordsPromise,
+      travelRecordsPromise,
+      standByRecordsPromise,
+    ]);
 
     const approvedTimeRecords = filterApprovedRecords(timeRecords, timesheets);
+    const approvedStandByRecords = filterApprovedRecords(
+      standByRecords,
+      timesheets
+    );
 
     const approvedTravelRecords = filterApprovedRecords(
       travelRecords,
@@ -56,6 +76,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       customers,
       timeRecords: approvedTimeRecords,
       travelRecords: approvedTravelRecords,
+      standByRecords: approvedStandByRecords,
     });
   },
 };

@@ -12,9 +12,10 @@ const mutations: MutationTree<ReportsStoreState> = {
       customers: Customer[];
       timeRecords: TimeRecord[];
       travelRecords: TravelRecord[];
+      standByRecords: StandbyRecord[];
     }
   ) {
-    const {employees, timeRecords, travelRecords} = payload;
+    const {employees, timeRecords, travelRecords, standByRecords} = payload;
     const nonBillableProjects = payload.customers.filter(
       (customer) => !customer.isBillable
     );
@@ -25,6 +26,10 @@ const mutations: MutationTree<ReportsStoreState> = {
       );
 
       const employeeTravelRecords = travelRecords.filter(
+        (x) => x.employeeId === employee.id
+      );
+
+      const employeeStandByRecords = standByRecords.filter(
         (x) => x.employeeId === employee.id
       );
 
@@ -41,6 +46,7 @@ const mutations: MutationTree<ReportsStoreState> = {
         travelRecords: employeeTravelRecords,
         billableRecords: employeeBillableRecords,
         nonBillableRecords: employeeNonBillableRecords,
+        standByRecords: employeeStandByRecords,
       };
     });
 
