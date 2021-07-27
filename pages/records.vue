@@ -62,6 +62,26 @@
           </template>
         </weekly-timesheet>
 
+        <template v-if="timesheet.leaveDays">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :title="'Leave days'"
+          >
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.leaveDays"
+                :readonly="true"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="timesheetFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
+
         <template
           v-if="employee && (employee.standBy || isAdminView) && timesheet.standByProject"
         >
@@ -86,86 +106,6 @@
           </weekly-timesheet>
         </template>
 
-          <template
-            v-if="employee && employee.standBy && timesheet.standBy"
-          >
-            <h3 class="mt-5 mb-3">
-              Stand-by hours
-            </h3>
-
-            <weekly-timesheet :selected-week="recordsState.selectedWeek">
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.standBy"
-                  :readonly="!isAdminView && isReadonly"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="timesheetFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                />
-              </template>
-            </weekly-timesheet>
-          </template>
-
-          <template
-            v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
-          >
-            <h3 class="mt-5 mb-3">
-              Travel allowance
-              <small v-if="!employee.travelAllowance" class="text-danger">- not active for employee</small>
-            </h3>
-
-            <weekly-timesheet :selected-week="recordsState.selectedWeek">
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.travelProject"
-                  :readonly="!isAdminView && isReadonly"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="kilometerFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                />
-              </template>
-            </weekly-timesheet>
-          </template>
-
-        <template v-if="timesheet.leaveDays" class="mb-3">
-          <h3 class="mt-5 mb-3">
-            Leave days
-          </h3>
-          <div class="pb-5">
-            <weekly-timesheet :selected-week="recordsState.selectedWeek">
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.leaveDays"
-                  :readonly="true"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="timesheetFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                />
-              </template>
-            </weekly-timesheet>
-          </div>
-        </template>
-          <b-form-textarea
-            v-if="!isReadonly || message"
-            id="message-textarea"
-            v-model="message"
-            class="mt-4"
-            placeholder="Add a comment here."
-            rows="1"
-            max-rows="4"
-            :plaintext="!isAdminView && isReadonly"
-            @change="hasUnsavedChanges = true"
-            @blur="handleBlur"
-          />
         <template
           v-if="employee && (employee.travelAllowance || isAdminView) && timesheet.travelProject"
         >
