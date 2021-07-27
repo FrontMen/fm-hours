@@ -80,9 +80,10 @@ export default defineComponent({
       });
     });
 
-    const dayWorkSchemeHoursTotal = computed(() => {
-      return props.workScheme.map((scheme) => scheme.workHours);
-    });
+    const dayWorkSchemeHoursTotal = computed(() =>
+      props.selectedWeek.map((_, index) =>
+        props.workScheme?.[index] ? props.workScheme[index].workHours : "-")
+    );
 
     return {
       weekTotal,
