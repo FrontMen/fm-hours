@@ -6,9 +6,10 @@ import {recordStatus} from '~/helpers/record-status';
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
-  kilometerFormatter, createLeaveProject,
-} from "~/helpers/timesheet";
-import { buildEmailData } from "~/helpers/email";
+  kilometerFormatter,
+  createLeaveProject,
+} from '~/helpers/timesheet';
+import {buildEmailData} from '~/helpers/email';
 
 export default (
   employeeId: string,
@@ -162,7 +163,10 @@ export default (
 
     const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,
-      leaveDays: createLeaveProject(recordsState.value.selectedWeek, recordsState.value.workScheme),
+      leaveDays: createLeaveProject(
+        recordsState.value.selectedWeek,
+        recordsState.value.workScheme
+      ),
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
@@ -221,7 +225,10 @@ export default (
 
       const newTimesheet = createWeeklyTimesheet({
         week: recordsState.value.selectedWeek,
-        leaveDays: createLeaveProject(recordsState.value.selectedWeek, recordsState.value.workScheme),
+        leaveDays: createLeaveProject(
+          recordsState.value.selectedWeek,
+          recordsState.value.workScheme
+        ),
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
         standByRecords: recordsState.value.standByRecords,

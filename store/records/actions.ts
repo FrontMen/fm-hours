@@ -59,15 +59,22 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       workSchemeResult
     );
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
-      employeeId: payload.employeeId,
-    });
+    const timeRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
+        employeeId: payload.employeeId,
+      });
 
-    const leaveDays: WeekDate[] = selectedWeek.filter((day: WeekDate) => day.isLeaveDay);
+    const leaveDays: WeekDate[] = selectedWeek.filter(
+      (day: WeekDate) => day.isLeaveDay
+    );
 
-    const standByRecords = await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({
-      employeeId: payload.employeeId,
-    }, "standby_records");
+    const standByRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>(
+        {
+          employeeId: payload.employeeId,
+        },
+        'standby_records'
+      );
 
     const travelRecords =
       await this.app.$travelRecordsService.getEmployeeRecords({
