@@ -2,15 +2,19 @@
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button
+        v-b-tooltip.hover
         class="navigation-buttons__button"
+        title="Or use keyboard left to go to previous month"
         @click="handlePreviousClick()"
       >
         <b-icon icon="arrow-left" />
       </b-button>
 
       <b-button
+        v-b-tooltip.hover
         class="navigation-buttons__button"
         :disabled="monthDifference === 0"
+        title="Or use keyboard left to go to next month"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
