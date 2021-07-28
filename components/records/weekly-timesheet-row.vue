@@ -16,6 +16,7 @@
     </b-col>
 
     <b-tooltip
+      v-if="removable"
       id="tooltip-confirmation"
       ref="tooltip"
       custom-class="tooltip-opacity"

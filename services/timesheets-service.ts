@@ -1,5 +1,6 @@
 import {DocumentData} from '@google-cloud/firestore';
 import {NuxtFireInstance} from '@nuxtjs/firebase';
+import {Collections} from '~/types/enums';
 
 import {recordStatus} from '~/helpers/record-status';
 
@@ -20,7 +21,7 @@ export default class TimesheetsService {
       | firebase.default.firestore.CollectionReference<DocumentData>
       | firebase.default.firestore.Query<
           DocumentData
-        > = this.fire.firestore.collection('timesheets');
+        > = this.fire.firestore.collection(Collections.TIMESHEETS);
 
     if (date && !startDate && !endDate) query = query.where('date', '==', date);
 
@@ -45,7 +46,7 @@ export default class TimesheetsService {
     endDate: number;
   }): Promise<Timesheet[]> {
     const snapshot = await this.fire.firestore
-      .collection('timesheets')
+      .collection(Collections.TIMESHEETS)
       .where('status', '==', recordStatus.APPROVED)
       .where('date', '>=', params.startDate)
       .where('date', '<=', params.endDate)
@@ -61,7 +62,7 @@ export default class TimesheetsService {
   async saveTimesheet(
     timesheet: Optional<Timesheet, 'id'>
   ): Promise<Timesheet> {
-    const ref = this.fire.firestore.collection('timesheets');
+    const ref = this.fire.firestore.collection(Collections.TIMESHEETS);
 
     const {id, ...newTimesheet} = timesheet;
 
@@ -77,7 +78,7 @@ export default class TimesheetsService {
   }
 
   async deleteTimesheet(timesheetId: string) {
-    const ref = this.fire.firestore.collection('timesheets');
+    const ref = this.fire.firestore.collection(Collections.TIMESHEETS);
     await ref.doc(timesheetId).delete();
   }
 }

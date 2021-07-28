@@ -3,6 +3,7 @@ interface ReportEmployee {
   billableRecords: TimeRecord[];
   nonBillableRecords: TimeRecord[];
   travelRecords: TravelRecord[];
+  standByRecords: StandbyRecord[];
 }
 
 interface MonthlyReportData {

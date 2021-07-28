@@ -10,10 +10,9 @@ export const recordStatus = {
   EMPTY: 'empty',
 };
 
-export function filterApprovedRecords<T extends TimeRecord | TravelRecord>(
-  records: T[],
-  timesheets: Timesheet[]
-) {
+export function filterApprovedRecords<
+  T extends TimeRecord | TravelRecord | StandbyRecord
+>(records: T[], timesheets: Timesheet[]) {
   return records.reduce((approveds, record) => {
     const recordTimesheet = timesheets.find(
       (timesheet) =>

@@ -12,6 +12,12 @@ interface WeekDate {
   isPartTime: Boolean;
 }
 
+interface StandbyRecord {
+  id: string | null;
+  date: number;
+  hours: number;
+  employeeId?: string;
+}
 interface TimeRecord {
   id: string | null;
   date: number;
@@ -36,7 +42,9 @@ interface TimesheetProject {
 
 interface WeeklyTimesheet {
   projects: TimesheetProject[];
+  leaveDays: TimesheetProject | null;
   travelProject: TimesheetProject | null;
+  standByProject: TimesheetProject | null;
 }
 
 interface RecordsStoreState {
@@ -44,9 +52,11 @@ interface RecordsStoreState {
   isSaving: boolean;
   lastSaved: Date | null;
   selectedWeek: WeekDate[];
+  leaveDays: WeekDate[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
+  standByRecords: StandbyRecord[];
 }
 
 interface RecordDayStatus {

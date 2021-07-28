@@ -1,3 +1,5 @@
+import {getTotalsByProp} from '~/helpers/helpers';
+
 export default () => {
   const createKilometersFields = () => {
     return [
@@ -6,17 +8,14 @@ export default () => {
     ];
   };
 
-  const getTotalKilometers = (records: TravelRecord[]): number =>
-    records.reduce(
-      (total, currentRecord) => (total += currentRecord.kilometers),
-      0
-    );
-
   const createKilometersItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
     report?.employees.forEach((employee) => {
-      const kilometers = getTotalKilometers(employee.travelRecords);
+      const kilometers = getTotalsByProp<TravelRecord>(
+        employee.travelRecords,
+        'kilometers'
+      );
 
       if (kilometers > 0) {
         items.push({

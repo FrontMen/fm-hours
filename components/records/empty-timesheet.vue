@@ -3,7 +3,13 @@
     <p>There are no hours registered for this week.</p>
 
     <template>
-      <b-button v-b-modal.modal-add-project>Add a project</b-button>
+      <b-button
+        v-b-modal.modal-add-project
+        v-b-tooltip.hover
+        title="Or use 'n' to add project"
+      >
+        Add a project
+      </b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 
       <b-button @click="handleCopyPreviousWeekClick">

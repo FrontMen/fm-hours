@@ -7,6 +7,7 @@ import {
   createWeeklyTimesheet,
   timesheetFormatter,
   kilometerFormatter,
+  createLeaveProject,
 } from '~/helpers/timesheet';
 import {buildEmailData} from '~/helpers/email';
 
@@ -42,7 +43,9 @@ export default (
 
   const timesheet = ref<WeeklyTimesheet>({
     projects: [],
+    leaveDays: null,
     travelProject: null,
+    standByProject: null,
   });
 
   const initialDate = startTimestamp ? new Date(startTimestamp) : new Date();
@@ -126,7 +129,9 @@ export default (
       projects: timesheet.value.projects.filter(
         (proj) => proj.customer.id !== project.customer.id
       ),
+      leaveDays: timesheet.value.leaveDays,
       travelProject: timesheet.value.travelProject,
+      standByProject: timesheet.value.standByProject,
     };
 
     // if deleting the last project, clear the timesheet
@@ -137,7 +142,7 @@ export default (
       message.value = '';
     }
 
-    if (!unsavedWeeklyTimesheet.value.projects.length) {
+    if (!unsavedWeeklyTimesheet.value?.projects.length) {
       hasUnsavedChanges.value = false;
     }
   };
@@ -158,9 +163,14 @@ export default (
 
     const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,
+      leaveDays: createLeaveProject(
+        recordsState.value.selectedWeek,
+        recordsState.value.workScheme
+      ),
       timeRecords: recordsState.value.timeRecords,
       travelRecords: recordsState.value.travelRecords,
       workScheme: recordsState.value.workScheme,
+      standByRecords: recordsState.value.standByRecords,
     });
 
     const newTimesheet = {
@@ -180,8 +190,13 @@ export default (
           ...project,
           ids: new Array(7).fill(null),
         })),
+      leaveDays: previousWeekTimesheet.leaveDays,
       travelProject: {
         ...previousWeekTimesheet.travelProject!,
+        ids: new Array(7).fill(null),
+      },
+      standByProject: {
+        ...previousWeekTimesheet.standByProject!,
         ids: new Array(7).fill(null),
       },
     };
@@ -196,6 +211,7 @@ export default (
       recordsState.value.selectedWeek,
       recordsState.value.timeRecords,
       recordsState.value.travelRecords,
+      recordsState.value.standByRecords,
     ],
     () => {
       if (!timesheet.value) {
@@ -209,8 +225,13 @@ export default (
 
       const newTimesheet = createWeeklyTimesheet({
         week: recordsState.value.selectedWeek,
+        leaveDays: createLeaveProject(
+          recordsState.value.selectedWeek,
+          recordsState.value.workScheme
+        ),
         timeRecords: recordsState.value.timeRecords,
         travelRecords: recordsState.value.travelRecords,
+        standByRecords: recordsState.value.standByRecords,
         workScheme: recordsState.value.workScheme,
       });
 

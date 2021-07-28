@@ -19,7 +19,11 @@
         {{ weekLabel }}
       </h2>
       <b-button-group class="navigation-buttons__date-group">
-        <b-button @click="handlePreviousClick()">
+        <b-button
+          v-b-tooltip.hover
+          title="Or use keyboard left to go to previous week"
+          @click="handlePreviousClick()"
+        >
           <b-icon icon="arrow-left" />
         </b-button>
         <b-button
@@ -29,7 +33,12 @@
           <b-icon icon="calendar2-date" />
         </b-button>
 
-        <b-button :disabled="weekDifference > 3" @click="handleNextClick()">
+        <b-button
+          v-b-tooltip.hover
+          :disabled="weekDifference > 3"
+          title="Or use keyboard right to go to next week"
+          @click="handleNextClick()"
+        >
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
@@ -40,6 +49,7 @@
 <script lang="ts">
 import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
+import hotkeys from 'hotkeys-js';
 
 import {getWeekRange, getDateLabel, getDayOnGMT} from "~/helpers/dates";
 
@@ -54,6 +64,10 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+  },
+  beforeDestroy() {
+    hotkeys.unbind('right');
+    hotkeys.unbind('left');
   },
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
@@ -77,6 +91,11 @@ export default defineComponent({
 
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
+
+    hotkeys('right', () => {
+      if (weekDifference.value <= 3) handleNextClick();
+    });
+    hotkeys('left', handlePreviousClick);
 
     return {
       handlePreviousClick,

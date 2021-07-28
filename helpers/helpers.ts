@@ -40,3 +40,13 @@ export const sortByProp = <T>(
   if (a[prop] < b[prop]) return order === 'asc' ? -1 : 1;
   return 0;
 };
+
+export const getTotalsByProp = <Type>(
+  arrToReduce: Type[],
+  prop: keyof Type
+): number => {
+  return arrToReduce.reduce((total, currentRecord) => {
+    const currentValue = currentRecord[prop] || 0;
+    return (total += +currentValue);
+  }, 0);
+};

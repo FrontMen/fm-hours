@@ -1,3 +1,5 @@
+import {getTotalsByProp} from '~/helpers/helpers';
+
 export default () => {
   const createTotalsFields = (reportData: MonthlyReportData | null) => {
     const leftFields = [
@@ -19,12 +21,6 @@ export default () => {
     return [...leftFields, ...(middleFields || []), ...rightFields];
   };
 
-  const getTotalHours = (records: TimeRecord[]): number =>
-    records.reduce(
-      (total, currentRecord) => (total += +currentRecord.hours),
-      0
-    );
-
   const getNonBillableColumns = (
     employee: ReportEmployee,
     nonBillableProjects: Customer[]
@@ -36,7 +32,11 @@ export default () => {
         (record) => record.customer.id === currentProject.id
       );
 
-      total[currentProject.name] = getTotalHours(records);
+      total[currentProject.name] = getTotalsByProp<TimeRecord>(
+        records,
+        'hours'
+      );
+
       return total;
     }, {});
   };
@@ -45,9 +45,15 @@ export default () => {
     employee: ReportEmployee,
     report: MonthlyReportData
   ) => {
-    const billableHours = getTotalHours(employee.billableRecords);
+    const billableHours = getTotalsByProp<TimeRecord>(
+      employee.billableRecords,
+      'hours'
+    );
 
-    const nonBillableHours = getTotalHours(employee.nonBillableRecords);
+    const nonBillableHours = getTotalsByProp<TimeRecord>(
+      employee.nonBillableRecords,
+      'hours'
+    );
     const nonBillableColumns = getNonBillableColumns(
       employee,
       report.nonBillableProjects
