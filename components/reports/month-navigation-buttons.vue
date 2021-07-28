@@ -13,8 +13,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        :disabled="monthDifference === 0"
-        title="Or use keyboard left to go to next month"
+        title="Or use keyboard right to go to next month"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
@@ -62,9 +61,7 @@ export default defineComponent({
       return differenceInCalendarMonths(props.selectedDate, today);
     });
 
-    hotkeys('right', () => {
-      if (monthDifference.value < 0) handleNextClick();
-    });
+    hotkeys('right', handleNextClick);
     hotkeys('left', handlePreviousClick);
 
     return {

@@ -35,7 +35,6 @@
 
         <b-button
           v-b-tooltip.hover
-          :disabled="weekDifference > 3"
           title="Or use keyboard right to go to next week"
           @click="handleNextClick()"
         >
@@ -92,9 +91,7 @@ export default defineComponent({
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
 
-    hotkeys('right', () => {
-      if (weekDifference.value <= 3) handleNextClick();
-    });
+    hotkeys('right', handleNextClick);
     hotkeys('left', handlePreviousClick);
 
     return {
