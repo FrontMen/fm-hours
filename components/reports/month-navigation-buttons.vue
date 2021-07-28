@@ -61,9 +61,7 @@ export default defineComponent({
       return differenceInCalendarMonths(props.selectedDate, today);
     });
 
-    hotkeys('right', () => {
-      handleNextClick();
-    });
+    hotkeys('right', handleNextClick);
     hotkeys('left', handlePreviousClick);
 
     return {

@@ -91,9 +91,7 @@ export default defineComponent({
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
 
-    hotkeys('right', () => {
-      handleNextClick();
-    });
+    hotkeys('right', handleNextClick);
     hotkeys('left', handlePreviousClick);
 
     return {
