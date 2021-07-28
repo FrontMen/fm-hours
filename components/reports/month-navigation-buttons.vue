@@ -11,7 +11,7 @@
       </b-button>
 
       <b-button
-        v-b-tooltip
+        v-b-tooltip.hover
         class="navigation-buttons__button"
         title="To current month"
         @click="handleCurrentClick"
