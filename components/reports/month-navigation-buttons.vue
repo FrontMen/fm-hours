@@ -13,7 +13,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="Or use keyboard left to go to next month"
+        title="Or use keyboard right to go to next month"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
