@@ -109,7 +109,6 @@
               </template>
             </weekly-timesheet>
           </template>
-
         </template>
 
         <template v-if="timesheet.leaveDays">
