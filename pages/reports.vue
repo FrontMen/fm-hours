@@ -9,7 +9,7 @@
     />
 
     <b-tabs pills card>
-      <b-tab title="Totals" active>
+      <b-tab title="Totals" active lazy>
         <reports-table
           :busy="isLoading || !totalsItems.length"
           :items="totalsItems"
@@ -18,7 +18,7 @@
         />
       </b-tab>
 
-      <b-tab title="Projects">
+      <b-tab title="Projects" lazy>
         <reports-table
           :busy="isLoading || !projectsItems.length"
           :items="projectsItems"
@@ -27,7 +27,7 @@
         />
       </b-tab>
 
-      <b-tab title="Kilometers">
+      <b-tab title="Kilometers" lazy>
         <reports-table
           :busy="isLoading || !kilometersItems.length"
           :items="kilometersItems"
@@ -36,7 +36,7 @@
         />
       </b-tab>
 
-      <b-tab title="Stand-by">
+      <b-tab title="Stand-by" lazy>
         <reports-table
           :busy="isLoading || !standByItems.length"
           :items="standByItems"

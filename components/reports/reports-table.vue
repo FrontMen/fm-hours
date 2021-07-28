@@ -27,7 +27,7 @@ export default defineComponent({
   },
   setup(props) {
     const downloadCsv = (csv: any, filename: string) => {
-      const csvFile = new Blob([csv], {type: "text/csv"});
+      const csvFile = new Blob(["\uFEFF"+csv], {type: "text/csv; charset=utf-18"});
       const downloadLink = document.createElement("a");
 
       downloadLink.download = filename;
