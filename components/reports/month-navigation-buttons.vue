@@ -13,6 +13,15 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
+        title="To current month"
+        @click="handleCurrentClick"
+      >
+        <b-icon icon="calendar2-date" />
+      </b-button>
+
+      <b-button
+        v-b-tooltip.hover
+        class="navigation-buttons__button"
         title="Or use keyboard right to go to next month"
         @click="handleNextClick()"
       >
@@ -22,10 +31,6 @@
       <h2 class="navigation-buttons__week-label">
         {{ monthLabel }}
       </h2>
-      <b-button v-if="monthDifference !== 0" @click="handleCurrentClick">
-        <b-icon icon="calendar2-date" />
-        <span class="ml-2 d-none d-sm-inline">To current month</span>
-      </b-button>
     </div>
   </div>
 </template>
@@ -50,10 +55,12 @@ export default defineComponent({
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
-    const handleCurrentClick = () => emit("current");
+    const handleCurrentClick = () => {
+      if (monthDifference.value !== 0) emit("current");
+    }
 
     const monthLabel = computed(() => {
-      return format(props.selectedDate, "MMMM");
+      return format(props.selectedDate, "MMMM yyyy");
     });
 
     const monthDifference = computed(() => {
