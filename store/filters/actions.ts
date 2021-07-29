@@ -36,6 +36,9 @@ const actions: ActionTree<FiltersStoreState, RootStoreState> = {
   updateEmployeeSearchTerm({commit}, payload: string) {
     commit('setEmployeeSearchTerm', payload);
   },
+  updateEmployeeShowInactive({commit}, payload: boolean) {
+    commit('setEmployeeShowInactive', payload);
+  },
 };
 
 export default actions;

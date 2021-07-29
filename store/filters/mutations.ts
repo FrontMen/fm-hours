@@ -36,6 +36,9 @@ const mutations: MutationTree<FiltersStoreState> = {
   setEmployeeSearchTerm(state, payload: string) {
     state.employeeFilters.searchTerm = payload;
   },
+  setEmployeeShowInactive(state, payload: boolean) {
+    state.employeeFilters.showInactive = payload;
+  },
 };
 
 export default mutations;

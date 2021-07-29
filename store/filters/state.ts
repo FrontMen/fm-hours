@@ -14,5 +14,6 @@ export default (): FiltersStoreState => ({
     searchTerm: '',
     filterBy: 'all',
     filterByCustomer: [],
+    showInactive: false,
   },
 });

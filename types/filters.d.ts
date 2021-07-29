@@ -14,5 +14,6 @@ type FiltersStoreState = {
     searchTerm: string;
     filterBy: string;
     filterByCustomer: string[];
+    showInactive: boolean;
   };
 };

@@ -2,7 +2,7 @@
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row :no-gutters="true">
-        <b-col cols="6" lg="3" class="pl-0">
+        <b-col cols="12" sd="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
             Search by employee name:
           </label>
@@ -13,7 +13,7 @@
             placeholder='Ex.: "John"'
           />
         </b-col>
-        <b-col cols="6" lg="4">
+        <b-col cols="12" sd="6" lg="4" class="mb-3 pr-2">
           <label class="employee-status__label" for="customer-select">
             Filter by customer:
           </label>
@@ -36,20 +36,15 @@
             </template>
           </multiselect>
         </b-col>
-        <b-col cols="6" lg="3">
-          <label class="employee-status__label" for="status-select">
-            Filter by status:
-          </label>
-          <b-form-select
-            id="status-select"
-            v-model="statusSelected"
-            :options="statusOptions"
-          />
+        <b-col cols="6" lg="3" class="mt-auto pb-2 mb-3 pr-2">
+          <b-form-checkbox v-model="showInactive" switch class="mr-3 ml-auto">
+            Show inactive
+          </b-form-checkbox>
         </b-col>
         <b-col
           cols="6"
           lg="2"
-          class="d-flex align-items-end justify-content-end"
+          class="d-flex align-items-end justify-content-end mb-3"
         >
           <b-button v-b-modal.modal-center>+ New employee</b-button>
         </b-col>
@@ -81,6 +76,12 @@
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
           <small v-if="employee.team">- {{ employee.team }}</small>
+          <b-badge
+            v-if="!checkEmployeeAvailability(employee, new Date())"
+            variant="danger"
+          >
+            Inactive
+          </b-badge>
         </div>
 
         <div class="ml-auto d-flex">
@@ -170,14 +171,9 @@ export default defineComponent({
       store.getters["filters/getEmployeeFilterByCustomer"]
     );
 
-    const statusSelected = ref<string>(
-      store.getters["filters/getEmployeeFilterBy"]
+    const showInactive = ref<boolean>(
+      store.getters["filters/getEmployeeShowInactive"]
     );
-    const statusOptions = [
-      {value: "all", text: "All"},
-      {value: "active", text: "Active"},
-      {value: "incative", text: "Inactive"},
-    ];
 
     const searchInput = ref<string>(
       store.getters["filters/getEmployeeSearchTerm"]
@@ -190,11 +186,6 @@ export default defineComponent({
         store.dispatch("filters/updateEmployeeSearchTerm", searchInput.value);
       }
       if (
-        store.getters["filters/getEmployeeFilterBy"] !== statusSelected.value
-      ) {
-        store.dispatch("filters/updateEmployeeFilterBy", statusSelected.value);
-      }
-      if (
         store.getters["filters/getEmployeeFilterByCustomer"] !==
         selectedCustomers.value
       ) {
@@ -203,14 +194,18 @@ export default defineComponent({
           selectedCustomers.value
         );
       }
+      if (
+        store.getters["filters/getEmployeeShowInactive"] !== showInactive.value
+      ) {
+        store.dispatch("filters/updateEmployeeShowInactive", showInactive.value);
+      }
     };
 
-    const employeeStatusChecker = (status: string, employee: Employee) => {
-      if (status === "all") return true;
+    const employeeStatusChecker = (status: boolean, employee: Employee) => {
+      if (status) return true;
 
-      const isSelectStatusActive = statusSelected.value === "active";
       const isActive = checkEmployeeAvailability(employee, new Date());
-      return isActive === isSelectStatusActive;
+      return isActive;
     };
 
     const employeeNameChecker = (employeeName: string, query: string) => {
@@ -223,7 +218,7 @@ export default defineComponent({
       employeeProjectsIds: string[],
       selectedProjects: Customer[]
     ) => {
-      if (!selectedProjects.length) return true;
+      if (!selectedProjects?.length) return true;
       if (!employeeProjectsIds?.length) return false;
 
       return employeeProjectsIds.every((id) =>
@@ -232,19 +227,18 @@ export default defineComponent({
     };
 
     const filteredEmployees = computed(() => {
+      handleFilterUpdates();
       // Avoid traverse array when no filter is set
       if (
-        statusSelected.value === "all" &&
+        showInactive.value &&
         !searchInput.value &&
-        !selectedCustomers.value.length
+        !selectedCustomers.value?.length
       )
         return [...employees.value];
 
-      handleFilterUpdates();
-
       return employees.value.filter((employee) => {
         return (
-          employeeStatusChecker(statusSelected.value, employee) &&
+          employeeStatusChecker(showInactive.value, employee) &&
           employeeNameChecker(employee.name, searchInput.value) &&
           employeeProjectsChecker(employee.projects, selectedCustomers.value)
         );
@@ -281,12 +275,12 @@ export default defineComponent({
       newEmployee,
       canAddEmployee,
       addEmployee,
-      statusSelected,
-      statusOptions,
       filteredEmployees,
       searchInput,
       customerOptions,
       selectedCustomers,
+      showInactive,
+      checkEmployeeAvailability,
     };
   },
 });
