@@ -10,6 +10,7 @@ import {
   createLeaveProject,
 } from '~/helpers/timesheet';
 import {buildEmailData} from '~/helpers/email';
+import {debounce} from '~/helpers/helpers';
 
 export default (
   employeeId: string,
@@ -94,15 +95,20 @@ export default (
   });
 
   const goToWeek = (to: 'current' | 'previous' | 'next') => {
+    cancelAutoSave();
     if (hasUnsavedChanges.value) {
       const confirmation = confirm(
         'You have unsaved changes, are you sure you want to switch to another week?'
       );
 
-      if (!confirmation) return;
+      if (!confirmation) {
+        debouncedAutoSave();
+        return;
+      }
     }
 
     unsavedWeeklyTimesheet.value = undefined;
+    hasUnsavedChanges.value = false;
     store.dispatch('records/goToWeek', {bridgeUid, to});
   };
 
@@ -328,6 +334,20 @@ export default (
     hasUnsavedChanges.value = false;
   };
 
+  const autoSave = () => {
+    if (hasUnsavedChanges.value) {
+      saveTimesheet(recordStatus.NEW as TimesheetStatus);
+    }
+  };
+
+  const debouncedAutoSave = debounce((cancel?: boolean) => {
+    if (cancel) return;
+
+    autoSave();
+  }, 5000);
+
+  const cancelAutoSave = () => debouncedAutoSave(true);
+
   return {
     goToWeek,
     copyPreviousWeek,
@@ -343,5 +363,6 @@ export default (
     timesheetDenyMessage,
     message,
     denyTimesheet,
+    autoSave: debouncedAutoSave,
   };
 };
