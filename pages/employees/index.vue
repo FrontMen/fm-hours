@@ -191,7 +191,7 @@ export default defineComponent({
         text: 'Team',
       }
     ];
-    const filterBy = ref<Customer[]>(
+    const filterBy = ref<keyof Employee>(
       store.getters["filters/getEmployeeFilterBy"]
     );
 
