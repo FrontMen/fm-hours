@@ -38,7 +38,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async getRecords(
-    {commit, rootState},
+    {commit},
     payload: {employeeId: string; startDate: Date; bridgeUid?: string}
   ) {
     commit('setLoading', {isLoading: true});
@@ -53,11 +53,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const selectedWeek = checkNonWorkingDays(
-      workWeek,
-      rootState.holidays.holidays,
-      workSchemeResult
-    );
+    const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
     const timeRecords =
       await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
@@ -93,7 +89,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async goToWeek(
-    {commit, state, rootState},
+    {commit, state},
     payload: {to: 'current' | 'next' | 'previous'; bridgeUid?: string}
   ) {
     const currentStartDate = state.selectedWeek[0].date;
@@ -116,11 +112,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       });
     }
 
-    const selectedWeek = checkNonWorkingDays(
-      workWeek,
-      rootState.holidays.holidays,
-      workSchemeResult
-    );
+    const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
     commit('setSelectedWeek', {
       selectedWeek,

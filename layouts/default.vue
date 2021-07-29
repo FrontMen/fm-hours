@@ -22,7 +22,6 @@ export default defineComponent({
   components: {AdminSidebar, TopBar},
   setup() {
     const store = useStore<RootStoreState>();
-    store.dispatch("holidays/getHolidays");
 
     const employee = computed(() => store.state.employee.employee);
     const isAdmin = computed(() => store.state.employee.isAdmin);

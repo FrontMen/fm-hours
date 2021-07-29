@@ -62,19 +62,16 @@ export function buildWeek(startDate: string | number | Date): WeekDate[] {
 
 export function checkNonWorkingDays(
   days: WeekDate[],
-  customHolidays: string[],
   workScheme?: WorkScheme[]
 ): WeekDate[] {
   return days.map((day) => {
-    const isCustomHoliday = customHolidays.includes(day.date);
-
     const workSchemeDay = workScheme?.find((ws) => ws.date === day.date);
     const isPublicHoliday = !!workSchemeDay?.holiday;
     const isLeaveDay = !!workSchemeDay?.absenceHours;
 
     return {
       ...day,
-      isHoliday: isCustomHoliday || isPublicHoliday,
+      isHoliday: isPublicHoliday,
       isLeaveDay,
     };
   });
