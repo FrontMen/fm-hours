@@ -27,7 +27,7 @@ const mutations: MutationTree<FiltersStoreState> = {
   },
 
   // Timesheets
-  setEmployeeFilterBy(state, payload: string) {
+  setEmployeeFilterBy(state, payload: keyof Employee) {
     state.employeeFilters.filterBy = payload;
   },
   setEmployeeFilterByCustomer(state, payload: string[]) {

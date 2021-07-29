@@ -12,7 +12,7 @@ type FiltersStoreState = {
   };
   employeeFilters: {
     searchTerm: string;
-    filterBy: string;
+    filterBy: keyof Employee;
     filterByCustomer: string[];
     showInactive: boolean;
   };

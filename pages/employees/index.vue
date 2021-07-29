@@ -2,7 +2,17 @@
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row :no-gutters="true">
-        <b-col cols="12" sd="6" lg="3" class="pl-0 mb-3 pr-2">
+        <b-col cols="12" sm="6" lg="2" class="pl-0 mb-3 pr-2">
+          <label class="employee-status__label" for="status-select">
+            Filter by:
+          </label>
+          <b-form-select
+            id="status-select"
+            v-model="filterBy"
+            :options="filterByOptions"
+          />
+        </b-col>
+        <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
             Search by employee name:
           </label>
@@ -13,7 +23,7 @@
             placeholder='Ex.: "John"'
           />
         </b-col>
-        <b-col cols="12" sd="6" lg="4" class="mb-3 pr-2">
+        <b-col cols="12" sm="6" lg="3" class="mb-3 pr-2">
           <label class="employee-status__label" for="customer-select">
             Filter by customer:
           </label>
@@ -27,7 +37,7 @@
             :close-on-select="false"
             :multiple="true"
             :taggable="false"
-            placeholder="Click or search for a customer here"
+            placeholder="Customer name"
           >
             <template slot="selection" slot-scope="{values}">
               <span v-if="values.length">
@@ -36,7 +46,7 @@
             </template>
           </multiselect>
         </b-col>
-        <b-col cols="6" lg="3" class="mt-auto pb-2 mb-3 pr-2">
+        <b-col cols="6" lg="2" class="mt-auto pb-2 mb-3 pr-2">
           <b-form-checkbox v-model="showInactive" switch class="mr-3 ml-auto">
             Show inactive
           </b-form-checkbox>
@@ -171,6 +181,20 @@ export default defineComponent({
       store.getters["filters/getEmployeeFilterByCustomer"]
     );
 
+    const filterByOptions: { value: keyof Employee; text: string; }[] = [
+      {
+        value: 'name',
+        text: 'Name',
+      },
+      {
+        value: 'team',
+        text: 'Team',
+      }
+    ];
+    const filterBy = ref<Customer[]>(
+      store.getters["filters/getEmployeeFilterBy"]
+    );
+
     const showInactive = ref<boolean>(
       store.getters["filters/getEmployeeShowInactive"]
     );
@@ -184,6 +208,11 @@ export default defineComponent({
         store.getters["filters/getEmployeeSearchTerm"] !== searchInput.value
       ) {
         store.dispatch("filters/updateEmployeeSearchTerm", searchInput.value);
+      }
+      if (
+        store.getters["filters/getEmployeeFilterBy"] !== filterBy.value
+      ) {
+        store.dispatch("filters/updateEmployeeFilterBy", filterBy.value);
       }
       if (
         store.getters["filters/getEmployeeFilterByCustomer"] !==
@@ -208,10 +237,11 @@ export default defineComponent({
       return isActive;
     };
 
-    const employeeNameChecker = (employeeName: string, query: string) => {
-      if (!query || !employeeName) return true;
+    const employeeByProp = (employee: Employee, query: string, filterByProp: keyof Employee) => {
+      if (!query || !employee) return true;
+      if (!employee[filterByProp]) return;
 
-      return queryOnString(employeeName, query);
+      return queryOnString(employee[filterByProp] as string, query);
     };
 
     const employeeProjectsChecker = (
@@ -239,7 +269,7 @@ export default defineComponent({
       return employees.value.filter((employee) => {
         return (
           employeeStatusChecker(showInactive.value, employee) &&
-          employeeNameChecker(employee.name, searchInput.value) &&
+          employeeByProp(employee, searchInput.value, filterBy.value) &&
           employeeProjectsChecker(employee.projects, selectedCustomers.value)
         );
       });
@@ -276,6 +306,8 @@ export default defineComponent({
       canAddEmployee,
       addEmployee,
       filteredEmployees,
+      filterBy,
+      filterByOptions,
       searchInput,
       customerOptions,
       selectedCustomers,
