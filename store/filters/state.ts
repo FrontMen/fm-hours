@@ -12,7 +12,8 @@ export default (): FiltersStoreState => ({
   },
   employeeFilters: {
     searchTerm: '',
-    filterBy: 'all',
+    filterBy: 'name',
     filterByCustomer: [],
+    showInactive: false,
   },
 });

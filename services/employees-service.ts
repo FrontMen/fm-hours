@@ -120,7 +120,7 @@ export default class EmployeesService {
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
 
-    return (result as unknown) as string[];
+    return result as unknown as string[];
   }
 
   public async getTeams(): Promise<string[]> {
@@ -128,7 +128,7 @@ export default class EmployeesService {
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().teams || [];
 
-    return (result as unknown) as string[];
+    return result as unknown as string[];
   }
 
   public async updateAdminEmails(adminList: string[]): Promise<string[]> {

@@ -32,12 +32,12 @@ const getters: GetterTree<FiltersStoreState, RootStoreState> = {
   },
 
   // Employee
-  getEmployeeFilterBy(state) {
+  getEmployeeFilterBy(state): keyof Employee {
     return state.employeeFilters.filterBy;
   },
 
-  getEmployeeFilterByCustomer(state) {
-    return state.employeeFilters.filterByCustomer;
+  getEmployeeShowInactive(state): boolean {
+    return state.employeeFilters.showInactive;
   },
 
   getEmployeeSearchTerm(state) {

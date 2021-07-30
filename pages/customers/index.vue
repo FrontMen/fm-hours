@@ -134,7 +134,7 @@ export default defineComponent({
     const searchTerm = ref<string>(
       store.getters["filters/getCustomerSearchTerm"]
     );
-    const searchCriteria: {value: "name" | "debtor"; text: string}[] = [
+    const searchCriteria: {value: keyof Customer; text: string}[] = [
       {value: "name", text: "Customer name"},
       {value: "debtor", text: "Debtor name"},
     ];

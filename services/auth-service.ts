@@ -34,10 +34,10 @@ export default class AuthService {
   }
 
   getPPidFromJWTToken(responseToken: string) {
-    const ppid = this.decodeAuthResponseToken(responseToken).firebase
-      .sign_in_attributes[
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier'
-    ];
+    const ppid =
+      this.decodeAuthResponseToken(responseToken).firebase.sign_in_attributes[
+        'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/privatepersonalidentifier'
+      ];
 
     localStorage.setItem('@fm-hours/ppid', ppid);
     return ppid;
