@@ -107,9 +107,7 @@ export default defineComponent({
 
     const customerId = router.currentRoute.params.customer_id;
     const customers = computed(() => store.state.customers.customers);
-    const customer: {value: Customer | undefined} = computed(() =>
-      customers.value.find((x) => x.id === customerId)
-    );
+    const customer: {value: Customer | undefined} = computed(() => customers.value.find((x) => x.id === customerId));
 
     onMounted(() => {
       if (customers.value.length === 0) {
@@ -170,6 +168,17 @@ export default defineComponent({
 
     const handleSubmit = () => {
       if (!hasUnsavedChanges) return;
+
+      if (customer.value?.isBillable !== form.value?.isBillable) {
+        const confirmation = confirm(
+          `Are you sure that you want to make ${
+            customer.value?.name
+          } ${customer.value?.isBillable ? 'not billabled' : 'billabled'}? Past timesheet will not reflect this change.`
+        );
+
+        if (!confirmation) return;
+      }
+
       store.dispatch("customers/updateCustomer", {
         ...form.value,
         id: customerId,
