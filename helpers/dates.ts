@@ -56,6 +56,7 @@ export function buildWeek(startDate: string | number | Date): WeekDate[] {
       isToday: isToday(newDate),
       isHoliday: false,
       isLeaveDay: false,
+      isPartTime: false,
     };
   });
 }
@@ -72,10 +73,14 @@ export function checkNonWorkingDays(
     const isPublicHoliday = !!workSchemeDay?.holiday;
     const isLeaveDay = !!workSchemeDay?.absenceHours;
 
+    const isPartTime =
+      !isPublicHoliday && !!workSchemeDay && workSchemeDay.theoreticalHours < 8;
+
     return {
       ...day,
       isHoliday: isCustomHoliday || isPublicHoliday,
       isLeaveDay,
+      isPartTime,
     };
   });
 }

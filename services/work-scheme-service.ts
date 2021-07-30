@@ -34,7 +34,7 @@ export default class WorkSchemeService {
         theoreticalHours: ws.theoretical_hours,
         absenceHours: ws.absence_hours,
         workHours: ws.work_hours,
-        holiday: ws.holiday,
+        holiday: !!ws.holiday,
       }));
     } catch (error) {
       // eslint-disable-next-line no-console

@@ -19,12 +19,10 @@
             :key="date.weekDay"
             cols="1"
             class="weekly-timesheet__date-column"
-            :class="{
-              today: date.isToday,
-              holiday: date.isHoliday,
-              leave: date.isLeaveDay,
-            }"
           >
+            <span v-if="shouldShowCaption(date)" class="caption">
+              {{ getCaptionText(date) }}
+            </span>
             <strong class="d-block">
               <span class="d-md-none">{{ date.weekDayShort }}</span>
               <span class="d-none d-md-block">{{ date.weekDay }}</span>
@@ -46,7 +44,9 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType} from "@nuxtjs/composition-api";
+import { defineComponent, PropType } from '@nuxtjs/composition-api'
+
+import { recordDayStatus, recordDayStatusProps } from '~/helpers/record-status'
 
 export default defineComponent({
   props: {
@@ -63,7 +63,40 @@ export default defineComponent({
       default: () => [],
     },
   },
-});
+  setup() {
+    const captionSizes = ['LONG', 'MID', 'SHORT']
+
+    const shouldShowCaption = (day: WeekDate) =>
+      recordDayStatusProps.some(prop => day[prop])
+
+    const getCaptionText = (day: WeekDate) => {
+      const dayStatusScore =
+        recordDayStatusProps.reduce((acc, index) => acc + +day[index], 0) - 1
+
+      const captionSizeIndex = dayStatusScore > 2 ? 2 : dayStatusScore
+      const captionSize = captionSizes[
+        captionSizeIndex
+      ] as keyof typeof recordDayStatus[0]
+
+      const captionText = recordDayStatusProps.reduce((acc, prop) => {
+        if (day[prop]) {
+          acc +=
+            recordDayStatus.find(status => status.prop === prop)![captionSize] +
+            '/'
+        }
+
+        return acc
+      }, '')
+
+      return captionText.replace(/\/$/g, '')
+    }
+
+    return {
+      shouldShowCaption,
+      getCaptionText,
+    }
+  },
+})
 </script>
 
 <style lang="scss" scoped>
@@ -96,9 +129,7 @@ export default defineComponent({
       max-width: 100%;
     }
 
-    &.today::after,
-    &.holiday::after,
-    &.leave::after {
+    .caption {
       position: absolute;
       top: -17px;
       right: 0;
@@ -116,26 +147,6 @@ export default defineComponent({
         left: 0;
         transform: none;
       }
-    }
-
-    &.today::after {
-      content: "TODAY";
-    }
-
-    &.holiday::after {
-      content: "HOLIDAY";
-    }
-
-    &.leave::after {
-      content: "LEAVE";
-    }
-
-    &.today.leave::after {
-      content: "TDY/LVD";
-    }
-
-    &.today.holiday::after {
-      content: "TDY/HOLI";
     }
   }
 }

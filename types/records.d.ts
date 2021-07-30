@@ -9,6 +9,7 @@ interface WeekDate {
   isToday: boolean;
   isHoliday: boolean;
   isLeaveDay: boolean;
+  isPartTime: Boolean;
 }
 
 interface StandbyRecord {
@@ -56,4 +57,11 @@ interface RecordsStoreState {
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
   standByRecords: StandbyRecord[];
+}
+
+interface RecordDayStatus {
+  prop: string;
+  SHORT: string;
+  MID: string;
+  LONG: string;
 }

@@ -27,3 +27,34 @@ export function filterApprovedRecords<
     return approveds;
   }, [] as T[]);
 }
+
+export const recordDayStatus: RecordDayStatus[] = [
+  {
+    prop: 'isToday',
+    SHORT: 'T',
+    MID: 'TDY',
+    LONG: 'TODAY',
+  },
+  {
+    prop: 'isHoliday',
+    SHORT: 'H',
+    MID: 'HOLI',
+    LONG: 'HOLIDAY',
+  },
+  {
+    prop: 'isLeaveDay',
+    SHORT: 'L',
+    MID: 'LVD',
+    LONG: 'LEAVE',
+  },
+  {
+    prop: 'isPartTime',
+    SHORT: 'P',
+    MID: 'PTD',
+    LONG: 'PART-TIME',
+  },
+];
+
+export const recordDayStatusProps = recordDayStatus.map(
+  (status) => status.prop
+) as Array<keyof WeekDate>;
