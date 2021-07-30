@@ -24,13 +24,12 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     commit('setLoading', {isLoading: true});
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<
-      TimeRecord
-    >({
-      employeeId: payload.employeeId,
-      startDate: payload.startDate.getTime().toString(),
-      endDate: payload.endDate.getTime().toString(),
-    });
+    const timeRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
+        employeeId: payload.employeeId,
+        startDate: payload.startDate.getTime().toString(),
+        endDate: payload.endDate.getTime().toString(),
+      });
 
     commit('setLoading', {isLoading: false});
     commit('setRecords', {
@@ -56,30 +55,27 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<
-      TimeRecord
-    >({
-      employeeId: payload.employeeId,
-    });
+    const timeRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
+        employeeId: payload.employeeId,
+      });
 
     const leaveDays: WeekDate[] = selectedWeek.filter(
       (day: WeekDate) => day.isLeaveDay
     );
 
-    const standByRecords = await this.app.$timeRecordsService.getEmployeeRecords<
-      StandbyRecord
-    >(
-      {
-        employeeId: payload.employeeId,
-      },
-      'standby_records'
-    );
+    const standByRecords =
+      await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>(
+        {
+          employeeId: payload.employeeId,
+        },
+        'standby_records'
+      );
 
-    const travelRecords = await this.app.$travelRecordsService.getEmployeeRecords(
-      {
+    const travelRecords =
+      await this.app.$travelRecordsService.getEmployeeRecords({
         employeeId: payload.employeeId,
-      }
-    );
+      });
 
     commit('setLoading', {isLoading: false});
     commit('setRecords', {
@@ -156,29 +152,26 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       payload.week
     );
 
-    const timeRecords = await this.app.$timeRecordsService.saveEmployeeRecords<
-      TimeRecord
-    >({
-      employeeId: payload.employeeId,
-      timeRecords: timeRecordsToSave,
-    });
-
-    const standByRecords = await this.app.$timeRecordsService.saveEmployeeRecords<
-      StandbyRecord
-    >(
-      {
+    const timeRecords =
+      await this.app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
         employeeId: payload.employeeId,
-        timeRecords: standByRecordsToSave,
-      },
-      Collections.STANDBYREC
-    );
+        timeRecords: timeRecordsToSave,
+      });
 
-    const travelRecords = await this.app.$travelRecordsService.saveEmployeeRecords(
-      {
+    const standByRecords =
+      await this.app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>(
+        {
+          employeeId: payload.employeeId,
+          timeRecords: standByRecordsToSave,
+        },
+        Collections.STANDBYREC
+      );
+
+    const travelRecords =
+      await this.app.$travelRecordsService.saveEmployeeRecords({
         employeeId: payload.employeeId,
         travelRecords: travelRecordsToSave,
-      }
-    );
+      });
 
     commit('setSaving', {isSaving: false});
     commit('updateRecords', {

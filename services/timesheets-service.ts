@@ -19,9 +19,9 @@ export default class TimesheetsService {
   }: GetTimesheetsProps) {
     let query:
       | firebase.default.firestore.CollectionReference<DocumentData>
-      | firebase.default.firestore.Query<
-          DocumentData
-        > = this.fire.firestore.collection(Collections.TIMESHEETS);
+      | firebase.default.firestore.Query<DocumentData> = this.fire.firestore.collection(
+      Collections.TIMESHEETS
+    );
 
     if (date && !startDate && !endDate) query = query.where('date', '==', date);
 
