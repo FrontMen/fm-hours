@@ -21,9 +21,8 @@ export const createWeeklyTimesheet = (params: {
   const weeklyCustomers: Customer[] = [];
   const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
   const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStandByRecords = params.standByRecords.filter(
-    isWithinCurrentWeek
-  );
+  const weeklyStandByRecords =
+    params.standByRecords.filter(isWithinCurrentWeek);
 
   weeklyTimeRecords.forEach((timeRecord) => {
     if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {

@@ -21,21 +21,19 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
         endDate: endDate.getTime(),
       }
     );
-    const timeRecordsPromise = this.app.$timeRecordsService.getRecords<
-      TimeRecord
-    >({
-      startDate,
-      endDate,
-    });
-    const standByRecordsPromise = this.app.$timeRecordsService.getRecords<
-      StandbyRecord
-    >(
-      {
+    const timeRecordsPromise =
+      this.app.$timeRecordsService.getRecords<TimeRecord>({
         startDate,
         endDate,
-      },
-      Collections.STANDBYREC
-    );
+      });
+    const standByRecordsPromise =
+      this.app.$timeRecordsService.getRecords<StandbyRecord>(
+        {
+          startDate,
+          endDate,
+        },
+        Collections.STANDBYREC
+      );
     const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
       startDate,
       endDate,
