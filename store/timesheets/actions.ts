@@ -87,6 +87,10 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     commit('setTimesheets', {timesheets: [timesheet]});
   },
 
+  async emailReminder(_, payload: {emailData: EmailData}) {
+    await this.app.$mailService.sendMail(payload.emailData);
+  },
+
   async deleteTimesheet({commit, state}, payload: {timesheetId: string}) {
     if (!payload.timesheetId) return;
 

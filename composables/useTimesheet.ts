@@ -9,7 +9,7 @@ import {
   kilometerFormatter,
   createLeaveProject,
 } from '~/helpers/timesheet';
-import {buildEmailData} from '~/helpers/email';
+import {buildEmailData, createReminderEmail} from '~/helpers/email';
 import {debounce} from '~/helpers/helpers';
 
 export default (
@@ -334,6 +334,17 @@ export default (
     hasUnsavedChanges.value = false;
   };
 
+  const sendReminder = (employee: Employee) => {
+    const emailData = createReminderEmail({
+      employee,
+      week: recordsState.value.selectedWeek,
+    });
+
+    store.dispatch('timesheets/emailReminder', {
+      emailData,
+    });
+  };
+
   const autoSave = () => {
     if (hasUnsavedChanges.value) {
       saveTimesheet(recordStatus.NEW as TimesheetStatus);
@@ -363,6 +374,7 @@ export default (
     timesheetDenyMessage,
     message,
     denyTimesheet,
+    sendReminder,
     autoSave: debouncedAutoSave,
   };
 };

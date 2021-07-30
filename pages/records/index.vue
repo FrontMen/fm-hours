@@ -156,6 +156,7 @@
         @save="saveTimesheet(recordStatus.PENDING)"
         @approve="saveTimesheet(recordStatus.APPROVED)"
         @unapprove="saveTimesheet(recordStatus.NEW)"
+        @reminder="handleReminder"
       />
 
       <weekly-timesheet-footer
@@ -296,6 +297,12 @@ export default defineComponent({
       timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
     };
 
+    const handleReminder = () => {
+      if (!selectedEmployee.value) return;
+
+      timesheet.sendReminder(selectedEmployee.value);
+    };
+
     const handleBlur = () => {
       timesheet.autoSave()
     };
@@ -365,6 +372,7 @@ export default defineComponent({
       reasonOfDenial,
       handleBlur,
       handleDeny,
+      handleReminder,
       submitTimesheet,
       setTotals,
       ...timesheet,
