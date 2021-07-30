@@ -332,8 +332,9 @@ export default defineComponent({
       let confirmation = true;
 
       if (totals.weekTotal > totals.expectedWeekTotal) {
+        const difference = +(totals.weekTotal - totals.expectedWeekTotal).toFixed(2);
         confirmation = confirm(
-          `You have filled in ${totals.weekTotal - totals.expectedWeekTotal} more hours than the expected ${totals.expectedWeekTotal} hours a week. Is this correct?`
+          `You have filled in ${difference} more hour${difference !== 1 ? 's': ''} than the expected ${totals.expectedWeekTotal} hours a week. Is this correct?`
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
