@@ -68,7 +68,8 @@ export function checkNonWorkingDays(
   return days.map((day) => {
     const workSchemeDay = workScheme?.find((ws) => ws.date === day.date);
     const isPublicHoliday = !!workSchemeDay?.holiday;
-    const isLeaveDay = !!workSchemeDay?.absenceHours;
+    // Holidays also register absence hours, prevent double label.
+    const isLeaveDay = !!workSchemeDay?.absenceHours && !isPublicHoliday;
 
     const isPartTime =
       !isPublicHoliday && !!workSchemeDay && workSchemeDay.theoreticalHours < 8;

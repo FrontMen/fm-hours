@@ -59,6 +59,7 @@
                 :show-add-project-button="
                   !isReadonly && selectableCustomers.length > 0
                 "
+                @totals="setTotals"
               />
             </template>
           </weekly-timesheet>
@@ -165,7 +166,7 @@
         :last-saved="recordsState.lastSaved"
         :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.NEW)"
-        @submit="saveTimesheet(recordStatus.PENDING)"
+        @submit="submitTimesheet"
         @unsubmit="saveTimesheet(recordStatus.NEW)"
       />
 
@@ -242,6 +243,11 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
     const isAdminView = router.currentRoute.name?.includes("timesheets");
+    let totals: TimesheetTotals = {
+      weekTotal: 0,
+      expectedWeekTotal: 0,
+      dayTotal: [],
+    };
 
     store.dispatch("employees/getEmployees");
     store.dispatch("customers/getCustomers");
@@ -318,6 +324,38 @@ export default defineComponent({
     });
 
 
+    const setTotals = (calculatedTotals: TimesheetTotals) => {
+      totals = calculatedTotals;
+    }
+
+    const submitTimesheet = () => {
+      let confirmation = true;
+
+      if (totals.weekTotal > totals.expectedWeekTotal) {
+        const difference = +(totals.weekTotal - totals.expectedWeekTotal).toFixed(2);
+        confirmation = confirm(
+          `You have filled in ${difference} more hour${difference !== 1 ? 's': ''} than the expected ${totals.expectedWeekTotal} hours a week. Is this correct?`
+        );
+      } else {
+        // Only show this one if total hours is fine, but some days are too long
+        const daysExceedingExpected = totals.dayTotal.filter(
+          (hoursInDay, index) => {
+            const weekendHours = !recordsState.value?.workScheme[index] && hoursInDay;
+            const exceedsExpectedHours = recordsState.value?.workScheme[index]?.workHours;
+            return hoursInDay > exceedsExpectedHours || weekendHours;
+          },
+        );
+
+        if (daysExceedingExpected.length) confirmation = confirm(
+          `You have filled in more hours than expected on some of the days. Is this correct?`
+        );
+      }
+
+      if (!confirmation) return;
+
+      timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+    }
+
     return {
       employee: selectedEmployee,
       selectableCustomers,
@@ -327,6 +365,8 @@ export default defineComponent({
       reasonOfDenial,
       handleBlur,
       handleDeny,
+      submitTimesheet,
+      setTotals,
       ...timesheet,
     };
   },

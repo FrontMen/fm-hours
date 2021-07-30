@@ -29,9 +29,10 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, watch} from "@nuxtjs/composition-api";
 
 export default defineComponent({
+  emit: ["totals"],
   props: {
     projects: {
       type: Array as PropType<TimesheetProject[]>,
@@ -50,7 +51,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  setup(props, {emit}) {
     const weekTotal = computed(() => {
       let total = 0;
 
@@ -83,6 +84,20 @@ export default defineComponent({
     const dayWorkSchemeHoursTotal = computed(() =>
       props.selectedWeek.map((_, index) =>
         props.workScheme?.[index] ? props.workScheme[index].workHours : "-")
+    );
+
+    watch(
+      () => [weekTotal.value],
+      () => {
+        const totals: TimesheetTotals = {
+          weekTotal: weekTotal.value,
+          expectedWeekTotal: weekWorkSchemeHoursTotal.value,
+          dayTotal: dayTotals.value,
+        };
+
+        emit('totals', totals);
+      },
+      {immediate: true}
     );
 
     return {
