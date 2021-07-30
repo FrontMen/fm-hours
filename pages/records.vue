@@ -222,9 +222,6 @@ import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-tota
 
 import useTimesheet from "~/composables/useTimesheet";
 import {recordStatus} from "~/helpers/record-status";
-import {debounce} from "~/helpers/helpers";
-
-let self: any;
 
 export default defineComponent({
   components: {
@@ -240,10 +237,6 @@ export default defineComponent({
 
   head: {},
 
-  created() {
-    self = this;
-    self.autoSave = debounce(self.autoSave, 5000);
-  },
   setup() {
     const router = useRouter();
     const store = useStore<RootStoreState>();
@@ -298,7 +291,7 @@ export default defineComponent({
     };
 
     const handleBlur = () => {
-      self.autoSave();
+      timesheet.autoSave()
     };
 
     const selectableCustomers = computed(() => {
@@ -324,14 +317,8 @@ export default defineComponent({
       ];
     });
 
-    function autoSave() {
-      if (timesheet.hasUnsavedChanges){
-        timesheet.saveTimesheet(recordStatus.NEW as TimesheetStatus);
-      }
-    }
 
     return {
-      autoSave,
       employee: selectedEmployee,
       selectableCustomers,
       recordsState,
