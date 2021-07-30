@@ -1,3 +1,0 @@
-interface HolidaysStoreState {
-  holidays: string[];
-}

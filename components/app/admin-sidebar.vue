@@ -35,11 +35,6 @@ export default defineComponent({
         icon: "people",
       },
       {
-        href: "/holidays",
-        name: "Holidays",
-        icon: "sun",
-      },
-      {
         href: "/timesheets",
         name: "Timesheets",
         icon: "calendar",
