@@ -1,3 +1,5 @@
+import {format} from 'date-fns';
+
 interface BuildEmailDataProps {
   employee: Employee;
   week: WeekDate[];
@@ -5,11 +7,11 @@ interface BuildEmailDataProps {
 }
 
 interface ReminderEmailProps {
-  employee: Employee;
-  week: WeekDate[];
+  employee: {name: string; email: string};
+  startDate: number;
 }
 interface BuildEmailProps {
-  employee: Employee;
+  employee: {name: string; email: string};
   content: string;
   subject: string;
 }
@@ -50,9 +52,11 @@ export const buildEmailData = ({
   return buildEmail({employee, content, subject: 'Timesheet denied'});
 };
 
-export const createReminderEmail = ({employee, week}: ReminderEmailProps) => {
-  const startDate = new Date(week[0].date).getTime();
-  const dayLabel = getDayLabel(week[0]);
+export const createReminderEmail = ({
+  employee,
+  startDate,
+}: ReminderEmailProps) => {
+  const dayLabel = format(startDate, 'dd MMMM');
   const baseUrl = location.origin;
 
   const content = `

@@ -1,22 +1,56 @@
 <template>
   <div class="my-5 content-wrapper">
-    <b-form-group
-      label="Filter by:"
-      label-for="filter-select"
-      label-class="font-weight-bold"
-      class="filter"
-    >
-      <b-form-select
-        id="filter-select"
-        v-model="selected"
-        :options="options"
-        class="filter__select"
-      >
-        <template #first>
-          <b-form-select-option :value="null">All</b-form-select-option>
-        </template>
-      </b-form-select>
-    </b-form-group>
+    <b-row no-gutters align-v="center">
+      <b-col cols="5" sd="4" lg="3">
+        <b-form-group
+          label="Filter by:"
+          label-for="filter-select"
+          label-class="font-weight-bold"
+          class="filter"
+        >
+          <b-form-select
+            id="filter-select"
+            v-model="selected"
+            :options="options"
+            class="filter__select"
+          >
+            <template #first>
+              <b-form-select-option :value="null">All</b-form-select-option>
+            </template>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+      <b-col cols="7" sd="4" lg="3" class="mr-2">
+        <b-form-group
+          label="Email reminder:"
+          label-for="select-reminder-week"
+          label-class="font-weight-bold"
+          class="filter"
+        >
+          <b-form-select
+            id="select-reminder-week"
+            v-model="selectedReminderStartDate"
+            :options="reminderOptions"
+            class="filter__select"
+          >
+            <template #first>
+              <b-form-select-option :value="undefined">
+                Select week
+              </b-form-select-option>
+            </template>
+          </b-form-select>
+        </b-form-group>
+      </b-col>
+      <b-col class="mt-auto mb-3">
+        <b-button
+          variant="warning"
+          :disabled="!selectedReminderStartDate"
+          @click="sendReminders"
+        >
+          Send reminder
+        </b-button>
+      </b-col>
+    </b-row>
     <b-table
       class="mt-3 app-table timesheet-table"
       responsive
@@ -69,6 +103,9 @@ import {
   useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
+import {
+  format,
+} from 'date-fns';
 
 import {recordStatus} from "~/helpers/record-status";
 import {TimesheetStatus} from "~/types/enums";
@@ -94,6 +131,7 @@ export default defineComponent({
       store.getters["filters/getTimesheetSortDescending"]
     );
     const selected = ref(store.getters["filters/getTimesheetFilterBy"]);
+    const selectedReminderStartDate = ref<number>();
     const getSelected = computed(() => selected.value);
 
     const weeksBefore = 6;
@@ -106,6 +144,15 @@ export default defineComponent({
     store.dispatch("timesheets/getTableData", {
       weeksBefore,
       weeksAfter,
+    });
+
+    const reminderOptions = computed(() => {
+      return store.state.timesheets?.timesheetTableData?.fields?.map((field) => {
+        if (!field.formatedStartDate) return null;
+
+        const dateLabel = `${field.formatedStartDate}-${field.formatedEndDate} (Week ${field.weekNumber})`;
+        return {value: field.timestamp, text: dateLabel};
+      }).filter(option => option);
     });
 
     const router = useRouter();
@@ -131,6 +178,22 @@ export default defineComponent({
       }
     };
 
+    const sendReminders = () => {
+      if (!selectedReminderStartDate.value) return;
+      const formattedData = format(new Date(selectedReminderStartDate.value), "yyyy-MM-dd");
+
+      tableData.value?.items?.forEach((employee) => {
+        if (!employee.email || !(employee[formattedData] === TimesheetStatus.EMPTY || employee[formattedData] === TimesheetStatus.DENIED)) return;
+        store.dispatch('timesheets/emailReminder', {
+          employee: {
+            name: employee.name,
+            email: employee.email,
+          },
+          startDate: selectedReminderStartDate.value,
+        });
+      });
+    };
+
     const sortCompare = (
       a: TimesheetTableItem,
       b: TimesheetTableItem,
@@ -150,6 +213,9 @@ export default defineComponent({
       openEmployeeTimesheetPage,
       tableData,
       sortCompare,
+      reminderOptions,
+      selectedReminderStartDate,
+      sendReminders,
     };
   },
 });
@@ -159,10 +225,6 @@ export default defineComponent({
 .filter {
   &__select {
     text-transform: capitalize;
-  }
-
-  @media (min-width: 576px) {
-    width: 25%;
   }
 }
 

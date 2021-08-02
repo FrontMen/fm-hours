@@ -300,7 +300,11 @@ export default defineComponent({
     const handleReminder = () => {
       if (!selectedEmployee.value) return;
 
-      timesheet.sendReminder(selectedEmployee.value);
+      const startDate = new Date(recordsState.value?.selectedWeek[0].date).getTime();
+      store.dispatch('timesheets/emailReminder', {
+        employee: selectedEmployee.value,
+        startDate,
+      });
     };
 
     const handleBlur = () => {
