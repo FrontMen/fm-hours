@@ -70,27 +70,13 @@ export default (
     {immediate: true}
   );
 
-  const message = ref<string>(
-    timesheetState.value?.timesheets[0]
-      ? timesheetState.value?.timesheets[0].message
-      : ''
+  const message = ref<string | undefined>(
+    timesheetState.value?.timesheets[0]?.message
   );
   watch(
     () => timesheetState.value?.timesheets[0],
     () => {
       message.value = timesheetState.value?.timesheets[0]?.message;
-    },
-    {immediate: true}
-  );
-
-  /*
-   * Gets message from previous week's timesheet when copying.
-   */
-  watch(
-    () => store.state.timesheets.previousTimesheet,
-    () => {
-      message.value =
-        store.state.timesheets.previousTimesheet?.message || message.value;
     },
     {immediate: true}
   );
@@ -172,13 +158,6 @@ export default (
     );
     const prevStartDate = subDays(startDate, 7);
     const previousWeek = buildWeek(startOfISOWeek(prevStartDate));
-
-    // Dispatch getter to update message with message present in previous week.
-    store.dispatch('timesheets/getPreviousTimesheet', {
-      startDate: prevStartDate.getTime(),
-      endDate: startDate.getTime(),
-      employeeId,
-    });
 
     const previousWeekTimesheet = createWeeklyTimesheet({
       week: previousWeek,

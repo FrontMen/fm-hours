@@ -13,10 +13,6 @@ const mutations: MutationTree<TimesheetsStoreState> = {
     state.timesheets = payload.timesheets;
   },
 
-  setPreviousTimesheet: (state, payload: {timesheet: Timesheet}) => {
-    state.previousTimesheet = payload.timesheet;
-  },
-
   setTimesheetsTableData: (state, payload: {tableData: TimesheetTableData}) => {
     state.timesheetTableData = payload.tableData;
   },
