@@ -57,6 +57,19 @@ export default (
     bridgeUid,
   });
 
+  const messages = ref<Message[]>(
+    timesheetState.value?.timesheets[0]
+      ? timesheetState.value?.timesheets[0].messages
+      : []
+  );
+  watch(
+    () => timesheetState.value?.timesheets[0],
+    () => {
+      messages.value = timesheetState.value?.timesheets[0]?.messages;
+    },
+    {immediate: true}
+  );
+
   const message = ref<string>(
     timesheetState.value?.timesheets[0]
       ? timesheetState.value?.timesheets[0].message
@@ -362,6 +375,7 @@ export default (
     isReadonly,
     timesheetDenyMessage,
     message,
+    messages,
     denyTimesheet,
     autoSave: debouncedAutoSave,
   };
