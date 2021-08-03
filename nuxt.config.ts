@@ -1,4 +1,5 @@
 import {defineNuxtConfig} from '@nuxtjs/composition-api';
+import i18n from './i18n.config';
 
 export default defineNuxtConfig({
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
@@ -53,6 +54,7 @@ export default defineNuxtConfig({
     // https://go.nuxtjs.dev/axios
     // load axios before firebase because: https://github.com/nuxt/nuxt.js/issues/7536#issuecomment-648957310
     '@nuxtjs/axios',
+    'nuxt-i18n',
   ],
 
   publicRuntimeConfig: {
@@ -80,6 +82,7 @@ export default defineNuxtConfig({
       },
     },
   },
+  i18n,
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
   axios: {

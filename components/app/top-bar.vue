@@ -31,6 +31,10 @@
             USING DEVELOPMENT SERVER
           </b-col>
 
+          <b-col class="text-right">
+            <LanguageSwitch class="language" />
+          </b-col>
+
           <b-col>
             <div class="employee d-flex align-items-center justify-content-end">
               <div class="d-none d-md-block employee__name mr-3">
