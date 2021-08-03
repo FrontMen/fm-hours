@@ -1,3 +1,12 @@
+<i18n lang="yaml">
+  en:
+    feedback: "Feedback"
+    logout: "Logout"
+  nl:
+    feedback: "#required"
+    logout: "#required"
+</i18n>
+
 <template>
   <div class="top-bar hide-print" :class="{'top-bar__development': isDev}">
     <div class="top-bar__inner content-wrapper">
@@ -22,7 +31,7 @@
                 target="_blank"
                 class="text-white ml-3"
               >
-                Feedback
+                {{$t("feedback")}}
               </a>
             </div>
           </b-col>
@@ -47,7 +56,7 @@
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
-                  Logout
+                  {{$t("logout")}}
                 </b-dropdown-item>
               </b-dropdown>
             </div>
@@ -59,7 +68,7 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, useRouter} from "@nuxtjs/composition-api";
+import {defineComponent, PropType, useRouter, useContext } from "@nuxtjs/composition-api";
 
 export default defineComponent({
   emit: ["logout"],
@@ -79,8 +88,9 @@ export default defineComponent({
   },
   setup(_, {emit}) {
     const router = useRouter();
+    const {localePath} = useContext();
 
-    const handleLogoClick = () => router.push("/records");
+    const handleLogoClick = () => router.push(localePath("/records"));
     const handleLogoutClick = () => emit("logout");
 
     return {

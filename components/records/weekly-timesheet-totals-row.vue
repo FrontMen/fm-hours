@@ -1,3 +1,10 @@
+<i18n lang="yaml">
+  en:
+    project: "Project"
+  nl:
+    project: "#required"
+</i18n>
+
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
     <b-col class="weekly-timesheet-totals-row__action" cols="4">
@@ -7,7 +14,7 @@
         variant="primary"
       >
         <b-icon icon="plus-square-fill" class="mr-1" />
-        Project
+        {{$t('project')}}
       </b-button>
     </b-col>
 

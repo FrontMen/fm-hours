@@ -1,19 +1,32 @@
+<i18n lang="yaml">
+  en:
+    noHours: "There are no hours registered for this week."
+    projectHint: "Or use 'n' to add project"
+    addProject: "Add a project"
+    copyPrevious: "Copy previous week"
+  nl:
+    noHours: "#required"
+    projectHint: "#required"
+    addProject: "#required"
+    copyPrevious: "#required"
+</i18n>
+
 <template>
   <div class="empty-timesheet">
-    <p>There are no hours registered for this week.</p>
+    <p>{{$t("noHours")}}</p>
 
     <template>
       <b-button
         v-b-modal.modal-add-project
         v-b-tooltip.hover
-        title="Or use 'n' to add project"
+        :title="$t('projectHint')"
       >
-        Add a project
+        {{$t("addProject")}}
       </b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 
       <b-button @click="handleCopyPreviousWeekClick">
-        Copy previous week
+        {{$t("copyPrevious")}}
       </b-button>
     </template>
   </div>

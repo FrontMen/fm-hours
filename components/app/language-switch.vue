@@ -1,9 +1,9 @@
 <i18n lang="yaml">
   en:
     en: "English"
-    nl: "Dutch"
+    nl: "Nederlands"
   nl:
-    en: "Engels"
+    en: "English"
     nl: "Nederlands"
 </i18n>
 

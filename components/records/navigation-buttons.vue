@@ -1,10 +1,27 @@
+<i18n lang="yaml">
+  en:
+    requestLeave: "Request leave"
+    monthly: "Monthly overview"
+    goMonthly: "Go to Monthly Overview"
+    timesheets: "Timesheets"
+    previousHint: "Or use keyboard left to go to previous week"
+    nextHint: "Or use keyboard right to go to next week"
+  nl:
+    requestLeave: "#required"
+    monthly: "#required"
+    goMonthly: "#required"
+    timesheets: "#required"
+    previousHint: "#required"
+    nextHint: "#required"
+</i18n>
+
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button-group class="navigation-buttons__date-group">
         <b-button
           v-b-tooltip.hover
-          title="Or use keyboard left to go to previous week"
+          :title="$t('previousHint')"
           @click="handlePreviousClick()"
         >
           <b-icon icon="arrow-left" />
@@ -14,12 +31,12 @@
           :disabled="weekDifference === 0"
           @click="handleCurrentClick()"
         >
-          Today
+          {{$t('today')}}
         </b-button>
 
         <b-button
           v-b-tooltip.hover
-          title="Or use keyboard right to go to next week"
+          :title="$t('nextHint')"
           @click="handleNextClick()"
         >
           <b-icon icon="arrow-right" />
@@ -36,23 +53,23 @@
           target="_blank"
           rel="noreferrer"
         >
-          Request Leave
+          {{$t('requestLeave')}}
           <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
         </b-button>
 
         <nuxt-link
           v-if="isAdminView"
-          to="/timesheets"
+          :to="localePath('/timesheets')"
           class="d-flex align-items-center flex-nowrap"
         >
           <b-button>
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            Timesheets
+            {{$t("timesheets")}}
           </b-button>
         </nuxt-link>
-        <nuxt-link v-if="!isAdminView" to="month">
-          <b-button v-b-tooltip.hover title="Go to Monthly Overview">
-            Monthly Overview
+        <nuxt-link v-if="!isAdminView" :to="localePath('month')">
+          <b-button v-b-tooltip.hover :title="$t("go-monthly->
+            {{$t("monthly")}}
           </b-button>
         </nuxt-link>
       </b-button-group>

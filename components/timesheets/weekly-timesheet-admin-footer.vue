@@ -1,8 +1,27 @@
+<i18n lang="yaml">
+  en:
+    lastSave: "Last saved: {time} ago."
+    update: "Update"
+    deny: "Deny"
+    approve: "Approve"
+    undo: "Undo approval"
+    approved: "APPROVED"
+    denied: "DENIED"
+  nl:
+    lastSave: "#required {time}"
+    update: "#required"
+    deny: "#required"
+    approve: "#required"
+    undo: "#required"
+    approved: "#required"
+    denied: "#required"
+</i18n>
+
 <template>
   <div class="weekly-timesheet-footer mb-3">
     <div>
       <span v-if="lastSaved" class="mr-3">
-        Last saved: {{ lastSavedLabel }}
+        {{$t('lastSave', {time: lastSavedLabel})}}
       </span>
       <b-spinner v-if="isSaving" small />
 
@@ -12,7 +31,7 @@
         :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
-        Update
+        {{$t('update')}}
       </b-button>
     </div>
 
@@ -33,7 +52,7 @@
         variant="danger"
         :disabled="isSaving"
       >
-        Deny
+        {{$t('deny')}}
       </b-button>
 
       <b-button
@@ -41,7 +60,7 @@
         :disabled="isSaving"
         @click="handleApproveClick"
       >
-        Approve
+        {{$t('approve')}}
       </b-button>
     </template>
 
@@ -53,14 +72,14 @@
           :disabled="isSaving"
           @click="handleUndoApproveClick"
         >
-          Undo approval
+          {{$t('undo')}}
         </b-button>
-        <strong>APPROVED</strong>
+        <strong>{{$t('approved')}}</strong>
         <b-icon class="ml-1" icon="check-circle-fill" variant="success" />
       </template>
 
       <template v-else>
-        <strong>DENIED</strong>
+        <strong>{{$t('denied')}}</strong>
         <b-icon class="ml-1" icon="x-circle-fill" variant="danger" />
       </template>
     </template>

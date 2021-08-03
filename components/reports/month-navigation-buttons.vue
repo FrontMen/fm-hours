@@ -1,3 +1,13 @@
+<i18n lang="yaml">
+  en:
+    previousHint: "Or use keyboard left to go to previous month"
+    nextHint: "Or use keyboard right to go to next month"
+
+  nl:
+    previousHint: "#required"
+    nextHint: "#required"
+</i18n>
+
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
