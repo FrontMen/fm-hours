@@ -30,6 +30,12 @@ interface TimesheetsStoreState {
   previousTimesheet: Timesheet | null;
 }
 
+interface Message {
+  id: string;
+  text: string;
+  createdAt: number;
+}
+
 interface Timesheet {
   id: string;
   date: number;
@@ -37,6 +43,7 @@ interface Timesheet {
   status: TimesheetStatus;
   reasonOfDenial: string;
   message: string;
+  messages: Message[];
 }
 
 interface WeekSpan {
