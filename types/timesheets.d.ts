@@ -41,7 +41,7 @@ interface Timesheet {
   employeeId: string;
   status: TimesheetStatus;
   reasonOfDenial: string;
-  messages: Message[];
+  messages?: Message[];
   message?: string /** Only present on old timesheets with single comment */;
 }
 

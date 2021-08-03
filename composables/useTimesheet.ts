@@ -10,7 +10,7 @@ import {
   createLeaveProject,
 } from '~/helpers/timesheet';
 import {buildEmailData} from '~/helpers/email';
-import {debounce} from '~/helpers/helpers';
+import {debounce, uuidv4} from '~/helpers/helpers';
 
 export default (
   employeeId: string,
@@ -23,6 +23,8 @@ export default (
   const recordsState = computed(() => store.state.records);
   const timesheetState = computed(() => store.state.timesheets);
   const customers = computed(() => store.state.customers);
+  const message = computed(() => timesheetState.value?.timesheets[0]?.message);
+  const messageInput = ref('');
 
   const timesheetStatus = computed(() => {
     return timesheetState.value.timesheets[0]
@@ -58,25 +60,12 @@ export default (
   });
 
   const messages = ref<Message[]>(
-    timesheetState.value?.timesheets[0]
-      ? timesheetState.value?.timesheets[0].messages
-      : []
+    timesheetState.value?.timesheets[0]?.messages || []
   );
   watch(
     () => timesheetState.value?.timesheets[0],
     () => {
-      messages.value = timesheetState.value?.timesheets[0]?.messages;
-    },
-    {immediate: true}
-  );
-
-  const message = ref<string | undefined>(
-    timesheetState.value?.timesheets[0]?.message
-  );
-  watch(
-    () => timesheetState.value?.timesheets[0],
-    () => {
-      message.value = timesheetState.value?.timesheets[0]?.message;
+      messages.value = timesheetState.value?.timesheets[0]?.messages || [];
     },
     {immediate: true}
   );
@@ -108,6 +97,7 @@ export default (
 
     unsavedWeeklyTimesheet.value = undefined;
     hasUnsavedChanges.value = false;
+    messageInput.value = '';
     store.dispatch('records/goToWeek', {bridgeUid, to});
   };
 
@@ -144,7 +134,7 @@ export default (
       store.dispatch('timesheets/deleteTimesheet', {
         timesheetId: timesheetState.value?.timesheets[0]?.id,
       });
-      message.value = '';
+      messageInput.value = '';
     }
 
     if (!unsavedWeeklyTimesheet.value?.projects.length) {
@@ -272,19 +262,31 @@ export default (
       reasonOfDenial = '';
     }
 
+    const createNewMessage = (text: string): Message => ({
+      id: uuidv4(),
+      createdAt: new Date().getTime(),
+      text,
+    });
+
+    const newMessages = messageInput.value
+      ? [...messages.value, createNewMessage(messageInput.value)]
+      : [...messages.value];
+
     const newTimesheet = timesheetState.value.timesheets[0]
       ? {
           ...timesheetState.value.timesheets[0],
           status: newTimesheetStatus,
           reasonOfDenial,
-          message: message.value || '',
+          messages: newMessages,
+          ...(message.value && {message: message.value}),
         }
       : {
           employeeId,
           date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
           status: newTimesheetStatus,
           reasonOfDenial,
-          message: message.value || '',
+          messages: newMessages,
+          ...(message.value && {message: message.value}),
         };
 
     store.dispatch('timesheets/saveTimesheet', newTimesheet);
@@ -355,6 +357,7 @@ export default (
     timesheetDenyMessage,
     message,
     messages,
+    messageInput,
     denyTimesheet,
     autoSave: debouncedAutoSave,
   };

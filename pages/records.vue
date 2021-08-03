@@ -143,14 +143,13 @@
         </div>
 
         <b-form-textarea
-          v-if="(!isReadonly || message) && timesheet.projects.length "
+          v-if="!isReadonly && timesheet.projects.length"
           id="message-textarea"
-          v-model="message"
+          v-model="messageInput"
           class="mt-4"
           placeholder="Add a comment here."
           rows="1"
           max-rows="4"
-          :plaintext="!isAdminView && isReadonly"
           @change="hasUnsavedChanges = true"
           @blur="handleBlur"
         />
