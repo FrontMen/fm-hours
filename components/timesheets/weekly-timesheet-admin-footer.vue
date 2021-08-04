@@ -16,6 +16,16 @@
       </b-button>
     </div>
 
+    <b-button
+      v-if="!isApproved"
+      class="mr-3"
+      variant="warning"
+      :disabled="isSaving"
+      @click="handleReminderClick"
+    >
+      Send reminder
+    </b-button>
+
     <template v-if="!isClosed">
       <b-button
         v-b-modal.deny-modal
@@ -65,12 +75,12 @@ import {
   PropType,
   ref,
   watch,
-} from "@nuxtjs/composition-api";
-import {formatDistanceToNow} from "date-fns";
-import {recordStatus} from "~/helpers/record-status";
+} from '@nuxtjs/composition-api';
+import {formatDistanceToNow} from 'date-fns';
+import {recordStatus} from '~/helpers/record-status';
 
 export default defineComponent({
-  emits: ["submit", "save", "unsubmit"],
+  emits: ['submit', 'save', 'unsubmit', 'reminder'],
   props: {
     hasUnsavedChanges: {
       type: Boolean,
@@ -90,12 +100,13 @@ export default defineComponent({
     },
   },
   setup(props, {emit}) {
-    const lastSavedLabel = ref("");
+    const lastSavedLabel = ref('');
     let intervalHandle: NodeJS.Timeout;
 
-    const handleSaveClick = () => emit("save");
-    const handleApproveClick = () => emit("approve");
-    const handleUndoApproveClick = () => emit("unapprove");
+    const handleSaveClick = () => emit('save');
+    const handleApproveClick = () => emit('approve');
+    const handleUndoApproveClick = () => emit('unapprove');
+    const handleReminderClick = () => emit('reminder');
 
     const isApproved = computed(() => props.status === recordStatus.APPROVED);
     const isDenied = computed(() => props.status === recordStatus.DENIED);
@@ -124,6 +135,7 @@ export default defineComponent({
       handleSaveClick,
       handleApproveClick,
       handleUndoApproveClick,
+      handleReminderClick,
       isClosed,
       isApproved,
       isDenied,
