@@ -32,4 +32,5 @@ export default {
   filterByCustomer: '#required',
   billable: '#required',
   monthlyReport: '#required',
+  reports: '#required',
 };

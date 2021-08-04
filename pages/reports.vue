@@ -1,3 +1,14 @@
+<i18n lang="yaml">
+  en:
+    totals: "Totals"
+    kilometers: "Kilometers"
+    standBy: "Stand-by"
+  nl:
+    totals: "#required"
+    kilometers: "#required"
+    standBy: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper mt-5">
     <month-navigation-buttons
@@ -9,12 +20,12 @@
     />
 
     <b-tabs pills card>
-      <b-tab title="Totals" active lazy>
+      <b-tab :title="$t('totals')" active lazy>
         <reports-table
           :busy="isLoading || !totalsItems.length"
           :items="totalsItems"
           :fields="totalsFields"
-          :csv-file-name="`totals-${formattedMonthDate}`"
+          :csv-file-name="`${$t('totals')}-${formattedMonthDate}`"
         />
       </b-tab>
 
@@ -27,21 +38,21 @@
         />
       </b-tab>
 
-      <b-tab title="Kilometers" lazy>
+      <b-tab :title="$t('kilometers')" lazy>
         <reports-table
           :busy="isLoading || !kilometersItems.length"
           :items="kilometersItems"
           :fields="kilometersFields"
-          :csv-file-name="`kilometers-${formattedMonthDate}`"
+          :csv-file-name="`${$t('kilometers')}-${formattedMonthDate}`"
         />
       </b-tab>
 
-      <b-tab title="Stand-by" lazy>
+      <b-tab :title="$t('standBy')" lazy>
         <reports-table
           :busy="isLoading || !standByItems.length"
           :items="standByItems"
           :fields="standByFields"
-          :csv-file-name="`stand-by-${formattedMonthDate}`"
+          :csv-file-name="`${$t('standBy')}-${formattedMonthDate}`"
         />
       </b-tab>
     </b-tabs>
@@ -53,6 +64,8 @@ import {
   computed,
   defineComponent,
   ref,
+  useContext,
+  useMeta,
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
@@ -74,6 +87,12 @@ export default defineComponent({
   },
 
   setup() {
+    const { i18n } = useContext();
+
+    useMeta(() => ({
+      title: i18n.t('reports') as string,
+    }));
+
     const {createTotalsFields, createTotalsItems} = useMonthlyTotalsReport();
     const {
       createProjectsFields,

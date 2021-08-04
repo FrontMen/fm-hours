@@ -36,4 +36,5 @@ export default {
   filterByCustomer: 'Filter by customer',
   billable: 'Billable',
   monthlyReport: 'Monthly report',
+  reports: 'Reports',
 };
