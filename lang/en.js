@@ -20,4 +20,12 @@ export default {
   travelAllowance: 'Travel allowance',
   name: 'Name',
   team: 'Team',
+  weekError:
+    'You have filled in {n} more hour than the expected {expected} hours a week. Is this correct?',
+  weekErrors:
+    'You have filled in {n} more hours than the expected {expected} hours a week. Is this correct?',
+  dayError:
+    'You have filled in more hours than expected on some of the days. Is this correct?',
+  timesheets: 'Timesheets',
+  chooseProject: 'Choose project',
 };

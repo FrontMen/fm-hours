@@ -19,4 +19,9 @@ export default {
   travelAllowance: '#required',
   name: '#required',
   team: '#required',
+  weekError: '#required {n} {expected}',
+  weekErrors: '#required {n} {expected}',
+  dayError: '#required',
+  timesheets: '#required',
+  chooseProject: '#required',
 };
