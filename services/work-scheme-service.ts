@@ -1,13 +1,16 @@
 import {format} from 'date-fns';
 
+import {NuxtRuntimeConfig} from '@nuxt/types/config/runtime';
 import {NuxtAxiosInstance} from '@nuxtjs/axios';
+import ApiUrl from '~/helpers/api';
 
 export default class WorkSchemeService {
   axios: NuxtAxiosInstance;
-  ApiUrl = '/api/v1';
+  config: NuxtRuntimeConfig;
 
-  constructor(axios: NuxtAxiosInstance) {
+  constructor(axios: NuxtAxiosInstance, config: NuxtRuntimeConfig) {
     this.axios = axios;
+    this.config = config;
   }
 
   async getWorkScheme(params: {
@@ -19,7 +22,7 @@ export default class WorkSchemeService {
 
     try {
       const response = await this.axios.$get<WorkSchemeResponse>(
-        `${this.ApiUrl}/users/${bridgeUid}/worktime?date_from=${format(
+        `${ApiUrl(this.config)}/users/${bridgeUid}/worktime?date_from=${format(
           startDate,
           'yyyy-MM-dd'
         )}&date_to=${format(endDate, 'yyyy-MM-dd')}`,

@@ -3,6 +3,7 @@ import {ActionTree} from 'vuex';
 
 import {createTimesheetTableData} from '~/helpers/timesheet';
 import {getWeeksSpan} from '~/helpers/dates';
+import {createReminderEmail} from '~/helpers/email';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   async getTimesheets(
@@ -69,6 +70,18 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     );
 
     commit('setTimesheets', {timesheets: [timesheet]});
+  },
+
+  async emailReminder(
+    _,
+    payload: {employee: {name: string; email: string}; startDate: number}
+  ) {
+    const emailData = createReminderEmail({
+      employee: payload.employee,
+      startDate: payload.startDate,
+    });
+
+    await this.app.$mailService.sendMail(emailData);
   },
 
   async deleteTimesheet({commit, state}, payload: {timesheetId: string}) {

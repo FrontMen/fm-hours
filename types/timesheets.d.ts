@@ -70,6 +70,7 @@ interface TimesheetTableField {
   formatedStartDate?: string;
   formatedEndDate?: string;
   weekNumber?: number;
+  timestamp?: number;
 }
 
 interface TimesheetTableData {
