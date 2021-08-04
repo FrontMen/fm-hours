@@ -24,4 +24,6 @@ export default {
   dayError: '#required',
   timesheets: '#required',
   chooseProject: '#required',
+  filterBy: '#required',
+  customers: '#required',
 };

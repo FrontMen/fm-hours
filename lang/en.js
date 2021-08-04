@@ -28,4 +28,6 @@ export default {
     'You have filled in more hours than expected on some of the days. Is this correct?',
   timesheets: 'Timesheets',
   chooseProject: 'Choose project',
+  filterBy: 'Filter by',
+  customers: 'Customers',
 };

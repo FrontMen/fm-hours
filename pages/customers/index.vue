@@ -164,19 +164,23 @@ import {
   ref,
   useStore,
   useContext,
+  useMeta,
 } from "@nuxtjs/composition-api";
 import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
   middleware: ["isAdmin"],
 
-  head: {
-    title: "Customers",
-  },
+  head: {},
 
   setup() {
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();
+
+    useMeta(() => ({
+      title: i18n.t('customers') as string,
+    }));
+
     const customers: {value: Customer[] | undefined} = computed(
       () => store.state.customers.customers
     );

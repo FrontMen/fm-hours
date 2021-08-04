@@ -1,9 +1,21 @@
+<i18n lang="yaml">
+  en:
+    all: "All"
+    emailReminder: "Email reminder:"
+    selectWeek: "Select week"
+    sendReminder: "Send reminder"
+    week: "Week"
+  nl:
+    feedback: "#required"
+    logout: "#required"
+</i18n>
+
 <template>
   <div class="my-5 content-wrapper">
     <b-row no-gutters align-v="center">
       <b-col cols="5" sd="4" lg="3">
         <b-form-group
-          label="Filter by:"
+          :label="$t('filterBy') + ':'"
           label-for="filter-select"
           label-class="font-weight-bold"
           class="filter"
@@ -15,14 +27,16 @@
             class="filter__select"
           >
             <template #first>
-              <b-form-select-option :value="null">All</b-form-select-option>
+              <b-form-select-option :value="null">
+                {{$t('all')}}
+              </b-form-select-option>
             </template>
           </b-form-select>
         </b-form-group>
       </b-col>
       <b-col cols="7" sd="4" lg="3" class="mr-2">
         <b-form-group
-          label="Email reminder:"
+          :label="$t('emailReminder')"
           label-for="select-reminder-week"
           label-class="font-weight-bold"
           class="filter"
@@ -35,7 +49,7 @@
           >
             <template #first>
               <b-form-select-option :value="undefined">
-                Select week
+                {{$t('selectWeek')}}
               </b-form-select-option>
             </template>
           </b-form-select>
@@ -47,7 +61,7 @@
           :disabled="!selectedReminderStartDate"
           @click="sendReminders"
         >
-          Send reminder
+          {{$t('sendReminder')}}
         </b-button>
       </b-col>
     </b-row>
@@ -102,6 +116,8 @@ import {
   defineComponent,
   useRouter,
   useStore,
+  useContext,
+  useMeta,
 } from "@nuxtjs/composition-api";
 import {
   format,
@@ -113,12 +129,15 @@ import {TimesheetStatus} from "~/types/enums";
 export default defineComponent({
   middleware: ["isAdmin"],
 
-  head: {
-    title: "Timesheets",
-  },
+  head: {},
 
   setup() {
+    const { i18n, localePath } = useContext();
     const store = useStore<RootStoreState>();
+
+    useMeta(() => ({
+      title: i18n.t('timesheets') as string,
+    }));
 
     const options = Object.entries(TimesheetStatus)
       .map(([value, text]) => ({
@@ -150,7 +169,7 @@ export default defineComponent({
       return store.state.timesheets?.timesheetTableData?.fields?.map((field) => {
         if (!field.formatedStartDate) return null;
 
-        const dateLabel = `${field.formatedStartDate}-${field.formatedEndDate} (Week ${field.weekNumber})`;
+        const dateLabel = `${field.formatedStartDate}-${field.formatedEndDate} (${i18n.t('week')} ${field.weekNumber})`;
         return {value: field.timestamp, text: dateLabel};
       }).filter(option => option);
     });
@@ -160,7 +179,7 @@ export default defineComponent({
       employeeId: string,
       startTimestamp: number
     ) => {
-      router.push(`/timesheets/${employeeId}/${startTimestamp}`);
+      router.push(localePath(`/timesheets/${employeeId}/${startTimestamp}`));
     };
 
     const handleFilterUpdates = () => {

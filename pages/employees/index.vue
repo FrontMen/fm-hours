@@ -1,6 +1,5 @@
 <i18n lang="yaml">
   en:
-    filterBy: "Filter by"
     searchEmployeeByName: "Search by employee name"
     namePlaceholder: "Ex.: \"John\""
     filterByCustomer: "Filter by customer"
@@ -12,8 +11,6 @@
     customerName: "Customer name"
     addEmployee: "Add an employee"
   nl:
-    feedback: "#required"
-    filterBy: "#required"
     searchEmployeeByName: "#required"
     namePlaceholder: "#required"
     filterByCustomer: "#required"
