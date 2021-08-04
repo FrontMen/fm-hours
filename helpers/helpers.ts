@@ -50,3 +50,9 @@ export const getTotalsByProp = <Type>(
     return (total += +currentValue);
   }, 0);
 };
+
+export function uuidv4() {
+  return '00-0-4-1-000'.replace(/[^-]/g, (s: any) =>
+    (((Math.random() + ~~s) * 0x10000) >> s).toString(16).padStart(4, '0')
+  );
+}

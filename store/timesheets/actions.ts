@@ -20,22 +20,6 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     commit('setTimesheets', {timesheets});
   },
 
-  /**
-   * Action similar to #getTimesheets, but expects to store 1 single timesheet to a different point in store.
-   * Used in copying previous week, to perpetuate the comment. Payload params mandatory for accuracy in search.
-   */
-  async getPreviousTimesheet(
-    {commit},
-    payload: {
-      startDate: number;
-      endDate: number;
-      employeeId: string;
-    }
-  ) {
-    const timesheets = await this.app.$timesheetsService.getTimesheets(payload);
-    commit('setPreviousTimesheet', {timesheet: timesheets[0]});
-  },
-
   async getTableData(
     {commit},
     payload: {

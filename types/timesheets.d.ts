@@ -27,7 +27,12 @@ interface TimesheetsStoreState {
   selectedEmployeeId: string;
   timesheets: Timesheet[];
   timesheetTableData: TimesheetTableData;
-  previousTimesheet: Timesheet | null;
+}
+
+interface Message {
+  id: string;
+  text: string;
+  createdAt: number;
 }
 
 interface Timesheet {
@@ -36,7 +41,8 @@ interface Timesheet {
   employeeId: string;
   status: TimesheetStatus;
   reasonOfDenial: string;
-  message: string;
+  messages?: Message[];
+  message?: string /** Only present on old timesheets with single comment */;
 }
 
 interface WeekSpan {

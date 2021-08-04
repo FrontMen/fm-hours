@@ -132,15 +132,24 @@
           </weekly-timesheet>
         </template>
 
+        <div v-if="message || messages" class="mt-4">
+          <comment-block v-if="!!message" :text="message" />
+          <comment-block
+            v-for="msg in messages"
+            :key="msg.id"
+            :text="msg.text"
+            :date="msg.createdAt"
+          />
+        </div>
+
         <b-form-textarea
-          v-if="(!isReadonly || message) && timesheet.projects.length "
+          v-if="!isReadonly && timesheet.projects.length"
           id="message-textarea"
-          v-model="message"
+          v-model="messageInput"
           class="mt-4"
           placeholder="Add a comment here."
           rows="1"
           max-rows="4"
-          :plaintext="!isAdminView && isReadonly"
           @change="hasUnsavedChanges = true"
           @blur="handleBlur"
         />
@@ -221,6 +230,7 @@ import SelectProjectDialog from "~/components/records/select-project-dialog.vue"
 import WeeklyTimesheetFooter from "~/components/records/weekly-timesheet-footer.vue";
 import WeeklyTimesheetRow from "~/components/records/weekly-timesheet-row.vue";
 import WeeklyTimesheetTotalsRow from "~/components/records/weekly-timesheet-totals-row.vue";
+import CommentBlock from "~/components/records/comment-block.vue";
 
 import useTimesheet from "~/composables/useTimesheet";
 import {recordStatus} from "~/helpers/record-status";
@@ -234,6 +244,7 @@ export default defineComponent({
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
     WeeklyTimesheetTotalsRow,
+    CommentBlock
   },
   middleware: ["isAuthenticated"],
 
