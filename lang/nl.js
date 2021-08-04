@@ -14,6 +14,7 @@ export default {
   confirmDelete: '#required {name}?',
   reConfirmDelete: '#required {name}!',
   noOptions: '{num} #required',
+  employee: '#required',
   employeeName: '#required',
   employeeEmail: '#required',
   travelAllowance: '#required',
@@ -26,4 +27,9 @@ export default {
   chooseProject: '#required',
   filterBy: '#required',
   customers: '#required',
+  projects: '#required',
+  project: '#required',
+  filterByCustomer: '#required',
+  billable: '#required',
+  monthlyReport: '#required',
 };

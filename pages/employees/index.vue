@@ -2,7 +2,6 @@
   en:
     searchEmployeeByName: "Search by employee name"
     namePlaceholder: "Ex.: \"John\""
-    filterByCustomer: "Filter by customer"
     showInactive: "Show inactive"
     newEmployee: "New employee"
     noEmployeeFound: "No employee found"
@@ -13,7 +12,6 @@
   nl:
     searchEmployeeByName: "#required"
     namePlaceholder: "#required"
-    filterByCustomer: "#required"
     showInactive: "#required"
     newEmployee: "#required"
     noEmployeeFound: "#required"

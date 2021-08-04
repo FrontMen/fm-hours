@@ -18,7 +18,7 @@
         />
       </b-tab>
 
-      <b-tab title="Projects" lazy>
+      <b-tab :title="$t('projects')" lazy>
         <reports-table
           :busy="isLoading || !projectsItems.length"
           :items="projectsItems"

@@ -1,16 +1,50 @@
+<i18n lang="yaml">
+  en:
+    backToWeek: "Back to week view"
+    print: "Print"
+    totalHours: "Total hours"
+    totalBillableHours: "Total billable hours"
+    totalSelectedHours: "Total for selected projects"
+    onlyBillable: "Only billable"
+    noResultsMonth: "No records available for selected month"
+    approvedBy: "Approved by"
+    date: "Date"
+    customer: "Customer"
+    debtor: "Debtor"
+    hours: "Hours"
+    selectProjects: "Select projects"
+  nl:
+    backToWeek: "#required"
+    print: "#required"
+    totalHours: "#required"
+    totalBillableHours: "#required"
+    totalSelectedHours: "#required"
+    onlyBillable: "#required"
+    noResultsMonth: "#required"
+    approvedBy: "#required"
+    date: "#required"
+    customer: "#required"
+    debtor: "#required"
+    hours: "#required"
+    selectProjects: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper mt-5">
     <b-row>
       <b-col cols="12" sm="4" md="4" class="hide-print">
-        <nuxt-link to="/" class="d-flex align-items-center flex-nowrap">
+        <nuxt-link
+          :to="localePath('/')"
+          class="d-flex align-items-center flex-nowrap"
+        >
           <b-button class="mb-3">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            Back to week view
+            {{$t('backToWeek')}}
           </b-button>
         </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
           <b-icon-printer />
-          &nbsp;Print
+          &nbsp;{{$t('print')}}
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
@@ -30,23 +64,22 @@
         <b-row>
           <b-col cols="12" sm="6">
             <p>
-              <strong>Employee:</strong>
+              <strong>{{$t('employee')}}:</strong>
               {{ employee.name }}
             </p>
             <p>
               <strong
                 v-if="selectedCustomers && selectedCustomers.length !== 1"
               >
-                Projects:
+                {{$t('projects')}}:
               </strong>
-              <strong v-else>Project:</strong>
+              <strong v-else>{{$t('project')}}:</strong>
               <span v-if="selectedCustomers && selectedCustomers.length">
                 <span
                   v-for="(project, i) in selectedCustomers"
                   :key="project.value"
                 >
-                  {{ project.value
-                  }}
+                  {{ project.value }}
                   <span v-if="i !== selectedCustomers.length - 1">,&nbsp;</span>
                 </span>
               </span>
@@ -70,15 +103,15 @@
           </b-col>
           <b-col cols="12" sm="6">
             <p>
-              <strong>Total hours:</strong>
+              <strong>{{$t('totalHours')}}:</strong>
               {{ totalHours.total }}
             </p>
             <p>
-              <strong>Total billable hours:</strong>
+              <strong>{{$t('totalBillableHours')}}:</strong>
               {{ totalHours.billable }}
             </p>
             <p>
-              <strong>Total for selected projects:</strong>
+              <strong>{{$t('totalSelectedHours')}}:</strong>
               {{ totalHours.selected }}
             </p>
           </b-col>
@@ -94,7 +127,7 @@
       </b-col>
       <b-col cols="4" md="3" class="mb-3 mt-auto hide-print">
         <label class="employee-status__label" for="customer-select">
-          <strong>Filter by customer:</strong>
+          <strong>{{$t('filterByCustomer')}}:</strong>
         </label>
         <multiselect
           id="customer-select"
@@ -106,18 +139,18 @@
           :close-on-select="false"
           :multiple="true"
           :taggable="false"
-          placeholder="Select projects"
+          :placeholder="$t('selectProjects')"
         >
           <template slot="selection" slot-scope="{values}">
             <span v-if="values.length">
-              {{ values.length }} options selected
+              {{ $t('noOptions', {num: values.length}) }}
             </span>
           </template>
         </multiselect>
       </b-col>
       <b-col cols="3" class="mt-auto mb-3 hide-print">
         <b-form-checkbox v-model="onlyBillable" switch class="mr-3 ml-auto">
-          Only billable
+          {{$t('onlyBillable')}}
         </b-form-checkbox>
       </b-col>
     </b-row>
@@ -134,12 +167,15 @@
       foot-clone
       show-empty
     >
+      <template #head()="data">
+        <span>{{ $t(data.column) }}</span>
+      </template>
       <template #head(debtor)="scope">
-        <span class="hide-print">{{ scope.label }}</span>
+        <span class="hide-print">{{ $t(scope.column) }}</span>
       </template>
 
       <template #empty>
-        <p>No records available for selected month</p>
+        <p>{{$t('noResultsMonth')}}</p>
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
@@ -148,7 +184,7 @@
           variant="success"
           class="hide-print"
         >
-          Billable
+          {{$t('billable')}}
         </b-badge>
       </template>
       <template #cell(debtor)="scope">
@@ -163,7 +199,7 @@
 
       <template #foot(hours)="">
         <span>
-          <strong>Total hours:</strong>
+          <strong>{{$t('totalHours')}}:</strong>
           {{ totalHours.selected }}
         </span>
       </template>
@@ -172,9 +208,9 @@
 
     <b-row class="no-break only-print">
       <b-col cols="6">
-        Approved by
+        {{$t('approvedBy')}}
         <br />
-        Date:
+        {{$t('date')}}:
         <br />
         <br />
         <br />
@@ -206,6 +242,8 @@ import {
   computed,
   defineComponent,
   ref,
+  useContext,
+  useMeta,
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
@@ -216,12 +254,15 @@ import { getTotalsByProp } from "~/helpers/helpers";
 export default defineComponent({
   components: {Multiselect},
   middleware: ["isAuthenticated"],
-  head: {
-    title: "Monthly report",
-  },
+  head: {},
 
   setup() {
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
+
+    useMeta(() => ({
+      title: i18n.t('monthlyReport') as string,
+    }));
 
     const selectedCustomers = ref<{value: string; label: string}[]>([]);
     const onlyBillable = ref<boolean>(false);

@@ -15,6 +15,7 @@ export default {
   reConfirmDelete:
     "You won't be able to access the timesheets / reports of {name}!",
   noOptions: '{num} options selected',
+  employee: 'Employee',
   employeeName: 'Employee name',
   employeeEmail: 'Employee email',
   travelAllowance: 'Travel allowance',
@@ -30,4 +31,9 @@ export default {
   chooseProject: 'Choose project',
   filterBy: 'Filter by',
   customers: 'Customers',
+  projects: 'Projects',
+  project: 'Project',
+  filterByCustomer: 'Filter by customer',
+  billable: 'Billable',
+  monthlyReport: 'Monthly report',
 };
