@@ -8,4 +8,6 @@ export default (): RecordsStoreState => ({
   leaveDays: [],
   standByRecords: [],
   workScheme: [],
+  errorMessage: '',
+  errorMessageWorkscheme: '',
 });

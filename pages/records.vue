@@ -12,6 +12,10 @@
         </a>
       </strong>
     </b-alert>
+    <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
+      Could not get workschema data. Holidays, leave, or total hours will not be
+      shown correctly, but you can still fill in and submit your timesheet
+    </b-alert>
     <employee-header
       v-if="isAdminView && employee"
       class="mb-5"
@@ -300,6 +304,10 @@ export default defineComponent({
       timesheet.autoSave()
     };
 
+  const showBridgeError = computed(()=>{
+    return !!store.state.records.errorMessageWorkscheme;
+  })
+
     const selectableCustomers = computed(() => {
       const customers: Customer[] = store.state.customers.customers;
       const selectedCustomers = timesheet.timesheet.value.projects.map(
@@ -331,7 +339,7 @@ export default defineComponent({
     const submitTimesheet = () => {
       let confirmation = true;
 
-      if (totals.weekTotal > totals.expectedWeekTotal) {
+      if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
         const difference = +(totals.weekTotal - totals.expectedWeekTotal).toFixed(2);
         confirmation = confirm(
           `You have filled in ${difference} more hour${difference !== 1 ? 's': ''} than the expected ${totals.expectedWeekTotal} hours a week. Is this correct?`
@@ -346,7 +354,7 @@ export default defineComponent({
           },
         );
 
-        if (daysExceedingExpected.length) confirmation = confirm(
+        if (daysExceedingExpected.length && !showBridgeError) confirmation = confirm(
           `You have filled in more hours than expected on some of the days. Is this correct?`
         );
       }
@@ -362,6 +370,7 @@ export default defineComponent({
       recordsState,
       recordStatus,
       isAdminView,
+      showBridgeError,
       reasonOfDenial,
       handleBlur,
       handleDeny,
