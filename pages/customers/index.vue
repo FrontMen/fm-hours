@@ -1,10 +1,53 @@
+<i18n lang="yaml">
+  en:
+    searchBy: "Search by"
+    search: "Search"
+    searchPlaceholder: "Ex.: \"Frontmen\""
+    showArchived: "Show archived"
+    newCustomer: "New Customer"
+    manageCustomer: "Manage Customer"
+    addCustomer: "Add a customer"
+    default: "Default"
+    yes: "Yes"
+    no: "No"
+    debtorReportOnly: "Debtor (only visible in reports)"
+    billable: "Billable"
+    availableAll: "Available to all employeees"
+    customers: "Customers"
+    debtors: "Debtors"
+    archived: "Archived"
+    actions: "Actions"
+  nl:
+    feedback: "#required"
+    logout: "#required"
+    searchBy: "#required"
+    search: "#required"
+    searchPlaceholder: "#required"
+    showArchived: "#required"
+    customerName: "#required"
+    debtorName: "#required"
+    newCustomer: "#required"
+    manageCustomer: "#required"
+    addCustomer: "#required"
+    default: "#required"
+    yes: "#required"
+    no: "#required"
+    debtorReportOnly: "#required"
+    billable: "#required"
+    availableAll: "#required"
+    customers: "#required"
+    debtors: "#required"
+    archived: "#required"
+    actions: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row :no-gutters="true">
         <b-col cols="6" md="3" class="mb-3">
           <label class="employee-status__label" for="status-select">
-            Search by:
+            {{$t('searchBy')}}:
           </label>
           <b-form-select
             id="status-select"
@@ -14,13 +57,13 @@
         </b-col>
         <b-col cols="6" md="4" class="pl-0 mb-3">
           <label class="employee-status__label" for="employee-search">
-            Search:
+            {{$t('search')}}:
           </label>
           <b-input
             id="employee-search"
             v-model="searchTerm"
             type="search"
-            placeholder='Ex.: "Frontmen"'
+            :placeholder="$t('searchPlaceholder')"
           />
         </b-col>
         <b-col cols="12" md="5" class="ml-auto mt-4">
@@ -30,9 +73,9 @@
               switch
               class="mr-3 ml-auto"
             >
-              Show archived
+              {{$t('showArchived')}}
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center>+ New customer</b-button>
+            <b-button v-b-modal.modal-center>+ {{$t('newCustomer')}}</b-button>
           </div>
         </b-col>
       </b-row>
@@ -48,38 +91,41 @@
       :sort-by.sync="sortKey"
       no-sort-reset
     >
-      <!-- Only the columns we want to customize need to be added
-        the ones that are missing are handled by default strategy -->
+      <template #head()="data">
+        <div>
+          {{ $t(data.label) }}
+        </div>
+      </template>
       <template #head(archived)="data">
         <div class="text-center">
-          {{ data.label }}
+          {{ $t(data.label) }}
         </div>
       </template>
       <template #head(actions)="data">
         <div class="text-right">
-          {{ data.label }}
+          {{ $t(data.label) }}
         </div>
       </template>
 
       <template #cell(customers)="scope">
         <strong>{{ scope.item.name }}</strong>
-        <b-badge v-if="scope.item.isDefault">Default</b-badge>
+        <b-badge v-if="scope.item.isDefault">{{$t('default')}}</b-badge>
       </template>
       <template #cell(archived)="scope">
         <div class="text-center">
           <b-badge :variant="scope.item.archived ? 'warning' : 'success'">
-            {{ scope.item.archived ? "Yes" : "No" }}
+            {{ scope.item.archived ? $t('yes') : $t('no') }}
           </b-badge>
         </div>
       </template>
       <template #cell(actions)="scope">
         <div class="text-right">
           <nuxt-link
-            :to="`/customers/${scope.item.id}`"
+            :to="localePath(`/customers/${scope.item.id}`)"
             class="btn btn-primary align-self-center"
-            title="Manage Customer"
+            :title="$t('manageCustomer')"
           >
-            Manage Customer
+            {{$t('manageCustomer')}}
           </nuxt-link>
         </div>
       </template>
@@ -87,22 +133,25 @@
     <b-modal
       id="modal-center"
       centered
-      title="Add a customer"
+      :title="$t('addCustomer')"
       cancel-variant="danger"
       :ok-disabled="!canAddCustomer"
       @ok="addCustomer()"
     >
-      <b-form-input v-model="newCustomer.name" placeholder="Customer name" />
+      <b-form-input
+        v-model="newCustomer.name"
+        :placeholder="$t('customerName')"
+      />
       <b-form-input
         v-model="newCustomer.debtor"
-        placeholder="Debtor (only visible in reports)"
+        :placeholder="$t('debtorReportOnly')"
         class="mt-3"
       />
       <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
-        Billable
+        {{$t('billable')}}
       </b-form-checkbox>
       <b-form-checkbox v-model="newCustomer.isDefault" class="mt-3">
-        Available to all employeees
+        {{$t('availableAll')}}
       </b-form-checkbox>
     </b-modal>
   </div>
@@ -114,6 +163,7 @@ import {
   defineComponent,
   ref,
   useStore,
+  useContext,
 } from "@nuxtjs/composition-api";
 import {queryOnString, sortByProp} from "~/helpers/helpers";
 
@@ -125,6 +175,7 @@ export default defineComponent({
   },
 
   setup() {
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
     const customers: {value: Customer[] | undefined} = computed(
       () => store.state.customers.customers
@@ -135,15 +186,16 @@ export default defineComponent({
       store.getters["filters/getCustomerSearchTerm"]
     );
     const searchCriteria: {value: keyof Customer; text: string}[] = [
-      {value: "name", text: "Customer name"},
-      {value: "debtor", text: "Debtor name"},
+      {value: "name", text: i18n.t('customerName') as string},
+      {value: "debtor", text: i18n.t('debtorName') as string},
     ];
+    console.log("vlad", searchCriteria);
 
     const fields = [
-      {key: "name", label: "Customers", sortable: true},
-      {key: "debtor", label: "Debtors", sortable: true},
-      {key: "archived", label: "Archived", sortable: false},
-      {key: "actions", label: "Actions", sortable: false},
+      {key: "name", label: "customers", sortable: true},
+      {key: "debtor", label: "debtors", sortable: true},
+      {key: "archived", label: "archived", sortable: false},
+      {key: "actions", label: "actions", sortable: false},
     ];
     const selectedCriteria = ref<"name" | "debtor">(
       store.getters["filters/getCustomerSearchCriteria"]
