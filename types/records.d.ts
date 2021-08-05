@@ -57,6 +57,8 @@ interface RecordsStoreState {
   travelRecords: TravelRecord[];
   workScheme: WorkScheme[];
   standByRecords: StandbyRecord[];
+  errorMessage: string;
+  errorMessageWorkscheme: string;
 }
 
 interface RecordDayStatus {
