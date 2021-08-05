@@ -10,7 +10,7 @@
       v-if="title"
       class="mt-5 mb-3 d-inline-block"
       :class="{ 'inactive-section text-danger': !active }"
-      :title="$t(notActive)"
+      :title="$t('notActive')"
     >
       {{ title }}
       <b-icon-exclamation-triangle v-if="!active" variant="danger" />
@@ -29,14 +29,21 @@
             <span v-if="shouldShowCaption(date)" class="caption">
               {{ getCaptionText(date) }}
             </span>
-            <strong class="d-block">
-              <span class="d-md-none">{{ date.weekDayShort }}</span>
-              <span class="d-none d-md-block">{{ date.weekDay }}</span>
+
+            <strong class="d-block text-capitalize">
+              <span class="d-md-none">
+                {{$d(new Date(date.date), 'dayNarrow')}}
+              </span>
+              <span class="d-none d-md-block">
+                {{$d(new Date(date.date), 'dayShort')}}
+              </span>
             </strong>
 
             <small>
-              <span>{{ date.monthDay }}</span>
-              <span class="d-none d-md-inline">{{ date.month }}</span>
+              <span class="d-none d-md-inline">
+                {{$d(new Date(date.date), 'dateMonth')}}
+              </span>
+              <span class="d-md-none">{{$d(new Date(date.date), 'date')}}</span>
             </small>
           </b-col>
 
