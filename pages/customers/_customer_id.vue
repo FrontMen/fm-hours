@@ -117,6 +117,7 @@ import {
   useMeta,
   watch,
   ref,
+  useContext,
 } from "@nuxtjs/composition-api";
 import { format } from "date-fns";
 
@@ -124,6 +125,7 @@ export default defineComponent({
   middleware: ["isAdmin"],
   head: {},
   setup() {
+    const { i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -167,7 +169,7 @@ export default defineComponent({
 
     const deleteCustomer = () => {
       const confirmation = confirm(
-        `Are you sure that you want to delete ${customer.value?.name}?`
+        i18n.t('customerDeleteConfirmation', {name: customer.value?.name || ''}) as string
       );
 
       if (!confirmation) return;
@@ -183,9 +185,10 @@ export default defineComponent({
       };
 
       const confirmation = confirm(
-        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${
-          customer.value?.name
-        }?`
+        i18n.t('customerArchiveConfirmation', {
+          name: customer.value?.name || '',
+          state: archive ? i18n.t('archive') : i18n.t('unarchive')
+        }) as string
       );
 
       if (!confirmation) return;

@@ -33,4 +33,8 @@ export default {
   billable: '#required',
   monthlyReport: '#required',
   reports: '#required',
+  customerDeleteConfirmation: '#required {name}',
+  customerArchiveConfirmation: '#required {state} {name}',
+  archive: '#required',
+  unarchive: '#required',
 };

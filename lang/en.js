@@ -37,4 +37,8 @@ export default {
   billable: 'Billable',
   monthlyReport: 'Monthly report',
   reports: 'Reports',
+  customerDeleteConfirmation: 'Are you sure that you want to delete {name}?',
+  customerArchiveConfirmation: 'Are you sure that you want to {state} {name}?',
+  archive: 'archive',
+  unarchive: 'unarchive',
 };
