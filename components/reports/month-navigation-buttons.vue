@@ -38,8 +38,8 @@
         <b-icon icon="arrow-right" />
       </b-button>
 
-      <h2 class="navigation-buttons__week-label--reports">
-        {{ monthLabel }}
+      <h2 class="navigation-buttons__week-label--reports text-capitalize">
+        {{$d(selectedDate, 'monthYear')}}
       </h2>
     </div>
   </div>
@@ -47,7 +47,7 @@
 
 <script lang="ts">
 import {computed, defineComponent} from "@nuxtjs/composition-api";
-import {differenceInCalendarMonths, format} from "date-fns";
+import {differenceInCalendarMonths} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
@@ -68,11 +68,6 @@ export default defineComponent({
     const handleCurrentClick = () => {
       if (monthDifference.value !== 0) emit("current");
     }
-
-    const monthLabel = computed(() => {
-      return format(props.selectedDate, "MMMM yyyy");
-    });
-
     const monthDifference = computed(() => {
       const today = new Date();
       return differenceInCalendarMonths(props.selectedDate, today);
@@ -85,7 +80,6 @@ export default defineComponent({
       handlePreviousClick,
       handleNextClick,
       handleCurrentClick,
-      monthLabel,
       monthDifference,
     };
   },
