@@ -39,4 +39,10 @@ export default {
   unarchive: '#required',
   cancel: '#required',
   ok: '#required',
+  lastSave: '#required {time}',
+  update: '#required',
+  approved: '#required',
+  debtor: '#required',
+  delete: '#required',
+  sendReminder: '#required',
 };

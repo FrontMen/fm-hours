@@ -1,19 +1,13 @@
 <i18n lang="yaml">
   en:
-    lastSave: "Last saved: {time} ago."
-    update: "Update"
     deny: "Deny"
     approve: "Approve"
     undo: "Undo approval"
-    approved: "APPROVED"
-    denied: "DENIED"
+    denied: "denied"
   nl:
-    lastSave: "#required {time}"
-    update: "#required"
     deny: "#required"
     approve: "#required"
     undo: "#required"
-    approved: "#required"
     denied: "#required"
 </i18n>
 
@@ -42,7 +36,7 @@
       :disabled="isSaving"
       @click="handleReminderClick"
     >
-      Send reminder
+      {{$t('sendReminder')}}
     </b-button>
 
     <template v-if="!isClosed">
@@ -74,12 +68,12 @@
         >
           {{$t('undo')}}
         </b-button>
-        <strong>{{$t('approved')}}</strong>
+        <strong class="text-uppercase">{{$t('approved')}}</strong>
         <b-icon class="ml-1" icon="check-circle-fill" variant="success" />
       </template>
 
       <template v-else>
-        <strong>{{$t('denied')}}</strong>
+        <strong class="text-uppercase">{{$t('denied')}}</strong>
         <b-icon class="ml-1" icon="x-circle-fill" variant="danger" />
       </template>
     </template>

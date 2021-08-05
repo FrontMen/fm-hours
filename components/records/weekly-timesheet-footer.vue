@@ -1,18 +1,12 @@
 <i18n lang="yaml">
   en:
-    lastSave: "Last saved: {time} ago."
-    update: "Update"
     unsubmit: "Unsubmit"
     waiting: "Waiting on approval"
-    approved: "Approved"
     denied: "Resubmit for approval"
     submit: "Submit for approval"
   nl:
-    lastSave: "#required {time}"
-    update: "#required"
     unsubmit: "#required"
     waiting: "#required"
-    approved: "#required"
     denied: "#required"
     submit: "#required"
 </i18n>

@@ -1,27 +1,18 @@
 <i18n lang="yaml">
   en:
     notFound: "Customer not found"
-    customers: "Customers"
     archived: "This customer archived at {time}"
-    name: "Name:"
     enterName: "Enter name"
-    debtor: "Debtor:"
     onlyReports: "Only visible in reports"
     enterDebtor: "Enter debtor"
     availableAll: "Available to all employeees"
-    delete: "Delete"
-    update: "Update"
   nl:
     notFound: "#required"
-    customers: "#required"
     archived: "#required {time}"
     enterName: "#required"
-    debtor: "#required"
     onlyReports: "#required"
     enterDebtor: "#required"
     availableAll: "#required"
-    delete: "#required"
-    update: "#required"
 </i18n>
 
 <template>
@@ -45,7 +36,7 @@
           </b-alert>
           <b-form-group
             id="input-group-name"
-            :label="$t('name')"
+            :label="$t('name') + ':'"
             label-for="input-2"
           >
             <b-form-input
@@ -58,7 +49,7 @@
 
           <b-form-group
             id="input-group-debtor"
-            :label="$t('debtor')"
+            :label="$t('debtor') + ':'"
             label-for="input-debtor"
             :description="$t('onlyReports')"
           >

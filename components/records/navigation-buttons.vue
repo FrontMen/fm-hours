@@ -68,7 +68,7 @@
           </b-button>
         </nuxt-link>
         <nuxt-link v-if="!isAdminView" :to="localePath('month')">
-          <b-button v-b-tooltip.hover :title="$t("go-monthly->
+          <b-button v-b-tooltip.hover :title="$t('goMonthly')">
             {{$t("monthly")}}
           </b-button>
         </nuxt-link>

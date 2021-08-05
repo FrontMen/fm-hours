@@ -3,11 +3,12 @@
     all: "All"
     emailReminder: "Email reminder:"
     selectWeek: "Select week"
-    sendReminder: "Send reminder"
     week: "Week"
   nl:
-    feedback: "#required"
-    logout: "#required"
+    all: "#required"
+    emailReminder: "#required"
+    selectWeek: "#required"
+    week: "#required"
 </i18n>
 
 <template>

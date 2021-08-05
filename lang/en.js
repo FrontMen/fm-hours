@@ -43,4 +43,10 @@ export default {
   unarchive: 'unarchive',
   cancel: 'Cancel',
   ok: 'OK',
+  lastSave: 'Last saved: {time} ago.',
+  update: 'Update',
+  approved: 'Approved',
+  debtor: 'Debtor',
+  delete: 'Delete',
+  sendReminder: 'Send reminder',
 };

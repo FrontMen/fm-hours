@@ -1,12 +1,8 @@
 <i18n lang="yaml">
   en:
     remove: "Remove entries from timesheet?"
-    delete: "Delete"
-    cancel: "Cancel"
   nl:
     remove: "#required"
-    delete: "#required"
-    cancel: "#required"
 </i18n>
 
 <template>

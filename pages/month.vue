@@ -9,8 +9,6 @@
     noResultsMonth: "No records available for selected month"
     approvedBy: "Approved by"
     date: "Date"
-    customer: "Customer"
-    debtor: "Debtor"
     hours: "Hours"
     selectProjects: "Select projects"
   nl:
@@ -23,7 +21,6 @@
     noResultsMonth: "#required"
     approvedBy: "#required"
     date: "#required"
-    customer: "#required"
     debtor: "#required"
     hours: "#required"
     selectProjects: "#required"

@@ -5,7 +5,6 @@
     manageProjects: "Manage Projects"
     customerSearchPlaceholder: "Click or search for a customer here"
     employeeSettings: "Employee Settings"
-    name: "Name"
     email: "Email"
     admin: "Admin"
     standBy: "Standby"
@@ -13,15 +12,12 @@
     startDate: "Start date"
     noDate: "No date selected"
     save: "Save"
-    delete: "Delete"
   nl:
-    feedback: "#required"
     notFoundEmployee: "#required"
     editTeam: "#required"
     manageProjects: "#required"
     customerSearchPlaceholder: "#required"
     employeeSettings: "#required"
-    name: "#required"
     email: "#required"
     admin: "#required"
     standBy: "#required"
@@ -29,7 +25,6 @@
     startDate: "#required"
     noDate: "#required"
     save: "#required"
-    delete: "#required"
 </i18n>
 
 <template>
