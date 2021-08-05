@@ -1,10 +1,16 @@
+<i18n lang="yaml">
+  en:
+    notActive: "Not active for employee"
+  nl:
+    notActive: "#required"
+</i18n>
 <template>
   <div>
     <h3
       v-if="title"
       class="mt-5 mb-3 d-inline-block"
       :class="{ 'inactive-section text-danger': !active }"
-      title="Not active for employee"
+      :title="$t(notActive)"
     >
       {{ title }}
       <b-icon-exclamation-triangle v-if="!active" variant="danger" />
