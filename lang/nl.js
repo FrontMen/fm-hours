@@ -45,4 +45,5 @@ export default {
   debtor: '#required',
   delete: '#required',
   sendReminder: '#required',
+  denied: '#required',
 };

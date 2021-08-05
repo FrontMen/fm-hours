@@ -3,12 +3,10 @@
     deny: "Deny"
     approve: "Approve"
     undo: "Undo approval"
-    denied: "denied"
   nl:
     deny: "#required"
     approve: "#required"
     undo: "#required"
-    denied: "#required"
 </i18n>
 
 <template>

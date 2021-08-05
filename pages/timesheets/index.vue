@@ -4,11 +4,17 @@
     emailReminder: "Email reminder:"
     selectWeek: "Select week"
     week: "Week"
+    empty: "empty"
+    pending: "pending"
+    new: "new"
   nl:
     all: "#required"
     emailReminder: "#required"
     selectWeek: "#required"
     week: "#required"
+    empty: "#required"
+    pending: "#required"
+    new: "#required"
 </i18n>
 
 <template>
@@ -100,7 +106,7 @@
       <template #cell()="scope">
         <div
           :class="['container--cell', scope.item[scope.field.key]]"
-          :title="scope.item[scope.field.key]"
+          :title="$t(scope.item[scope.field.key])"
           @click="
             openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
           "
