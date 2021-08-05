@@ -191,7 +191,6 @@ export default defineComponent({
       {value: "name", text: i18n.t('customerName') as string},
       {value: "debtor", text: i18n.t('debtorName') as string},
     ];
-    console.log("vlad", searchCriteria);
 
     const fields = [
       {key: "name", label: "customers", sortable: true},

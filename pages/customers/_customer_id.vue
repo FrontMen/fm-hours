@@ -14,7 +14,7 @@
   nl:
     notFound: "#required"
     customers: "#required"
-    archived: "#required"
+    archived: "#required {time}"
     enterName: "#required"
     debtor: "#required"
     onlyReports: "#required"
@@ -41,7 +41,7 @@
           @change="hasUnsavedChanges = true"
         >
           <b-alert :show="form.archived" variant="info">
-            {{$t('archived', { title: form.archivedDate | formatDate("dd MMMM yyyy") })}}
+            {{$t('archived', { time: formatDate(form.archivedDate) })}}
           </b-alert>
           <b-form-group
             id="input-group-name"
@@ -118,6 +118,7 @@ import {
   watch,
   ref,
 } from "@nuxtjs/composition-api";
+import { format } from "date-fns";
 
 export default defineComponent({
   middleware: ["isAdmin"],
@@ -217,6 +218,11 @@ export default defineComponent({
       router.push("/customers");
     };
 
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      return format(new Date(date), "dd MMMM yyyy");
+    };
+
     return {
       customer,
       hasUnsavedChanges,
@@ -224,6 +230,7 @@ export default defineComponent({
       archiveCustomerToggle,
       deleteCustomer,
       handleSubmit,
+      formatDate,
     };
   },
 });
