@@ -155,8 +155,10 @@ export default defineComponent({
     watch(
       () => formattedProjectValues.value,
       () => {
-        const floatIntegers = formattedProjectValues.value.map(val =>
-          !isTravelAllowance ? timeStringToFloat(val) : +val,
+        const floatIntegers = formattedProjectValues.value.map(val => {
+          if (val === '') return 0
+          return !isTravelAllowance ? timeStringToFloat(val) : +val
+        }
         )
         props.project.values = floatIntegers
       },
