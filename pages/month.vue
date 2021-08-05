@@ -2,19 +2,16 @@
   en:
     backToWeek: "Back to week view"
     print: "Print"
-    totalHours: "Total hours"
     totalBillableHours: "Total billable hours"
     totalSelectedHours: "Total for selected projects"
     onlyBillable: "Only billable"
     noResultsMonth: "No records available for selected month"
     approvedBy: "Approved by"
     date: "Date"
-    hours: "Hours"
     selectProjects: "Select projects"
   nl:
     backToWeek: "#required"
     print: "#required"
-    totalHours: "#required"
     totalBillableHours: "#required"
     totalSelectedHours: "#required"
     onlyBillable: "#required"
@@ -22,7 +19,6 @@
     approvedBy: "#required"
     date: "#required"
     debtor: "#required"
-    hours: "#required"
     selectProjects: "#required"
 </i18n>
 

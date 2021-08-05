@@ -1,11 +1,9 @@
 <i18n lang="yaml">
   en:
     totals: "Totals"
-    kilometers: "Kilometers"
     standBy: "Stand-by"
   nl:
     totals: "#required"
-    kilometers: "#required"
     standBy: "#required"
 </i18n>
 

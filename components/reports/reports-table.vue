@@ -22,7 +22,11 @@
       responsive
       v-bind="$attrs"
       v-on="$listeners"
-    />
+    >
+      <template #head()="data">
+        {{$t(data.column)}}
+      </template>
+    </b-table>
   </div>
 </template>
 

@@ -46,4 +46,9 @@ export default {
   delete: '#required',
   sendReminder: '#required',
   denied: '#required',
+  totalHours: '#required',
+  productivity: '#required',
+  nonBillable: '#required',
+  kilometers: '#required',
+  hours: '#required',
 };

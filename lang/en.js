@@ -50,4 +50,9 @@ export default {
   delete: 'Delete',
   sendReminder: 'Send reminder',
   denied: 'denied',
+  totalHours: 'Total hours',
+  productivity: 'Productivity',
+  nonBillable: 'Non-billable',
+  kilometers: 'Kilometers',
+  hours: 'Hours',
 };
