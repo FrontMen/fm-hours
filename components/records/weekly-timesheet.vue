@@ -1,8 +1,32 @@
 <i18n lang="yaml">
   en:
     notActive: "Not active for employee"
+    TODAY: "today"
+    TDY: "tdy"
+    T: "t"
+    HOLIDAY: "holiday"
+    HOLI: "holi"
+    H: "h"
+    LEAVE: "leave"
+    LVD: "lvd"
+    L: "l"
+    PART-TIME: "part-time"
+    PTD: "ptd"
+    P: "p"
   nl:
     notActive: "#required"
+    TODAY: "#required"
+    TDY: "#required"
+    T: "#required"
+    HOLIDAY: "#required"
+    HOLI: "#required"
+    H: "#required"
+    LEAVE: "#required"
+    LVD: "#required"
+    L: "#required"
+    PART-TIME: "#required"
+    PTD: "#required"
+    P: "#required"
 </i18n>
 <template>
   <div>
@@ -26,8 +50,8 @@
             cols="1"
             class="weekly-timesheet__date-column"
           >
-            <span v-if="shouldShowCaption(date)" class="caption">
-              {{ getCaptionText(date) }}
+            <span v-if="shouldShowCaption(date)" class="caption text-uppercase">
+              {{ $t(getCaptionText(date)) }}
             </span>
 
             <strong class="d-block text-capitalize">
