@@ -133,6 +133,8 @@
       :title="$t('addEmployee')"
       cancel-variant="danger"
       :ok-disabled="!canAddEmployee"
+      :ok-title="$t('ok')"
+      :cancel-title="$t('cancel')"
       @ok="addEmployee()"
     >
       <b-form-input

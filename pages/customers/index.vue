@@ -134,6 +134,8 @@
       :title="$t('addCustomer')"
       cancel-variant="danger"
       :ok-disabled="!canAddCustomer"
+      :ok-title="$t('ok')"
+      :cancel-title="$t('cancel')"
       @ok="addCustomer()"
     >
       <b-form-input

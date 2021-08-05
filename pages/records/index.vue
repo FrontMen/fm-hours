@@ -203,9 +203,11 @@
       <b-modal
         id="deny-modal"
         centered
-        title="$t('denialReason')"
+        :title="$t('denialReason')"
         cancel-variant="danger"
         :ok-disabled="!reasonOfDenial"
+        :ok-title="$t('ok')"
+        :cancel-title="$t('cancel')"
         @hidden="reasonOfDenial = ''"
         @ok="handleDeny()"
       >

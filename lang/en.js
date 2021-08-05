@@ -41,4 +41,6 @@ export default {
   customerArchiveConfirmation: 'Are you sure that you want to {state} {name}?',
   archive: 'archive',
   unarchive: 'unarchive',
+  cancel: 'Cancel',
+  ok: 'OK',
 };

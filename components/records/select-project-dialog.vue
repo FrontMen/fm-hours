@@ -3,14 +3,10 @@
     addProject: "Add project"
     name: "Name"
     nameError: "Please choose a project from the list"
-    cancel: "Cancel"
-    ok: "OK"
   nl:
     addProject: "#required"
     name: "#required"
     nameError: "#required"
-    cancel: "#required"
-    ok: "#required"
 </i18n>
 
 <template>

@@ -37,4 +37,6 @@ export default {
   customerArchiveConfirmation: '#required {state} {name}',
   archive: '#required',
   unarchive: '#required',
+  cancel: '#required',
+  ok: '#required',
 };
