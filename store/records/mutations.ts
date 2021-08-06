@@ -52,6 +52,10 @@ const mutations: MutationTree<RecordsStoreState> = {
     state.selectedWeek = payload.selectedWeek;
     state.workScheme = payload.workScheme;
   },
+
+  setErrorMessageWorkscheme: (state, payload: string) => {
+    state.errorMessageWorkscheme = payload;
+  },
 };
 
 export default mutations;

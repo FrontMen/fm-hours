@@ -83,7 +83,7 @@ export default defineComponent({
 
     const dayWorkSchemeHoursTotal = computed(() =>
       props.selectedWeek.map((_, index) =>
-        props.workScheme?.[index] ? props.workScheme[index].workHours : "-")
+        props.workScheme?.[index] ? props.workScheme[index].workHours : "0")
     );
 
     watch(
