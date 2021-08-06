@@ -79,11 +79,12 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, useContext} from "@nuxtjs/composition-api";
+import { getISOWeek } from "date-fns";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
 import hotkeys from 'hotkeys-js';
 
-import {getWeekRange, getDateLabel, getDayOnGMT} from "~/helpers/dates";
+import {getWeekRange, getDayOnGMT} from "~/helpers/dates";
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -102,6 +103,7 @@ export default defineComponent({
     hotkeys.unbind('left');
   },
   setup(props, {emit}) {
+    const { i18n } = useContext();
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => emit("current");
@@ -112,7 +114,10 @@ export default defineComponent({
       const firstDate = props.selectedWeek[0].date;
       const {start, end} = getWeekRange(firstDate);
 
-      return getDateLabel(start, end);
+      const weekIs = i18n.t('weekNo', {num: getISOWeek(start)});
+      const formatStart = i18n.d(start, 'dateMonth');
+      const formatEnd = i18n.d(end, 'dateMonthYearShort');
+      return `${formatStart} - ${formatEnd} (${weekIs})`;
     });
 
     const weekDifference = computed(() => {

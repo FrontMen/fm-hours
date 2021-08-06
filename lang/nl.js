@@ -53,4 +53,5 @@ export default {
   kilometers: '#required',
   hours: '#required',
   availableAll: '#required',
+  weekNo: '#required: {num}',
 };
