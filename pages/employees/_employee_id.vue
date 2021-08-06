@@ -142,6 +142,7 @@
             <b-form-datepicker
               id="start-datepicker"
               v-model="startDate"
+              :locale="isoLocale"
               class="w-75 mb-2"
               :label-no-date-selected="$t('noDate')"
               @input="hasUnsavedChanges = true"
@@ -157,6 +158,7 @@
             <b-form-datepicker
               id="end-datepicker"
               v-model="endDate"
+              :locale="isoLocale"
               class="mt-2 w-75 mb-2"
               :disabled="!hasEndDate"
               :label-no-date-selected="$t('noDate')"
@@ -216,6 +218,10 @@ export default defineComponent({
     const selectedTeam = ref<string | null>(null);
     const emailTouched = ref<boolean | null>(null);
     const nameTouched = ref<boolean | null>(null);
+
+    const isoLocale = computed(() => {
+      return i18n.localeProperties.iso;
+    });
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -496,6 +502,7 @@ export default defineComponent({
       saveProjects,
       hasUnsavedChanges,
       isTravelAllowed,
+      isoLocale,
       startDate,
       hasEndDate,
       endDate,

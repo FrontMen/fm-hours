@@ -149,6 +149,7 @@
       <b-form-datepicker
         id="employee-start-date"
         v-model="newEmployee.startDate"
+        :locale="isoLocale"
         class="w-75"
       />
       <b-form-checkbox v-model="newEmployee.travelAllowance" class="mt-3">
@@ -197,6 +198,10 @@ export default defineComponent({
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
       }
+    });
+
+    const isoLocale = computed(() => {
+      return i18n.localeProperties.iso;
     });
 
     const customerOptions = computed(() =>
@@ -339,6 +344,7 @@ export default defineComponent({
       filteredEmployees,
       filterBy,
       filterByOptions,
+      isoLocale,
       searchInput,
       customerOptions,
       selectedCustomers,
