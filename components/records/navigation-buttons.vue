@@ -148,7 +148,6 @@ export default defineComponent({
     font-size: 18px;
     font-weight: bold;
     flex-grow: 1;
-    /* width: 100%; */
 
     @media (min-width: 560px) {
       font-size: 24px;
