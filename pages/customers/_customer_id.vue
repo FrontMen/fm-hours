@@ -61,7 +61,9 @@
             />
           </b-form-group>
 
-          <b-form-checkbox v-model="form.isBillable">Billable</b-form-checkbox>
+          <b-form-checkbox v-model="form.isBillable">
+            {{$t('billable')}}
+          </b-form-checkbox>
 
           <b-form-checkbox v-model="form.isDefault">
             {{$t('availableAll')}}
@@ -79,10 +81,10 @@
             <b-button
               type="button"
               variant="warning"
-              class="mr-2"
+              class="mr-2 text-capitalize"
               @click="archiveCustomerToggle(!form.archived)"
             >
-              {{ form.archived ? "Unarchive" : "Archive" }}
+              {{ form.archived ? $t('unarchive') : $t('archive') }}
             </b-button>
             <b-button
               type="submit"

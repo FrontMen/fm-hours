@@ -16,6 +16,7 @@ export default {
     "You won't be able to access the timesheets / reports of {name}!",
   noOptions: '{num} options selected',
   employee: 'Employee',
+  Employee: 'Employee',
   employeeName: 'Employee name',
   employeeEmail: 'Employee email',
   travelAllowance: 'Travel allowance',

@@ -15,6 +15,7 @@ export default {
   reConfirmDelete: '#required {name}!',
   noOptions: '{num} #required',
   employee: '#required',
+  Employee: '#required',
   employeeName: '#required',
   employeeEmail: '#required',
   travelAllowance: '#required',

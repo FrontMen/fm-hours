@@ -86,7 +86,7 @@
     >
       <template #head(id)="scope">
         <div>
-          {{ scope.label }}
+          {{ $t(scope.label) }}
         </div>
       </template>
       <template #head()="scope">
