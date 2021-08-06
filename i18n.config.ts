@@ -16,5 +16,6 @@ export default {
   vueI18n: {
     fallbackLocale: 'en',
     dateTimeFormats,
+    silentTranslationWarn: true,
   },
 };
