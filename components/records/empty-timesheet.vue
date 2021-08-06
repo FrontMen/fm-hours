@@ -17,7 +17,7 @@
         v-b-tooltip.hover
         :title="$t('projectHint')"
       >
-        {{$t("addProject")}}
+        {{$t("addAProject")}}
       </b-button>
       <span class="d-none d-sm-inline mx-2">or</span>
 

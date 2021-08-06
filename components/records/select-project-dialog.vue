@@ -1,9 +1,7 @@
 <i18n lang="yaml">
   en:
-    addProject: "Add project"
     nameError: "Please choose a project from the list"
   nl:
-    addProject: "#required"
     nameError: "#required"
 </i18n>
 
@@ -11,7 +9,7 @@
   <b-modal
     id="modal-add-project"
     ref="modal"
-    :title="$t('addProject')"
+    :title="$t('addAProject')"
     :ok-title="$t('ok')"
     :cancel-title="$t('cancel')"
     cancel-variant="outline-primary"
