@@ -1,17 +1,5 @@
 <template>
   <div class="content-wrapper mt-5">
-    <b-alert show variant="info" class="mb-3">
-      To request leave, please visit
-      <strong>
-        <a
-          href="https://bridge.hosted-tools.com/myprofile/absences"
-          target="_blank"
-          rel="noreferrer"
-        >
-          Bridge!
-        </a>
-      </strong>
-    </b-alert>
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       Could not get workschema data. Holidays, leave, or total hours will not be
       shown correctly, but you can still fill in and submit your timesheet

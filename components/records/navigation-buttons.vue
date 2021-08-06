@@ -1,23 +1,6 @@
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
-      <nuxt-link v-if="!isAdminView" to="month">
-        <b-button>Monthly overview</b-button>
-      </nuxt-link>
-
-      <nuxt-link
-        v-if="isAdminView"
-        to="/timesheets"
-        class="d-flex align-items-center flex-nowrap"
-      >
-        <b-button>
-          <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-          Timesheets
-        </b-button>
-      </nuxt-link>
-      <h2 class="navigation-buttons__week-label">
-        {{ weekLabel }}
-      </h2>
       <b-button-group class="navigation-buttons__date-group">
         <b-button
           v-b-tooltip.hover
@@ -26,11 +9,12 @@
         >
           <b-icon icon="arrow-left" />
         </b-button>
+
         <b-button
           :disabled="weekDifference === 0"
           @click="handleCurrentClick()"
         >
-          <b-icon icon="calendar2-date" />
+          Today
         </b-button>
 
         <b-button
@@ -40,6 +24,37 @@
         >
           <b-icon icon="arrow-right" />
         </b-button>
+      </b-button-group>
+      <h2 class="navigation-buttons__week-label">
+        {{ weekLabel }}
+      </h2>
+      <b-button-group class="navigation-buttons__date-group mr-2">
+        <b-button
+          class="mr-1"
+          variant="info"
+          href="https://bridge.hosted-tools.com/myprofile/absences"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Request Leave
+          <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
+        </b-button>
+
+        <nuxt-link
+          v-if="isAdminView"
+          to="/timesheets"
+          class="d-flex align-items-center flex-nowrap"
+        >
+          <b-button>
+            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
+            Timesheets
+          </b-button>
+        </nuxt-link>
+        <nuxt-link v-if="!isAdminView" to="month">
+          <b-button v-b-tooltip.hover title="Go to Monthly Overview">
+            Monthly Overview
+          </b-button>
+        </nuxt-link>
       </b-button-group>
     </div>
   </div>
@@ -113,11 +128,12 @@ export default defineComponent({
   &__container {
     flex: 0 0 auto;
     display: flex;
-    align-items: center;
     flex-wrap: wrap;
     gap: 8px;
     width: 100%;
     max-width: 100%;
+    align-items: stretch;
+    flex-direction: row;
   }
 
   &__date-group {
@@ -131,12 +147,10 @@ export default defineComponent({
   &__week-label {
     font-size: 18px;
     font-weight: bold;
-
-    margin: 0 auto;
+    flex-grow: 1;
 
     @media (min-width: 560px) {
       font-size: 24px;
-      margin-right: 0;
     }
   }
 }
