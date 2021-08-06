@@ -3,16 +3,16 @@
     requestLeave: "Request leave"
     monthly: "Monthly overview"
     goMonthly: "Go to Monthly Overview"
-    timesheets: "Timesheets"
     previousHint: "Or use keyboard left to go to previous week"
     nextHint: "Or use keyboard right to go to next week"
+    today: "today"
   nl:
     requestLeave: "#required"
     monthly: "#required"
     goMonthly: "#required"
-    timesheets: "#required"
     previousHint: "#required"
     nextHint: "#required"
+    today: "#required"
 </i18n>
 
 <template>
@@ -29,6 +29,7 @@
 
         <b-button
           :disabled="weekDifference === 0"
+          class="text-capitalize"
           @click="handleCurrentClick()"
         >
           {{$t('today')}}

@@ -2,10 +2,11 @@
   en:
     previousHint: "Or use keyboard left to go to previous month"
     nextHint: "Or use keyboard right to go to next month"
-
+    currentHint: "To current month"
   nl:
     previousHint: "#required"
     nextHint: "#required"
+    currentHint: "#required"
 </i18n>
 
 <template>
@@ -14,7 +15,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="Or use keyboard left to go to previous month"
+        :title="$t('previousHint')"
         @click="handlePreviousClick()"
       >
         <b-icon icon="arrow-left" />
@@ -23,7 +24,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="To current month"
+        :title="$t('currentHint')"
         @click="handleCurrentClick"
       >
         <b-icon icon="calendar2-date" />
@@ -32,7 +33,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="Or use keyboard right to go to next month"
+        :title="$t('nextHint')"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
