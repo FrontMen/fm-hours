@@ -28,7 +28,7 @@
         <b-icon icon="arrow-right" />
       </b-button>
 
-      <h2 class="navigation-buttons__week-label">
+      <h2 class="navigation-buttons__week-label--reports">
         {{ monthLabel }}
       </h2>
     </div>
@@ -98,7 +98,7 @@ export default defineComponent({
     margin-right: 8px;
   }
 
-  &__week-label {
+  &__week-label--reports {
     flex: 1 1 auto;
     margin: 0 0 0 8px;
     font-size: 18px;
