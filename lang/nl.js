@@ -52,4 +52,5 @@ export default {
   nonBillable: '#required',
   kilometers: '#required',
   hours: '#required',
+  availableAll: '#required',
 };

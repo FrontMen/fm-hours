@@ -56,4 +56,5 @@ export default {
   nonBillable: 'Non-billable',
   kilometers: 'Kilometers',
   hours: 'Hours',
+  availableAll: 'Available to all employeees',
 };

@@ -1,18 +1,14 @@
 <i18n lang="yaml">
   en:
     notFound: "Customer not found"
-    archived: "This customer archived at {time}"
     enterName: "Enter name"
     onlyReports: "Only visible in reports"
     enterDebtor: "Enter debtor"
-    availableAll: "Available to all employeees"
   nl:
     notFound: "#required"
-    archived: "#required {time}"
     enterName: "#required"
     onlyReports: "#required"
     enterDebtor: "#required"
-    availableAll: "#required"
 </i18n>
 
 <template>
@@ -32,7 +28,7 @@
           @change="hasUnsavedChanges = true"
         >
           <b-alert :show="form.archived" variant="info">
-            {{$t('archived', { time: formatDate(form.archivedDate) })}}
+            {{$t('archivedCustomer', { time: formatDate(form.archivedDate) })}}
           </b-alert>
           <b-form-group
             id="input-group-name"

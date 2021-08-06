@@ -1,11 +1,9 @@
 <i18n lang="yaml">
   en:
     addProject: "Add project"
-    name: "Name"
     nameError: "Please choose a project from the list"
   nl:
     addProject: "#required"
-    name: "#required"
     nameError: "#required"
 </i18n>
 

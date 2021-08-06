@@ -7,7 +7,6 @@
     noEmployeeFound: "No employee found"
     inactive: "Inactive"
     manageEmployee: "Manage employee"
-    customerName: "Customer name"
     addEmployee: "Add an employee"
   nl:
     searchEmployeeByName: "#required"
@@ -17,7 +16,6 @@
     noEmployeeFound: "#required"
     inactive: "#required"
     manageEmployee: "#required"
-    customerName: "#required"
     addEmployee: "#required"
 </i18n>
 

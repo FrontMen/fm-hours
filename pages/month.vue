@@ -1,5 +1,6 @@
 <i18n lang="yaml">
   en:
+    customer: "Customer"
     backToWeek: "Back to week view"
     print: "Print"
     totalBillableHours: "Total billable hours"
@@ -10,6 +11,7 @@
     date: "Date"
     selectProjects: "Select projects"
   nl:
+    customer: "#required"
     backToWeek: "#required"
     print: "#required"
     totalBillableHours: "#required"
@@ -18,7 +20,6 @@
     noResultsMonth: "#required"
     approvedBy: "#required"
     date: "#required"
-    debtor: "#required"
     selectProjects: "#required"
 </i18n>
 

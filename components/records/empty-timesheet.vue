@@ -1,19 +1,15 @@
 <i18n lang="yaml">
   en:
-    noHours: "There are no hours registered for this week."
     projectHint: "Or use 'n' to add project"
-    addProject: "Add a project"
     copyPrevious: "Copy previous week"
   nl:
-    noHours: "#required"
     projectHint: "#required"
-    addProject: "#required"
     copyPrevious: "#required"
 </i18n>
 
 <template>
   <div class="empty-timesheet">
-    <p>{{$t("noHours")}}</p>
+    <p>{{$t("noHoursThisWeek")}}</p>
 
     <template>
       <b-button
