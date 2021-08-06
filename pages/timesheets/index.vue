@@ -90,10 +90,18 @@
         </div>
       </template>
       <template #head()="scope">
-        <div class="table-cell-wrapper table-cell-wrapper__heading">
+        <div class="table-cell-wrapper table-cell-wrapper__heading text-center">
           <p>
             {{
-              `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
+              $d(new Date(scope.field.timestamp), "dateMonth")
+            }}
+            <br />
+            {{
+              $d(new Date(scope.field.timestampEnd), "dateMonth")
+            }}
+            <br />
+            {{
+              `(${scope.field.weekNumber})`
             }}
           </p>
         </div>
@@ -173,10 +181,10 @@ export default defineComponent({
     });
 
     const reminderOptions = computed(() => {
-      return store.state.timesheets?.timesheetTableData?.fields?.map((field) => {
-        if (!field.formatedStartDate) return null;
+      return store.state.timesheets?.timesheetTableData?.fields?.map((field: TimesheetTableField) => {
+        if (!field.timestamp || !field.timestampEnd) return null;
 
-        const dateLabel = `${field.formatedStartDate}-${field.formatedEndDate} (${i18n.t('week')} ${field.weekNumber})`;
+        const dateLabel = `${i18n.d(new Date(field.timestamp as number), "dateMonth")} - ${i18n.d(new Date(field.timestampEnd as number), "dateMonth")} (${i18n.t('weekNo', {num: field.weekNumber})})`;
         return {value: field.timestamp, text: dateLabel};
       }).filter(option => option);
     });
@@ -280,10 +288,10 @@ export default defineComponent({
 
 .table-cell-wrapper {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
 
   &__employee {
+    justify-content: flex-start;
     p {
       margin: 0;
       white-space: nowrap;
@@ -291,6 +299,7 @@ export default defineComponent({
   }
 
   &__heading {
+    justify-content: center;
     p {
       margin: 0;
       font-size: 0.8rem;
