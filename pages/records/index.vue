@@ -1,8 +1,28 @@
+<i18n lang="yaml">
+  en:
+    workschemeError: "Could not get workschema data. Holidays, leave, or total hours will not be shown correctly, but you can still fill in and submit your timesheet"
+    leaveRequest: "To request leave, please visit"
+    bridge: "Bridge"
+    standByHours: "Stand-by hours"
+    leaveDay: "Leave days"
+    addComment: "Add a comment here."
+    denialReason: "Reason of denial"
+    denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
+  nl:
+    workschemeError: "#required"
+    leaveRequest: "#required"
+    bridge: "#required"
+    standByHours: "#required"
+    leaveDay: "#required"
+    addComment: "#required"
+    denialReason: "#required"
+    denialReasonPlaceholder: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper mt-5">
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
-      Could not get workschema data. Holidays, leave, or total hours will not be
-      shown correctly, but you can still fill in and submit your timesheet
+      {{$t('workschemeError')}}
     </b-alert>
     <employee-header
       v-if="isAdminView && employee"
@@ -62,7 +82,7 @@
             <weekly-timesheet
               :selected-week="recordsState.selectedWeek"
               :active="!!employee.standBy"
-              :title="'Stand-by hours'"
+              :title="$t('standByHours')"
             >
               <template #rows>
                 <weekly-timesheet-row
@@ -86,7 +106,7 @@
             <weekly-timesheet
               :selected-week="recordsState.selectedWeek"
               :active="!!employee.travelAllowance"
-              :title="'Travel allowance'"
+              :title="$t('travelAllowance')"
             >
               <template #rows>
                 <weekly-timesheet-row
@@ -107,7 +127,7 @@
         <template v-if="timesheet.leaveDays">
           <weekly-timesheet
             :selected-week="recordsState.selectedWeek"
-            :title="'Leave days'"
+            :title="$t('leaveDay')"
           >
             <template #rows>
               <weekly-timesheet-row
@@ -139,7 +159,7 @@
           id="message-textarea"
           v-model="messageInput"
           class="mt-4"
-          placeholder="Add a comment here."
+          :placeholder="$t('addComment')"
           rows="1"
           max-rows="4"
           @change="hasUnsavedChanges = true"
@@ -183,16 +203,18 @@
       <b-modal
         id="deny-modal"
         centered
-        title="Reason of denial"
+        :title="$t('denialReason')"
         cancel-variant="danger"
         :ok-disabled="!reasonOfDenial"
+        :ok-title="$t('ok')"
+        :cancel-title="$t('cancel')"
         @hidden="reasonOfDenial = ''"
         @ok="handleDeny()"
       >
         <b-form-textarea
           id="textarea"
           v-model="reasonOfDenial"
-          placeholder="Write a short description of the reason of denial and what the employee should do to fix it."
+          :placeholder="$t('denialReasonPlaceholder')"
           rows="3"
         />
       </b-modal>
@@ -213,6 +235,7 @@ import {
   useStore,
   useMeta,
   ref,
+  useContext,
 } from "@nuxtjs/composition-api";
 
 import EmployeeHeader from "~/components/app/employee-header.vue";
@@ -243,6 +266,7 @@ export default defineComponent({
   head: {},
 
   setup() {
+    const { i18n, localePath } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
@@ -257,7 +281,7 @@ export default defineComponent({
     store.dispatch("customers/getCustomers");
 
     if (isAdminView && !store.getters["employee/isEmployeeAdmin"]) {
-      return router.replace("/records");
+      return router.replace(localePath("/records"));
     }
 
     const employeeId = isAdminView
@@ -276,8 +300,8 @@ export default defineComponent({
       if (!isAdminView) return undefined;
 
       return selectedEmployee.value
-        ? `Timesheets - ${selectedEmployee.value?.name}`
-        : "Timesheets";
+        ? `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
+        : i18n.t('timesheets') as string;
     });
 
     useMeta(() => ({
@@ -333,7 +357,7 @@ export default defineComponent({
       );
 
       return [
-        {text: "Choose project", disabled: true},
+        {text: i18n.t('chooseProject'), disabled: true},
         ...selectableCustomers.map((entry) => ({
           value: entry.id,
           text: entry.name,
@@ -352,7 +376,7 @@ export default defineComponent({
       if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
         const difference = +(totals.weekTotal - totals.expectedWeekTotal).toFixed(2);
         confirmation = confirm(
-          `You have filled in ${difference} more hour${difference !== 1 ? 's': ''} than the expected ${totals.expectedWeekTotal} hours a week. Is this correct?`
+          `${difference === 1 ? i18n.t('weekError', {n: difference, expected: totals.expectedWeekTotal}) : i18n.t('weekErrors', {n: difference, expected: totals.expectedWeekTotal})}`
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
@@ -365,7 +389,7 @@ export default defineComponent({
         );
 
         if (daysExceedingExpected.length && !showBridgeError) confirmation = confirm(
-          `You have filled in more hours than expected on some of the days. Is this correct?`
+          i18n.t('dayError') as string
         );
       }
 

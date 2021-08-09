@@ -1,10 +1,27 @@
+<i18n lang="yaml">
+  en:
+    requestLeave: "Request leave"
+    monthly: "Monthly overview"
+    goMonthly: "Go to Monthly Overview"
+    previousHint: "Or use keyboard left to go to previous week"
+    nextHint: "Or use keyboard right to go to next week"
+    today: "today"
+  nl:
+    requestLeave: "#required"
+    monthly: "#required"
+    goMonthly: "#required"
+    previousHint: "#required"
+    nextHint: "#required"
+    today: "#required"
+</i18n>
+
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button-group class="navigation-buttons__date-group">
         <b-button
           v-b-tooltip.hover
-          title="Or use keyboard left to go to previous week"
+          :title="$t('previousHint')"
           @click="handlePreviousClick()"
         >
           <b-icon icon="arrow-left" />
@@ -12,14 +29,15 @@
 
         <b-button
           :disabled="weekDifference === 0"
+          class="text-capitalize"
           @click="handleCurrentClick()"
         >
-          Today
+          {{$t('today')}}
         </b-button>
 
         <b-button
           v-b-tooltip.hover
-          title="Or use keyboard right to go to next week"
+          :title="$t('nextHint')"
           @click="handleNextClick()"
         >
           <b-icon icon="arrow-right" />
@@ -36,23 +54,23 @@
           target="_blank"
           rel="noreferrer"
         >
-          Request Leave
+          {{$t('requestLeave')}}
           <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
         </b-button>
 
         <nuxt-link
           v-if="isAdminView"
-          to="/timesheets"
+          :to="localePath('/timesheets')"
           class="d-flex align-items-center flex-nowrap"
         >
           <b-button>
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            Timesheets
+            {{$t("timesheets")}}
           </b-button>
         </nuxt-link>
-        <nuxt-link v-if="!isAdminView" to="month">
-          <b-button v-b-tooltip.hover title="Go to Monthly Overview">
-            Monthly Overview
+        <nuxt-link v-if="!isAdminView" :to="localePath('month')">
+          <b-button v-b-tooltip.hover :title="$t('goMonthly')">
+            {{$t("monthly")}}
           </b-button>
         </nuxt-link>
       </b-button-group>
@@ -61,11 +79,12 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, useContext} from "@nuxtjs/composition-api";
+import { getISOWeek } from "date-fns";
 import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
 import hotkeys from 'hotkeys-js';
 
-import {getWeekRange, getDateLabel, getDayOnGMT} from "~/helpers/dates";
+import {getWeekRange, getDayOnGMT} from "~/helpers/dates";
 
 export default defineComponent({
   emits: ["previous", "next", "current"],
@@ -84,6 +103,7 @@ export default defineComponent({
     hotkeys.unbind('left');
   },
   setup(props, {emit}) {
+    const { i18n } = useContext();
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => emit("current");
@@ -94,7 +114,10 @@ export default defineComponent({
       const firstDate = props.selectedWeek[0].date;
       const {start, end} = getWeekRange(firstDate);
 
-      return getDateLabel(start, end);
+      const weekIs = i18n.t('weekNo', {num: getISOWeek(start)});
+      const formatStart = i18n.d(start, 'dateMonth');
+      const formatEnd = i18n.d(end, 'dateMonthYearShort');
+      return `${formatStart} - ${formatEnd} (${weekIs})`;
     });
 
     const weekDifference = computed(() => {

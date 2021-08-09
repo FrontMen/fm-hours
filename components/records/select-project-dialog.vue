@@ -1,8 +1,17 @@
+<i18n lang="yaml">
+  en:
+    nameError: "Please choose a project from the list"
+  nl:
+    nameError: "#required"
+</i18n>
+
 <template>
   <b-modal
     id="modal-add-project"
     ref="modal"
-    title="Add project"
+    :title="$t('addAProject')"
+    :ok-title="$t('ok')"
+    :cancel-title="$t('cancel')"
     cancel-variant="outline-primary"
     centered
     @show="reset"
@@ -11,9 +20,9 @@
   >
     <form ref="form" @submit.stop.prevent="handleSubmit">
       <b-form-group
-        label="Name"
+        :label="$t('name')"
+        :invalid-feedback="$t('nameError')"
         label-for="project-input"
-        invalid-feedback="Please choose a project from the list"
         :state="selectState"
       >
         <b-form-select

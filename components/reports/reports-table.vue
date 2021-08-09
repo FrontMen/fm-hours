@@ -1,7 +1,15 @@
+<i18n lang="yaml">
+  en:
+    export: "Export"
+
+  nl:
+    export: "#required"
+</i18n>
+
 <template>
   <div class="reports-table">
     <div class="reports-table__btn mb-4">
-      <b-btn @click="exportToCsv">Export</b-btn>
+      <b-btn @click="exportToCsv">{{$t('export')}}</b-btn>
     </div>
 
     <b-table
@@ -14,7 +22,11 @@
       responsive
       v-bind="$attrs"
       v-on="$listeners"
-    />
+    >
+      <template #head()="data">
+        {{$t(data.column)}}
+      </template>
+    </b-table>
   </div>
 </template>
 

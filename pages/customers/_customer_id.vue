@@ -1,13 +1,26 @@
+<i18n lang="yaml">
+  en:
+    notFound: "Customer not found"
+    enterName: "Enter name"
+    onlyReports: "Only visible in reports"
+    enterDebtor: "Enter debtor"
+  nl:
+    notFound: "#required"
+    enterName: "#required"
+    onlyReports: "#required"
+    enterDebtor: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper my-5">
-    <div v-if="!customer">Customer not found</div>
+    <div v-if="!customer">{{$t('notFound')}}</div>
 
     <template v-else>
       <b-container class="mb-5">
         <div class="mb-5">
-          <nuxt-link to="/customers" class="btn btn-primary">
+          <nuxt-link :to="localePath('/customers')" class="btn btn-primary">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            Customers
+            {{$t('customers')}}
           </nuxt-link>
         </div>
         <b-form
@@ -15,36 +28,41 @@
           @change="hasUnsavedChanges = true"
         >
           <b-alert :show="form.archived" variant="info">
-            This customer archived at
-            {{ form.archivedDate | formatDate("dd MMMM yyyy") }}
+            {{$t('archivedCustomer', { time: formatDate(form.archivedDate) })}}
           </b-alert>
-          <b-form-group id="input-group-name" label="Name:" label-for="input-2">
+          <b-form-group
+            id="input-group-name"
+            :label="$t('name') + ':'"
+            label-for="input-2"
+          >
             <b-form-input
               id="input-name"
               v-model="form.name"
-              placeholder="Enter name"
+              :placeholder="$t('enterName')"
               required
             />
           </b-form-group>
 
           <b-form-group
             id="input-group-debtor"
-            label="Debtor:"
+            :label="$t('debtor') + ':'"
             label-for="input-debtor"
-            description="Only visible in reports"
+            :description="$t('onlyReports')"
           >
             <b-form-input
               id="input-debtor"
               v-model="form.debtor"
-              placeholder="Enter debtor"
+              :placeholder="$t('enterDebtor')"
               required
             />
           </b-form-group>
 
-          <b-form-checkbox v-model="form.isBillable">Billable</b-form-checkbox>
+          <b-form-checkbox v-model="form.isBillable">
+            {{$t('billable')}}
+          </b-form-checkbox>
 
           <b-form-checkbox v-model="form.isDefault">
-            Available to all employeees
+            {{$t('availableAll')}}
           </b-form-checkbox>
 
           <div class="d-flex justify-content-end mt-5">
@@ -54,22 +72,22 @@
               class="mr-2"
               @click="deleteCustomer"
             >
-              Delete
+              {{$t('delete')}}
             </b-button>
             <b-button
               type="button"
               variant="warning"
-              class="mr-2"
+              class="mr-2 text-capitalize"
               @click="archiveCustomerToggle(!form.archived)"
             >
-              {{ form.archived ? "Unarchive" : "Archive" }}
+              {{ form.archived ? $t('unarchive') : $t('archive') }}
             </b-button>
             <b-button
               type="submit"
               variant="primary"
               :disabled="!hasUnsavedChanges"
             >
-              Update
+              {{$t('update')}}
             </b-button>
           </div>
         </b-form>
@@ -88,12 +106,15 @@ import {
   useMeta,
   watch,
   ref,
+  useContext,
 } from "@nuxtjs/composition-api";
+import { format } from "date-fns";
 
 export default defineComponent({
   middleware: ["isAdmin"],
   head: {},
   setup() {
+    const { i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -137,7 +158,7 @@ export default defineComponent({
 
     const deleteCustomer = () => {
       const confirmation = confirm(
-        `Are you sure that you want to delete ${customer.value?.name}?`
+        i18n.t('customerDeleteConfirmation', {name: customer.value?.name || ''}) as string
       );
 
       if (!confirmation) return;
@@ -153,9 +174,10 @@ export default defineComponent({
       };
 
       const confirmation = confirm(
-        `Are you sure that you want to ${archive ? "archive" : "unarchive"} ${
-          customer.value?.name
-        }?`
+        i18n.t('customerArchiveConfirmation', {
+          name: customer.value?.name || '',
+          state: archive ? i18n.t('archive') : i18n.t('unarchive')
+        }) as string
       );
 
       if (!confirmation) return;
@@ -188,6 +210,11 @@ export default defineComponent({
       router.push("/customers");
     };
 
+    const formatDate = (date: string) => {
+      if (!date) return '';
+      return format(new Date(date), "dd MMMM yyyy");
+    };
+
     return {
       customer,
       hasUnsavedChanges,
@@ -195,6 +222,7 @@ export default defineComponent({
       archiveCustomerToggle,
       deleteCustomer,
       handleSubmit,
+      formatDate,
     };
   },
 });

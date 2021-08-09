@@ -1,13 +1,27 @@
+<i18n lang="yaml">
+  en:
+    login: "Login"
+    loginHint: "Login to use the hours registration tool"
+    loading: "Loading..."
+  nl:
+    login: "#required"
+    loginHint: "#required"
+    loading: "#required"
+</i18n>
+
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
     <b-card align="center">
       <img src="@/assets/images/logo.png" alt="Frontmen logo" />
-      <h1>Login</h1>
-      <b-card-text>Login to use the hours registration tool</b-card-text>
+      <h1>{{$t('login')}}</h1>
+      <b-card-text>{{$t('loginHint')}}</b-card-text>
 
+      <b-button variant="dark" class="m-2">
+        <language-switch></language-switch>
+      </b-button>
       <b-button :disabled="isLoading" class="login-button" @click="login()">
         <b-spinner v-if="isLoading" class="mr-2" small />
-        {{ buttonText }}
+        {{ $t(buttonText) }}
       </b-button>
     </b-card>
     <b-alert :show="!!errorMessage" variant="danger" class="mt-3">
@@ -20,15 +34,19 @@
 import {
   computed,
   defineComponent,
+  useContext,
   useRouter,
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
+import languageSwitch from "~/components/app/language-switch.vue";
 
 export default defineComponent({
+  components: { languageSwitch },
   middleware: ["isLoggedIn"],
   layout: "login",
   setup() {
+    const { localePath } = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
@@ -36,7 +54,7 @@ export default defineComponent({
     const isLoading = computed(() => store.state.employee.isLoading);
     const errorMessage = computed(() => store.state.employee.errorMessage);
     const buttonText = computed(() =>
-      isLoading.value ? "Loading..." : "Login"
+      isLoading.value ? "loading" : "login"
     );
 
     const login = () => {
@@ -47,7 +65,7 @@ export default defineComponent({
       () => [isLoggedIn.value],
       () => {
         if (isLoggedIn.value) {
-          router.push("/records");
+          router.push(localePath("/records"));
         }
       }
     );

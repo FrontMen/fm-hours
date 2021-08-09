@@ -1,13 +1,30 @@
+<i18n lang="yaml">
+  en:
+    home: "Home"
+    customers: "Customers"
+    employees: "Employees"
+    holidays: "Holidays"
+    timesheets: "Timesheets"
+    reports: "Reports"
+  nl:
+    home: "Overzicht"
+    customers: "Klanten"
+    employees: "Medewerkers"
+    holidays: "Feestdagen"
+    timesheets: "Timesheets"
+    reports: "Rapportages"
+</i18n>
+
 <template>
   <b-sidebar id="sidebar-1" shadow backdrop>
     <b-list-group>
       <b-list-group-item
         v-for="(link, index) in links"
         :key="index"
-        :to="link.href"
+        :to="localePath(link.href)"
       >
         <b-icon :icon="link.icon" />
-        {{ link.name }}
+        {{ $t(link.name) }}
       </b-list-group-item>
     </b-list-group>
   </b-sidebar>
@@ -20,28 +37,28 @@ export default defineComponent({
   setup() {
     const links = [
       {
-        href: "/",
-        name: "Home",
+        href: "/records",
+        name: "home",
         icon: "house",
       },
       {
         href: "/customers",
-        name: "Customers",
+        name: "customers",
         icon: "building",
       },
       {
         href: "/employees",
-        name: "Employees",
+        name: "employees",
         icon: "people",
       },
       {
         href: "/timesheets",
-        name: "Timesheets",
+        name: "timesheets",
         icon: "calendar",
       },
       {
         href: "/reports",
-        name: "Reports",
+        name: "reports",
         icon: "file-bar-graph",
       },
     ];

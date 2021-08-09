@@ -1,10 +1,31 @@
+<i18n lang="yaml">
+  en:
+    searchEmployeeByName: "Search by employee name"
+    namePlaceholder: "Ex.: \"John\""
+    showInactive: "Show inactive"
+    newEmployee: "New employee"
+    noEmployeeFound: "No employee found"
+    inactive: "Inactive"
+    manageEmployee: "Manage employee"
+    addEmployee: "Add an employee"
+  nl:
+    searchEmployeeByName: "#required"
+    namePlaceholder: "#required"
+    showInactive: "#required"
+    newEmployee: "#required"
+    noEmployeeFound: "#required"
+    inactive: "#required"
+    manageEmployee: "#required"
+    addEmployee: "#required"
+</i18n>
+
 <template>
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row :no-gutters="true">
         <b-col cols="12" sm="6" lg="2" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="status-select">
-            Filter by:
+            {{$t('filterBy')}}:
           </label>
           <b-form-select
             id="status-select"
@@ -14,18 +35,18 @@
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
-            Search by employee name:
+            {{$t('searchEmployeeByName')}}:
           </label>
           <b-input
             id="employee-search"
             v-model="searchInput"
             type="search"
-            placeholder='Ex.: "John"'
+            :placeholder="$t('namePlaceholder')"
           />
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="mb-3 pr-2">
           <label class="employee-status__label" for="customer-select">
-            Filter by customer:
+            {{$t('filterByCustomer')}}:
           </label>
           <multiselect
             id="customer-select"
@@ -37,18 +58,18 @@
             :close-on-select="false"
             :multiple="true"
             :taggable="false"
-            placeholder="Customer name"
+            :placeholder="$t('customerName')"
           >
             <template slot="selection" slot-scope="{values}">
               <span v-if="values.length">
-                {{ values.length }} options selected
+                {{ $t('noOptions', {num: values.length}) }}
               </span>
             </template>
           </multiselect>
         </b-col>
         <b-col cols="6" lg="2" class="mt-auto pb-2 mb-3 pr-2">
           <b-form-checkbox v-model="showInactive" switch class="mr-3 ml-auto">
-            Show inactive
+            {{$t('showInactive')}}
           </b-form-checkbox>
         </b-col>
         <b-col
@@ -56,14 +77,14 @@
           lg="2"
           class="d-flex align-items-end justify-content-end mb-3"
         >
-          <b-button v-b-modal.modal-center>+ New employee</b-button>
+          <b-button v-b-modal.modal-center>+ {{$t('newEmployee')}}</b-button>
         </b-col>
       </b-row>
     </b-container>
     <b-container fluid class="app-table">
       <b-row class="app-table__top-row py-3">
         <b-col>
-          <span class="font-weight-bold">Employees</span>
+          <span class="font-weight-bold">{{$t('employees')}}</span>
         </b-col>
       </b-row>
 
@@ -72,7 +93,7 @@
         class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
       >
         <b-icon-person-x class="mr-2" />
-        No employee found.
+        {{$t('noEmployeeFound')}}.
       </b-row>
 
       <b-row
@@ -90,13 +111,16 @@
             v-if="!checkEmployeeAvailability(employee, new Date())"
             variant="danger"
           >
-            Inactive
+            {{$t('inactive')}}
           </b-badge>
         </div>
 
         <div class="ml-auto d-flex">
-          <nuxt-link class="btn btn-info" :to="`/employees/${employee.id}`">
-            Manage employee
+          <nuxt-link
+            class="btn btn-info"
+            :to="localePath(`/employees/${employee.id}`)"
+          >
+            {{$t('manageEmployee')}}
           </nuxt-link>
         </div>
       </b-row>
@@ -104,26 +128,32 @@
     <b-modal
       id="modal-center"
       centered
-      title="Add a employee"
+      :title="$t('addEmployee')"
       cancel-variant="danger"
       :ok-disabled="!canAddEmployee"
+      :ok-title="$t('ok')"
+      :cancel-title="$t('cancel')"
       @ok="addEmployee()"
     >
-      <b-form-input v-model="newEmployee.name" placeholder="Employee name" />
+      <b-form-input
+        v-model="newEmployee.name"
+        :placeholder="$t('employeeName')"
+      />
       <b-form-input
         v-model="newEmployee.email"
         type="email"
-        placeholder="Employee email"
+        :placeholder="$t('employeeEmail')"
         class="mt-3"
       />
       <label for="employee-start-date" class="mt-3">Start date:</label>
       <b-form-datepicker
         id="employee-start-date"
         v-model="newEmployee.startDate"
+        :locale="isoLocale"
         class="w-75"
       />
       <b-form-checkbox v-model="newEmployee.travelAllowance" class="mt-3">
-        Travel allowance
+        {{$t('travelAllowance')}}
       </b-form-checkbox>
     </b-modal>
   </div>
@@ -136,6 +166,7 @@ import {
   defineComponent,
   useStore,
   onMounted,
+  useContext,
 } from "@nuxtjs/composition-api";
 import Multiselect from "vue-multiselect";
 
@@ -154,6 +185,7 @@ export default defineComponent({
   },
 
   setup() {
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
@@ -166,6 +198,10 @@ export default defineComponent({
       if (customers.value.length === 0) {
         store.dispatch("customers/getCustomers");
       }
+    });
+
+    const isoLocale = computed(() => {
+      return i18n.localeProperties.iso;
     });
 
     const customerOptions = computed(() =>
@@ -184,11 +220,11 @@ export default defineComponent({
     const filterByOptions: { value: keyof Employee; text: string; }[] = [
       {
         value: 'name',
-        text: 'Name',
+        text: i18n.t('name') as string,
       },
       {
         value: 'team',
-        text: 'Team',
+        text: i18n.t('team') as string,
       }
     ];
     const filterBy = ref<keyof Employee>(
@@ -308,6 +344,7 @@ export default defineComponent({
       filteredEmployees,
       filterBy,
       filterByOptions,
+      isoLocale,
       searchInput,
       customerOptions,
       selectedCustomers,

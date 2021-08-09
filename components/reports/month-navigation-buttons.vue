@@ -1,10 +1,21 @@
+<i18n lang="yaml">
+  en:
+    previousHint: "Or use keyboard left to go to previous month"
+    nextHint: "Or use keyboard right to go to next month"
+    currentHint: "To current month"
+  nl:
+    previousHint: "#required"
+    nextHint: "#required"
+    currentHint: "#required"
+</i18n>
+
 <template>
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="Or use keyboard left to go to previous month"
+        :title="$t('previousHint')"
         @click="handlePreviousClick()"
       >
         <b-icon icon="arrow-left" />
@@ -13,7 +24,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="To current month"
+        :title="$t('currentHint')"
         @click="handleCurrentClick"
       >
         <b-icon icon="calendar2-date" />
@@ -22,14 +33,14 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        title="Or use keyboard right to go to next month"
+        :title="$t('nextHint')"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
       </b-button>
 
-      <h2 class="navigation-buttons__week-label--reports">
-        {{ monthLabel }}
+      <h2 class="navigation-buttons__week-label--reports text-capitalize">
+        {{$d(selectedDate, 'monthYear')}}
       </h2>
     </div>
   </div>
@@ -37,7 +48,7 @@
 
 <script lang="ts">
 import {computed, defineComponent} from "@nuxtjs/composition-api";
-import {differenceInCalendarMonths, format} from "date-fns";
+import {differenceInCalendarMonths} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
@@ -58,11 +69,6 @@ export default defineComponent({
     const handleCurrentClick = () => {
       if (monthDifference.value !== 0) emit("current");
     }
-
-    const monthLabel = computed(() => {
-      return format(props.selectedDate, "MMMM yyyy");
-    });
-
     const monthDifference = computed(() => {
       const today = new Date();
       return differenceInCalendarMonths(props.selectedDate, today);
@@ -75,7 +81,6 @@ export default defineComponent({
       handlePreviousClick,
       handleNextClick,
       handleCurrentClick,
-      monthLabel,
       monthDifference,
     };
   },

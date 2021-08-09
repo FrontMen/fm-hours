@@ -1,21 +1,50 @@
+<i18n lang="yaml">
+  en:
+    notFoundEmployee: "Employee not found"
+    editTeam: "Edit team"
+    manageProjects: "Manage Projects"
+    customerSearchPlaceholder: "Click or search for a customer here"
+    employeeSettings: "Employee Settings"
+    email: "Email"
+    admin: "Admin"
+    standBy: "Standby"
+    endDate: "End date"
+    startDate: "Start date"
+    noDate: "No date selected"
+    save: "Save"
+  nl:
+    notFoundEmployee: "#required"
+    editTeam: "#required"
+    manageProjects: "#required"
+    customerSearchPlaceholder: "#required"
+    employeeSettings: "#required"
+    email: "#required"
+    admin: "#required"
+    standBy: "#required"
+    endDate: "#required"
+    startDate: "#required"
+    noDate: "#required"
+    save: "#required"
+</i18n>
+
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
-      <div v-if="!employee">Employee not found</div>
+      <div v-if="!employee">{{$t('notFoundEmployee')}}</div>
 
       <div v-else>
         <employee-header :employee="employee" />
 
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">Edit team:</h6>
+            <h6 class="mb-3">{{$t('editTeam')}}:</h6>
             <b-form-select
               v-model="selectedTeam"
               :options="teamList"
               class="mb-3"
               @change="hasUnsavedChanges = true"
             />
-            <h6 class="mb-3">Manage Projects</h6>
+            <h6 class="mb-3">{{$t('manageProjects')}}</h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -25,12 +54,12 @@
               :close-on-select="false"
               :multiple="true"
               :taggable="false"
-              placeholder="Click or search for a customer here"
+              :placeholder="$t('customerSearchPlaceholder')"
               @input="hasUnsavedChanges = true"
             >
               <template slot="selection" slot-scope="{values}">
                 <span v-if="values.length" class="multiselect__single">
-                  {{ values.length }} options selected
+                  {{ $t('noOptions', {num: values.length}) }}
                 </span>
               </template>
             </multiselect>
@@ -59,25 +88,25 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">Employee Settings</h6>
+            <h6 class="mb-3">{{$t('employeeSettings')}}</h6>
 
-            Name:
+            {{$t('name')}}:
             <b-form-input
               v-model="name"
               type="text"
               class="mt-2 w-75 mb-2"
-              placeholder="Employee name"
+              :placeholder="$t('employeeName')"
               :trim="true"
               :state="nameValidationState"
               @change="(nameTouched = true), (hasUnsavedChanges = true)"
             />
 
-            Email:
+            {{$t('email')}}:
             <b-form-input
               v-model="email"
               type="email"
               class="mt-2 w-75 mb-2"
-              placeholder="Employee email"
+              :placeholder="$t('employeeEmail')"
               :state="emailValidationState"
               :trim="true"
               @change="(emailTouched = true), (hasUnsavedChanges = true)"
@@ -89,7 +118,7 @@
               class="mt-2 mr-3"
               @change="hasUnsavedChanges = true"
             >
-              Admin
+              {{$t('admin')}}
             </b-form-checkbox>
             <b-form-checkbox
               v-model="isTravelAllowed"
@@ -97,7 +126,7 @@
               switch
               @change="hasUnsavedChanges = true"
             >
-              Travel allowance
+              {{$t('travelAllowance')}}
             </b-form-checkbox>
             <b-form-checkbox
               v-model="standbyAllowed"
@@ -105,13 +134,17 @@
               class="mt-2 mr-3"
               @change="hasUnsavedChanges = true"
             >
-              Standby
+              {{$t('standBy')}}
             </b-form-checkbox>
-            <label class="mt-2" for="start-datepicker">Start date:</label>
+            <label class="mt-2" for="start-datepicker">
+              {{$t('startDate')}}:
+            </label>
             <b-form-datepicker
               id="start-datepicker"
               v-model="startDate"
+              :locale="isoLocale"
               class="w-75 mb-2"
+              :label-no-date-selected="$t('noDate')"
               @input="hasUnsavedChanges = true"
             />
             <b-form-checkbox
@@ -120,22 +153,24 @@
               switch
               @change="hasUnsavedChanges = true"
             >
-              End date:
+              {{$t('endDate')}}:
             </b-form-checkbox>
             <b-form-datepicker
               id="end-datepicker"
               v-model="endDate"
+              :locale="isoLocale"
               class="mt-2 w-75 mb-2"
               :disabled="!hasEndDate"
+              :label-no-date-selected="$t('noDate')"
               @input="hasUnsavedChanges = true"
             />
           </b-col>
         </b-row>
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
-          Save
+          {{$t('save')}}
         </b-button>
         <b-button variant="danger" @click="handleEmployeeDelete">
-          Delete
+          {{$t('delete')}}
         </b-button>
         <b-row>
           <b-col cols="12" md="5">
@@ -159,6 +194,7 @@ import {
   useMeta,
   watch,
   ref,
+  useContext,
 } from "@nuxtjs/composition-api";
 import Multiselect from "vue-multiselect";
 import {BIconTrashFill} from "bootstrap-vue";
@@ -172,6 +208,7 @@ export default defineComponent({
   middleware: ["isAdmin"],
   head: {},
   setup() {
+    const { i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -181,6 +218,10 @@ export default defineComponent({
     const selectedTeam = ref<string | null>(null);
     const emailTouched = ref<boolean | null>(null);
     const nameTouched = ref<boolean | null>(null);
+
+    const isoLocale = computed(() => {
+      return i18n.localeProperties.iso;
+    });
 
     const customers = computed(() => store.state.customers.customers);
     const customerOptions = computed(() =>
@@ -207,11 +248,11 @@ export default defineComponent({
           return {value: team, text: team};
         }
       );
-      return [{value: null, text: "Select team"}, ...parsedTeam];
+      return [{value: null, text: i18n.t("selectTeam")}, ...parsedTeam];
     });
 
     const pageTitle = computed(() =>
-      employee.value ? `Employees - ${employee.value?.name}` : "Employees"
+      employee.value ? `i18n.t("employees") - ${employee.value?.name}` : i18n.t("employees") as string
     );
 
     const emailValidationState = computed(() => {
@@ -393,12 +434,12 @@ export default defineComponent({
       if (!employee.value) return;
 
       if (hasEndDate.value && !endDate.value) {
-        errorMessage.value = "Please select an end date";
+        errorMessage.value = i18n.t('errorEnddate') as string;
         return;
       }
 
       if (!name.value || !email.value) {
-        errorMessage.value = "Please set the employee name and email";
+        errorMessage.value = i18n.t('errorNameEmail') as string;
         return;
       }
 
@@ -424,13 +465,13 @@ export default defineComponent({
 
     const handleEmployeeDelete = () => {
       const confirmation = confirm(
-        `Are you sure you want to delete ${employee.value?.name}?`
+        i18n.t('confirmDelete', {name: employee.value?.name}) as string
       );
 
       if (!confirmation) return;
 
       const confirmation2 = confirm(
-        `You won't be able to access the timesheets / reports of ${employee.value?.name} !`
+        i18n.t('reConfirmDelete', {name: employee.value?.name}) as string
       );
 
       if (!confirmation2) return;
@@ -461,6 +502,7 @@ export default defineComponent({
       saveProjects,
       hasUnsavedChanges,
       isTravelAllowed,
+      isoLocale,
       startDate,
       hasEndDate,
       endDate,

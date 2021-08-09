@@ -1,11 +1,4 @@
-import {
-  format,
-  isToday,
-  isWeekend,
-  startOfISOWeek,
-  addWeeks,
-  getISOWeek,
-} from 'date-fns';
+import {format, isToday, isWeekend, startOfISOWeek, addWeeks} from 'date-fns';
 
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
@@ -22,22 +15,6 @@ export function addDays(dirtyDate: string | number | Date, days: number) {
   date.setDate(date.getDate() + days);
 
   return date;
-}
-
-// based on a date, create a label with the begin and enddate of that week
-export function getDateLabel(startDate: Date, endDate: Date) {
-  let label = format(startDate, 'dd');
-
-  if (startDate.getMonth() !== endDate.getMonth()) {
-    label += ` ${format(startDate, 'MMM')}`;
-
-    if (startDate.getFullYear() !== endDate.getFullYear()) {
-      label += ` ${format(startDate, 'yyyy')}`;
-    }
-  }
-
-  label += ` - ${format(endDate, 'dd MMM yyyy')}`;
-  return `${label} (week: ${getISOWeek(startDate)})`;
 }
 
 // Build a week based on a startDate.

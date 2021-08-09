@@ -7,7 +7,7 @@
         variant="primary"
       >
         <b-icon icon="plus-square-fill" class="mr-1" />
-        Project
+        {{$t('project')}}
       </b-button>
     </b-col>
 

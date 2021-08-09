@@ -1,3 +1,10 @@
+<i18n lang="yaml">
+  en:
+    remove: "Remove entries from timesheet?"
+  nl:
+    remove: "#required"
+</i18n>
+
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
@@ -26,11 +33,13 @@
       variant="light"
     >
       <div class="container">
-        Remove entries from timesheet?
+        {{$t('remove')}}
         <b-row class="justify-content-around mt-2">
-          <b-button variant="secondary" @click="closeTooltip">Cancel</b-button>
+          <b-button variant="secondary" @click="closeTooltip">
+            {{$t('cancel')}}
+          </b-button>
           <b-button variant="danger" @click="handleRemoveClick">
-            Delete
+            {{$t('delete')}}
           </b-button>
         </b-row>
       </div>

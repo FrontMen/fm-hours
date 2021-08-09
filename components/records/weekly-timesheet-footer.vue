@@ -1,7 +1,20 @@
+<i18n lang="yaml">
+  en:
+    unsubmit: "Unsubmit"
+    waiting: "Waiting on approval"
+    denied: "Resubmit for approval"
+    submit: "Submit for approval"
+  nl:
+    unsubmit: "#required"
+    waiting: "#required"
+    denied: "#required"
+    submit: "#required"
+</i18n>
+
 <template>
   <div class="weekly-timesheet-footer">
     <div class="weekly-timesheet-footer__status">
-      <span v-if="lastSaved">Last saved: {{ lastSavedLabel }} ago</span>
+      <span v-if="lastSaved">{{$t('lastSave', {time: lastSavedLabel})}}</span>
       <b-spinner v-if="isSaving" class="ml-1" small />
     </div>
 
@@ -10,7 +23,7 @@
       :disabled="isSaving || !hasUnsavedChanges"
       @click="handleSaveClick"
     >
-      Update
+      {{$t('update')}}
     </b-button>
 
     <b-button
@@ -18,14 +31,14 @@
       :disabled="isSaving"
       @click="handleUnsubmitClick"
     >
-      Unsubmit
+      {{$t('unsubmit')}}
     </b-button>
 
     <b-button
       :disabled="isSaving || !canSubmitForApproval"
       @click="handleSubmitClick"
     >
-      {{ submitButtonLabel }}
+      {{ $t(submitButtonLabel) }}
     </b-button>
   </div>
 </template>
@@ -73,13 +86,13 @@ export default defineComponent({
     const submitButtonLabel = computed(() => {
       switch (props.status) {
         case recordStatus.PENDING:
-          return "Waiting on approval";
+          return "waiting";
         case recordStatus.APPROVED:
-          return "Approved";
+          return "approved";
         case recordStatus.DENIED:
-          return "Resubmit for approval";
+          return "denied";
         default:
-          return "Submit for approval";
+          return "submit";
       }
     });
 

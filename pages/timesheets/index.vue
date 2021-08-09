@@ -1,9 +1,28 @@
+<i18n lang="yaml">
+  en:
+    all: "All"
+    emailReminder: "Email reminder:"
+    selectWeek: "Select week"
+    week: "Week"
+    empty: "empty"
+    pending: "pending"
+    new: "new"
+  nl:
+    all: "#required"
+    emailReminder: "#required"
+    selectWeek: "#required"
+    week: "#required"
+    empty: "#required"
+    pending: "#required"
+    new: "#required"
+</i18n>
+
 <template>
   <div class="my-5 content-wrapper">
     <b-row no-gutters align-v="center">
       <b-col cols="5" sd="4" lg="3">
         <b-form-group
-          label="Filter by:"
+          :label="$t('filterBy') + ':'"
           label-for="filter-select"
           label-class="font-weight-bold"
           class="filter"
@@ -15,14 +34,16 @@
             class="filter__select"
           >
             <template #first>
-              <b-form-select-option :value="null">All</b-form-select-option>
+              <b-form-select-option :value="null">
+                {{$t('all')}}
+              </b-form-select-option>
             </template>
           </b-form-select>
         </b-form-group>
       </b-col>
       <b-col cols="7" sd="4" lg="3" class="mr-2">
         <b-form-group
-          label="Email reminder:"
+          :label="$t('emailReminder')"
           label-for="select-reminder-week"
           label-class="font-weight-bold"
           class="filter"
@@ -35,7 +56,7 @@
           >
             <template #first>
               <b-form-select-option :value="undefined">
-                Select week
+                {{$t('selectWeek')}}
               </b-form-select-option>
             </template>
           </b-form-select>
@@ -47,7 +68,7 @@
           :disabled="!selectedReminderStartDate"
           @click="sendReminders"
         >
-          Send reminder
+          {{$t('sendReminder')}}
         </b-button>
       </b-col>
     </b-row>
@@ -65,14 +86,22 @@
     >
       <template #head(id)="scope">
         <div>
-          {{ scope.label }}
+          {{ $t(scope.label) }}
         </div>
       </template>
       <template #head()="scope">
-        <div class="table-cell-wrapper table-cell-wrapper__heading">
+        <div class="table-cell-wrapper table-cell-wrapper__heading text-center">
           <p>
             {{
-              `${scope.field.formatedStartDate} ${scope.field.formatedEndDate} (${scope.field.weekNumber})`
+              $d(new Date(scope.field.timestamp), "dateMonth")
+            }}
+            <br />
+            {{
+              $d(new Date(scope.field.timestampEnd), "dateMonth")
+            }}
+            <br />
+            {{
+              `(${scope.field.weekNumber})`
             }}
           </p>
         </div>
@@ -85,7 +114,7 @@
       <template #cell()="scope">
         <div
           :class="['container--cell', scope.item[scope.field.key]]"
-          :title="scope.item[scope.field.key]"
+          :title="$t(scope.item[scope.field.key])"
           @click="
             openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
           "
@@ -102,6 +131,8 @@ import {
   defineComponent,
   useRouter,
   useStore,
+  useContext,
+  useMeta,
 } from "@nuxtjs/composition-api";
 import {
   format,
@@ -113,12 +144,15 @@ import {TimesheetStatus} from "~/types/enums";
 export default defineComponent({
   middleware: ["isAdmin"],
 
-  head: {
-    title: "Timesheets",
-  },
+  head: {},
 
   setup() {
+    const { i18n, localePath } = useContext();
     const store = useStore<RootStoreState>();
+
+    useMeta(() => ({
+      title: i18n.t('timesheets') as string,
+    }));
 
     const options = Object.entries(TimesheetStatus)
       .map(([value, text]) => ({
@@ -147,10 +181,10 @@ export default defineComponent({
     });
 
     const reminderOptions = computed(() => {
-      return store.state.timesheets?.timesheetTableData?.fields?.map((field) => {
-        if (!field.formatedStartDate) return null;
+      return store.state.timesheets?.timesheetTableData?.fields?.map((field: TimesheetTableField) => {
+        if (!field.timestamp || !field.timestampEnd) return null;
 
-        const dateLabel = `${field.formatedStartDate}-${field.formatedEndDate} (Week ${field.weekNumber})`;
+        const dateLabel = `${i18n.d(new Date(field.timestamp as number), "dateMonth")} - ${i18n.d(new Date(field.timestampEnd as number), "dateMonth")} (${i18n.t('weekNo', {num: field.weekNumber})})`;
         return {value: field.timestamp, text: dateLabel};
       }).filter(option => option);
     });
@@ -160,7 +194,7 @@ export default defineComponent({
       employeeId: string,
       startTimestamp: number
     ) => {
-      router.push(`/timesheets/${employeeId}/${startTimestamp}`);
+      router.push(localePath(`/timesheets/${employeeId}/${startTimestamp}`));
     };
 
     const handleFilterUpdates = () => {
@@ -254,10 +288,10 @@ export default defineComponent({
 
 .table-cell-wrapper {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
 
   &__employee {
+    justify-content: flex-start;
     p {
       margin: 0;
       white-space: nowrap;
@@ -265,6 +299,7 @@ export default defineComponent({
   }
 
   &__heading {
+    justify-content: center;
     p {
       margin: 0;
       font-size: 0.8rem;
