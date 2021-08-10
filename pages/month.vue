@@ -188,7 +188,7 @@
         {{ formatDate(scope.item.date) }}
       </template>
       <template #cell(hours)="scope">
-        {{ parseFloat(scope.item.hours).toPrecision(3) }}
+        {{ parseFloat(scope.item.hours).toFixed(2) }}
       </template>
 
       <template #foot(hours)="">
