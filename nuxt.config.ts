@@ -89,13 +89,10 @@ export default defineNuxtConfig({
     proxy: true,
   },
 
-  proxy:
-    process.env.NODE_ENV === 'development'
-      ? {
-          '/api/v1': 'https://bridge.hosted-tools.com',
-          '/api/get-token': 'https://auth.hosted-tools.com',
-        }
-      : [],
+  proxy: [
+    'https://bridge.hosted-tools.com/api/v1',
+    'https://auth.hosted-tools.com/api/get-token',
+  ],
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},

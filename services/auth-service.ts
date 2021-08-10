@@ -1,23 +1,15 @@
-import {NuxtRuntimeConfig} from '@nuxt/types/config/runtime';
 import {NuxtAxiosInstance} from '@nuxtjs/axios';
 import {NuxtFireInstance} from '@nuxtjs/firebase';
 import Cookies from 'js-cookie';
 import jwtDecode from 'jwt-decode';
-import ApiUrl from '~/helpers/api';
 
 export default class AuthService {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
-  config: NuxtRuntimeConfig;
 
-  constructor(
-    fire: NuxtFireInstance,
-    axios: NuxtAxiosInstance,
-    config: NuxtRuntimeConfig
-  ) {
+  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
     this.fire = fire;
     this.axios = axios;
-    this.config = config;
   }
 
   setAuthCookie(cookieData: string, expires: Date): void {
@@ -71,12 +63,9 @@ export default class AuthService {
   }
 
   async getUserInfo() {
-    const employeeId = await this.axios.$get(
-      `${ApiUrl(this.config)}/users/me`,
-      {
-        withCredentials: true,
-      }
-    );
+    const employeeId = await this.axios.$get(`/api/v1/users/me`, {
+      withCredentials: true,
+    });
     return employeeId;
   }
 }
