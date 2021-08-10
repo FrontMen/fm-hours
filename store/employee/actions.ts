@@ -25,11 +25,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   },
 
   logout({commit}) {
-    const authService = new AuthService(
-      this.$fire,
-      this.$axios,
-      this.app.$config
-    );
+    const authService = new AuthService(this.$fire, this.$axios);
 
     localStorage.removeItem('@fm-hours/ppid');
     authService.deleteAuthCookie();
@@ -49,11 +45,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
     try {
       const employeesService = new EmployeesService(this.$fire);
-      const authService = new AuthService(
-        this.$fire,
-        this.$axios,
-        this.app.$config
-      );
+      const authService = new AuthService(this.$fire, this.$axios);
 
       if (!authService.getAuthCookie()) {
         const ppid =
