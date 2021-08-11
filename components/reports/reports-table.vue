@@ -33,6 +33,15 @@
 <script lang="ts">
 import {defineComponent} from "@vue/composition-api";
 
+function isNumeric(str: string) {
+  if (typeof str !== "string") return false;
+  return !isNaN(Number(str)) && !isNaN(parseFloat(str));
+}
+
+function convertDecimalToEuropeanStyle(numberText: string) {
+  return `"${numberText.replace(/\./g, ',')}"`;
+}
+
 export default defineComponent({
   props: {
     csvFileName: {type: String, default: "export"},
@@ -66,7 +75,7 @@ export default defineComponent({
             ""
           );
 
-          row.push(textContent);
+          row.push(isNumeric(textContent) ? convertDecimalToEuropeanStyle(textContent) : textContent);
         });
 
         csv.push(row.join(","));
