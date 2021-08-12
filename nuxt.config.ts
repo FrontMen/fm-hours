@@ -1,12 +1,13 @@
-import {defineNuxtConfig} from '@nuxtjs/composition-api';
 import i18n from './i18n.config';
 
-export default defineNuxtConfig({
+export default {
   // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
-  ssr: false,
+  ssr: true,
 
   // Target (https://go.nuxtjs.dev/config-target)
-  target: 'static',
+  target: 'server',
+
+  mode: 'universal',
 
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
@@ -96,4 +97,4 @@ export default defineNuxtConfig({
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {},
-});
+};
