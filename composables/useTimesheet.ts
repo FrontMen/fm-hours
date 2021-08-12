@@ -236,6 +236,8 @@ export default (
     newTimesheetStatus: TimesheetStatus,
     denialMessage?: string
   ) => {
+    if (!hasUnsavedChanges.value) return;
+
     if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
       const confirmation = confirm(
         'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
@@ -329,9 +331,7 @@ export default (
   };
 
   const autoSave = () => {
-    if (hasUnsavedChanges.value) {
-      saveTimesheet(recordStatus.NEW as TimesheetStatus);
-    }
+    saveTimesheet(recordStatus.NEW as TimesheetStatus);
   };
 
   const debouncedAutoSave = debounce((cancel?: boolean) => {
