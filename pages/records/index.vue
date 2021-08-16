@@ -77,7 +77,7 @@
           </weekly-timesheet>
 
           <template
-            v-if="employee && employee.standBy && timesheet.standByProject && hasEmployeeStandby"
+            v-if="employee && employee.standBy && timesheet.standByProject"
           >
             <weekly-timesheet
               :selected-week="recordsState.selectedWeek"
@@ -101,7 +101,7 @@
           </template>
 
           <template
-            v-if="employee && employee.travelAllowance && timesheet.travelProject && hasEmployeeTravelled"
+            v-if="employee && employee.travelAllowance && timesheet.travelProject"
           >
             <weekly-timesheet
               :selected-week="recordsState.selectedWeek"
@@ -316,9 +316,6 @@ export default defineComponent({
       selectedEmployee.value?.bridgeUid
     );
 
-    const hasEmployeeTravelled = computed(() => timesheet.timesheet.value.travelProject?.values.some((value: number) => value > 0));
-    const hasEmployeeStandby = computed(() => timesheet.timesheet.value.standByProject?.values.some((value: number) => value > 0));
-
     const reasonOfDenial = ref("");
 
     const handleDeny = () => {
@@ -409,8 +406,6 @@ export default defineComponent({
       isAdminView,
       showBridgeError,
       reasonOfDenial,
-      hasEmployeeTravelled,
-      hasEmployeeStandby,
       handleBlur,
       handleDeny,
       handleReminder,
