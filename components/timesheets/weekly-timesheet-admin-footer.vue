@@ -1,7 +1,7 @@
 <i18n lang="yaml">
   en:
     deny: "Deny"
-    approve: "Approve"
+    approve: "Approve & go to next"
     undo: "Undo approval"
   nl:
     deny: "#required"

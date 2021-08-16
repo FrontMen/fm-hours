@@ -175,7 +175,7 @@
         :last-saved="recordsState.lastSaved"
         :status="timesheetStatus"
         @save="saveTimesheet(recordStatus.PENDING)"
-        @approve="saveTimesheet(recordStatus.APPROVED)"
+        @approve="handleApprove"
         @unapprove="saveTimesheet(recordStatus.NEW)"
         @reminder="handleReminder"
       />
@@ -318,6 +318,10 @@ export default defineComponent({
 
     const reasonOfDenial = ref("");
 
+    const handleApprove = () => {
+      timesheet.saveTimesheet(recordStatus.APPROVED as TimesheetStatus, undefined, () => timesheet.goToWeek('next'))
+    }
+
     const handleDeny = () => {
       if (!reasonOfDenial.value || !selectedEmployee.value) return;
 
@@ -408,6 +412,7 @@ export default defineComponent({
       reasonOfDenial,
       handleBlur,
       handleDeny,
+      handleApprove,
       handleReminder,
       submitTimesheet,
       setTotals,
