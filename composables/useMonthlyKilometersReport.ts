@@ -4,6 +4,7 @@ export default () => {
   const createKilometersFields = () => {
     return [
       {key: 'name', sortable: true},
+      {key: 'team', sortable: true},
       {key: 'kilometers', sortable: true},
     ];
   };
@@ -20,6 +21,7 @@ export default () => {
       if (kilometers > 0) {
         items.push({
           name: employee.name,
+          team: employee.team,
           kilometers,
         });
       }

@@ -4,6 +4,7 @@ export default () => {
   const createProjectsFields = () => {
     return [
       {key: 'name', sortable: true},
+      {key: 'team', sortable: true},
       {key: 'project', sortable: true},
       {key: 'debtor', sortable: true},
       {key: 'billable', sortable: true, variant: 'success'},
@@ -17,6 +18,7 @@ export default () => {
 
     return {
       name: employee.name,
+      team: employee.team,
       billable: getTotalsByProp<TimeRecord>(records, 'hours') || 0,
       project: customer.name,
       debtor: customer.debtor,

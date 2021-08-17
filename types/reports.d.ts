@@ -1,5 +1,6 @@
 interface ReportEmployee {
   name: string;
+  team?: string;
   billableRecords: TimeRecord[];
   nonBillableRecords: TimeRecord[];
   travelRecords: TravelRecord[];

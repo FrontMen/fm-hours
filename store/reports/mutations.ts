@@ -43,6 +43,7 @@ const mutations: MutationTree<ReportsStoreState> = {
 
       return {
         name: employee.name,
+        team: employee.team,
         travelRecords: employeeTravelRecords,
         billableRecords: employeeBillableRecords,
         nonBillableRecords: employeeNonBillableRecords,
