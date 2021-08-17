@@ -4,6 +4,7 @@ export default () => {
   const createTotalsFields = (reportData: MonthlyReportData | null) => {
     const leftFields = [
       {key: 'name', sortable: true},
+      {key: 'team', sortable: true},
       {key: 'billable', sortable: true, variant: 'success'},
       {key: 'nonBillable', sortable: true, variant: 'warning'},
     ];
@@ -64,6 +65,7 @@ export default () => {
 
     return {
       name: employee.name,
+      team: employee.team,
       billable: billableHours,
       nonBillable: nonBillableHours,
       totalHours: +(billableHours + nonBillableHours).toFixed(2),
