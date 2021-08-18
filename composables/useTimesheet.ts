@@ -234,8 +234,7 @@ export default (
 
   const saveTimesheet = (
     newTimesheetStatus: TimesheetStatus,
-    denialMessage?: string,
-    callback?: () => void
+    denialMessage?: string
   ) => {
     if (
       newTimesheetStatus === timesheetStatus.value &&
@@ -297,8 +296,6 @@ export default (
         };
 
     store.dispatch('timesheets/saveTimesheet', newTimesheet);
-
-    if (callback) callback();
 
     hasUnsavedChanges.value = false;
   };
