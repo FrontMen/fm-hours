@@ -31,6 +31,9 @@ export default (
   const timesheetState = computed(() => store.state.timesheets);
   const customers = computed(() => store.state.customers);
   const message = computed(() => timesheetState.value?.timesheets[0]?.message);
+  const isApproved = computed(
+    () => timesheetStatus.value === recordStatus.APPROVED
+  );
   const messageInput = ref('');
 
   const timesheet = ref<WeeklyTimesheet>({
@@ -221,7 +224,7 @@ export default (
     {deep: true}
   );
 
-  const saveTimesheet = (
+  const saveTimesheet = async (
     newTimesheetStatus: TimesheetStatus,
     denialMessage?: string,
     callback?: () => void
@@ -287,9 +290,8 @@ export default (
           ...(message.value && {message: message.value}),
         };
 
-    store.dispatch('timesheets/saveTimesheet', newTimesheet);
-
-    if (callback) callback();
+    await store.dispatch('timesheets/saveTimesheet', newTimesheet);
+    if (isApproved && callback) callback();
 
     hasUnsavedChanges.value = false;
   };
