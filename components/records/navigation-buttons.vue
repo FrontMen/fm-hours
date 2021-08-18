@@ -48,6 +48,7 @@
       </h2>
       <b-button-group class="navigation-buttons__date-group mr-2">
         <b-button
+          v-if="!isAdminView"
           class="mr-1"
           variant="info"
           href="https://bridge.hosted-tools.com/myprofile/absences"
