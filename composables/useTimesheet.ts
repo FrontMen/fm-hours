@@ -236,7 +236,11 @@ export default (
     newTimesheetStatus: TimesheetStatus,
     denialMessage?: string
   ) => {
-    if (!hasUnsavedChanges.value) return;
+    if (
+      newTimesheetStatus === timesheetStatus.value &&
+      !hasUnsavedChanges.value
+    )
+      return;
 
     if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
       const confirmation = confirm(
