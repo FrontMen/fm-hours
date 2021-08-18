@@ -1,6 +1,6 @@
 {
   "name": "fm-hours",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "nuxt-ts --dotenv .env.dev",
@@ -16,7 +16,11 @@
     "lint": "npm run lint:eslint && npm run lint:prettier",
     "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
     "format:prettier": "prettier \"**/*.js\" \"**/*.vue\" --write --ignore-path .eslintignore .",
-    "format": "npm run format:eslint && npm run format:prettier"
+    "format": "npm run format:eslint && npm run format:prettier",
+    "release": "standard-version",
+    "release:minor": "standard-version --release-as minor",
+    "release:patch": "standard-version --release-as patch",
+    "release:major": "standard-version --release-as major"
   },
   "lint-staged": {
     "*.{js,ts,vue}": [
@@ -84,6 +88,7 @@
     "prettier": "^2.3.2",
     "sass": "^1.29.0",
     "sass-loader": "^10.0.5",
+    "standard-version": "^9.3.1",
     "ts-jest": "^26.4.1",
     "vue-jest": "^3.0.4"
   }
