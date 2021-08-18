@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/FrontMen/fm-hours/compare/v1.0.0...v1.1.0) (2021-08-18)
+
+
+### Features
+
+* added versioning and changelog generation ([2592c09](https://github.com/FrontMen/fm-hours/commit/2592c0943bf88404338d389777c4c5a78c6d8c9c))
+
 ## 1.0.0 (2021-08-18)
 
 
