@@ -58,6 +58,8 @@ export default defineComponent({
     );
 
     const login = () => {
+      // HACKY "FIX" TO LOG IN PRODUCTION (remove setTimeout once the issue is really fixed)
+      setTimeout(() => router.push(localePath("/records")), 5000)
       store.dispatch("employee/login");
     };
 
@@ -65,7 +67,8 @@ export default defineComponent({
       () => [isLoggedIn.value],
       () => {
         if (isLoggedIn.value) {
-          router.push(localePath("/records"));
+          // HACKY "FIX" TO LOG IN PRODUCTION (uncomment line below once the issue is really fixed)
+          // router.push(localePath("/records"));
         }
       }
     );
