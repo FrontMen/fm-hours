@@ -43,6 +43,7 @@
         class="mr-3"
         variant="danger"
         :disabled="isSaving"
+        @click="handleDenyClick"
       >
         {{$t('deny')}}
       </b-button>
@@ -70,7 +71,7 @@
         <b-icon class="ml-1" icon="check-circle-fill" variant="success" />
       </template>
 
-      <template v-else>
+      <template v-if="isDenied">
         <strong class="text-uppercase">{{$t('denied')}}</strong>
         <b-icon class="ml-1" icon="x-circle-fill" variant="danger" />
       </template>
@@ -116,6 +117,7 @@ export default defineComponent({
 
     const handleSaveClick = () => emit('save');
     const handleApproveClick = () => emit('approve');
+    const handleDenyClick = () => emit('deny');
     const handleUndoApproveClick = () => emit('unapprove');
     const handleReminderClick = () => emit('reminder');
 
@@ -145,6 +147,7 @@ export default defineComponent({
     return {
       handleSaveClick,
       handleApproveClick,
+      handleDenyClick,
       handleUndoApproveClick,
       handleReminderClick,
       isClosed,

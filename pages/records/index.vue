@@ -205,7 +205,7 @@
         :ok-title="$t('ok')"
         :cancel-title="$t('cancel')"
         @hidden="reasonOfDenial = ''"
-        @ok="handleDeny()"
+        @ok="handleDeny"
       >
         <b-form-textarea
           id="textarea"
