@@ -16,9 +16,7 @@
       <h1>{{$t('login')}}</h1>
       <b-card-text>{{$t('loginHint')}}</b-card-text>
 
-      <b-button variant="dark" class="m-2">
-        <language-switch></language-switch>
-      </b-button>
+      <language-switch></language-switch>
       <b-button :disabled="isLoading" class="login-button" @click="login()">
         <b-spinner v-if="isLoading" class="mr-2" small />
         {{ $t(buttonText) }}
@@ -98,5 +96,6 @@ export default defineComponent({
   display: flex;
   align-items: center;
   margin: 0 auto;
+  margin-top: 20px;
 }
 </style>
