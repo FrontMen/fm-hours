@@ -1,0 +1,42 @@
+<template>
+  <div class="layout-wrapper">
+    <top-bar
+      v-if="employee"
+      :employee="employee"
+      :is-admin="isAdmin"
+      :is-dev="$config.isDevelopment"
+      @logout="logout()"
+    />
+    <admin-sidebar v-if="isAdmin" />
+
+    <Nuxt />
+  </div>
+</template>
+
+<script lang="ts">
+import {computed, defineComponent, useStore} from "@nuxtjs/composition-api";
+
+import AdminSidebar from "~/components/app/admin-sidebar.vue";
+import TopBar from "~/components/app/top-bar.vue";
+
+export default defineComponent({
+  middleware: 'authenticated',
+  components: {AdminSidebar, TopBar},
+  setup() {
+    const store = useStore<RootStoreState>();
+
+    const employee = computed(() => store.state.employee.employee);
+    const isAdmin = computed(() => store.state.employee.isAdmin);
+
+    const logout = () => {
+      store.dispatch("employee/logout");
+    };
+
+    return {
+      employee,
+      isAdmin,
+      logout,
+    };
+  },
+});
+</script>

@@ -5,6 +5,7 @@ const mutations: MutationTree<EmployeeStoreState> = {
     state.isLoggedIn = true;
     state.employee = payload.employee;
     state.isAdmin = payload.isAdmin;
+    console.log('mutataions', state.isLoggedIn);
   },
 
   resetEmployee: (state) => {

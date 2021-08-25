@@ -257,8 +257,6 @@ export default defineComponent({
     WeeklyTimesheetTotalsRow,
     CommentBlock
   },
-  middleware: ["isAuthenticated"],
-
   head: {},
 
   setup() {

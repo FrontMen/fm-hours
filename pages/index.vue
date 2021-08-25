@@ -16,6 +16,8 @@
       <h1>{{$t('login')}}</h1>
       <b-card-text>{{$t('loginHint')}}</b-card-text>
 
+      here: {{isLoggedIn}} here
+
       <b-button variant="dark" class="m-2">
         <language-switch></language-switch>
       </b-button>
@@ -34,21 +36,15 @@
 import {
   computed,
   defineComponent,
-  useContext,
-  useRouter,
   useStore,
-  watch,
 } from "@nuxtjs/composition-api";
 import languageSwitch from "~/components/app/language-switch.vue";
 
 export default defineComponent({
   components: { languageSwitch },
-  middleware: ["isLoggedIn"],
-  layout: "login",
+  layout: "default",
   setup() {
-    const { localePath } = useContext();
     const store = useStore<RootStoreState>();
-    const router = useRouter();
 
     const isLoggedIn = computed(() => store.state.employee.isLoggedIn);
     const isLoading = computed(() => store.state.employee.isLoading);
@@ -59,19 +55,9 @@ export default defineComponent({
 
     const login = () => {
       // HACKY "FIX" TO LOG IN PRODUCTION (remove setTimeout once the issue is really fixed)
-      setTimeout(() => router.push(localePath("/records")), 5000)
+      // setTimeout(() => router.push(localePath("/records")), 5000);
       store.dispatch("employee/login");
     };
-
-    watch(
-      () => [isLoggedIn.value],
-      () => {
-        if (isLoggedIn.value) {
-          // HACKY "FIX" TO LOG IN PRODUCTION (uncomment line below once the issue is really fixed)
-          // router.push(localePath("/records"));
-        }
-      }
-    );
 
     return {
       isLoggedIn,
