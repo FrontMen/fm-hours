@@ -90,7 +90,7 @@ export default defineComponent({
     const router = useRouter();
     const {localePath} = useContext();
 
-    const handleLogoClick = () => router.push(localePath("/records"));
+    const handleLogoClick = () => router.push(localePath("/"));
     const handleLogoutClick = () => emit("logout");
 
     return {

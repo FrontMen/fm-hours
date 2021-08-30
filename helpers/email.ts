@@ -60,7 +60,7 @@ export const createReminderEmail = ({
   const baseUrl = location.origin;
 
   const content = `
-    <p>This is a reminder to submit the following <a href="${baseUrl}/records/${startDate}" target="_blank">timesheet</a>.</p>
+    <p>This is a reminder to submit the following <a href="${baseUrl}/${startDate}" target="_blank">timesheet</a>.</p>
     <p>Please take some time to fill it in and submit it for approval.</p>
   `;
 
