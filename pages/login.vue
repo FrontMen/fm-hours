@@ -50,9 +50,9 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const isLoggedIn = computed(() => store.state.employee.isLoggedIn);
-    const isLoading = computed(() => store.state.employee.isLoading);
-    const errorMessage = computed(() => store.state.employee.errorMessage);
+    const isLoggedIn = computed(() => store.state.auth.isLoggedIn);
+    const isLoading = computed(() => store.state.auth.isLoading);
+    const errorMessage = computed(() => store.state.auth.errorMessage);
     const buttonText = computed(() =>
       isLoading.value ? "loading" : "login"
     );
@@ -60,7 +60,7 @@ export default defineComponent({
     const login = () => {
       // HACKY "FIX" TO LOG IN PRODUCTION (remove setTimeout once the issue is really fixed)
       setTimeout(() => router.push(localePath("/")), 5000)
-      store.dispatch("employee/login");
+      store.dispatch("auth/login");
     };
 
     watch(

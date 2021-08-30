@@ -262,7 +262,7 @@ export default defineComponent({
   head: {},
 
   setup() {
-    const { i18n, localePath } = useContext();
+    const { i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
@@ -276,9 +276,9 @@ export default defineComponent({
     store.dispatch("employees/getEmployees");
     store.dispatch("customers/getCustomers");
 
-    if (isAdminView && !store.getters["employee/isEmployeeAdmin"]) {
-      return router.replace(localePath("/records"));
-    }
+    // if (isAdminView && !store.getters["employee/isEmployeeAdmin"]) {
+    //   return router.replace(localePath("/"));
+    // }
 
     const employeeId = isAdminView
       ? router.currentRoute.params.employee_id

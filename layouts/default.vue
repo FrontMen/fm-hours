@@ -1,12 +1,12 @@
 <template>
   <div class="layout-wrapper">
     <top-bar
-      :employee="employee"
-      :is-admin="isAdmin"
+      :employee="user"
+      :is-admin="false"
       :is-dev="$config.isDevelopment"
       @logout="logout()"
     />
-    <admin-sidebar v-if="isAdmin" />
+    <admin-sidebar v-if="true" />
 
     <Nuxt />
   </div>
@@ -24,16 +24,15 @@ export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
 
-    const employee = computed(() => store.state.employee.employee);
-    const isAdmin = computed(() => store.state.employee.isAdmin);
+    const user = computed(() => store.state.auth.user);
+    // const isAdmin = computed(() => store.state.auth.isAdmin);
 
     const logout = () => {
-      store.dispatch("employee/logout");
+      store.dispatch("auth/logout");
     };
 
     return {
-      employee,
-      isAdmin,
+      user,
       logout,
     };
   },
