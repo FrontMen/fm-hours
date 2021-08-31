@@ -1,7 +1,9 @@
 import {defineNuxtMiddleware} from '@nuxtjs/composition-api';
 
 export default defineNuxtMiddleware(({store, redirect}) => {
-  if (!store.getters['auth/isEmployeeLoggedIn']) {
+  if (store.getters['auth/isUserLoggedIn']) {
+    return redirect('/');
+  } else {
     return redirect('/login');
   }
 });

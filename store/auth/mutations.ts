@@ -26,7 +26,7 @@ const mutations: MutationTree<AuthStoreState> = {
     // state.isAdmin = payload.isAdmin;
   },
 
-  resetEmployee: (state) => {
+  resetUser: (state) => {
     state.isLoggedIn = false;
     // state.isAdmin = false;
     state.user = undefined;

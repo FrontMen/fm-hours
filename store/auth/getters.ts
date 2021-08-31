@@ -4,7 +4,7 @@ const getters: GetterTree<AuthStoreState, RootStoreState> = {
   isAuthenticated(state) {
     return !!state.user && !!state.user.uid;
   },
-  isEmployeeLoggedIn(state): boolean {
+  isUserLoggedIn(state): boolean {
     return state.isLoggedIn;
   },
 

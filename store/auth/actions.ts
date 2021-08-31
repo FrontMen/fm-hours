@@ -24,14 +24,17 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     }
   },
 
-  logout() {
-    return this.$fire.auth.signOut();
+  logout({commit, state}) {
+    this.$fire.auth.signOut();
+    commit('setLoading', false);
+    commit('resetUser');
+    return state;
   },
 
   onAuthStateChangedAction({commit}, {authUser}) {
     console.log('onAuthStateChangedAction');
     if (!authUser) {
-      commit('setUser', {user: undefined, isAdmin: false});
+      commit('setUser', undefined);
       return;
     }
 
