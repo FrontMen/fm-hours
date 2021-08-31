@@ -21,7 +21,9 @@ import {
   computed,
   defineComponent,
   useStore,
-  ref
+  ref,
+  // useRouter,
+  // useContext
 } from "@nuxtjs/composition-api";
 
 import AdminSidebar from "~/components/app/admin-sidebar.vue";
@@ -32,6 +34,8 @@ export default defineComponent({
   middleware: ['isAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();
+    // const router = useRouter();
+    // const {localePath} = useContext();
 
     const isAuthed = ref<boolean>(
       store.getters["auth/isUserLoggedIn"]
@@ -46,6 +50,7 @@ export default defineComponent({
       const authState = await store.dispatch('auth/logout');
       console.log('auth state', authState);
       // router.push('/login');
+      // router.push(localePath('/login'));
     };
 
     return {

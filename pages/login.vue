@@ -35,6 +35,8 @@ import {
   computed,
   defineComponent,
   useStore,
+  // useRouter,
+  // useContext
 } from "@nuxtjs/composition-api";
 import languageSwitch from "~/components/app/language-switch.vue";
 
@@ -43,6 +45,8 @@ export default defineComponent({
   layout: "login",
   setup() {
     const store = useStore<RootStoreState>();
+    // const router = useRouter();
+    // const {localePath} = useContext();
 
     const isLoggedIn = computed(() => store.state.auth.isLoggedIn);
     const isLoading = computed(() => store.state.auth.isLoading);
@@ -51,8 +55,11 @@ export default defineComponent({
       isLoading.value ? "loading" : "login"
     );
 
-    const login = () => {
-      store.dispatch("auth/login");
+    const login =  async () => {
+      console.log('logging in')
+      await store.dispatch("auth/login");
+      // router.push('/');
+      // router.push(localePath('/'));
     };
 
     return {

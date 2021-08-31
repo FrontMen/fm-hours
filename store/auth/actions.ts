@@ -7,7 +7,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         'saml.intracto'
       );
       const {user} = await this.$fire.auth.signInWithPopup(provider);
-      console.log('user', user);
+      console.log('login user', user);
       if (user) {
         const {uid, email, emailVerified, displayName, photoURL} = user;
 
@@ -33,8 +33,9 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
 
   onAuthStateChangedAction({commit}, {authUser}) {
     console.log('onAuthStateChangedAction');
+    console.log('authuser', authUser);
     if (!authUser) {
-      commit('setUser', undefined);
+      commit('resetUser');
       return;
     }
 
