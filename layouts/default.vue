@@ -31,7 +31,7 @@ import TopBar from '~/components/app/top-bar.vue';
 
 export default defineComponent({
   components: {AdminSidebar, TopBar},
-  // middleware: ['isAuthenticated'],
+  middleware: ['isNotAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();
@@ -46,7 +46,6 @@ export default defineComponent({
     // const isAdmin = computed(() => store.state.auth.isAdmin);
 
     const logout = async () => {
-      console.log('test');
       const authState = await store.dispatch('auth/logout');
       if (authState) router.push(localePath('/login'));
     };
