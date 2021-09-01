@@ -18,17 +18,18 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
           displayName,
           photoURL,
         });
+        return true;
       }
     } catch (error) {
       console.error(error);
     }
   },
 
-  logout({commit, state}) {
-    this.$fire.auth.signOut();
+  async logout({commit}) {
+    await this.$fire.auth.signOut();
     commit('setLoading', false);
     commit('resetUser');
-    return state;
+    return true;
   },
 
   onAuthStateChangedAction({commit}, {authUser}) {

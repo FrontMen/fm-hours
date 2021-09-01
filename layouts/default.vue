@@ -22,23 +22,23 @@ import {
   defineComponent,
   useStore,
   ref,
-  // useRouter,
-  // useContext
-} from "@nuxtjs/composition-api";
+  useRouter,
+  useContext
+} from '@nuxtjs/composition-api';
 
-import AdminSidebar from "~/components/app/admin-sidebar.vue";
-import TopBar from "~/components/app/top-bar.vue";
+import AdminSidebar from '~/components/app/admin-sidebar.vue';
+import TopBar from '~/components/app/top-bar.vue';
 
 export default defineComponent({
   components: {AdminSidebar, TopBar},
-  middleware: ['isAuthenticated'],
+  // middleware: ['isAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();
-    // const router = useRouter();
-    // const {localePath} = useContext();
+    const router = useRouter();
+    const {localePath} = useContext();
 
     const isAuthed = ref<boolean>(
-      store.getters["auth/isUserLoggedIn"]
+      store.getters['auth/isUserLoggedIn']
     );
 
     const user = computed(() => store.state.auth.user);
@@ -46,11 +46,9 @@ export default defineComponent({
     // const isAdmin = computed(() => store.state.auth.isAdmin);
 
     const logout = async () => {
-      console.log('logout')
+      console.log('test');
       const authState = await store.dispatch('auth/logout');
-      console.log('auth state', authState);
-      // router.push('/login');
-      // router.push(localePath('/login'));
+      if (authState) router.push(localePath('/login'));
     };
 
     return {
