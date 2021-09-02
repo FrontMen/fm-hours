@@ -1,10 +1,5 @@
 <template>
   <div class="layout-wrapper">
-    <div>
-      employeeeee: {{employee}} isAdmin: {{isAdmin}}
-      <button @click="logout()">logout</button>
-    </div>
-
     <top-bar
       :employee="employee"
       :is-admin="isAdmin"
