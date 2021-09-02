@@ -3,8 +3,8 @@
     feedback: "Feedback"
     logout: "Logout"
   nl:
-    feedback: "#required"
-    logout: "#required"
+    feedback: "Feedback"
+    logout: "Uitloggen"
 </i18n>
 
 <template>

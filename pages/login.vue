@@ -4,9 +4,9 @@
     loginHint: "Login to use the hours registration tool"
     loading: "Loading..."
   nl:
-    login: "#required"
-    loginHint: "#required"
-    loading: "#required"
+    login: "Inloggen"
+    loginHint: "Log in voor uren registratie en rapportage"
+    loading: "Laden.."
 </i18n>
 
 <template>

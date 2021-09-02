@@ -2,7 +2,7 @@
   en:
     nameError: "Please choose a project from the list"
   nl:
-    nameError: "#required"
+    nameError: "Kies een project uit de lijst"
 </i18n>
 
 <template>

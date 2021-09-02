@@ -3,8 +3,8 @@
     totals: "Totals"
     standBy: "Stand-by"
   nl:
-    totals: "#required"
-    standBy: "#required"
+    totals: "Totalen"
+    standBy: "Stand-by"
 </i18n>
 
 <template>

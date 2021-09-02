@@ -7,12 +7,12 @@
     nextHint: "Or use keyboard right to go to next week"
     today: "today"
   nl:
-    requestLeave: "#required"
-    monthly: "#required"
-    goMonthly: "#required"
-    previousHint: "#required"
-    nextHint: "#required"
-    today: "#required"
+    requestLeave: "Verlof aanvragen"
+    monthly: "Maand overzicht"
+    goMonthly: "Ga naar maand overzicht"
+    previousHint: "Of gebruikt de pijltjestoets links om naar vorige week te navigeren"
+    nextHint: "Of gebruikt de pijltjestoets rechts om naar volgende week te navigeren"
+    today: "vandaag"
 </i18n>
 
 <template>

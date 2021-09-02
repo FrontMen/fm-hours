@@ -3,8 +3,8 @@
     projectHint: "Or use 'n' to add project"
     copyPrevious: "Copy previous week"
   nl:
-    projectHint: "#required"
-    copyPrevious: "#required"
+    projectHint: "Gebruik 'n' om een project toe te voegen"
+    copyPrevious: "Kopiëer vorige week"
 </i18n>
 
 <template>

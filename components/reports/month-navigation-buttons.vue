@@ -4,9 +4,9 @@
     nextHint: "Or use keyboard right to go to next month"
     currentHint: "To current month"
   nl:
-    previousHint: "#required"
-    nextHint: "#required"
-    currentHint: "#required"
+    previousHint: "Or use keyboard left to go to previous week"
+    nextHint: "Or use keyboard right to go to next week"
+    currentHint: "Huidige maand"
 </i18n>
 
 <template>

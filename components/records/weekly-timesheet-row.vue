@@ -2,7 +2,7 @@
   en:
     remove: "Remove entries from timesheet?"
   nl:
-    remove: "#required"
+    remove: "Wil je alle data van de urenregistratie verwijderen?"
 </i18n>
 
 <template>

@@ -9,14 +9,14 @@
     denialReason: "Reason of denial"
     denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
   nl:
-    workschemeError: "#required"
-    leaveRequest: "#required"
-    bridge: "#required"
-    standByHours: "#required"
-    leaveDay: "#required"
-    addComment: "#required"
-    denialReason: "#required"
-    denialReasonPlaceholder: "#required"
+    workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
+    leaveRequest: "Voor verlof"
+    bridge: "Bridge"
+    standByHours: "Stand-by uren"
+    leaveDay: "Verlofdagen"
+    addComment: "Notitie toevoegen"
+    denialReason: "Reden van afwijzing"
+    denialReasonPlaceholder: "Schrijf een korte notitie van de reden van afkeuren. Dit wordt getoond aan de medewerker."
 </i18n>
 
 <template>

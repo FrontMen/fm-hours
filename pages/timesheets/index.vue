@@ -8,13 +8,13 @@
     pending: "pending"
     new: "new"
   nl:
-    all: "#required"
-    emailReminder: "#required"
-    selectWeek: "#required"
-    week: "#required"
-    empty: "#required"
-    pending: "#required"
-    new: "#required"
+    all: "Alles"
+    emailReminder: "Email herinnering:"
+    selectWeek: "Selecteer week"
+    week: "Week"
+    empty: "leeg"
+    pending: "in afwachting"
+    new: "Nieuw"
 </i18n>
 
 <template>

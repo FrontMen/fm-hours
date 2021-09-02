@@ -3,7 +3,7 @@
     export: "Export"
 
   nl:
-    export: "#required"
+    export: "Exporteren"
 </i18n>
 
 <template>
