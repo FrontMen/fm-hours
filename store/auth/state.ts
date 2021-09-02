@@ -4,5 +4,3 @@ export default (): AuthStoreState => ({
   user: undefined,
   errorMessage: '',
 });
-
-//    isAdmin: false,

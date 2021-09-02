@@ -1,17 +1,17 @@
 <template>
   <div class="layout-wrapper">
+    <div>
+      employeeeee: {{employee}} isAdmin: {{isAdmin}}
+      <button @click="logout()">logout</button>
+    </div>
+
     <!-- <top-bar
       :employee="employee"
-      :is-admin="false"
+      :is-admin="isAdmin"
       :is-dev="$config.isDevelopment"
       @logout="logout()"
     /> -->
-    <admin-sidebar v-if="true" />
-
-    {{isAuthed}}
-
-    <button @click="logout()">logout</button>
-
+    <!-- <admin-sidebar v-if="isAdmin" /> -->
     <Nuxt />
   </div>
 </template>
@@ -43,17 +43,22 @@ export default defineComponent({
 
     const user = computed(() => store.state.auth.user);
 
-    // const isAdmin = computed(() => store.state.auth.isAdmin);
+
+    const isAdmin = computed(() => store.state.employee.isAdmin);
+    const employee = computed(() => store.state.employee.employee);
 
     const logout = async () => {
       const authState = await store.dispatch('auth/logout');
       if (authState) router.push(localePath('/login'));
     };
 
+    if (isAuthed) store.dispatch('employee/getEmployee');
+
     return {
+      employee,
+      isAdmin,
       user,
-      logout,
-      isAuthed
+      logout
     };
   },
 });

@@ -12,5 +12,3 @@ interface AuthStoreState {
   errorMessage: string;
   user: User | undefined;
 }
-
-//     isAdmin: boolean;
