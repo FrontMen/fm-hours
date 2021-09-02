@@ -9,14 +9,14 @@
     manageEmployee: "Manage employee"
     addEmployee: "Add an employee"
   nl:
-    searchEmployeeByName: "#required"
-    namePlaceholder: "#required"
-    showInactive: "#required"
-    newEmployee: "#required"
-    noEmployeeFound: "#required"
-    inactive: "#required"
-    manageEmployee: "#required"
-    addEmployee: "#required"
+    searchEmployeeByName: "Zoek medeerker op naam"
+    namePlaceholder: "Bv.: \"John\""
+    showInactive: "Laat inactieve medeerkers zien"
+    newEmployee: "Nieuwe medewerker"
+    noEmployeeFound: "Geen medewerker(s) gevonden"
+    inactive: "Inactief"
+    manageEmployee: "Medewerker bewerken"
+    addEmployee: "Medewerker toevoegen"
 </i18n>
 
 <template>

@@ -5,10 +5,10 @@
     denied: "Resubmit for approval"
     submit: "Submit for approval"
   nl:
-    unsubmit: "#required"
-    waiting: "#required"
-    denied: "#required"
-    submit: "#required"
+    unsubmit: "Terugtrekken"
+    waiting: "Wacht op akkoord"
+    denied: "Opnieuw insturen voor akkoord"
+    submit: "Verzenden"
 </i18n>
 
 <template>
