@@ -5,13 +5,13 @@
       <button @click="logout()">logout</button>
     </div>
 
-    <!-- <top-bar
+    <top-bar
       :employee="employee"
       :is-admin="isAdmin"
       :is-dev="$config.isDevelopment"
       @logout="logout()"
-    /> -->
-    <!-- <admin-sidebar v-if="isAdmin" /> -->
+    />
+    <admin-sidebar v-if="isAdmin" />
     <Nuxt />
   </div>
 </template>
@@ -37,28 +37,25 @@ export default defineComponent({
     const router = useRouter();
     const {localePath} = useContext();
 
-    const isAuthed = ref<boolean>(
-      store.getters['auth/isUserLoggedIn']
-    );
+    const isAuthed = ref<boolean>(store.getters['auth/isUserLoggedIn']);
+
+    if (isAuthed) store.dispatch('employee/getEmployee');
 
     const user = computed(() => store.state.auth.user);
 
-
-    const isAdmin = computed(() => store.state.employee.isAdmin);
     const employee = computed(() => store.state.employee.employee);
+    const isAdmin = computed(() => store.state.employee.isAdmin);
 
     const logout = async () => {
       const authState = await store.dispatch('auth/logout');
       if (authState) router.push(localePath('/login'));
     };
 
-    if (isAuthed) store.dispatch('employee/getEmployee');
-
     return {
       employee,
       isAdmin,
       user,
-      logout
+      logout,
     };
   },
 });
