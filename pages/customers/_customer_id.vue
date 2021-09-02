@@ -5,7 +5,7 @@
     onlyReports: "Only visible in reports"
     enterDebtor: "Enter debtor"
   nl:
-    notFound: "#Klant niet gevonden"
+    notFound: "Klant niet gevonden"
     enterName: "Typ naam"
     onlyReports: "Alleen zichtbaar in rapportage"
     enterDebtor: "typ debiteurnaam"
