@@ -27,19 +27,19 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       if (!employee) throw new Error('Employee not found!');
       // if (!employee.bridgeUid || !employee.picture) {
-        // throw new Error('Employee found but incomplete');
-        // authService.getUserInfo().then((bridgeUid: string) => {
-        //   employeesService.updateEmployee({
-        //     ...employee!,
-        //     picture: employee.picture || generateAvatarURL(employee.name),
-        //     bridgeUid: employee.bridgeUid || bridgeUid,
-        //   });
-        // });
+      // throw new Error('Employee found but incomplete');
+      // authService.getUserInfo().then((bridgeUid: string) => {
+      //   employeesService.updateEmployee({
+      //     ...employee!,
+      //     picture: employee.picture || generateAvatarURL(employee.name),
+      //     bridgeUid: employee.bridgeUid || bridgeUid,
+      //   });
+      // });
       // }
       commit('setEmployee', {employee, isAdmin});
 
       return employee;
-    } catch (error) {
+    } catch (error: any) {
       // dispatch(
       //   'auth/setErrorMessage',
       //   error.response

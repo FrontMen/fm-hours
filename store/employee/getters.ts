@@ -5,6 +5,10 @@ const getters: GetterTree<EmployeeStoreState, RootStoreState> = {
   //   return state.isLoggedIn;
   // },
 
+  getEmployee(state): Employee | null {
+    return state.employee;
+  },
+
   isEmployeeAdmin(state): boolean {
     return state.isAdmin;
   },

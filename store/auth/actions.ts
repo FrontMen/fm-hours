@@ -19,7 +19,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         });
         return true;
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error);
     }
   },

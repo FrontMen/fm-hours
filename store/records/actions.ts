@@ -53,7 +53,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
           startDate: new Date(workWeek[0].date),
           endDate: new Date(workWeek[6].date),
         });
-      } catch (error) {
+      } catch (error: any) {
         commit(
           'setErrorMessageWorkscheme',
           error.response
