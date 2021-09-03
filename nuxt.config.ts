@@ -1,14 +1,6 @@
 import i18n from './i18n.config';
 
 export default {
-  // Disable server-side rendering (https://go.nuxtjs.dev/ssr-mode)
-  // ssr: true,
-
-  // Target (https://go.nuxtjs.dev/config-target)
-  target: 'server',
-
-  mode: 'universal',
-
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     title: 'Frontmen - Hours',

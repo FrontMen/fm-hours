@@ -17,7 +17,6 @@ export default (
   startTimestamp?: number,
   bridgeUid?: string
 ) => {
-  console.log('useTimesheet setup');
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
   const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
