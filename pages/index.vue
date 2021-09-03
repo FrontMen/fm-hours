@@ -30,16 +30,14 @@
       :employee="employee"
     />
 
-    <client-only>
-      <navigation-buttons
-        class="mb-5"
-        :selected-week="recordsState.selectedWeek"
-        :is-admin-view="isAdminView"
-        @previous="goToWeek('previous')"
-        @next="goToWeek('next')"
-        @current="goToWeek('current')"
-      />
-    </client-only>
+    <navigation-buttons
+      class="mb-5"
+      :selected-week="recordsState.selectedWeek"
+      :is-admin-view="isAdminView"
+      @previous="goToWeek('previous')"
+      @next="goToWeek('next')"
+      @current="goToWeek('current')"
+    />
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
@@ -47,10 +45,6 @@
       @copy-previous-week="copyPreviousWeek"
     />
 
-    <div>recordsState: {{recordsState}}</div>
-  </div>
-
-  <!--
     <template>
       <form action="javascript:void(0);">
         <template v-if="timesheet.projects.length">
@@ -226,7 +220,7 @@
       :projects="selectableCustomers"
       @project-selected="addProject"
     />
-  </div> -->
+  </div>
 </template>
 
 <script lang="ts">
@@ -236,8 +230,9 @@ import {
   useRouter,
   useStore,
   watch,
-  // useMeta,
-  // useContext,
+  useMeta,
+  useContext,
+  ref,
 } from '@nuxtjs/composition-api';
 
 import EmployeeHeader from '~/components/app/employee-header.vue';
@@ -250,7 +245,7 @@ import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-tota
 import CommentBlock from '~/components/records/comment-block.vue';
 
 import useTimesheet from '~/composables/useTimesheet';
-// import {recordStatus} from '~/helpers/record-status';
+import {recordStatus} from '~/helpers/record-status';
 
 export default defineComponent({
   components: {
@@ -268,7 +263,7 @@ export default defineComponent({
   head: {},
 
   setup() {
-    // const {i18n, localePath} = useContext();
+    const {i18n, localePath} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
@@ -276,18 +271,18 @@ export default defineComponent({
     // // TODO Clean this up (not a good way to check admin stuff)
     const isAdminView = router.currentRoute.name?.includes('timesheets');
 
-    // let totals: TimesheetTotals = {
-    //   weekTotal: 0,
-    //   expectedWeekTotal: 0,
-    //   dayTotal: [],
-    // };
+    let totals: TimesheetTotals = {
+      weekTotal: 0,
+      expectedWeekTotal: 0,
+      dayTotal: [],
+    };
 
     store.dispatch('employees/getEmployees');
     store.dispatch('customers/getCustomers');
 
-    // if (isAdminView && !store.getters['employee/isEmployeeAdmin']) {
-    //   return router.replace(localePath('/'));
-    // }
+    if (isAdminView && !store.getters['employee/isEmployeeAdmin']) {
+      return router.replace(localePath('/'));
+    }
 
     const currentEmployee = computed(
       () => store.getters['employee/getEmployee']
@@ -309,17 +304,17 @@ export default defineComponent({
         : store.state.employee.employee;
     });
 
-    // const pageTitle = computed(() => {
-    //   if (!isAdminView) return undefined;
+    const pageTitle = computed(() => {
+      if (!isAdminView) return undefined;
 
-    //   return selectedEmployee.value
-    //     ? `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
-    //     : (i18n.t('timesheets') as string);
-    // });
+      return selectedEmployee.value
+        ? `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
+        : (i18n.t('timesheets') as string);
+    });
 
-    // useMeta(() => ({
-    //   title: pageTitle.value,
-    // }));
+    useMeta(() => ({
+      title: pageTitle.value,
+    }));
 
     const startTimestamp = router.currentRoute.params.start_timestamp;
 
@@ -329,145 +324,145 @@ export default defineComponent({
       selectedEmployee.value?.bridgeUid
     );
 
-    // const showTravel = computed(() => {
-    //   if (isAdminView) {
-    //     return timesheet.timesheet.value.travelProject?.values.some(
-    //       (value: number) => value > 0
-    //     );
-    //   } else {
-    //     return (
-    //       selectedEmployee &&
-    //       selectedEmployee.value?.travelAllowance &&
-    //       timesheet.timesheet.value.travelProject
-    //     );
-    //   }
-    // });
+    const showTravel = computed(() => {
+      if (isAdminView) {
+        return timesheet.timesheet.value.travelProject?.values.some(
+          (value: number) => value > 0
+        );
+      } else {
+        return (
+          selectedEmployee &&
+          selectedEmployee.value?.travelAllowance &&
+          timesheet.timesheet.value.travelProject
+        );
+      }
+    });
 
-    // const showStandby = computed(() => {
-    //   if (isAdminView) {
-    //     return timesheet.timesheet.value.standByProject?.values.some(
-    //       (value: number) => value > 0
-    //     );
-    //   } else {
-    //     return (
-    //       selectedEmployee &&
-    //       selectedEmployee.value?.standBy &&
-    //       timesheet.timesheet.value.standByProject
-    //     );
-    //   }
-    // });
+    const showStandby = computed(() => {
+      if (isAdminView) {
+        return timesheet.timesheet.value.standByProject?.values.some(
+          (value: number) => value > 0
+        );
+      } else {
+        return (
+          selectedEmployee &&
+          selectedEmployee.value?.standBy &&
+          timesheet.timesheet.value.standByProject
+        );
+      }
+    });
 
-    // const reasonOfDenial = ref('');
+    const reasonOfDenial = ref('');
 
-    // const handleDeny = () => {
-    //   if (!reasonOfDenial.value || !selectedEmployee.value) return;
+    const handleDeny = () => {
+      if (!reasonOfDenial.value || !selectedEmployee.value) return;
 
-    //   timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
-    // };
+      timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
+    };
 
-    // const handleReminder = () => {
-    //   if (!selectedEmployee.value) return;
+    const handleReminder = () => {
+      if (!selectedEmployee.value) return;
 
-    //   const startDate = new Date(
-    //     recordsState.value?.selectedWeek[0].date
-    //   ).getTime();
-    //   store.dispatch('timesheets/emailReminder', {
-    //     employee: selectedEmployee.value,
-    //     startDate,
-    //   });
-    // };
+      const startDate = new Date(
+        recordsState.value?.selectedWeek[0].date
+      ).getTime();
+      store.dispatch('timesheets/emailReminder', {
+        employee: selectedEmployee.value,
+        startDate,
+      });
+    };
 
-    // const handleBlur = () => {
-    //   timesheet.autoSave();
-    // };
+    const handleBlur = () => {
+      timesheet.autoSave();
+    };
 
     const showBridgeError = computed(() => {
       return !!store.state.records.errorMessageWorkscheme;
     });
 
-    // const selectableCustomers = computed(() => {
-    //   const customers: Customer[] = store.state.customers.customers;
-    //   const selectedCustomers = timesheet.timesheet.value.projects.map(
-    //     (project) => project.customer.id
-    //   );
+    const selectableCustomers = computed(() => {
+      const customers: Customer[] = store.state.customers.customers;
+      const selectedCustomers = timesheet.timesheet.value.projects.map(
+        (project) => project.customer.id
+      );
 
-    //   const selectableCustomers = customers.filter(
-    //     (x: Customer) =>
-    //       (selectedEmployee.value?.projects?.includes(x.id) &&
-    //         !selectedCustomers?.includes(x.id) &&
-    //         !x.archived) ||
-    //       x.isDefault
-    //   );
+      const selectableCustomers = customers.filter(
+        (x: Customer) =>
+          (selectedEmployee.value?.projects?.includes(x.id) &&
+            !selectedCustomers?.includes(x.id) &&
+            !x.archived) ||
+          x.isDefault
+      );
 
-    //   return [
-    //     {text: i18n.t('chooseProject'), disabled: true},
-    //     ...selectableCustomers.map((entry) => ({
-    //       value: entry.id,
-    //       text: entry.name,
-    //     })),
-    //   ];
-    // });
+      return [
+        {text: i18n.t('chooseProject'), disabled: true},
+        ...selectableCustomers.map((entry) => ({
+          value: entry.id,
+          text: entry.name,
+        })),
+      ];
+    });
 
-    // const setTotals = (calculatedTotals: TimesheetTotals) => {
-    //   totals = calculatedTotals;
-    // };
+    const setTotals = (calculatedTotals: TimesheetTotals) => {
+      totals = calculatedTotals;
+    };
 
-    // const submitTimesheet = () => {
-    //   let confirmation = true;
+    const submitTimesheet = () => {
+      let confirmation = true;
 
-    //   if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
-    //     const difference = +(
-    //       totals.weekTotal - totals.expectedWeekTotal
-    //     ).toFixed(2);
-    //     confirmation = confirm(
-    //       `${
-    //         difference === 1
-    //           ? i18n.t('weekError', {
-    //               n: difference,
-    //               expected: totals.expectedWeekTotal,
-    //             })
-    //           : i18n.t('weekErrors', {
-    //               n: difference,
-    //               expected: totals.expectedWeekTotal,
-    //             })
-    //       }`
-    //     );
-    //   } else {
-    //     // Only show this one if total hours is fine, but some days are too long
-    //     const daysExceedingExpected = totals.dayTotal.filter(
-    //       (hoursInDay, index) => {
-    //         const weekendHours =
-    //           !recordsState.value?.workScheme[index] && hoursInDay;
-    //         const exceedsExpectedHours =
-    //           recordsState.value?.workScheme[index]?.workHours;
-    //         return hoursInDay > exceedsExpectedHours || weekendHours;
-    //       }
-    //     );
+      if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
+        const difference = +(
+          totals.weekTotal - totals.expectedWeekTotal
+        ).toFixed(2);
+        confirmation = confirm(
+          `${
+            difference === 1
+              ? i18n.t('weekError', {
+                  n: difference,
+                  expected: totals.expectedWeekTotal,
+                })
+              : i18n.t('weekErrors', {
+                  n: difference,
+                  expected: totals.expectedWeekTotal,
+                })
+          }`
+        );
+      } else {
+        // Only show this one if total hours is fine, but some days are too long
+        const daysExceedingExpected = totals.dayTotal.filter(
+          (hoursInDay, index) => {
+            const weekendHours =
+              !recordsState.value?.workScheme[index] && hoursInDay;
+            const exceedsExpectedHours =
+              recordsState.value?.workScheme[index]?.workHours;
+            return hoursInDay > exceedsExpectedHours || weekendHours;
+          }
+        );
 
-    //     if (daysExceedingExpected.length && !showBridgeError)
-    //       confirmation = confirm(i18n.t('dayError') as string);
-    //   }
+        if (daysExceedingExpected.length && !showBridgeError)
+          confirmation = confirm(i18n.t('dayError') as string);
+      }
 
-    //   if (!confirmation) return;
+      if (!confirmation) return;
 
-    //   timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
-    // };
+      timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+    };
 
     return {
       employee: selectedEmployee,
-      // selectableCustomers,
+      selectableCustomers,
       recordsState,
-      // recordStatus,
+      recordStatus,
       isAdminView,
       showBridgeError,
-      // reasonOfDenial,
-      // showTravel,
-      // showStandby,
-      // handleBlur,
-      // handleDeny,
-      // handleReminder,
-      // submitTimesheet,
-      // setTotals,
+      reasonOfDenial,
+      showTravel,
+      showStandby,
+      handleBlur,
+      handleDeny,
+      handleReminder,
+      submitTimesheet,
+      setTotals,
       ...timesheet,
     };
   },

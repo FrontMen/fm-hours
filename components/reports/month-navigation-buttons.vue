@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "@nuxtjs/composition-api";
+import {computed, defineComponent, onBeforeMount} from "@nuxtjs/composition-api";
 import {differenceInCalendarMonths} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
@@ -74,8 +74,10 @@ export default defineComponent({
       return differenceInCalendarMonths(props.selectedDate, today);
     });
 
-    hotkeys('right', handleNextClick);
-    hotkeys('left', handlePreviousClick);
+    onBeforeMount(() => {
+      hotkeys('right', handleNextClick);
+      hotkeys('left', handlePreviousClick);
+    });
 
     return {
       handlePreviousClick,

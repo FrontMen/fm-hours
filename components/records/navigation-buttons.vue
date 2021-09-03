@@ -80,15 +80,21 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, useContext} from "@nuxtjs/composition-api";
-import { getISOWeek } from "date-fns";
-import differenceInCalendarWeeks from "date-fns/differenceInCalendarWeeks";
+import {
+  computed,
+  defineComponent,
+  onBeforeMount,
+  PropType,
+  useContext,
+} from '@nuxtjs/composition-api';
+import {getISOWeek} from 'date-fns';
+import differenceInCalendarWeeks from 'date-fns/differenceInCalendarWeeks';
 import hotkeys from 'hotkeys-js';
 
-import {getWeekRange, getDayOnGMT} from "~/helpers/dates";
+import {getWeekRange, getDayOnGMT} from '~/helpers/dates';
 
 export default defineComponent({
-  emits: ["previous", "next", "current"],
+  emits: ['previous', 'next', 'current'],
   props: {
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
@@ -104,13 +110,18 @@ export default defineComponent({
     hotkeys.unbind('left');
   },
   setup(props, {emit}) {
-    const { i18n } = useContext();
-    const handlePreviousClick = () => emit("previous");
-    const handleNextClick = () => emit("next");
-    const handleCurrentClick = () => emit("current");
+    const {i18n} = useContext();
+    const handlePreviousClick = () => emit('previous');
+    const handleNextClick = () => emit('next');
+    const handleCurrentClick = () => emit('current');
+
+    onBeforeMount(() => {
+      hotkeys('right', handleNextClick);
+      hotkeys('left', handlePreviousClick);
+    });
 
     const weekLabel = computed(() => {
-      if (!props.selectedWeek.length) return "";
+      if (!props.selectedWeek.length) return '';
 
       const firstDate = props.selectedWeek[0].date;
       const {start, end} = getWeekRange(firstDate);
@@ -129,9 +140,6 @@ export default defineComponent({
 
       return differenceInCalendarWeeks(startDate, today, {weekStartsOn: 1});
     });
-
-    hotkeys('right', handleNextClick);
-    hotkeys('left', handlePreviousClick);
 
     return {
       handlePreviousClick,
