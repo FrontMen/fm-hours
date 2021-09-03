@@ -16,7 +16,6 @@ import {
   computed,
   defineComponent,
   useStore,
-  ref,
   useRouter,
   useContext
 } from '@nuxtjs/composition-api';
@@ -26,18 +25,13 @@ import TopBar from '~/components/app/top-bar.vue';
 
 export default defineComponent({
   components: {AdminSidebar, TopBar},
-  middleware: ['isNotAuthenticated'],
+  middleware: ['isAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();
     const {localePath} = useContext();
 
-    const isAuthed = ref<boolean>(store.getters['auth/isUserLoggedIn']);
-
-    if (isAuthed) store.dispatch('employee/getEmployee');
-
     const user = computed(() => store.state.auth.user);
-
     const employee = computed(() => store.state.employee.employee);
     const isAdmin = computed(() => store.state.employee.isAdmin);
 

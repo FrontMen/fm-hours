@@ -48,7 +48,6 @@ export default defineComponent({
     const router = useRouter();
     const {localePath} = useContext();
 
-    const isLoggedIn = computed(() => store.state.auth.isLoggedIn);
     const isLoading = computed(() => store.state.auth.isLoading);
     const errorMessage = computed(() => store.state.auth.errorMessage);
     const buttonText = computed(() =>
@@ -61,7 +60,6 @@ export default defineComponent({
     };
 
     return {
-      isLoggedIn,
       login,
       isLoading,
       errorMessage,

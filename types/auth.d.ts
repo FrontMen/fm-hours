@@ -7,7 +7,6 @@ interface User {
 }
 
 interface AuthStoreState {
-  isLoggedIn: boolean;
   isLoading: boolean;
   errorMessage: string;
   user: User | undefined;

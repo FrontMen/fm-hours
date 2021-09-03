@@ -19,12 +19,10 @@ const mutations: MutationTree<AuthStoreState> = {
   },
 
   setUser: (state, user: User) => {
-    state.isLoggedIn = true;
     state.user = user;
   },
 
   resetUser: (state) => {
-    state.isLoggedIn = false;
     state.user = undefined;
   },
 

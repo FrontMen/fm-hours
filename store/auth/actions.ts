@@ -31,7 +31,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     return true;
   },
 
-  onAuthStateChangedAction({commit}, {authUser}) {
+  onAuthStateChangedAction({commit, dispatch}, {authUser}) {
     if (!authUser) {
       commit('resetUser');
       return;
@@ -46,6 +46,8 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       displayName,
       photoURL,
     });
+
+    dispatch('employee/getEmployee', {}, {root: true});
   },
 };
 

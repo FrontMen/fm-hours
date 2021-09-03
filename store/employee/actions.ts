@@ -26,8 +26,8 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       const isAdmin = await employeesService.isAdmin(user.email);
 
       if (!employee) throw new Error('Employee not found!');
-      if (!employee.bridgeUid || !employee.picture) {
-        throw new Error('Employee found but incomplete');
+      // if (!employee.bridgeUid || !employee.picture) {
+        // throw new Error('Employee found but incomplete');
         // authService.getUserInfo().then((bridgeUid: string) => {
         //   employeesService.updateEmployee({
         //     ...employee!,
@@ -35,7 +35,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         //     bridgeUid: employee.bridgeUid || bridgeUid,
         //   });
         // });
-      }
+      // }
       commit('setEmployee', {employee, isAdmin});
 
       return employee;
