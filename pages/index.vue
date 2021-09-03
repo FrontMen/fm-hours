@@ -30,20 +30,24 @@
       :employee="employee"
     />
 
-    <!-- <navigation-buttons
-      class="mb-5"
-      :selected-week="recordsState.selectedWeek"
-      :is-admin-view="isAdminView"
-      @previous="goToWeek('previous')"
-      @next="goToWeek('next')"
-      @current="goToWeek('current')"
-    /> -->
+    <client-only>
+      <navigation-buttons
+        class="mb-5"
+        :selected-week="recordsState.selectedWeek"
+        :is-admin-view="isAdminView"
+        @previous="goToWeek('previous')"
+        @next="goToWeek('next')"
+        @current="goToWeek('current')"
+      />
+    </client-only>
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
       :is-admin-view="isAdminView"
       @copy-previous-week="copyPreviousWeek"
     />
+
+    <div>recordsState: {{recordsState}}</div>
   </div>
 
   <!--
@@ -278,14 +282,16 @@ export default defineComponent({
     //   dayTotal: [],
     // };
 
-    // store.dispatch('employees/getEmployees');
-    // store.dispatch('customers/getCustomers');
+    store.dispatch('employees/getEmployees');
+    store.dispatch('customers/getCustomers');
 
     // if (isAdminView && !store.getters['employee/isEmployeeAdmin']) {
     //   return router.replace(localePath('/'));
     // }
 
-    const currentEmployee = computed(() => store.getters['employee/getEmployee']);
+    const currentEmployee = computed(
+      () => store.getters['employee/getEmployee']
+    );
     let employeeId: string = '';
 
     watch(currentEmployee, () => {
