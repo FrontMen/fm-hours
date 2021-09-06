@@ -83,3 +83,5 @@ dist
 .idea
 # VSCode settings
 .vscode
+# Firebase auth
+static/firebase-auth-sw.js

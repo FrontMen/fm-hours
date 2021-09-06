@@ -247,7 +247,6 @@ import { getTotalsByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   components: {Multiselect},
-  middleware: ["isAuthenticated"],
   head: {},
 
   setup() {

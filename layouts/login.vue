@@ -3,6 +3,8 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@nuxtjs/composition-api";
-export default defineComponent({});
+import {defineComponent} from '@nuxtjs/composition-api';
+export default defineComponent({
+  middleware: ['isNotAuthenticated'],
+});
 </script>

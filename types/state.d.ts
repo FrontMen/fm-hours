@@ -1,4 +1,5 @@
 interface RootStoreState {
+  auth: AuthStoreState;
   customers: CustomersStoreState;
   holidays: HolidaysStoreState;
   records: RecordsStoreState;

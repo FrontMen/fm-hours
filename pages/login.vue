@@ -34,47 +34,32 @@
 import {
   computed,
   defineComponent,
-  useContext,
-  useRouter,
   useStore,
-  watch,
-} from "@nuxtjs/composition-api";
-import languageSwitch from "~/components/app/language-switch.vue";
+  useRouter,
+  useContext
+} from '@nuxtjs/composition-api';
+import languageSwitch from '~/components/app/language-switch.vue';
 
 export default defineComponent({
   components: { languageSwitch },
-  middleware: ["isUnauthenticated"],
-  layout: "login",
+  layout: 'login',
   setup() {
-    const { localePath } = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
+    const {localePath} = useContext();
 
-    const isLoggedIn = computed(() => store.state.employee.isLoggedIn);
-    const isLoading = computed(() => store.state.employee.isLoading);
-    const errorMessage = computed(() => store.state.employee.errorMessage);
+    const isLoading = computed(() => store.state.auth.isLoading);
+    const errorMessage = computed(() => store.state.auth.errorMessage);
     const buttonText = computed(() =>
-      isLoading.value ? "loading" : "login"
+      isLoading.value ? 'loading' : 'login'
     );
 
-    const login = () => {
-      // HACKY "FIX" TO LOG IN PRODUCTION (remove setTimeout once the issue is really fixed)
-      setTimeout(() => router.push(localePath("/")), 5000)
-      store.dispatch("employee/login");
+    const login =  async () => {
+      const login = await store.dispatch('auth/login');
+      if (login) router.push(localePath('/'));
     };
 
-    watch(
-      () => [isLoggedIn.value],
-      () => {
-        if (isLoggedIn.value) {
-          // HACKY "FIX" TO LOG IN PRODUCTION (uncomment line below once the issue is really fixed)
-          // router.push(localePath("/"));
-        }
-      }
-    );
-
     return {
-      isLoggedIn,
       login,
       isLoading,
       errorMessage,
