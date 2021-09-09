@@ -24,16 +24,9 @@
       {{$t('workschemeError')}}
     </b-alert>
 
-    <employee-header
-      v-if="isAdminView && employee"
-      class="mb-5"
-      :employee="employee"
-    />
-
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
-      :is-admin-view="isAdminView"
       @previous="goToWeek('previous')"
       @next="goToWeek('next')"
       @current="goToWeek('current')"
@@ -41,7 +34,6 @@
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
-      :is-admin-view="isAdminView"
       @copy-previous-week="copyPreviousWeek"
     />
 
@@ -54,8 +46,8 @@
                 v-for="(project, index) in timesheet.projects"
                 :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
                 :project="timesheet.projects[index]"
-                :readonly="!isAdminView && (isReadonly || project.isExternal)"
-                :removeable="!isAdminView && !isReadonly && !project.isExternal"
+                :readonly="isReadonly || project.isExternal"
+                :removeable="!isReadonly && !project.isExternal"
                 :selected-week="recordsState.selectedWeek"
                 :value-formatter="timesheetFormatter"
                 :employee="employee"
@@ -86,7 +78,7 @@
                 <weekly-timesheet-row
                   :key="recordsState.selectedWeek[0].date"
                   :project="timesheet.standByProject"
-                  :readonly="!isAdminView && isReadonly"
+                  :readonly="isReadonly"
                   :removable="false"
                   :selected-week="recordsState.selectedWeek"
                   :value-formatter="timesheetFormatter"
@@ -108,7 +100,7 @@
                 <weekly-timesheet-row
                   :key="recordsState.selectedWeek[0].date"
                   :project="timesheet.travelProject"
-                  :readonly="!isAdminView && isReadonly"
+                  :readonly="isReadonly"
                   :removable="false"
                   :selected-week="recordsState.selectedWeek"
                   :value-formatter="kilometerFormatter"
@@ -163,21 +155,7 @@
         />
       </form>
 
-      <weekly-timesheet-admin-footer
-        v-if="isAdminView"
-        class="mt-5"
-        :has-unsaved-changes="hasUnsavedChanges"
-        :is-saving="recordsState.isSaving"
-        :last-saved="recordsState.lastSaved"
-        :status="timesheetStatus"
-        @save="saveTimesheet(recordStatus.PENDING)"
-        @approve="saveTimesheet(recordStatus.APPROVED)"
-        @unapprove="saveTimesheet(recordStatus.NEW)"
-        @reminder="handleReminder"
-      />
-
       <weekly-timesheet-footer
-        v-else
         class="mt-5"
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="recordsState.isSaving"
@@ -263,13 +241,10 @@ export default defineComponent({
   head: {},
 
   setup() {
-    const {i18n, localePath} = useContext();
+    const {i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
-
-    // // TODO Clean this up (not a good way to check admin stuff)
-    const isAdminView = router.currentRoute.name?.includes('timesheets');
 
     let totals: TimesheetTotals = {
       weekTotal: 0,
@@ -277,12 +252,7 @@ export default defineComponent({
       dayTotal: [],
     };
 
-    store.dispatch('employees/getEmployees');
     store.dispatch('customers/getCustomers');
-
-    if (isAdminView && !store.getters['employee/isEmployeeAdmin']) {
-      return router.replace(localePath('/'));
-    }
 
     const currentEmployee = computed(
       () => store.getters['employee/getEmployee']
@@ -290,27 +260,12 @@ export default defineComponent({
     let employeeId: string = '';
 
     watch(currentEmployee, () => {
-      employeeId = isAdminView
-        ? router.currentRoute.params.employee_id
-        : currentEmployee.value?.id;
+      employeeId = currentEmployee.value?.id;
     });
 
-    // TODO Check the admin employee works
-    const selectedEmployee = computed(() => {
-      const employees = store.state.employees.employees;
-
-      return isAdminView
-        ? employees.find((x) => x.id === employeeId)
-        : store.state.employee.employee;
-    });
-
-    const pageTitle = computed(() => {
-      if (!isAdminView) return undefined;
-
-      return selectedEmployee.value
-        ? `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
-        : (i18n.t('timesheets') as string);
-    });
+    const pageTitle = computed(() =>
+      `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
+    );
 
     useMeta(() => ({
       title: pageTitle.value,
@@ -321,53 +276,41 @@ export default defineComponent({
     const timesheet = useTimesheet(
       employeeId,
       Number(startTimestamp),
-      selectedEmployee.value?.bridgeUid
+      currentEmployee.value?.bridgeUid
     );
 
-    const showTravel = computed(() => {
-      if (isAdminView) {
-        return timesheet.timesheet.value.travelProject?.values.some(
-          (value: number) => value > 0
-        );
-      } else {
-        return (
-          selectedEmployee &&
-          selectedEmployee.value?.travelAllowance &&
-          timesheet.timesheet.value.travelProject
-        );
-      }
-    });
+    const showTravel = computed(() =>
+      (
+        currentEmployee &&
+        currentEmployee.value?.travelAllowance &&
+        timesheet.timesheet.value.travelProject
+      )
+    );
 
-    const showStandby = computed(() => {
-      if (isAdminView) {
-        return timesheet.timesheet.value.standByProject?.values.some(
-          (value: number) => value > 0
-        );
-      } else {
-        return (
-          selectedEmployee &&
-          selectedEmployee.value?.standBy &&
-          timesheet.timesheet.value.standByProject
-        );
-      }
-    });
+    const showStandby = computed(() =>
+      (
+        currentEmployee &&
+        currentEmployee.value?.standBy &&
+        timesheet.timesheet.value.standByProject
+      )
+    );
 
     const reasonOfDenial = ref('');
 
     const handleDeny = () => {
-      if (!reasonOfDenial.value || !selectedEmployee.value) return;
+      if (!reasonOfDenial.value || !currentEmployee.value) return;
 
-      timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
+      timesheet.denyTimesheet(currentEmployee.value, reasonOfDenial.value);
     };
 
     const handleReminder = () => {
-      if (!selectedEmployee.value) return;
+      if (!currentEmployee.value) return;
 
       const startDate = new Date(
         recordsState.value?.selectedWeek[0].date
       ).getTime();
       store.dispatch('timesheets/emailReminder', {
-        employee: selectedEmployee.value,
+        employee: currentEmployee.value,
         startDate,
       });
     };
@@ -388,7 +331,7 @@ export default defineComponent({
 
       const selectableCustomers = customers.filter(
         (x: Customer) =>
-          (selectedEmployee.value?.projects?.includes(x.id) &&
+          (currentEmployee.value?.projects?.includes(x.id) &&
             !selectedCustomers?.includes(x.id) &&
             !x.archived) ||
           x.isDefault
@@ -449,11 +392,10 @@ export default defineComponent({
     };
 
     return {
-      employee: selectedEmployee,
+      employee: currentEmployee,
       selectableCustomers,
       recordsState,
       recordStatus,
-      isAdminView,
       showBridgeError,
       reasonOfDenial,
       showTravel,
