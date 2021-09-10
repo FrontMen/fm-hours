@@ -188,6 +188,7 @@ import {
   watch,
   useMeta,
   useContext,
+  ref,
 } from '@nuxtjs/composition-api';
 
 import EmployeeHeader from '~/components/app/employee-header.vue';
@@ -223,6 +224,12 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
     const timesheetState = computed(() => store.state.timesheets);
+    const timesheet = ref<WeeklyTimesheet>({
+      projects: [],
+      leaveDays: null,
+      travelProject: null,
+      standByProject: null,
+    });
 
     const timesheetStatus = computed(() => {
       return timesheetState.value.timesheets[0]
@@ -234,6 +241,12 @@ export default defineComponent({
       () =>
         timesheetStatus.value === recordStatus.APPROVED ||
         timesheetStatus.value === recordStatus.PENDING
+    );
+
+    const timesheetDenyMessage = computed(() =>
+      timesheetState.value.timesheets[0]
+        ? timesheetState.value.timesheets[0].reasonOfDenial
+        : ''
     );
 
     let totals: TimesheetTotals = {
@@ -263,10 +276,11 @@ export default defineComponent({
 
     const startTimestamp = router.currentRoute.params.start_timestamp;
 
-    const timesheet = useTimesheet(
+    timesheet.value = useTimesheet(
       employeeId,
       Number(startTimestamp),
-      currentEmployee.value?.bridgeUid
+      currentEmployee.value?.bridgeUid,
+      timesheetStatus
     );
 
     const showTravel = computed(() =>
@@ -364,6 +378,7 @@ export default defineComponent({
     return {
       employee: currentEmployee,
       selectableCustomers,
+      timesheetDenyMessage,
       recordsState,
       recordStatus,
       showBridgeError,
