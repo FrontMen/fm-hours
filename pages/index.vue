@@ -6,8 +6,6 @@
     standByHours: "Stand-by hours"
     leaveDay: "Leave days"
     addComment: "Add a comment here."
-    denialReason: "Reason of denial"
-    denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
   nl:
     workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
     leaveRequest: "Voor verlof"
@@ -15,8 +13,6 @@
     standByHours: "Stand-by uren"
     leaveDay: "Verlofdagen"
     addComment: "Notitie toevoegen"
-    denialReason: "Reden van afwijzing"
-    denialReasonPlaceholder: "Schrijf een korte notitie van de reden van afkeuren. Dit wordt getoond aan de medewerker."
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
@@ -166,6 +162,7 @@
         @unsubmit="saveTimesheet(recordStatus.NEW)"
       />
 
+      <!-- TODO: Get denial message for user -->
       <b-alert
         :show="timesheetDenyMessage !== ''"
         variant="danger"
@@ -173,25 +170,6 @@
       >
         {{ timesheetDenyMessage }}
       </b-alert>
-
-      <b-modal
-        id="deny-modal"
-        centered
-        :title="$t('denialReason')"
-        cancel-variant="danger"
-        :ok-disabled="!reasonOfDenial"
-        :ok-title="$t('ok')"
-        :cancel-title="$t('cancel')"
-        @hidden="reasonOfDenial = ''"
-        @ok="handleDeny"
-      >
-        <b-form-textarea
-          id="textarea"
-          v-model="reasonOfDenial"
-          :placeholder="$t('denialReasonPlaceholder')"
-          rows="3"
-        />
-      </b-modal>
     </template>
 
     <select-project-dialog
@@ -210,7 +188,6 @@ import {
   watch,
   useMeta,
   useContext,
-  ref,
 } from '@nuxtjs/composition-api';
 
 import EmployeeHeader from '~/components/app/employee-header.vue';
@@ -245,6 +222,19 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
+    const timesheetState = computed(() => store.state.timesheets);
+
+    const timesheetStatus = computed(() => {
+      return timesheetState.value.timesheets[0]
+        ? timesheetState.value.timesheets[0].status
+        : (recordStatus.NEW as TimesheetStatus);
+    });
+
+    const isReadonly = computed(
+      () =>
+        timesheetStatus.value === recordStatus.APPROVED ||
+        timesheetStatus.value === recordStatus.PENDING
+    );
 
     let totals: TimesheetTotals = {
       weekTotal: 0,
@@ -294,26 +284,6 @@ export default defineComponent({
         timesheet.timesheet.value.standByProject
       )
     );
-
-    const reasonOfDenial = ref('');
-
-    const handleDeny = () => {
-      if (!reasonOfDenial.value || !currentEmployee.value) return;
-
-      timesheet.denyTimesheet(currentEmployee.value, reasonOfDenial.value);
-    };
-
-    const handleReminder = () => {
-      if (!currentEmployee.value) return;
-
-      const startDate = new Date(
-        recordsState.value?.selectedWeek[0].date
-      ).getTime();
-      store.dispatch('timesheets/emailReminder', {
-        employee: currentEmployee.value,
-        startDate,
-      });
-    };
 
     const handleBlur = () => {
       timesheet.autoSave();
@@ -397,14 +367,12 @@ export default defineComponent({
       recordsState,
       recordStatus,
       showBridgeError,
-      reasonOfDenial,
       showTravel,
       showStandby,
       handleBlur,
-      handleDeny,
-      handleReminder,
       submitTimesheet,
       setTotals,
+      isReadonly,
       ...timesheet,
     };
   },

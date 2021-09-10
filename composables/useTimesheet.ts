@@ -38,12 +38,6 @@ export default (
       : ''
   );
 
-  const isReadonly = computed(
-    () =>
-      timesheetStatus.value === recordStatus.APPROVED ||
-      timesheetStatus.value === recordStatus.PENDING
-  );
-
   const timesheet = ref<WeeklyTimesheet>({
     projects: [],
     leaveDays: null,
@@ -357,7 +351,6 @@ export default (
     kilometerFormatter: kilometerFormatter(0, 9999),
     saveTimesheet,
     timesheetStatus,
-    isReadonly,
     timesheetDenyMessage,
     message,
     messages,
