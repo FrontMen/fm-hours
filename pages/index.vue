@@ -188,7 +188,7 @@ import {
   watch,
   useMeta,
   useContext,
-  ref,
+  // ref,
 } from '@nuxtjs/composition-api';
 
 import EmployeeHeader from '~/components/app/employee-header.vue';
@@ -219,17 +219,17 @@ export default defineComponent({
   head: {},
 
   setup() {
-    const {i18n } = useContext();
+    const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const recordsState = computed(() => store.state.records);
     const timesheetState = computed(() => store.state.timesheets);
-    const timesheet = ref<WeeklyTimesheet>({
-      projects: [],
-      leaveDays: null,
-      travelProject: null,
-      standByProject: null,
-    });
+    // const timesheet = ref<WeeklyTimesheet>({
+    //   projects: [],
+    //   leaveDays: null,
+    //   travelProject: null,
+    //   standByProject: null,
+    // });
 
     const timesheetStatus = computed(() => {
       return timesheetState.value.timesheets[0]
@@ -264,10 +264,20 @@ export default defineComponent({
 
     watch(currentEmployee, () => {
       employeeId = currentEmployee.value?.id;
+      console.log('HERE', employeeId);
+      const timestamp = router.currentRoute.params.start_timestamp;
+      const startTimestamp = timestamp ? new Date(timestamp) : new Date();
+      const bridgeUid = currentEmployee.value?.bridgeUid;
+
+      store.dispatch('records/getRecords', {
+        employeeId,
+        startDate: startTimestamp,
+        bridgeUid,
+      });
     });
 
-    const pageTitle = computed(() =>
-      `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
+    const pageTitle = computed(
+      () => `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
     );
 
     useMeta(() => ({
@@ -275,28 +285,27 @@ export default defineComponent({
     }));
 
     const startTimestamp = router.currentRoute.params.start_timestamp;
+    console.log('employeeid', employeeId);
 
-    timesheet.value = useTimesheet(
+    const timesheet = useTimesheet(
       employeeId,
       Number(startTimestamp),
       currentEmployee.value?.bridgeUid,
       timesheetStatus
     );
 
-    const showTravel = computed(() =>
-      (
+    const showTravel = computed(
+      () =>
         currentEmployee &&
         currentEmployee.value?.travelAllowance &&
         timesheet.timesheet.value.travelProject
-      )
     );
 
-    const showStandby = computed(() =>
-      (
+    const showStandby = computed(
+      () =>
         currentEmployee &&
         currentEmployee.value?.standBy &&
         timesheet.timesheet.value.standByProject
-      )
     );
 
     const handleBlur = () => {
@@ -370,9 +379,9 @@ export default defineComponent({
           confirmation = confirm(i18n.t('dayError') as string);
       }
 
-      if (!confirmation) return;
+      if (!confirmation) console.log('no confirmation'); // return;
 
-      timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+      // timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
     };
 
     return {
