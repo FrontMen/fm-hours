@@ -47,7 +47,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       photoURL,
     });
 
-    dispatch('employee/getEmployee', {}, {root: true});
+    if (!process.server) dispatch('employee/getEmployee', {}, {root: true});
   },
 };
 

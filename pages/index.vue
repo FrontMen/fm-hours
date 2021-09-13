@@ -15,7 +15,17 @@
     addComment: "Notitie toevoegen"
 </i18n>
 <template>
-  <div class="content-wrapper mt-5">
+  <div>
+    <h6>currentEmployee:</h6>
+    <p>{{currentEmployee}}</p>
+
+    <h6>recordsState:</h6>
+    <p>{{recordsState}}</p>
+
+    <h6>timesheetState:</h6>
+    <p>{{timesheetState}}</p>
+  </div>
+  <!-- <div class="content-wrapper mt-5">
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       {{$t('workschemeError')}}
     </b-alert>
@@ -147,7 +157,6 @@
           rows="1"
           max-rows="4"
           @change="hasUnsavedChanges = true"
-          @blur="handleBlur"
         />
       </form>
 
@@ -162,7 +171,7 @@
         @unsubmit="saveTimesheet(recordStatus.NEW)"
       />
 
-      <!-- TODO: Get denial message for user -->
+      TODO: Get denial message for user
       <b-alert
         :show="timesheetDenyMessage !== ''"
         variant="danger"
@@ -176,7 +185,7 @@
       :projects="selectableCustomers"
       @project-selected="addProject"
     />
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">
@@ -186,8 +195,8 @@ import {
   useRouter,
   useStore,
   watch,
-  useMeta,
-  useContext,
+  // useMeta,
+  // useContext,
   // ref,
 } from '@nuxtjs/composition-api';
 
@@ -200,8 +209,8 @@ import WeeklyTimesheetRow from '~/components/records/weekly-timesheet-row.vue';
 import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-totals-row.vue';
 import CommentBlock from '~/components/records/comment-block.vue';
 
-import useTimesheet from '~/composables/useTimesheet';
-import {recordStatus} from '~/helpers/record-status';
+// import useTimesheet from '~/composables/useTimesheet';
+// import {recordStatus} from '~/helpers/record-status';
 
 export default defineComponent({
   components: {
@@ -219,11 +228,47 @@ export default defineComponent({
   head: {},
 
   setup() {
-    const {i18n} = useContext();
+    // const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
+    const currentEmployee = computed( () => store.getters['employee/getEmployee']);
     const recordsState = computed(() => store.state.records);
     const timesheetState = computed(() => store.state.timesheets);
+    const isServer = process.server;
+
+    let employeeId: string = '';
+
+    watch([currentEmployee], () => {
+      employeeId = currentEmployee.value.id;
+      const bridgeUid = currentEmployee.value.bridgeUid;
+      const timestamp = router.currentRoute.params.start_timestamp;
+      const startTimestamp = timestamp ? new Date(timestamp) : new Date();
+
+      console.log('isServer', isServer);
+      store.dispatch('records/getRecords', {
+        employeeId,
+        startDate: startTimestamp,
+        bridgeUid,
+      });
+    });
+
+    watch(() => [
+      recordsState.value.selectedWeek,
+      recordsState.value.timeRecords,
+      recordsState.value.travelRecords,
+      recordsState.value.standByRecords,
+    ], () => {
+      console.log('recordSate, getTimesheets', employeeId);
+
+      console.log('isServer', isServer);
+      store.dispatch('timesheets/getTimesheets', {
+        employeeId,
+        date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+      });
+
+      console.log('timesheet state', timesheetState);
+    });
+
     // const timesheet = ref<WeeklyTimesheet>({
     //   projects: [],
     //   leaveDays: null,
@@ -231,188 +276,161 @@ export default defineComponent({
     //   standByProject: null,
     // });
 
-    const timesheetStatus = computed(() => {
-      return timesheetState.value.timesheets[0]
-        ? timesheetState.value.timesheets[0].status
-        : (recordStatus.NEW as TimesheetStatus);
-    });
+    // const timesheetStatus = computed(() => {
+    //   return timesheetState.value.timesheets[0]
+    //     ? timesheetState.value.timesheets[0].status
+    //     : (recordStatus.NEW as TimesheetStatus);
+    // });
 
-    const isReadonly = computed(
-      () =>
-        timesheetStatus.value === recordStatus.APPROVED ||
-        timesheetStatus.value === recordStatus.PENDING
-    );
+    // const isReadonly = computed(
+    //   () =>
+    //     timesheetStatus.value === recordStatus.APPROVED ||
+    //     timesheetStatus.value === recordStatus.PENDING
+    // );
 
-    const timesheetDenyMessage = computed(() =>
-      timesheetState.value.timesheets[0]
-        ? timesheetState.value.timesheets[0].reasonOfDenial
-        : ''
-    );
+    // const timesheetDenyMessage = computed(() =>
+    //   timesheetState.value.timesheets[0]
+    //     ? timesheetState.value.timesheets[0].reasonOfDenial
+    //     : ''
+    // );
 
-    let totals: TimesheetTotals = {
-      weekTotal: 0,
-      expectedWeekTotal: 0,
-      dayTotal: [],
-    };
+    // let totals: TimesheetTotals = {
+    //   weekTotal: 0,
+    //   expectedWeekTotal: 0,
+    //   dayTotal: [],
+    // };
 
-    store.dispatch('customers/getCustomers');
+    // store.dispatch('customers/getCustomers');
 
-    const currentEmployee = computed(
-      () => store.getters['employee/getEmployee']
-    );
-    let employeeId: string = '';
+    // const employeeId = currentEmployee.value?.id;
+    // const bridgeUid = currentEmployee.value?.bridgeUid;
 
-    watch(currentEmployee, () => {
-      employeeId = currentEmployee.value?.id;
-      console.log('HERE employee ID', employeeId);
-      const timestamp = router.currentRoute.params.start_timestamp;
-      const startTimestamp = timestamp ? new Date(timestamp) : new Date();
-      const bridgeUid = currentEmployee.value?.bridgeUid;
+    // const timestamp = router.currentRoute.params.start_timestamp;
+    // const startTimestamp = timestamp ? new Date(timestamp) : new Date();
 
-      store.dispatch('records/getRecords', {
-        employeeId,
-        startDate: startTimestamp,
-        bridgeUid,
-      });
 
-      console.log('records', recordsState)
+    // const pageTitle = computed(
+    //   () => `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
+    // );
 
-      // const rDate = computed(() => store.state.records.selectedWeek[0].date);
-      // console.log('date', rDate);
+    // useMeta(() => ({
+    //   title: pageTitle.value,
+    // }));
 
-      // if (rDate.value) {
-      //   store.dispatch('timesheets/getTimesheets', {
-      //     date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
-      //     employeeId,
-      //   });
-      // }
+    // console.log('employeeid', employeeId);
 
-      console.log('timesheet', store.state.timesheets)
-    });
+    // const timesheet = useTimesheet(
+    //   employeeId,
+    //   currentEmployee.value?.bridgeUid,
+    //   timesheetStatus
+    // );
 
-    const pageTitle = computed(
-      () => `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
-    );
+    // const showTravel = computed(
+    //   () =>
+    //     currentEmployee &&
+    //     currentEmployee.value?.travelAllowance &&
+    //     timesheet.timesheet.value.travelProject
+    // );
 
-    useMeta(() => ({
-      title: pageTitle.value,
-    }));
+    // const showStandby = computed(
+    //   () =>
+    //     currentEmployee &&
+    //     currentEmployee.value?.standBy &&
+    //     timesheet.timesheet.value.standByProject
+    // );
 
-    const startTimestamp = router.currentRoute.params.start_timestamp;
-    console.log('employeeid', employeeId);
+    // const showBridgeError = computed(() => {
+    //   return !!store.state.records.errorMessageWorkscheme;
+    // });
 
-    const timesheet = useTimesheet(
-      employeeId,
-      Number(startTimestamp),
-      currentEmployee.value?.bridgeUid,
-      timesheetStatus
-    );
+    // const selectableCustomers = computed(() => {
+    //   const customers: Customer[] = store.state.customers.customers;
+    //   const selectedCustomers = timesheet.timesheet.value.projects.map(
+    //     (project) => project.customer.id
+    //   );
 
-    const showTravel = computed(
-      () =>
-        currentEmployee &&
-        currentEmployee.value?.travelAllowance &&
-        timesheet.timesheet.value.travelProject
-    );
+    //   const selectableCustomers = customers.filter(
+    //     (x: Customer) =>
+    //       (currentEmployee.value?.projects?.includes(x.id) &&
+    //         !selectedCustomers?.includes(x.id) &&
+    //         !x.archived) ||
+    //       x.isDefault
+    //   );
 
-    const showStandby = computed(
-      () =>
-        currentEmployee &&
-        currentEmployee.value?.standBy &&
-        timesheet.timesheet.value.standByProject
-    );
+    //   return [
+    //     {text: i18n.t('chooseProject'), disabled: true},
+    //     ...selectableCustomers.map((entry) => ({
+    //       value: entry.id,
+    //       text: entry.name,
+    //     })),
+    //   ];
+    // });
 
-    const handleBlur = () => {
-      timesheet.autoSave();
-    };
+    // const setTotals = (calculatedTotals: TimesheetTotals) => {
+    //   totals = calculatedTotals;
+    // };
 
-    const showBridgeError = computed(() => {
-      return !!store.state.records.errorMessageWorkscheme;
-    });
+    // const submitTimesheet = () => {
+    //   let confirmation = true;
 
-    const selectableCustomers = computed(() => {
-      const customers: Customer[] = store.state.customers.customers;
-      const selectedCustomers = timesheet.timesheet.value.projects.map(
-        (project) => project.customer.id
-      );
+    //   if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
+    //     const difference = +(
+    //       totals.weekTotal - totals.expectedWeekTotal
+    //     ).toFixed(2);
+    //     confirmation = confirm(
+    //       `${
+    //         difference === 1
+    //           ? i18n.t('weekError', {
+    //               n: difference,
+    //               expected: totals.expectedWeekTotal,
+    //             })
+    //           : i18n.t('weekErrors', {
+    //               n: difference,
+    //               expected: totals.expectedWeekTotal,
+    //             })
+    //       }`
+    //     );
+    //   } else {
+    //     // Only show this one if total hours is fine, but some days are too long
+    //     const daysExceedingExpected = totals.dayTotal.filter(
+    //       (hoursInDay, index) => {
+    //         const weekendHours =
+    //           !recordsState.value?.workScheme[index] && hoursInDay;
+    //         const exceedsExpectedHours =
+    //           recordsState.value?.workScheme[index]?.workHours;
+    //         return hoursInDay > exceedsExpectedHours || weekendHours;
+    //       }
+    //     );
 
-      const selectableCustomers = customers.filter(
-        (x: Customer) =>
-          (currentEmployee.value?.projects?.includes(x.id) &&
-            !selectedCustomers?.includes(x.id) &&
-            !x.archived) ||
-          x.isDefault
-      );
+    //     if (daysExceedingExpected.length && !showBridgeError)
+    //       confirmation = confirm(i18n.t('dayError') as string);
+    //   }
 
-      return [
-        {text: i18n.t('chooseProject'), disabled: true},
-        ...selectableCustomers.map((entry) => ({
-          value: entry.id,
-          text: entry.name,
-        })),
-      ];
-    });
+    //   if (!confirmation) console.log('no confirmation'); // return;
 
-    const setTotals = (calculatedTotals: TimesheetTotals) => {
-      totals = calculatedTotals;
-    };
-
-    const submitTimesheet = () => {
-      let confirmation = true;
-
-      if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
-        const difference = +(
-          totals.weekTotal - totals.expectedWeekTotal
-        ).toFixed(2);
-        confirmation = confirm(
-          `${
-            difference === 1
-              ? i18n.t('weekError', {
-                  n: difference,
-                  expected: totals.expectedWeekTotal,
-                })
-              : i18n.t('weekErrors', {
-                  n: difference,
-                  expected: totals.expectedWeekTotal,
-                })
-          }`
-        );
-      } else {
-        // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.dayTotal.filter(
-          (hoursInDay, index) => {
-            const weekendHours =
-              !recordsState.value?.workScheme[index] && hoursInDay;
-            const exceedsExpectedHours =
-              recordsState.value?.workScheme[index]?.workHours;
-            return hoursInDay > exceedsExpectedHours || weekendHours;
-          }
-        );
-
-        if (daysExceedingExpected.length && !showBridgeError)
-          confirmation = confirm(i18n.t('dayError') as string);
-      }
-
-      if (!confirmation) console.log('no confirmation'); // return;
-
-      // timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
-    };
+    //   // timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+    // };
 
     return {
-      employee: currentEmployee,
-      selectableCustomers,
-      timesheetDenyMessage,
       recordsState,
-      recordStatus,
-      showBridgeError,
-      showTravel,
-      showStandby,
-      handleBlur,
-      submitTimesheet,
-      setTotals,
-      isReadonly,
-      ...timesheet,
-    };
+      timesheetState,
+      currentEmployee
+    }
+
+    // return {
+    //   employee: currentEmployee,
+    //   selectableCustomers,
+    //   timesheetDenyMessage,
+    //   recordsState,
+    //   recordStatus,
+    //   showBridgeError,
+    //   showTravel,
+    //   showStandby,
+    //   submitTimesheet,
+    //   setTotals,
+    //   isReadonly,
+    //   ...timesheet,
+    // };
   },
 });
 </script>
