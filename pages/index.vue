@@ -264,7 +264,7 @@ export default defineComponent({
 
     watch(currentEmployee, () => {
       employeeId = currentEmployee.value?.id;
-      console.log('HERE', employeeId);
+      console.log('HERE employee ID', employeeId);
       const timestamp = router.currentRoute.params.start_timestamp;
       const startTimestamp = timestamp ? new Date(timestamp) : new Date();
       const bridgeUid = currentEmployee.value?.bridgeUid;
@@ -274,6 +274,20 @@ export default defineComponent({
         startDate: startTimestamp,
         bridgeUid,
       });
+
+      console.log('records', recordsState)
+
+      // const rDate = computed(() => store.state.records.selectedWeek[0].date);
+      // console.log('date', rDate);
+
+      // if (rDate.value) {
+      //   store.dispatch('timesheets/getTimesheets', {
+      //     date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+      //     employeeId,
+      //   });
+      // }
+
+      console.log('timesheet', store.state.timesheets)
     });
 
     const pageTitle = computed(
