@@ -48,7 +48,6 @@
     "@nuxtjs/pwa": "^3.3.5",
     "bootstrap": "^4.6.0",
     "bootstrap-vue": "^2.21.2",
-    "core-js": "^3.6.5",
     "date-fns": "^2.16.1",
     "firebase": "^8.0.1",
     "hotkeys-js": "^3.8.7",
