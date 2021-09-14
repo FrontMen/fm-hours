@@ -37,7 +37,7 @@ export default defineComponent({
   setup() {
     const links = [
       {
-        href: "/records",
+        href: "/",
         name: "home",
         icon: "house",
       },

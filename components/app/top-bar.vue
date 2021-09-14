@@ -3,8 +3,8 @@
     feedback: "Feedback"
     logout: "Logout"
   nl:
-    feedback: "#required"
-    logout: "#required"
+    feedback: "Feedback"
+    logout: "Uitloggen"
 </i18n>
 
 <template>
@@ -46,12 +46,15 @@
 
           <b-col>
             <div class="employee d-flex align-items-center justify-content-end">
-              <div class="d-none d-md-block employee__name mr-3">
+              <div
+                v-if="employee"
+                class="d-none d-md-block employee__name mr-3"
+              >
                 {{ employee.name }}
               </div>
 
               <b-dropdown right class="employee__dropdown">
-                <template #button-content>
+                <template v-if="employee" #button-content>
                   <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
                 </template>
 
@@ -68,10 +71,15 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, useRouter, useContext } from "@nuxtjs/composition-api";
+import {
+  defineComponent,
+  PropType,
+  useRouter,
+  useContext,
+} from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  emit: ["logout"],
+  emit: ['logout'],
   props: {
     isAdmin: {
       type: Boolean,
@@ -79,7 +87,6 @@ export default defineComponent({
     },
     employee: {
       type: Object as PropType<Employee>,
-      required: true,
     },
     isDev: {
       type: Boolean,
@@ -90,8 +97,8 @@ export default defineComponent({
     const router = useRouter();
     const {localePath} = useContext();
 
-    const handleLogoClick = () => router.push(localePath("/records"));
-    const handleLogoutClick = () => emit("logout");
+    const handleLogoClick = () => router.push(localePath('/'));
+    const handleLogoutClick = () => emit('logout');
 
     return {
       handleLogoClick,
@@ -149,7 +156,7 @@ export default defineComponent({
     }
 
     &:before {
-      content: "";
+      content: '';
       position: absolute;
       top: 50%;
       left: 0;

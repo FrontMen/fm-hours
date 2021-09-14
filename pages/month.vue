@@ -11,16 +11,16 @@
     date: "Date"
     selectProjects: "Select projects"
   nl:
-    customer: "#required"
-    backToWeek: "#required"
-    print: "#required"
-    totalBillableHours: "#required"
-    totalSelectedHours: "#required"
-    onlyBillable: "#required"
-    noResultsMonth: "#required"
-    approvedBy: "#required"
-    date: "#required"
-    selectProjects: "#required"
+    customer: "Klant"
+    backToWeek: "Terug naar weekoverzicht"
+    print: "Afdrukken"
+    totalBillableHours: "Totaal facturabele uren"
+    totalSelectedHours: "Totaal voor geselecteerde periode"
+    onlyBillable: "Alleen facturabele uren"
+    noResultsMonth: "Geen resultaten gevonden voor de geselecteerde maand"
+    approvedBy: "Geakkoordeerd door"
+    date: "Datum"
+    selectProjects: "Selecteer projecten"
 </i18n>
 
 <template>
@@ -247,7 +247,6 @@ import { getTotalsByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   components: {Multiselect},
-  middleware: ["isAuthenticated"],
   head: {},
 
   setup() {

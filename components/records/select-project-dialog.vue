@@ -2,7 +2,7 @@
   en:
     nameError: "Please choose a project from the list"
   nl:
-    nameError: "#required"
+    nameError: "Kies een project uit de lijst"
 </i18n>
 
 <template>
@@ -41,6 +41,7 @@
 import {
   defineComponent,
   nextTick,
+  onBeforeMount,
   PropType,
   ref,
 } from "@nuxtjs/composition-api";
@@ -87,9 +88,11 @@ export default defineComponent({
       handleSubmit();
     };
 
-    hotkeys('n', () => {
-      // @ts-ignore (BFormGroup does not have proper typing)
-      refs.modal.show("modal-add-project");
+    onBeforeMount(() => {
+      hotkeys('n', () => {
+        // @ts-ignore (BFormGroup does not have proper typing)
+        refs.modal.show("modal-add-project");
+      });
     });
 
     return {

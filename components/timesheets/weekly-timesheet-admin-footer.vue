@@ -4,9 +4,9 @@
     approve: "Approve"
     undo: "Undo approval"
   nl:
-    deny: "#required"
-    approve: "#required"
-    undo: "#required"
+    deny: "Afkeuren"
+    approve: "Akkordeeren"
+    undo: "Ongedaan maken"
 </i18n>
 
 <template>

@@ -4,9 +4,9 @@
     nextHint: "Or use keyboard right to go to next month"
     currentHint: "To current month"
   nl:
-    previousHint: "#required"
-    nextHint: "#required"
-    currentHint: "#required"
+    previousHint: "Or use keyboard left to go to previous week"
+    nextHint: "Or use keyboard right to go to next week"
+    currentHint: "Huidige maand"
 </i18n>
 
 <template>
@@ -47,7 +47,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "@nuxtjs/composition-api";
+import {computed, defineComponent, onBeforeMount} from "@nuxtjs/composition-api";
 import {differenceInCalendarMonths} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
@@ -74,8 +74,10 @@ export default defineComponent({
       return differenceInCalendarMonths(props.selectedDate, today);
     });
 
-    hotkeys('right', handleNextClick);
-    hotkeys('left', handlePreviousClick);
+    onBeforeMount(() => {
+      hotkeys('right', handleNextClick);
+      hotkeys('left', handlePreviousClick);
+    });
 
     return {
       handlePreviousClick,

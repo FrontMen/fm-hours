@@ -1,8 +1,8 @@
 import {GetterTree} from 'vuex';
 
 const getters: GetterTree<EmployeeStoreState, RootStoreState> = {
-  isEmployeeLoggedIn(state): boolean {
-    return state.isLoggedIn;
+  getEmployee(state): Employee | null {
+    return state.employee;
   },
 
   isEmployeeAdmin(state): boolean {
