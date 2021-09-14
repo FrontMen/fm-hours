@@ -9,8 +9,10 @@
 
 <template>
   <div class="d-inline-block language-switcher">
-    <img :src="svgUrl" :alt="$t(`lang.${activeLocaleCode}`)" />
     <b-dropdown>
+      <template #button-content>
+        <img class="mr-2" :src="svgUrl" :alt="$t(`lang.${activeLocaleCode}`)" />
+      </template>
       <b-dropdown-item
         v-for="locale in availableLocalesToSelect"
         :key="locale.code"
