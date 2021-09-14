@@ -21,8 +21,8 @@
           :class="{ active: locale.isActiveLocale }"
         >
           <img
-            :src="`/_nuxt/assets/languages/${locale.code}.svg`"
-            alt="lang.${locale.code}"
+            :src="getLanguageSvgUrl(locale.code)"
+            :alt="$t(`lang.${locale.code}`)"
           />
           {{ $t(`lang.${locale.code}`) }}
         </nuxt-link>
@@ -56,20 +56,24 @@ export default defineComponent({
     );
 
     const svgUrl = computed(() => {
-      /**
-       * Since the ~/assets is evaluated via webpack, we have to require
-       * the asset URL to get it properly.
-       * https://nuxtjs.org/docs/2.x/directory-structure/assets#images
-       */
-      const url = require(`~/assets/languages/${activeLocaleCode.value}.svg`);
-      return url;
+      return getLanguageSvgUrl(activeLocaleCode.value!);
     });
 
     return {
       availableLocalesToSelect,
       svgUrl,
       activeLocaleCode,
+      getLanguageSvgUrl,
     };
+
+    /**
+     * Since the ~/assets is evaluated via webpack, we have to require
+     * the asset URL to get it properly.
+     * https://nuxtjs.org/docs/2.x/directory-structure/assets#images
+     */
+    function getLanguageSvgUrl(code: string) {
+      return require(`~/assets/languages/${code}.svg`);
+    }
   },
 });
 </script>
@@ -77,6 +81,10 @@ export default defineComponent({
 
 <style lang="scss">
 .language-switcher {
+  a {
+    text-decoration: none;
+  }
+
   img {
     width: 20px;
     cursor: default;
