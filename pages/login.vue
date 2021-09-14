@@ -11,14 +11,13 @@
 
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
-    <b-card align="center">
+    <b-card align="center" class="main-card">
       <img src="@/assets/images/logo.png" alt="Frontmen logo" />
       <h1>{{$t('login')}}</h1>
       <b-card-text>{{$t('loginHint')}}</b-card-text>
 
-      <b-button variant="dark" class="m-2">
-        <language-switch></language-switch>
-      </b-button>
+      <language-switch class="mb-2"></language-switch>
+
       <b-button :disabled="isLoading" class="login-button" @click="login()">
         <b-spinner v-if="isLoading" class="mr-2" small />
         {{ $t(buttonText) }}
@@ -36,12 +35,12 @@ import {
   defineComponent,
   useStore,
   useRouter,
-  useContext
+  useContext,
 } from '@nuxtjs/composition-api';
 import languageSwitch from '~/components/app/language-switch.vue';
 
 export default defineComponent({
-  components: { languageSwitch },
+  components: {languageSwitch},
   layout: 'login',
   setup() {
     const store = useStore<RootStoreState>();
@@ -50,11 +49,9 @@ export default defineComponent({
 
     const isLoading = computed(() => store.state.auth.isLoading);
     const errorMessage = computed(() => store.state.auth.errorMessage);
-    const buttonText = computed(() =>
-      isLoading.value ? 'loading' : 'login'
-    );
+    const buttonText = computed(() => (isLoading.value ? 'loading' : 'login'));
 
-    const login =  async () => {
+    const login = async () => {
       const login = await store.dispatch('auth/login');
       if (login) router.push(localePath('/'));
     };
@@ -79,9 +76,15 @@ export default defineComponent({
 }
 
 .login-button {
-  font-size: 20px;
+  min-width: 7rem;
+  font-size: 1.2rem;
   display: flex;
   align-items: center;
+  justify-content: center;
   margin: 0 auto;
+}
+
+.main-card {
+  width: 25rem;
 }
 </style>
