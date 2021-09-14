@@ -73,7 +73,7 @@
     "jest": "27.2.0",
     "js-cookie": "2.2.1",
     "jwt-decode": "3.1.2",
-    "lint-staged": "10.4.0",
+    "lint-staged": "11.1.2",
     "nuxt": "2.15.8",
     "nuxt-i18n": "6.28.1",
     "prettier": "2.4.0",
