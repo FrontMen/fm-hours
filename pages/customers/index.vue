@@ -163,8 +163,6 @@ import {queryOnString, sortByProp} from "~/helpers/helpers";
 export default defineComponent({
   middleware: ["isAdmin"],
 
-  head: {},
-
   setup() {
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();
@@ -302,5 +300,7 @@ export default defineComponent({
       addCustomer,
     };
   },
+
+  head: {},
 });
 </script>

@@ -260,8 +260,6 @@ export default defineComponent({
   },
   middleware: ['isAuthenticated'],
 
-  head: {},
-
   setup() {
     const {i18n, localePath} = useContext();
     const router = useRouter();
@@ -466,5 +464,7 @@ export default defineComponent({
       ...timesheet,
     };
   },
+
+  head: {},
 });
 </script>

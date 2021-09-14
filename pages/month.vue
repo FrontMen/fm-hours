@@ -240,17 +240,16 @@ import {
   useMeta,
   useStore,
   watch,
-} from "@nuxtjs/composition-api";
-import {startOfMonth, endOfMonth, format, addMonths, subMonths} from "date-fns";
-import Multiselect from "vue-multiselect";
-import { getTotalsByProp } from "~/helpers/helpers";
+} from '@nuxtjs/composition-api';
+import {startOfMonth, endOfMonth, format, addMonths, subMonths} from 'date-fns';
+import Multiselect from 'vue-multiselect';
+import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
   components: {Multiselect},
-  head: {},
 
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -267,7 +266,7 @@ export default defineComponent({
     const getRecords = () => {
       const startDate = monthDate.value;
 
-      store.dispatch("records/getMonthlyTimeRecords", {
+      store.dispatch('records/getMonthlyTimeRecords', {
         employeeId: store.state.employee.employee!.id,
         startDate,
         endDate,
@@ -275,11 +274,11 @@ export default defineComponent({
     };
 
     const monthDate = ref<Date>(startOfMonth(new Date()));
-    let endDate: Date = endOfMonth(monthDate.value);
+    let endDate: Date = endOfMonth(monthDate.value as Date);
     watch(
       [monthDate, employee],
       () => {
-        endDate = endOfMonth(monthDate.value);
+        endDate = endOfMonth(monthDate.value as Date);
         getRecords();
       },
       {
@@ -303,9 +302,9 @@ export default defineComponent({
       const selectedBillable = handleSelectedProjects(conditionalBillable);
 
       const totals = {
-        billable: getTotalsByProp<TimeRecord>(billableRecords, "hours"),
-        selected: getTotalsByProp<TimeRecord>(selectedBillable, "hours"),
-        total: getTotalsByProp<TimeRecord>(records, "hours"),
+        billable: getTotalsByProp<TimeRecord>(billableRecords, 'hours'),
+        selected: getTotalsByProp<TimeRecord>(selectedBillable, 'hours'),
+        total: getTotalsByProp<TimeRecord>(records, 'hours'),
       };
 
       return totals;
@@ -328,7 +327,7 @@ export default defineComponent({
       return mappedProjects;
     });
 
-    store.dispatch("reports/getMonthlyReportData", {
+    store.dispatch('reports/getMonthlyReportData', {
       startDate: monthDate.value,
     });
 
@@ -356,15 +355,15 @@ export default defineComponent({
     };
 
     const formatDate = (dateTime: number): string => {
-      return format(dateTime, "dd-MMMM-yyyy");
+      return format(dateTime, 'dd-MMMM-yyyy');
     };
 
     const goToPreviousMonth = () => {
-      monthDate.value = subMonths(monthDate.value, 1);
+      monthDate.value = subMonths(monthDate.value as Date, 1);
     };
 
     const goToNextMonth = () => {
-      monthDate.value = addMonths(monthDate.value, 1);
+      monthDate.value = addMonths(monthDate.value as Date, 1);
     };
 
     const goToCurrentMonth = () => {
@@ -391,6 +390,7 @@ export default defineComponent({
       triggerPrint,
     };
   },
+  head: {},
 });
 </script>
 
