@@ -62,7 +62,7 @@
     "bootstrap": "4.6.0",
     "bootstrap-vue": "2.21.2",
     "core-js": "3.17.3",
-    "date-fns": "2.16.1",
+    "date-fns": "2.23.0",
     "eslint": "7.32.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-nuxt": "2.0.0",
