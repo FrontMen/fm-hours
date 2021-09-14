@@ -7,24 +7,12 @@
     nl: "Nederlands"
 </i18n>
 
-<style lang="scss">
-.language-switcher {
-  img {
-    width: 20px;
-    cursor: default;
-  }
-}
-</style>
-
 <template>
   <div class="d-inline-block language-switcher">
-    <img
-      :src="`/_nuxt/assets/languages/${availableLocales.find(locale => locale.isActiveLocale).code}.svg`"
-      :alt="$t(`lang.${availableLocales.find(locale => locale.isActiveLocale).code}`)"
-    />
+    <img :src="svgUrl" :alt="$t(`lang.${activeLocaleCode}`)" />
     <b-dropdown>
       <b-dropdown-item
-        v-for="locale in availableLocales.filter(locale => !locale.isActiveLocale)"
+        v-for="locale in availableLocalesToSelect"
         :key="locale.code"
       >
         <nuxt-link
@@ -44,23 +32,54 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, useContext } from "@nuxtjs/composition-api";
-// eslint-disable-next-line import/named
-import { LocaleObject } from "nuxt-i18n";
+import {computed, defineComponent, useContext} from '@nuxtjs/composition-api';
+import type {LocaleObject} from 'nuxt-i18n';
 export default defineComponent({
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
+
     const availableLocales = computed(() =>
-      (i18n.locales as LocaleObject[]).map((loc: LocaleObject) => {
+      (i18n.locales as LocaleObject[]).map((loc) => {
         return {
           code: loc.code,
           isActiveLocale: loc.code === i18n.locale,
         };
       })
     );
+
+    const activeLocaleCode = computed(
+      () => availableLocales.value.find((loc) => loc.isActiveLocale)?.code
+    );
+
+    const availableLocalesToSelect = computed(() =>
+      availableLocales.value.filter((locale) => !locale.isActiveLocale)
+    );
+
+    const svgUrl = computed(() => {
+      /**
+       * Since the ~/assets is evaluated via webpack, we have to require
+       * the asset URL to get it properly.
+       * https://nuxtjs.org/docs/2.x/directory-structure/assets#images
+       */
+      const url = require(`~/assets/languages/${activeLocaleCode.value}.svg`);
+      return url;
+    });
+
     return {
-      availableLocales,
+      availableLocalesToSelect,
+      svgUrl,
+      activeLocaleCode,
     };
   },
 });
 </script>
+
+
+<style lang="scss">
+.language-switcher {
+  img {
+    width: 20px;
+    cursor: default;
+  }
+}
+</style>
