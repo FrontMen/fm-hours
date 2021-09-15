@@ -24,17 +24,13 @@
     <h6>timesheet:</h6>
     <p>{{timesheet}}</p>
 
-    <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
-      {{$t('workschemeError')}}
-    </b-alert>
-
     <b-alert
-      :show="showEmployeeError"
+      :show="showBridgeError || showEmployeeError"
       dismissible
       variant="warning"
       class="mb-3"
     >
-      {{$t('employeeError')}}
+      {{showBridgeError ? $t('workschemeError') : $t('employeeError')}}
     </b-alert>
 
     <navigation-buttons
@@ -193,7 +189,7 @@
 import {
   computed,
   defineComponent,
-//   useRouter,
+  //   useRouter,
   useStore,
   watch,
   useMeta,
@@ -241,7 +237,8 @@ export default defineComponent({
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
     const messageInput = ref('');
-    const {employee_id: employeeId, start_timestamp: timestamp} =
+    const showEmployeeError = ref(false);
+    const {employee_id: employeeId, start_timestamp: startTimestamp} =
       params.value;
 
     const customers = computed(() => store.state.customers);
@@ -249,12 +246,9 @@ export default defineComponent({
     const timesheetState = computed(() => store.state.timesheets);
     const selectedEmployee = computed(() => {
       showEmployeeError.value = false;
-      console.log('emplID', employeeId)
-      console.log('tm', timestamp)
       const employee = store.state.employees.employees.find(
         (employee: Employee) => employee.id === employeeId
       );
-      console.log('employee', employee)
       if (!employee) {
         showEmployeeError.value = true;
         return {} as Employee;
@@ -270,7 +264,6 @@ export default defineComponent({
     const showBridgeError = computed(() => {
       return !!store.state.records.errorMessageWorkscheme;
     });
-    const showEmployeeError = ref(false);
     const timesheetDenyMessage = computed(() =>
       timesheetState.value.timesheets[0]
         ? timesheetState.value.timesheets[0].reasonOfDenial
@@ -334,11 +327,13 @@ export default defineComponent({
 
     watch([selectedEmployee], () => {
       bridgeUid = selectedEmployee.value.bridgeUid;
-      const startTimestamp = timestamp ? new Date(parseInt(timestamp)) : new Date();
+      const startDate = startTimestamp
+        ? new Date(parseInt(startTimestamp))
+        : new Date();
 
       store.dispatch('records/getRecords', {
         employeeId,
-        startDate: startTimestamp,
+        startDate,
         bridgeUid,
       });
     });
