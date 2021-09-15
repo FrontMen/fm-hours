@@ -6,6 +6,7 @@
     standByHours: "Stand-by hours"
     leaveDay: "Leave days"
     addComment: "Add a comment here."
+    employeeError: "Selected employee is not found"
   nl:
     workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
     leaveRequest: "Voor verlof"
@@ -13,6 +14,7 @@
     standByHours: "Stand-by uren"
     leaveDay: "Verlofdagen"
     addComment: "Notitie toevoegen"
+    employeeError: "Geselecteerde medewerker is niet gevonden"
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
@@ -24,6 +26,15 @@
 
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       {{$t('workschemeError')}}
+    </b-alert>
+
+    <b-alert
+      :show="showEmployeeError"
+      dismissible
+      variant="warning"
+      class="mb-3"
+    >
+      {{$t('employeeError')}}
     </b-alert>
 
     <navigation-buttons
@@ -230,16 +241,25 @@ export default defineComponent({
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
     const messageInput = ref('');
-    const {employee_id: employeeId, start_timestamp: startTimestamp} =
+    const {employee_id: employeeId, start_timestamp: timestamp} =
       params.value;
 
     const customers = computed(() => store.state.customers);
     const recordsState = computed(() => store.state.records);
     const timesheetState = computed(() => store.state.timesheets);
     const selectedEmployee = computed(() => {
-      return store.state.employees.employees.find(
+      showEmployeeError.value = false;
+      console.log('emplID', employeeId)
+      console.log('tm', timestamp)
+      const employee = store.state.employees.employees.find(
         (employee: Employee) => employee.id === employeeId
       );
+      console.log('employee', employee)
+      if (!employee) {
+        showEmployeeError.value = true;
+        return {} as Employee;
+      }
+      return employee;
     });
     const pageTitle = computed(
       () => `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
@@ -250,6 +270,7 @@ export default defineComponent({
     const showBridgeError = computed(() => {
       return !!store.state.records.errorMessageWorkscheme;
     });
+    const showEmployeeError = ref(false);
     const timesheetDenyMessage = computed(() =>
       timesheetState.value.timesheets[0]
         ? timesheetState.value.timesheets[0].reasonOfDenial
@@ -304,7 +325,7 @@ export default defineComponent({
       timesheetState.value?.timesheets[0]?.messages || []
     );
 
-    let bridgeUid: string;
+    let bridgeUid: string | undefined;
     let totals: TimesheetTotals = {
       weekTotal: 0,
       expectedWeekTotal: 0,
@@ -313,6 +334,7 @@ export default defineComponent({
 
     watch([selectedEmployee], () => {
       bridgeUid = selectedEmployee.value.bridgeUid;
+      const startTimestamp = timestamp ? new Date(parseInt(timestamp)) : new Date();
 
       store.dispatch('records/getRecords', {
         employeeId,
@@ -608,6 +630,7 @@ export default defineComponent({
       timesheetState,
       timesheet,
       showBridgeError,
+      showEmployeeError,
       selectableCustomers,
       timesheetStatus,
       isReadonly,
