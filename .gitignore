@@ -85,3 +85,4 @@ dist
 .vscode
 # Firebase auth
 static/firebase-auth-sw.js
+serviceAccount.json

@@ -1,6 +1,16 @@
+import * as path from 'path';
 import i18n from './i18n.config';
 
+import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
+
+const serviceAccountOutDir = path.join(__dirname);
+const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
+
 export default {
+  /**
+   * @nuxtjs/vercel-builder enables this on CI.
+   */
+  standalone: true,
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
     title: 'Frontmen - Hours',
@@ -73,7 +83,10 @@ export default {
           onAuthStateChangedMutation: 'auth/ON_AUTH_STATE_CHANGED_MUTATION',
           onAuthStateChangedAction: 'auth/onAuthStateChangedAction',
         },
-        ssr: true,
+        ssr: {
+          credential: serviceAccountPath,
+          serverLogin: true,
+        },
       },
     },
   },
