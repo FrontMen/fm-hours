@@ -16,12 +16,6 @@
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
-    <h6>currentEmployee:</h6>
-    <p>{{employee}}</p>
-
-    <h6>timesheet:</h6>
-    <p>{{timesheet}}</p>
-
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       {{$t('workschemeError')}}
     </b-alert>
@@ -246,10 +240,8 @@ export default defineComponent({
     const showBridgeError = computed(() => {
       return !!store.state.records.errorMessageWorkscheme;
     });
-    const timesheetDenyMessage = computed(() =>
-      timesheetState.value.timesheets[0]
-        ? timesheetState.value.timesheets[0].reasonOfDenial
-        : ''
+    const timesheetDenyMessage = computed(
+      () => timesheetState.value.timesheets[0]?.reasonOfDenial || ''
     );
     const timesheetStatus = computed(() => {
       return timesheetState.value.timesheets[0]
@@ -402,7 +394,7 @@ export default defineComponent({
             )?.archived;
             if (projectArchived) {
               alert(
-                `${project.customer.name} is already archived. We wont copy it to new timesheet`
+                `${project.customer.name} is already archived. We will not copy it to a new timesheet`
               );
             }
             return !projectArchived;
@@ -493,8 +485,6 @@ export default defineComponent({
       }
       if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
         reasonOfDenial = denialMessage;
-      } else if (newTimesheetStatus === recordStatus.PENDING) {
-        reasonOfDenial = '';
       }
 
       const createNewMessage = (text: string): Message => ({
