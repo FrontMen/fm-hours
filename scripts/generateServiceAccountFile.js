@@ -10,6 +10,8 @@ module.exports = {
       throw new Error('Outdir is required')
     }
 
+    createFolderIfDoesntExist(outdir)
+
     const fileContent = process.env.SERVICE_ACCOUNT_STRING
 
     if (!fileContent) {
@@ -32,5 +34,11 @@ module.exports = {
     console.log(`File ${FILE_NAME} generated successfully!`)
 
     return fileFullPath
+  }
+}
+
+function createFolderIfDoesntExist(folderPath) {
+  if (!fs.existsSync(folderPath)) {
+    fs.mkdirSync(folderPath)
   }
 }
