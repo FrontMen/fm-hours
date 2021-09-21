@@ -1,14 +1,10 @@
 <i18n lang="yaml">
   en:
-    requestLeave: "Request leave"
-    monthly: "Monthly overview"
     goMonthly: "Go to Monthly Overview"
     previousHint: "Or use keyboard left to go to previous week"
     nextHint: "Or use keyboard right to go to next week"
     today: "today"
   nl:
-    requestLeave: "Verlof aanvragen"
-    monthly: "Maand overzicht"
     goMonthly: "Ga naar maand overzicht"
     previousHint: "Of gebruikt de pijltjestoets links om naar vorige week te navigeren"
     nextHint: "Of gebruikt de pijltjestoets rechts om naar volgende week te navigeren"
@@ -47,18 +43,6 @@
         {{ weekLabel }}
       </h2>
       <b-button-group class="navigation-buttons__date-group mr-2">
-        <b-button
-          v-if="isIndex"
-          class="mr-1"
-          variant="info"
-          href="https://bridge.hosted-tools.com/myprofile/absences"
-          target="_blank"
-          rel="noreferrer"
-        >
-          {{$t('requestLeave')}}
-          <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
-        </b-button>
-
         <nuxt-link
           v-if="!isIndex"
           :to="localePath('/timesheets')"
@@ -67,12 +51,6 @@
           <b-button>
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
             {{$t("timesheets")}}
-          </b-button>
-        </nuxt-link>
-
-        <nuxt-link v-if="isIndex" :to="localePath('month')">
-          <b-button v-b-tooltip.hover :title="$t('goMonthly')">
-            {{$t("monthly")}}
           </b-button>
         </nuxt-link>
       </b-button-group>
