@@ -1,15 +1,5 @@
 import i18n from './i18n.config';
 
-import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
-
-// const serviceAccountOutDir = path.join(__dirname, 'generated');
-// const files = fs.readdirSync(serviceAccountOutDir);
-// for (const file of files) {
-//   console.log(file);
-// }
-
-// const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
-
 export default {
   /**
    * @nuxtjs/vercel-builder enables this on CI.
@@ -44,15 +34,25 @@ export default {
     '@nuxt/typescript-build',
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api',
-    function myCustomBuildModule() {
-      // @ts-ignore
-      this.nuxt.hook('build:compile', () => {
-        // @ts-ignore
-        const fullPath = generateServiceAccountFile(this.options.buildDir);
-        // @ts-ignore
-        this.options.firebase.services.auth.ssr.credential = fullPath;
-      });
-    },
+    /**
+     * Internal Module to generate Service Account File.
+     * This is extremely important to enable SSR api calls correctly.
+     *
+     * It'll basically generate a `serviceAccount.json` file in the `.nuxt` folder
+     * so firebase api can auth both in client
+     *
+     * See more details here:
+     * https://firebase.nuxtjs.org/service-options/auth#credential
+     *
+     * Obs.: The path of the file generated needs to be bound to
+     * `firebase.services.auth.ssr.credentials` settings.
+     */
+    [
+      '~/modules/generateServiceAccountFile',
+      {
+        fileName: 'serviceAccount.json',
+      },
+    ],
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
