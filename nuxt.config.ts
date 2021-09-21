@@ -4,14 +4,22 @@ import i18n from './i18n.config';
 
 import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
 
-const files = fs.readdirSync(__dirname);
-
+const serviceAccountOutDir = path.join(__dirname);
+const files = fs.readdirSync(serviceAccountOutDir);
 for (const file of files) {
   console.log(file);
 }
 
-const serviceAccountOutDir = path.join(__dirname);
 const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
+
+console.log('DIRNAME:', __dirname);
+console.log('serviceAccountOutDir:', serviceAccountOutDir);
+console.log('IF I RESOLVE (dir only):', path.resolve(__dirname));
+console.log(
+  'IF I RESOLVE (dir + file):',
+  path.resolve(__dirname, 'serviceAccount.json')
+);
+console.log('serviceAccountPath:', serviceAccountPath);
 
 export default {
   /**
