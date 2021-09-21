@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs')
 const path = require('path')
 
-const FILE_NAME = 'serviceAccount.js'
+const FILE_NAME = 'serviceAccount.json'
 
 module.exports = {
   generateServiceAccountFile(outdir) {
@@ -28,7 +28,7 @@ module.exports = {
      */
     const parsedValue = JSON.parse(fileContent);
 
-    fs.writeFileSync(fileFullPath, `module.exports = ${JSON.stringify(parsedValue, null, 2)}`)
+    fs.writeFileSync(fileFullPath, JSON.stringify(parsedValue, null, 2))
 
     // eslint-disable-next-line no-console
     console.log(`File ${FILE_NAME} generated successfully!`)

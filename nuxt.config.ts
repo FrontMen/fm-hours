@@ -1,17 +1,16 @@
 import * as path from 'path';
-// import * as fs from 'fs';
+import * as fs from 'fs';
 import i18n from './i18n.config';
 
 import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
 
-const serviceAccountOutDir = path.join(__dirname, 'generated');
+// const serviceAccountOutDir = path.join(__dirname, 'generated');
 // const files = fs.readdirSync(serviceAccountOutDir);
 // for (const file of files) {
 //   console.log(file);
 // }
 
 // const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
-generateServiceAccountFile(serviceAccountOutDir);
 
 export default {
   /**
@@ -47,6 +46,12 @@ export default {
     '@nuxt/typescript-build',
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api',
+    function myCustomBuildModule() {
+      this.nuxt.hook('build:compile', async () => {
+        const fullPath = generateServiceAccountFile(this.options.buildDir);
+        this.options.firebase.services.auth.ssr.credential = fullPath;
+      });
+    },
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
