@@ -1,5 +1,3 @@
-import * as path from 'path';
-import * as fs from 'fs';
 import i18n from './i18n.config';
 
 import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
@@ -47,8 +45,11 @@ export default {
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api',
     function myCustomBuildModule() {
+      // @ts-ignore
       this.nuxt.hook('build:compile', () => {
+        // @ts-ignore
         const fullPath = generateServiceAccountFile(this.options.buildDir);
+        // @ts-ignore
         this.options.firebase.services.auth.ssr.credential = fullPath;
       });
     },
