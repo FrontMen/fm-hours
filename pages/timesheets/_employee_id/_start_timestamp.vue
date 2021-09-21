@@ -212,7 +212,9 @@ import NavigationButtons from '~/components/records/navigation-buttons.vue';
 import SelectProjectDialog from '~/components/records/select-project-dialog.vue';
 import WeeklyTimesheetFooter from '~/components/records/weekly-timesheet-footer.vue';
 import WeeklyTimesheetRow from '~/components/records/weekly-timesheet-row.vue';
+import WeeklyTimesheet from '~/components/records/weekly-timesheet.vue';
 import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-totals-row.vue';
+
 import CommentBlock from '~/components/records/comment-block.vue';
 
 export default defineComponent({
@@ -220,6 +222,7 @@ export default defineComponent({
     EmptyTimesheet,
     NavigationButtons,
     SelectProjectDialog,
+    WeeklyTimesheet,
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
     WeeklyTimesheetTotalsRow,

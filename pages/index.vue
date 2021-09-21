@@ -201,12 +201,14 @@ import WeeklyTimesheetFooter from '~/components/records/weekly-timesheet-footer.
 import WeeklyTimesheetRow from '~/components/records/weekly-timesheet-row.vue';
 import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-totals-row.vue';
 import CommentBlock from '~/components/records/comment-block.vue';
+import WeeklyTimesheet from '~/components/records/weekly-timesheet.vue';
 
 export default defineComponent({
   components: {
     EmptyTimesheet,
     NavigationButtons,
     SelectProjectDialog,
+    WeeklyTimesheet,
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
     WeeklyTimesheetTotalsRow,
