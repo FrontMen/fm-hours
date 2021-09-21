@@ -47,7 +47,7 @@ export default {
     // https://composition-api.nuxtjs.org/
     '@nuxtjs/composition-api',
     function myCustomBuildModule() {
-      this.nuxt.hook('build:compile', async () => {
+      this.nuxt.hook('build:compile', () => {
         const fullPath = generateServiceAccountFile(this.options.buildDir);
         this.options.firebase.services.auth.ssr.credential = fullPath;
       });
@@ -97,7 +97,7 @@ export default {
         },
         ssr: {
           // credential: serviceAccountPath,
-          credential: '~generated/serviceAccount.js',
+          credential: '.nuxt/serviceAccount.json',
           serverLogin: true,
         },
       },
