@@ -1,25 +1,17 @@
 import * as path from 'path';
-import * as fs from 'fs';
+// import * as fs from 'fs';
 import i18n from './i18n.config';
 
 import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
 
-const serviceAccountOutDir = path.join(__dirname);
-const files = fs.readdirSync(serviceAccountOutDir);
-for (const file of files) {
-  console.log(file);
-}
+const serviceAccountOutDir = path.join(__dirname, 'generated');
+// const files = fs.readdirSync(serviceAccountOutDir);
+// for (const file of files) {
+//   console.log(file);
+// }
 
-const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
-
-console.log('DIRNAME:', __dirname);
-console.log('serviceAccountOutDir:', serviceAccountOutDir);
-console.log('IF I RESOLVE (dir only):', path.resolve(__dirname));
-console.log(
-  'IF I RESOLVE (dir + file):',
-  path.resolve(__dirname, 'serviceAccount.json')
-);
-console.log('serviceAccountPath:', serviceAccountPath);
+// const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
+generateServiceAccountFile(serviceAccountOutDir);
 
 export default {
   /**
@@ -100,7 +92,7 @@ export default {
         },
         ssr: {
           // credential: serviceAccountPath,
-          credential: '~serviceAccount.json',
+          credential: '~generated/serviceAccount.json',
           serverLogin: true,
         },
       },
