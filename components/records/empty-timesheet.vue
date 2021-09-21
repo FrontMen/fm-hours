@@ -32,13 +32,13 @@
 import {defineComponent} from "@nuxtjs/composition-api";
 
 export default defineComponent({
-  emits: ["copy-previous-week"],
   props: {
     isAdminView: {
       type: Boolean,
       default: false,
     },
   },
+  emits: ["copy-previous-week"],
   setup(_, {emit}) {
     return {
       handleCopyPreviousWeekClick: () => emit("copy-previous-week"),
