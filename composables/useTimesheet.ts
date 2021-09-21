@@ -1,4 +1,10 @@
-import {computed, useStore, ref, watch} from '@nuxtjs/composition-api';
+import {
+  computed,
+  useStore,
+  ref,
+  watch,
+  ComputedRef,
+} from '@nuxtjs/composition-api';
 import {startOfISOWeek, subDays} from 'date-fns';
 
 import {buildWeek, getDayOnGMT} from '~/helpers/dates';
@@ -15,7 +21,8 @@ import {debounce, uuidv4} from '~/helpers/helpers';
 export default (
   employeeId: string,
   startTimestamp?: number,
-  bridgeUid?: string
+  bridgeUid?: string,
+  timesheetStatus?: ComputedRef<TimesheetStatus>
 ) => {
   const store = useStore<RootStoreState>();
   const hasUnsavedChanges = ref<Boolean>(false);
@@ -25,24 +32,6 @@ export default (
   const customers = computed(() => store.state.customers);
   const message = computed(() => timesheetState.value?.timesheets[0]?.message);
   const messageInput = ref('');
-
-  const timesheetStatus = computed(() => {
-    return timesheetState.value.timesheets[0]
-      ? timesheetState.value.timesheets[0].status
-      : (recordStatus.NEW as TimesheetStatus);
-  });
-
-  const timesheetDenyMessage = computed(() =>
-    timesheetState.value.timesheets[0]
-      ? timesheetState.value.timesheets[0].reasonOfDenial
-      : ''
-  );
-
-  const isReadonly = computed(
-    () =>
-      timesheetStatus.value === recordStatus.APPROVED ||
-      timesheetStatus.value === recordStatus.PENDING
-  );
 
   const timesheet = ref<WeeklyTimesheet>({
     projects: [],
@@ -252,6 +241,8 @@ export default (
 
     unsavedWeeklyTimesheet.value = undefined;
 
+    console.log('saving timesheet: ', employeeId);
+
     store.dispatch('records/saveTimesheet', {
       employeeId,
       week: recordsState.value.selectedWeek,
@@ -356,9 +347,6 @@ export default (
     timesheetFormatter: timesheetFormatter(24),
     kilometerFormatter: kilometerFormatter(0, 9999),
     saveTimesheet,
-    timesheetStatus,
-    isReadonly,
-    timesheetDenyMessage,
     message,
     messages,
     messageInput,

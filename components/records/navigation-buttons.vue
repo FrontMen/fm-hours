@@ -48,7 +48,7 @@
       </h2>
       <b-button-group class="mr-2 navigation-buttons__date-group">
         <b-button
-          v-if="!isAdminView"
+          v-if="isIndex"
           class="mr-1"
           variant="info"
           href="https://bridge.hosted-tools.com/myprofile/absences"
@@ -60,7 +60,7 @@
         </b-button>
 
         <nuxt-link
-          v-if="isAdminView"
+          v-if="!isIndex"
           :to="localePath('/timesheets')"
           class="d-flex align-items-center flex-nowrap"
         >
@@ -69,7 +69,8 @@
             {{$t("timesheets")}}
           </b-button>
         </nuxt-link>
-        <nuxt-link v-if="!isAdminView" :to="localePath('month')">
+
+        <nuxt-link v-if="isIndex" :to="localePath('month')">
           <b-button v-b-tooltip.hover :title="$t('goMonthly')">
             {{$t("monthly")}}
           </b-button>
@@ -86,11 +87,11 @@ import {
   onBeforeMount,
   PropType,
   useContext,
+  useRoute,
 } from '@nuxtjs/composition-api';
 import {getISOWeek} from 'date-fns';
 import differenceInCalendarWeeks from 'date-fns/differenceInCalendarWeeks';
 import hotkeys from 'hotkeys-js';
-
 import {getWeekRange, getDayOnGMT} from '~/helpers/dates';
 
 export default defineComponent({
@@ -107,6 +108,9 @@ export default defineComponent({
   emits: ['previous', 'next', 'current'],
   setup(props, {emit}) {
     const {i18n} = useContext();
+    const isIndex = computed(() => {
+      return useRoute().value.name?.includes('index');
+    });
     const handlePreviousClick = () => emit('previous');
     const handleNextClick = () => emit('next');
     const handleCurrentClick = () => emit('current');
@@ -141,6 +145,7 @@ export default defineComponent({
       handlePreviousClick,
       handleNextClick,
       handleCurrentClick,
+      isIndex,
       weekLabel,
       weekDifference,
     };

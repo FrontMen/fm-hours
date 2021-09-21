@@ -6,9 +6,11 @@ import {recordStatus} from '~/helpers/record-status';
 
 export default class TimesheetsService {
   fire: NuxtFireInstance;
+  isServer: boolean;
 
   constructor(fire: NuxtFireInstance) {
     this.fire = fire;
+    this.isServer = process.server;
   }
 
   async getTimesheets({
@@ -17,6 +19,9 @@ export default class TimesheetsService {
     endDate,
     employeeId,
   }: GetTimesheetsProps) {
+    // Only do firebase calls on client side
+    if (this.isServer) return [];
+
     let query:
       | firebase.default.firestore.CollectionReference<DocumentData>
       | firebase.default.firestore.Query<DocumentData> = this.fire.firestore.collection(

@@ -6,8 +6,6 @@
     standByHours: "Stand-by hours"
     leaveDay: "Leave days"
     addComment: "Add a comment here."
-    denialReason: "Reason of denial"
-    denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
   nl:
     workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
     leaveRequest: "Voor verlof"
@@ -15,8 +13,6 @@
     standByHours: "Stand-by uren"
     leaveDay: "Verlofdagen"
     addComment: "Notitie toevoegen"
-    denialReason: "Reden van afwijzing"
-    denialReasonPlaceholder: "Schrijf een korte notitie van de reden van afkeuren. Dit wordt getoond aan de medewerker."
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
@@ -24,16 +20,9 @@
       {{$t('workschemeError')}}
     </b-alert>
 
-    <employee-header
-      v-if="isAdminView && employee"
-      class="mb-5"
-      :employee="employee"
-    />
-
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
-      :is-admin-view="isAdminView"
       @previous="goToWeek('previous')"
       @next="goToWeek('next')"
       @current="goToWeek('current')"
@@ -41,185 +30,145 @@
 
     <empty-timesheet
       v-if="!timesheet.projects.length"
-      :is-admin-view="isAdminView"
       @copy-previous-week="copyPreviousWeek"
     />
-
-    <template>
-      <form action="javascript:void(0);">
-        <template v-if="timesheet.projects.length">
-          <weekly-timesheet :selected-week="recordsState.selectedWeek">
-            <template #rows>
-              <weekly-timesheet-row
-                v-for="(project, index) in timesheet.projects"
-                :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
-                :project="timesheet.projects[index]"
-                :readonly="!isAdminView && (isReadonly || project.isExternal)"
-                :removeable="!isAdminView && !isReadonly && !project.isExternal"
-                :selected-week="recordsState.selectedWeek"
-                :value-formatter="timesheetFormatter"
-                :employee="employee"
-                @save="saveTimesheet(recordStatus.NEW)"
-                @change="hasUnsavedChanges = true"
-                @remove="deleteProject(timesheet.projects[index])"
-              />
-
-              <weekly-timesheet-totals-row
-                :projects="timesheet.projects"
-                :selected-week="recordsState.selectedWeek"
-                :work-scheme="recordsState.workScheme"
-                :show-add-project-button="
-                  !isReadonly && selectableCustomers.length > 0
-                "
-                @totals="setTotals"
-              />
-            </template>
-          </weekly-timesheet>
-
-          <template v-if="showStandby">
-            <weekly-timesheet
-              :selected-week="recordsState.selectedWeek"
-              :active="!!employee.standBy"
-              :title="$t('standByHours')"
-            >
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.standByProject"
-                  :readonly="!isAdminView && isReadonly"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="timesheetFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                  @remove="deleteProject(timesheet.projects[index])"
-                />
-              </template>
-            </weekly-timesheet>
-          </template>
-
-          <template v-if="showTravel">
-            <weekly-timesheet
-              :selected-week="recordsState.selectedWeek"
-              :active="!!employee.travelAllowance"
-              :title="$t('travelAllowance')"
-            >
-              <template #rows>
-                <weekly-timesheet-row
-                  :key="recordsState.selectedWeek[0].date"
-                  :project="timesheet.travelProject"
-                  :readonly="!isAdminView && isReadonly"
-                  :removable="false"
-                  :selected-week="recordsState.selectedWeek"
-                  :value-formatter="kilometerFormatter"
-                  :employee="employee"
-                  @change="hasUnsavedChanges = true"
-                />
-              </template>
-            </weekly-timesheet>
-          </template>
-        </template>
-
-        <template v-if="timesheet.leaveDays">
-          <weekly-timesheet
-            :selected-week="recordsState.selectedWeek"
-            :title="$t('leaveDay')"
-          >
-            <template #rows>
-              <weekly-timesheet-row
-                :key="recordsState.selectedWeek[0].date"
-                :project="timesheet.leaveDays"
-                :readonly="true"
-                :removable="false"
-                :selected-week="recordsState.selectedWeek"
-                :value-formatter="timesheetFormatter"
-                :employee="employee"
-                @change="hasUnsavedChanges = true"
-              />
-            </template>
-          </weekly-timesheet>
-        </template>
-
-        <div v-if="message || messages" class="mt-4">
-          <comment-block v-if="!!message" :text="message" />
-          <comment-block
-            v-for="msg in messages"
-            :key="msg.id"
-            :text="msg.text"
-            :date="msg.createdAt"
-          />
-        </div>
-
-        <b-form-textarea
-          v-if="!isReadonly && timesheet.projects.length"
-          id="message-textarea"
-          v-model="messageInput"
-          class="mt-4"
-          :placeholder="$t('addComment')"
-          rows="1"
-          max-rows="4"
-          @change="hasUnsavedChanges = true"
-          @blur="handleBlur"
-        />
-      </form>
-
-      <weekly-timesheet-admin-footer
-        v-if="isAdminView"
-        class="mt-5"
-        :has-unsaved-changes="hasUnsavedChanges"
-        :is-saving="recordsState.isSaving"
-        :last-saved="recordsState.lastSaved"
-        :status="timesheetStatus"
-        @save="saveTimesheet(recordStatus.PENDING)"
-        @approve="saveTimesheet(recordStatus.APPROVED)"
-        @unapprove="saveTimesheet(recordStatus.NEW)"
-        @reminder="handleReminder"
-      />
-
-      <weekly-timesheet-footer
-        v-else
-        class="mt-5"
-        :has-unsaved-changes="hasUnsavedChanges"
-        :is-saving="recordsState.isSaving"
-        :last-saved="recordsState.lastSaved"
-        :status="timesheetStatus"
-        @save="saveTimesheet(recordStatus.NEW)"
-        @submit="submitTimesheet"
-        @unsubmit="saveTimesheet(recordStatus.NEW)"
-      />
-
-      <b-alert
-        :show="timesheetDenyMessage !== ''"
-        variant="danger"
-        class="my-3"
-      >
-        {{ timesheetDenyMessage }}
-      </b-alert>
-
-      <b-modal
-        id="deny-modal"
-        centered
-        :title="$t('denialReason')"
-        cancel-variant="danger"
-        :ok-disabled="!reasonOfDenial"
-        :ok-title="$t('ok')"
-        :cancel-title="$t('cancel')"
-        @hidden="reasonOfDenial = ''"
-        @ok="handleDeny"
-      >
-        <b-form-textarea
-          id="textarea"
-          v-model="reasonOfDenial"
-          :placeholder="$t('denialReasonPlaceholder')"
-          rows="3"
-        />
-      </b-modal>
-    </template>
 
     <select-project-dialog
       :projects="selectableCustomers"
       @project-selected="addProject"
     />
+
+    <form action="javascript:void(0);">
+      <template v-if="timesheet.projects.length">
+        <weekly-timesheet :selected-week="recordsState.selectedWeek">
+          <template #rows>
+            <weekly-timesheet-row
+              v-for="(project, index) in timesheet.projects"
+              :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
+              :project="timesheet.projects[index]"
+              :readonly="isReadonly || project.isExternal"
+              :removeable="!isReadonly && !project.isExternal"
+              :selected-week="recordsState.selectedWeek"
+              :value-formatter="timesheetFormatter"
+              :employee="employee"
+              @save="saveTimesheet(recordStatus.NEW)"
+              @change="hasUnsavedChanges = true"
+              @remove="deleteProject(timesheet.projects[index])"
+            />
+
+            <weekly-timesheet-totals-row
+              :projects="timesheet.projects"
+              :selected-week="recordsState.selectedWeek"
+              :work-scheme="recordsState.workScheme"
+              :show-add-project-button="
+                  !isReadonly && selectableCustomers.length > 0
+                "
+              @totals="setTotals"
+            />
+          </template>
+        </weekly-timesheet>
+
+        <template v-if="showStandby">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="!!employee.standBy"
+            :title="$t('standByHours')"
+          >
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.standByProject"
+                :readonly="isReadonly"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="timesheetFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+                @remove="deleteProject(timesheet.projects[index])"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
+
+        <template v-if="showTravel">
+          <weekly-timesheet
+            :selected-week="recordsState.selectedWeek"
+            :active="!!employee.travelAllowance"
+            :title="$t('travelAllowance')"
+          >
+            <template #rows>
+              <weekly-timesheet-row
+                :key="recordsState.selectedWeek[0].date"
+                :project="timesheet.travelProject"
+                :readonly="isReadonly"
+                :removable="false"
+                :selected-week="recordsState.selectedWeek"
+                :value-formatter="kilometerFormatter"
+                :employee="employee"
+                @change="hasUnsavedChanges = true"
+              />
+            </template>
+          </weekly-timesheet>
+        </template>
+      </template>
+
+      <!-- TODO: Setup the intracto APIs before uncommenting -->
+      <!-- <template v-if="timesheet.leaveDays">
+        <weekly-timesheet
+          :selected-week="recordsState.selectedWeek"
+          :title="$t('leaveDay')"
+        >
+          <template #rows>
+            <weekly-timesheet-row
+              :key="recordsState.selectedWeek[0].date"
+              :project="timesheet.leaveDays"
+              :readonly="true"
+              :removable="false"
+              :selected-week="recordsState.selectedWeek"
+              :value-formatter="timesheetFormatter"
+              :employee="employee"
+              @change="hasUnsavedChanges = true"
+            />
+          </template>
+        </weekly-timesheet>
+      </template> -->
+
+      <div v-if="message || messages" class="mt-4">
+        <comment-block v-if="!!message" :text="message" />
+        <comment-block
+          v-for="msg in messages"
+          :key="msg.id"
+          :text="msg.text"
+          :date="msg.createdAt"
+        />
+      </div>
+
+      <b-form-textarea
+        v-if="!isReadonly && timesheet.projects.length"
+        id="message-textarea"
+        v-model="messageInput"
+        class="mt-4"
+        :placeholder="$t('addComment')"
+        rows="1"
+        max-rows="4"
+        @change="hasUnsavedChanges = true"
+      />
+    </form>
+
+    <weekly-timesheet-footer
+      class="mt-5"
+      :has-unsaved-changes="hasUnsavedChanges"
+      :is-saving="recordsState.isSaving"
+      :last-saved="recordsState.lastSaved"
+      :status="timesheetStatus"
+      @save="saveTimesheet(recordStatus.NEW)"
+      @submit="submitTimesheet"
+      @unsubmit="saveTimesheet(recordStatus.NEW)"
+    />
+
+    <b-alert :show="timesheetDenyMessage !== ''" variant="danger" class="my-3">
+      {{ timesheetDenyMessage }}
+    </b-alert>
   </div>
 </template>
 
@@ -234,6 +183,16 @@ import {
   useContext,
   ref,
 } from '@nuxtjs/composition-api';
+import {startOfISOWeek, subDays} from 'date-fns';
+import {buildWeek, getDayOnGMT} from '~/helpers/dates';
+import {uuidv4} from '~/helpers/helpers';
+import {
+  createWeeklyTimesheet,
+  timesheetFormatter,
+  kilometerFormatter,
+  createLeaveProject,
+} from '~/helpers/timesheet';
+import {recordStatus} from '~/helpers/record-status';
 
 import EmployeeHeader from '~/components/app/employee-header.vue';
 import EmptyTimesheet from '~/components/records/empty-timesheet.vue';
@@ -243,9 +202,6 @@ import WeeklyTimesheetFooter from '~/components/records/weekly-timesheet-footer.
 import WeeklyTimesheetRow from '~/components/records/weekly-timesheet-row.vue';
 import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-totals-row.vue';
 import CommentBlock from '~/components/records/comment-block.vue';
-
-import useTimesheet from '~/composables/useTimesheet';
-import {recordStatus} from '~/helpers/record-status';
 
 export default defineComponent({
   components: {
@@ -261,145 +217,332 @@ export default defineComponent({
   middleware: ['isAuthenticated'],
 
   setup() {
-    const {i18n, localePath} = useContext();
+    const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
+    const hasUnsavedChanges = ref<Boolean>(false);
+    const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
+    const messageInput = ref('');
+    const currentEmployee = computed(
+      () => store.getters['employee/getEmployee']
+    );
+    const customers = computed(() => store.state.customers);
     const recordsState = computed(() => store.state.records);
+    const timesheetState = computed(() => store.state.timesheets);
+    const pageTitle = computed(
+      () => `${i18n.t('timesheets')} - ${currentEmployee.value?.name}`
+    );
+    const message = computed(
+      () => timesheetState.value?.timesheets[0]?.message
+    );
+    const showBridgeError = computed(() => {
+      return !!store.state.records.errorMessageWorkscheme;
+    });
+    const timesheetDenyMessage = computed(
+      () => timesheetState.value.timesheets[0]?.reasonOfDenial || ''
+    );
+    const timesheetStatus = computed(() => {
+      return timesheetState.value.timesheets[0]
+        ? timesheetState.value.timesheets[0].status
+        : (recordStatus.NEW as TimesheetStatus);
+    });
 
-    // // TODO Clean this up (not a good way to check admin stuff)
-    const isAdminView = router.currentRoute.name?.includes('timesheets');
+    const isReadonly = computed(
+      () =>
+        timesheetStatus.value === recordStatus.APPROVED ||
+        timesheetStatus.value === recordStatus.PENDING
+    );
 
+    const hasRestDayHours = computed(() => {
+      return timesheet.value.projects.reduce((_, project) => {
+        return project.values.reduce((acc, value, index) => {
+          if (!value) return acc;
+
+          const day = recordsState.value.selectedWeek[index];
+
+          return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
+        }, false);
+      }, false);
+    });
+
+    const showStandby = computed(
+      () =>
+        currentEmployee &&
+        currentEmployee.value?.standBy &&
+        timesheet.value.standByProject
+    );
+
+    const showTravel = computed(
+      () =>
+        currentEmployee &&
+        currentEmployee.value?.travelAllowance &&
+        timesheet.value.travelProject
+    );
+
+    const timesheet = ref<WeeklyTimesheet>({
+      projects: [],
+      leaveDays: null,
+      travelProject: null,
+      standByProject: null,
+    });
+
+    const messages = ref<Message[]>(
+      timesheetState.value?.timesheets[0]?.messages || []
+    );
+
+    let employeeId: string = '';
+    let bridgeUid: number = 0;
     let totals: TimesheetTotals = {
       weekTotal: 0,
       expectedWeekTotal: 0,
       dayTotal: [],
     };
 
-    store.dispatch('employees/getEmployees');
-    store.dispatch('customers/getCustomers');
+    watch([currentEmployee], () => {
+      employeeId = currentEmployee.value.id;
+      bridgeUid = currentEmployee.value.bridgeUid;
+      const timestamp = router.currentRoute.params.start_timestamp;
+      const startTimestamp = timestamp ? new Date(timestamp) : new Date();
 
-    if (isAdminView && !store.getters['employee/isEmployeeAdmin']) {
-      return router.replace(localePath('/'));
-    }
+      store.dispatch('records/getRecords', {
+        employeeId,
+        startDate: startTimestamp,
+        bridgeUid,
+      });
+    });
 
-    const currentEmployee = computed(
-      () => store.getters['employee/getEmployee']
+    watch(
+      () => [
+        recordsState.value.selectedWeek,
+        recordsState.value.timeRecords,
+        recordsState.value.travelRecords,
+        recordsState.value.standByRecords,
+      ],
+      () => {
+        const date = new Date(
+          recordsState.value.selectedWeek[0].date
+        ).getTime();
+
+        store.dispatch('timesheets/getTimesheets', {
+          employeeId,
+          date,
+        });
+
+        const newTimesheet = createWeeklyTimesheet({
+          week: recordsState.value.selectedWeek,
+          leaveDays: createLeaveProject(
+            recordsState.value.selectedWeek,
+            recordsState.value.workScheme
+          ),
+          timeRecords: recordsState.value.timeRecords,
+          travelRecords: recordsState.value.travelRecords,
+          standByRecords: recordsState.value.standByRecords,
+          workScheme: recordsState.value.workScheme,
+        });
+
+        timesheet.value = unsavedWeeklyTimesheet.value
+          ? unsavedWeeklyTimesheet.value
+          : newTimesheet;
+      }
     );
-    let employeeId: string = '';
-
-    watch(currentEmployee, () => {
-      employeeId = isAdminView
-        ? router.currentRoute.params.employee_id
-        : currentEmployee.value?.id;
-    });
-
-    // TODO Check the admin employee works
-    const selectedEmployee = computed(() => {
-      const employees = store.state.employees.employees;
-
-      return isAdminView
-        ? employees.find((x) => x.id === employeeId)
-        : store.state.employee.employee;
-    });
-
-    const pageTitle = computed(() => {
-      if (!isAdminView) return undefined;
-
-      return selectedEmployee.value
-        ? `${i18n.t('timesheets')} - ${selectedEmployee.value?.name}`
-        : (i18n.t('timesheets') as string);
-    });
 
     useMeta(() => ({
       title: pageTitle.value,
     }));
 
-    const startTimestamp = router.currentRoute.params.start_timestamp;
+    store.dispatch('customers/getCustomers');
 
-    const timesheet = useTimesheet(
-      employeeId,
-      Number(startTimestamp),
-      selectedEmployee.value?.bridgeUid
-    );
-
-    const showTravel = computed(() => {
-      if (isAdminView) {
-        return timesheet.timesheet.value.travelProject?.values.some(
-          (value: number) => value > 0
-        );
-      } else {
-        return (
-          selectedEmployee &&
-          selectedEmployee.value?.travelAllowance &&
-          timesheet.timesheet.value.travelProject
+    const goToWeek = (to: 'current' | 'previous' | 'next') => {
+      if (hasUnsavedChanges.value) {
+        confirm(
+          'You have unsaved changes, are you sure you want to switch to another week?'
         );
       }
-    });
 
-    const showStandby = computed(() => {
-      if (isAdminView) {
-        return timesheet.timesheet.value.standByProject?.values.some(
-          (value: number) => value > 0
-        );
-      } else {
-        return (
-          selectedEmployee &&
-          selectedEmployee.value?.standBy &&
-          timesheet.timesheet.value.standByProject
-        );
-      }
-    });
-
-    const reasonOfDenial = ref('');
-
-    const handleDeny = () => {
-      if (!reasonOfDenial.value || !selectedEmployee.value) return;
-
-      timesheet.denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
+      unsavedWeeklyTimesheet.value = undefined;
+      hasUnsavedChanges.value = false;
+      messageInput.value = '';
+      store.dispatch('records/goToWeek', {bridgeUid, to});
     };
 
-    const handleReminder = () => {
-      if (!selectedEmployee.value) return;
-
+    const copyPreviousWeek = () => {
       const startDate = new Date(
-        recordsState.value?.selectedWeek[0].date
-      ).getTime();
-      store.dispatch('timesheets/emailReminder', {
-        employee: selectedEmployee.value,
-        startDate,
+        getDayOnGMT(recordsState.value.selectedWeek[0].date)
+      );
+      const prevStartDate = subDays(startDate, 7);
+      const previousWeek = buildWeek(startOfISOWeek(prevStartDate));
+
+      const previousWeekTimesheet = createWeeklyTimesheet({
+        week: previousWeek,
+        leaveDays: createLeaveProject(
+          recordsState.value.selectedWeek,
+          recordsState.value.workScheme
+        ),
+        timeRecords: recordsState.value.timeRecords,
+        travelRecords: recordsState.value.travelRecords,
+        workScheme: recordsState.value.workScheme,
+        standByRecords: recordsState.value.standByRecords,
+      });
+
+      const newTimesheet = {
+        projects: previousWeekTimesheet.projects
+          .filter((project) => {
+            const projectArchived = customers.value.customers.find(
+              (customer) => customer.id === project.customer.id
+            )?.archived;
+            if (projectArchived) {
+              alert(
+                `${project.customer.name} is already archived. We will not copy it to a new timesheet`
+              );
+            }
+            return !projectArchived;
+          })
+          .map((project) => ({
+            ...project,
+            ids: new Array(7).fill(null),
+          })),
+        leaveDays: previousWeekTimesheet.leaveDays,
+        travelProject: {
+          ...previousWeekTimesheet.travelProject!,
+          ids: new Array(7).fill(null),
+        },
+        standByProject: {
+          ...previousWeekTimesheet.standByProject!,
+          ids: new Array(7).fill(null),
+        },
+      };
+
+      timesheet.value = newTimesheet;
+    };
+
+    const addProject = (id: string) => {
+      const allCustomers = store.state.customers.customers;
+      const customer = allCustomers.find((x) => x.id === id) as Customer;
+
+      timesheet.value.projects.push({
+        customer,
+        values: Array.from(Array(7), () => 0),
+        ids: Array.from(Array(7), () => null),
+        isExternal: false,
       });
     };
 
-    const handleBlur = () => {
-      timesheet.autoSave();
-    };
-
-    const showBridgeError = computed(() => {
-      return !!store.state.records.errorMessageWorkscheme;
-    });
-
     const selectableCustomers = computed(() => {
-      const customers: Customer[] = store.state.customers.customers;
-      const selectedCustomers = timesheet.timesheet.value.projects.map(
+      const currentIds = timesheet.value.projects.map(
         (project) => project.customer.id
       );
 
-      const selectableCustomers = customers.filter(
-        (x: Customer) =>
-          (selectedEmployee.value?.projects?.includes(x.id) &&
-            !selectedCustomers?.includes(x.id) &&
-            !x.archived) ||
-          x.isDefault
+      const selectable = customers.value.customers.filter(
+        (customer: Customer) =>
+          (currentEmployee.value?.projects?.includes(customer.id) &&
+            !currentIds?.includes(customer.id) &&
+            !customer.archived) ||
+          customer.isDefault
       );
 
       return [
         {text: i18n.t('chooseProject'), disabled: true},
-        ...selectableCustomers.map((entry) => ({
+        ...selectable.map((entry) => ({
           value: entry.id,
           text: entry.name,
         })),
       ];
     });
+
+    const saveTimesheet = (
+      newTimesheetStatus: TimesheetStatus,
+      denialMessage?: string
+    ) => {
+      if (
+        newTimesheetStatus === timesheetStatus.value &&
+        !hasUnsavedChanges.value
+      )
+        return;
+
+      if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
+        const confirmation = confirm(
+          'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
+        );
+
+        if (!confirmation) return;
+      }
+
+      unsavedWeeklyTimesheet.value = undefined;
+
+      console.log('saving timesheet: ', employeeId);
+
+      store.dispatch('records/saveTimesheet', {
+        employeeId,
+        week: recordsState.value.selectedWeek,
+        timesheet: timesheet.value,
+      });
+
+      let reasonOfDenial = '';
+      if (timesheetState.value.timesheets[0]) {
+        reasonOfDenial = timesheetState.value.timesheets[0].reasonOfDenial;
+      }
+      if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
+        reasonOfDenial = denialMessage;
+      }
+
+      const createNewMessage = (text: string): Message => ({
+        id: uuidv4(),
+        createdAt: new Date().getTime(),
+        text,
+      });
+
+      const newMessages = messageInput.value
+        ? [...messages.value, createNewMessage(messageInput.value)]
+        : [...messages.value];
+
+      const newTimesheet = timesheetState.value.timesheets[0]
+        ? {
+            ...timesheetState.value.timesheets[0],
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          }
+        : {
+            employeeId,
+            date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          };
+
+      store.dispatch('timesheets/saveTimesheet', newTimesheet);
+    };
+
+    const deleteProject = (project: TimesheetProject) => {
+      store.dispatch('records/deleteProjectRecords', {
+        week: recordsState.value.selectedWeek,
+        project,
+        employeeId,
+      });
+
+      unsavedWeeklyTimesheet.value = {
+        projects: timesheet.value.projects.filter(
+          (proj) => proj.customer.id !== project.customer.id
+        ),
+        leaveDays: timesheet.value.leaveDays,
+        travelProject: timesheet.value.travelProject,
+        standByProject: timesheet.value.standByProject,
+      };
+
+      // if deleting the last project, clear the timesheet
+      if (timesheet.value.projects.length <= 1) {
+        store.dispatch('timesheets/deleteTimesheet', {
+          timesheetId: timesheetState.value?.timesheets[0]?.id,
+        });
+        messageInput.value = '';
+      }
+
+      if (!unsavedWeeklyTimesheet.value?.projects.length) {
+        hasUnsavedChanges.value = false;
+      }
+    };
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals = calculatedTotals;
@@ -443,25 +586,35 @@ export default defineComponent({
 
       if (!confirmation) return;
 
-      timesheet.saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+      saveTimesheet(recordStatus.PENDING as TimesheetStatus);
     };
 
     return {
-      employee: selectedEmployee,
-      selectableCustomers,
+      employee: currentEmployee,
       recordsState,
-      recordStatus,
-      isAdminView,
+      timesheetState,
+      timesheet,
       showBridgeError,
-      reasonOfDenial,
-      showTravel,
+      selectableCustomers,
+      timesheetStatus,
+      isReadonly,
+      messages,
+      message,
+      timesheetDenyMessage,
+      totals,
       showStandby,
-      handleBlur,
-      handleDeny,
-      handleReminder,
-      submitTimesheet,
+      showTravel,
+      messageInput,
+      hasUnsavedChanges,
+      goToWeek,
+      copyPreviousWeek,
+      addProject,
+      saveTimesheet,
+      timesheetFormatter: timesheetFormatter(24),
+      kilometerFormatter: kilometerFormatter(0, 9999),
+      deleteProject,
       setTotals,
-      ...timesheet,
+      submitTimesheet,
     };
   },
 
