@@ -52,17 +52,13 @@ import {differenceInCalendarMonths} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
-  emits: ["previous", "next", "current"],
   props: {
     selectedDate: {
       type: Date,
       required: true,
     },
   },
-  beforeDestroy() {
-    hotkeys.unbind('right');
-    hotkeys.unbind('left');
-  },
+  emits: ["previous", "next", "current"],
   setup(props, {emit}) {
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
@@ -85,6 +81,10 @@ export default defineComponent({
       handleCurrentClick,
       monthDifference,
     };
+  },
+  beforeDestroy() {
+    hotkeys.unbind('right');
+    hotkeys.unbind('left');
   },
 });
 </script>

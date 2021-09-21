@@ -19,10 +19,10 @@
 <template>
   <div class="content-wrapper mt-5">
     <h6>selectedEmployee:</h6>
-    <p>{{employee}}</p>
+    <p>{{ employee }}</p>
 
     <h6>timesheet:</h6>
-    <p>{{timesheet}}</p>
+    <p>{{ timesheet }}</p>
 
     <b-alert
       :show="showBridgeError || showEmployeeError"
@@ -30,7 +30,7 @@
       variant="warning"
       class="mb-3"
     >
-      {{showBridgeError ? $t('workschemeError') : $t('employeeError')}}
+      {{ showBridgeError ? $t('workschemeError') : $t('employeeError') }}
     </b-alert>
 
     <navigation-buttons
@@ -74,8 +74,8 @@
               :selected-week="recordsState.selectedWeek"
               :work-scheme="recordsState.workScheme"
               :show-add-project-button="
-                  !isReadonly && selectableCustomers.length > 0
-                "
+                !isReadonly && selectableCustomers.length > 0
+              "
               @totals="setTotals"
             />
           </template>
@@ -144,7 +144,7 @@
             />
           </template>
         </weekly-timesheet>
-      </template> -->
+      </template>-->
 
       <div v-if="message || messages" class="mt-4">
         <comment-block v-if="!!message" :text="message" />
@@ -196,32 +196,33 @@ import {
   useContext,
   ref,
 } from '@nuxtjs/composition-api';
-import {startOfISOWeek, subDays} from 'date-fns';
-import {buildWeek, getDayOnGMT} from '~/helpers/dates';
-import {uuidv4} from '~/helpers/helpers';
+import { startOfISOWeek, subDays } from 'date-fns';
+import { buildWeek, getDayOnGMT } from '~/helpers/dates';
+import { uuidv4 } from '~/helpers/helpers';
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
   kilometerFormatter,
   createLeaveProject,
 } from '~/helpers/timesheet';
-import {recordStatus} from '~/helpers/record-status';
+import { recordStatus } from '~/helpers/record-status';
 
-import EmployeeHeader from '~/components/app/employee-header.vue';
 import EmptyTimesheet from '~/components/records/empty-timesheet.vue';
 import NavigationButtons from '~/components/records/navigation-buttons.vue';
 import SelectProjectDialog from '~/components/records/select-project-dialog.vue';
 import WeeklyTimesheetFooter from '~/components/records/weekly-timesheet-footer.vue';
 import WeeklyTimesheetRow from '~/components/records/weekly-timesheet-row.vue';
+import WeeklyTimesheet from '~/components/records/weekly-timesheet.vue';
 import WeeklyTimesheetTotalsRow from '~/components/records/weekly-timesheet-totals-row.vue';
+
 import CommentBlock from '~/components/records/comment-block.vue';
 
 export default defineComponent({
   components: {
-    EmployeeHeader,
     EmptyTimesheet,
     NavigationButtons,
     SelectProjectDialog,
+    WeeklyTimesheet,
     WeeklyTimesheetRow,
     WeeklyTimesheetFooter,
     WeeklyTimesheetTotalsRow,
@@ -229,16 +230,14 @@ export default defineComponent({
   },
   middleware: ['isAuthenticated'],
 
-  head: {},
-
   setup() {
-    const {i18n, params} = useContext();
+    const { i18n, params } = useContext();
     const store = useStore<RootStoreState>();
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
     const messageInput = ref('');
     const showEmployeeError = ref(false);
-    const {employee_id: employeeId, start_timestamp: startTimestamp} =
+    const { employee_id: employeeId, start_timestamp: startTimestamp } =
       params.value;
 
     const customers = computed(() => store.state.customers);
@@ -390,7 +389,7 @@ export default defineComponent({
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
       messageInput.value = '';
-      store.dispatch('records/goToWeek', {bridgeUid, to});
+      store.dispatch('records/goToWeek', { bridgeUid, to });
     };
 
     const copyPreviousWeek = () => {
@@ -469,7 +468,7 @@ export default defineComponent({
       );
 
       return [
-        {text: i18n.t('chooseProject'), disabled: true},
+        { text: i18n.t('chooseProject'), disabled: true },
         ...selectable.map((entry) => ({
           value: entry.id,
           text: entry.name,
@@ -527,20 +526,20 @@ export default defineComponent({
 
       const newTimesheet = timesheetState.value.timesheets[0]
         ? {
-            ...timesheetState.value.timesheets[0],
-            status: newTimesheetStatus,
-            reasonOfDenial,
-            messages: newMessages,
-            ...(message.value && {message: message.value}),
-          }
+          ...timesheetState.value.timesheets[0],
+          status: newTimesheetStatus,
+          reasonOfDenial,
+          messages: newMessages,
+          ...(message.value && { message: message.value }),
+        }
         : {
-            employeeId,
-            date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
-            status: newTimesheetStatus,
-            reasonOfDenial,
-            messages: newMessages,
-            ...(message.value && {message: message.value}),
-          };
+          employeeId,
+          date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+          status: newTimesheetStatus,
+          reasonOfDenial,
+          messages: newMessages,
+          ...(message.value && { message: message.value }),
+        };
 
       store.dispatch('timesheets/saveTimesheet', newTimesheet);
     };
@@ -586,16 +585,15 @@ export default defineComponent({
           totals.weekTotal - totals.expectedWeekTotal
         ).toFixed(2);
         confirmation = confirm(
-          `${
-            difference === 1
-              ? i18n.t('weekError', {
-                  n: difference,
-                  expected: totals.expectedWeekTotal,
-                })
-              : i18n.t('weekErrors', {
-                  n: difference,
-                  expected: totals.expectedWeekTotal,
-                })
+          `${difference === 1
+            ? i18n.t('weekError', {
+              n: difference,
+              expected: totals.expectedWeekTotal,
+            })
+            : i18n.t('weekErrors', {
+              n: difference,
+              expected: totals.expectedWeekTotal,
+            })
           }`
         );
       } else {
@@ -648,5 +646,7 @@ export default defineComponent({
       submitTimesheet,
     };
   },
+
+  head: {},
 });
 </script>

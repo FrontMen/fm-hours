@@ -206,7 +206,6 @@ import {emailRegex} from "~/helpers/email";
 export default defineComponent({
   components: {EmployeeHeader, Multiselect, BIconTrashFill},
   middleware: ["isAdmin"],
-  head: {},
   setup() {
     const { i18n } = useContext();
     const router = useRouter();
@@ -522,6 +521,7 @@ export default defineComponent({
       emailTouched,
     };
   },
+  head: {},
 });
 </script>
 

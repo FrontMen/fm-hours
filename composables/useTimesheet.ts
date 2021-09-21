@@ -226,7 +226,7 @@ export default (
     denialMessage?: string
   ) => {
     if (
-      newTimesheetStatus === timesheetStatus.value &&
+      newTimesheetStatus === timesheetStatus?.value &&
       !hasUnsavedChanges.value
     )
       return;

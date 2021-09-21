@@ -144,8 +144,6 @@ import {TimesheetStatus} from "~/types/enums";
 export default defineComponent({
   middleware: ["isAdmin"],
 
-  head: {},
-
   setup() {
     const { i18n, localePath } = useContext();
     const store = useStore<RootStoreState>();
@@ -252,6 +250,8 @@ export default defineComponent({
       sendReminders,
     };
   },
+
+  head: {},
 });
 </script>
 

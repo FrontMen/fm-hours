@@ -42,7 +42,8 @@
       <h2 class="navigation-buttons__week-label">
         {{ weekLabel }}
       </h2>
-      <b-button-group class="navigation-buttons__date-group mr-2">
+      <b-button-group class="mr-2 navigation-buttons__date-group">
+
         <nuxt-link
           v-if="!isIndex"
           :to="localePath('/timesheets')"
@@ -73,7 +74,6 @@ import hotkeys from 'hotkeys-js';
 import {getWeekRange, getDayOnGMT} from '~/helpers/dates';
 
 export default defineComponent({
-  emits: ['previous', 'next', 'current'],
   props: {
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
@@ -84,10 +84,7 @@ export default defineComponent({
       default: false,
     },
   },
-  beforeDestroy() {
-    hotkeys.unbind('right');
-    hotkeys.unbind('left');
-  },
+  emits: ['previous', 'next', 'current'],
   setup(props, {emit}) {
     const {i18n} = useContext();
     const isIndex = computed(() => {
@@ -131,6 +128,10 @@ export default defineComponent({
       weekLabel,
       weekDifference,
     };
+  },
+  beforeDestroy() {
+    hotkeys.unbind('right');
+    hotkeys.unbind('left');
   },
 });
 </script>

@@ -8,7 +8,7 @@
 </i18n>
 
 <template>
-  <div class="content-wrapper mt-5">
+  <div class="mt-5 content-wrapper">
     <month-navigation-buttons
       class="mb-4"
       :selected-date="monthDate"
@@ -66,42 +66,34 @@ import {
   useMeta,
   useStore,
   watch,
-} from "@nuxtjs/composition-api";
-import {format, addMonths, subMonths} from "date-fns";
+} from '@nuxtjs/composition-api';
+import {format, addMonths, subMonths} from 'date-fns';
 
-import useMonthlyTotalsReport from "~/composables/useMonthlyTotalsReport";
-import useMonthlyProjectsReport from "~/composables/useMonthlyProjectsReport";
-import useMonthlyKilometersReport from "~/composables/useMonthlyKilometersReport";
-import useMonthlyStandByReport from "~/composables/useMonthlyStandbyReport";
+import useMonthlyTotalsReport from '~/composables/useMonthlyTotalsReport';
+import useMonthlyProjectsReport from '~/composables/useMonthlyProjectsReport';
+import useMonthlyKilometersReport from '~/composables/useMonthlyKilometersReport';
+import useMonthlyStandByReport from '~/composables/useMonthlyStandbyReport';
 
-import ReportsTable from "~/components/reports/reports-table.vue";
+import ReportsTable from '~/components/reports/reports-table.vue';
 
 export default defineComponent({
   components: {ReportsTable},
-  middleware: ["isAdmin"],
-
-  head: {
-    title: "Reports",
-  },
+  middleware: ['isAdmin'],
 
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
 
     useMeta(() => ({
       title: i18n.t('reports') as string,
     }));
 
     const {createTotalsFields, createTotalsItems} = useMonthlyTotalsReport();
-    const {
-      createProjectsFields,
-      createProjectsItems,
-    } = useMonthlyProjectsReport();
-    const { createStandByFields, createStandByItems } = useMonthlyStandByReport();
+    const {createProjectsFields, createProjectsItems} =
+      useMonthlyProjectsReport();
+    const {createStandByFields, createStandByItems} = useMonthlyStandByReport();
 
-    const {
-      createKilometersFields,
-      createKilometersItems,
-    } = useMonthlyKilometersReport();
+    const {createKilometersFields, createKilometersItems} =
+      useMonthlyKilometersReport();
 
     const monthDate = ref<Date>(new Date());
 
@@ -126,15 +118,15 @@ export default defineComponent({
     );
 
     const formattedMonthDate = computed(() =>
-      format(monthDate.value, "MM-yyyy")
+      format(monthDate.value as Date, 'MM-yyyy')
     );
 
     const goToPreviousMonth = () => {
-      monthDate.value = subMonths(monthDate.value, 1);
+      monthDate.value = subMonths(monthDate.value as Date, 1);
     };
 
     const goToNextMonth = () => {
-      monthDate.value = addMonths(monthDate.value, 1);
+      monthDate.value = addMonths(monthDate.value as Date, 1);
     };
 
     const goToCurrentMonth = () => {
@@ -144,7 +136,7 @@ export default defineComponent({
     watch(
       () => monthDate.value,
       () => {
-        store.dispatch("reports/getMonthlyReportData", {
+        store.dispatch('reports/getMonthlyReportData', {
           startDate: monthDate.value,
         });
       },
@@ -167,6 +159,9 @@ export default defineComponent({
       goToNextMonth,
       goToCurrentMonth,
     };
+  },
+  head: {
+    title: 'Reports',
   },
 });
 </script>

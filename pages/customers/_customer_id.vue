@@ -112,7 +112,6 @@ import { format } from "date-fns";
 
 export default defineComponent({
   middleware: ["isAdmin"],
-  head: {},
   setup() {
     const { i18n } = useContext();
     const router = useRouter();
@@ -225,5 +224,6 @@ export default defineComponent({
       formatDate,
     };
   },
+  head: {},
 });
 </script>
