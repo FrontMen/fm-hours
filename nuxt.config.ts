@@ -99,7 +99,8 @@ export default {
           onAuthStateChangedAction: 'auth/onAuthStateChangedAction',
         },
         ssr: {
-          credential: serviceAccountPath,
+          // credential: serviceAccountPath,
+          credential: '~serviceAccount.json',
           serverLogin: true,
         },
       },
