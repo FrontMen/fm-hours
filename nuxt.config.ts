@@ -92,7 +92,7 @@ export default {
         },
         ssr: {
           // credential: serviceAccountPath,
-          credential: '~generated/serviceAccount.json',
+          credential: '~generated/serviceAccount.js',
           serverLogin: true,
         },
       },

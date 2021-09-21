@@ -2,7 +2,7 @@ require('dotenv').config();
 const fs = require('fs')
 const path = require('path')
 
-const FILE_NAME = 'serviceAccount.json'
+const FILE_NAME = 'serviceAccount.js'
 
 module.exports = {
   generateServiceAccountFile(outdir) {
@@ -21,14 +21,14 @@ module.exports = {
     }
 
     const fileFullPath = path.join(outdir, FILE_NAME)
-    console.log('fileFullPath: ', fileFullPath)
+    console.log('fileFullPath: ', fileFullPath);
 
     /**
      * This process only happens to format the file :)
      */
     const parsedValue = JSON.parse(fileContent);
 
-    fs.writeFileSync(fileFullPath, JSON.stringify(parsedValue, null, 2))
+    fs.writeFileSync(fileFullPath, `module.exports = ${JSON.stringify(parsedValue, null, 2)}`)
 
     // eslint-disable-next-line no-console
     console.log(`File ${FILE_NAME} generated successfully!`)
@@ -41,4 +41,8 @@ function createFolderIfDoesntExist(folderPath) {
   if (!fs.existsSync(folderPath)) {
     fs.mkdirSync(folderPath)
   }
+}
+
+function consoleFolder() {
+
 }
