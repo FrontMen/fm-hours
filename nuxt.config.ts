@@ -1,7 +1,14 @@
 import * as path from 'path';
+import * as fs from 'fs';
 import i18n from './i18n.config';
 
 import {generateServiceAccountFile} from './scripts/generateServiceAccountFile';
+
+const files = fs.readdirSync(__dirname);
+
+for (const file of files) {
+  console.log(file);
+}
 
 const serviceAccountOutDir = path.join(__dirname);
 const serviceAccountPath = generateServiceAccountFile(serviceAccountOutDir);
