@@ -15,7 +15,7 @@
     addComment: "Notitie toevoegen"
 </i18n>
 <template>
-  <div class="content-wrapper mt-5">
+  <div class="mt-5 content-wrapper">
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       {{ $t('workschemeError') }}
     </b-alert>
