@@ -8,7 +8,7 @@
 </i18n>
 
 <template>
-  <div class="top-bar hide-print" :class="{'top-bar__development': isDev}">
+  <div class="top-bar hide-print" :class="{ 'top-bar__development': isDev }">
     <div class="top-bar__inner content-wrapper">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
@@ -31,7 +31,7 @@
                 target="_blank"
                 class="text-white ml-3"
               >
-                {{$t("feedback")}}
+                {{ $t("feedback") }}
               </a>
             </div>
           </b-col>
@@ -59,7 +59,7 @@
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
-                  {{$t("logout")}}
+                  {{ $t("logout") }}
                 </b-dropdown-item>
               </b-dropdown>
             </div>
@@ -77,8 +77,12 @@ import {
   useRouter,
   useContext,
 } from '@nuxtjs/composition-api';
+import LanguageSwitch from './language-switch.vue'
 
 export default defineComponent({
+  components: {
+    LanguageSwitch
+  },
   emit: ['logout'],
   props: {
     isAdmin: {
@@ -93,9 +97,9 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(_, {emit}) {
+  setup(_, { emit }) {
     const router = useRouter();
-    const {localePath} = useContext();
+    const { localePath } = useContext();
 
     const handleLogoClick = () => router.push(localePath('/'));
     const handleLogoutClick = () => emit('logout');
@@ -156,7 +160,7 @@ export default defineComponent({
     }
 
     &:before {
-      content: '';
+      content: "";
       position: absolute;
       top: 50%;
       left: 0;

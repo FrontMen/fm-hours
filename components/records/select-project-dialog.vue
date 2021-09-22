@@ -55,9 +55,6 @@ export default defineComponent({
       default: () => [],
     },
   },
-  beforeDestroy() {
-    hotkeys.unbind("n");
-  },
   setup(_, {emit, refs}) {
     const selectState = ref(null);
     const selectedProject = ref(null);
@@ -103,6 +100,9 @@ export default defineComponent({
       handleSubmit,
       handleOk,
     };
+  },
+  beforeDestroy() {
+    hotkeys.unbind("n");
   },
 });
 </script>

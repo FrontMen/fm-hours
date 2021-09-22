@@ -180,10 +180,6 @@ export default defineComponent({
 
   middleware: ["isAdmin"],
 
-  head: {
-    title: "Employees",
-  },
-
   setup() {
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();
@@ -351,6 +347,10 @@ export default defineComponent({
       showInactive,
       checkEmployeeAvailability,
     };
+  },
+
+  head: {
+    title: "Employees",
   },
 });
 </script>
