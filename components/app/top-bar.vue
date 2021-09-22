@@ -53,7 +53,7 @@
                 target="_blank"
                 rel="noreferrer"
               >
-                {{$t('requestLeave')}}
+                {{ $t('requestLeave') }}
                 <b-icon
                   class="mr-1"
                   icon="box-arrow-up-right"
@@ -63,7 +63,7 @@
 
               <nuxt-link :to="localePath('month')">
                 <b-button v-b-tooltip.hover :title="$t('goMonthly')">
-                  {{$t("monthly")}}
+                  {{ $t("monthly") }}
                 </b-button>
               </nuxt-link>
             </b-button-group>
@@ -141,7 +141,7 @@ export default defineComponent({
 });
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @media print {
   .hide-print {
     visibility: hidden;
