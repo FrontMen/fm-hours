@@ -23,10 +23,22 @@ export default {
   css: ['@/assets/scss/index.scss'],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: ['~plugins/filters', '~/plugins/services'],
+  plugins: [
+    '~plugins/filters',
+    '~/plugins/services',
+    {src: '~/plugins/thirdPartyComponents', mode: 'client'},
+  ],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
-  components: true,
+  components: {
+    dir: [
+      '~/components',
+      '~/components/app',
+      '~/components/records',
+      '~/components/reports',
+      '~/components/timesheets',
+    ],
+  },
 
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
