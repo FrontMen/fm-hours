@@ -196,15 +196,11 @@ import {
   ref,
   useContext,
 } from "@nuxtjs/composition-api";
-import Multiselect from "vue-multiselect";
-import {BIconTrashFill} from "bootstrap-vue";
 
-import EmployeeHeader from "~/components/app/employee-header.vue";
 import {formatDate, getDayOnGMT} from "~/helpers/dates";
 import {emailRegex} from "~/helpers/email";
 
 export default defineComponent({
-  components: {EmployeeHeader, Multiselect, BIconTrashFill},
   middleware: ["isAdmin"],
   setup() {
     const { i18n } = useContext();
@@ -524,5 +520,3 @@ export default defineComponent({
   head: {},
 });
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

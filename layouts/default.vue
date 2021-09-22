@@ -20,11 +20,7 @@ import {
   useContext
 } from '@nuxtjs/composition-api';
 
-import AdminSidebar from '~/components/app/admin-sidebar.vue';
-import TopBar from '~/components/app/top-bar.vue';
-
 export default defineComponent({
-  components: {AdminSidebar, TopBar},
   middleware: ['isAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();

@@ -43,7 +43,6 @@
         {{ weekLabel }}
       </h2>
       <b-button-group class="mr-2 navigation-buttons__date-group">
-
         <nuxt-link
           v-if="!isIndex"
           :to="localePath('/timesheets')"

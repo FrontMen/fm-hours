@@ -242,11 +242,9 @@ import {
   watch,
 } from '@nuxtjs/composition-api';
 import {startOfMonth, endOfMonth, format, addMonths, subMonths} from 'date-fns';
-import Multiselect from 'vue-multiselect';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
-  components: {Multiselect},
 
   setup() {
     const {i18n} = useContext();
@@ -394,7 +392,6 @@ export default defineComponent({
 });
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style lang="scss" scoped>
 @media screen {
   .only-print {

@@ -37,10 +37,8 @@ import {
   useRouter,
   useContext,
 } from '@nuxtjs/composition-api';
-import languageSwitch from '~/components/app/language-switch.vue';
 
 export default defineComponent({
-  components: {languageSwitch},
   layout: 'login',
   setup() {
     const store = useStore<RootStoreState>();

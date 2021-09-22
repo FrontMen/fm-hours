@@ -74,10 +74,7 @@ import useMonthlyProjectsReport from '~/composables/useMonthlyProjectsReport';
 import useMonthlyKilometersReport from '~/composables/useMonthlyKilometersReport';
 import useMonthlyStandByReport from '~/composables/useMonthlyStandbyReport';
 
-import ReportsTable from '~/components/reports/reports-table.vue';
-
 export default defineComponent({
-  components: {ReportsTable},
   middleware: ['isAdmin'],
 
   setup() {

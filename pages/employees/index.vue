@@ -168,7 +168,6 @@ import {
   onMounted,
   useContext,
 } from "@nuxtjs/composition-api";
-import Multiselect from "vue-multiselect";
 
 import {validateEmail} from "../../helpers/validation";
 import {formatDate} from "~/helpers/dates";
@@ -176,7 +175,6 @@ import {checkEmployeeAvailability} from "~/helpers/employee";
 import {queryOnString} from "~/helpers/helpers";
 
 export default defineComponent({
-  components: {Multiselect},
 
   middleware: ["isAdmin"],
 

@@ -106,12 +106,8 @@ import {
   useRouter,
   useContext,
 } from '@nuxtjs/composition-api';
-import LanguageSwitch from './language-switch.vue'
 
 export default defineComponent({
-  components: {
-    LanguageSwitch
-  },
   emit: ['logout'],
   props: {
     isAdmin: {
