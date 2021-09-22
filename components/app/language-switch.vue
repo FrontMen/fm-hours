@@ -1,44 +1,9 @@
-<i18n lang="yaml">
-  en:
-    en: "English"
-    nl: "Nederlands"
-  nl:
-    en: "English"
-    nl: "Nederlands"
-</i18n>
-
-<template>
-  <div class="d-inline-block language-switcher">
-    <b-dropdown>
-      <template #button-content>
-        <img class="mr-2" :src="svgUrl" :alt="$t(`lang.${activeLocaleCode}`)" />
-      </template>
-      <b-dropdown-item
-        v-for="locale in availableLocalesToSelect"
-        :key="locale.code"
-      >
-        <nuxt-link
-          :key="locale.code"
-          :to="switchLocalePath(locale.code)"
-          :class="{ active: locale.isActiveLocale }"
-        >
-          <img
-            :src="getLanguageSvgUrl(locale.code)"
-            :alt="$t(`lang.${locale.code}`)"
-          />
-          {{ $t(`lang.${locale.code}`) }}
-        </nuxt-link>
-      </b-dropdown-item>
-    </b-dropdown>
-  </div>
-</template>
-
 <script lang="ts">
-import {computed, defineComponent, useContext} from '@nuxtjs/composition-api';
-import type {LocaleObject} from 'nuxt-i18n';
+import { computed, defineComponent, useContext } from '@nuxtjs/composition-api';
+import type { LocaleObject } from 'nuxt-i18n';
 export default defineComponent({
   setup() {
-    const {i18n} = useContext();
+    const { i18n } = useContext();
 
     const availableLocales = computed(() =>
       (i18n.locales as LocaleObject[]).map((loc) => {
@@ -80,16 +45,49 @@ export default defineComponent({
 });
 </script>
 
+<template>
+  <div class="d-inline-block" :class="$style.languageSwitcher">
+    <b-dropdown>
+      <template #button-content>
+        <img
+          class="mr-2"
+          :class="$style.icon"
+          :src="svgUrl"
+          :alt="$t(`lang.${activeLocaleCode}`)"
+        />
+      </template>
+      <b-dropdown-item
+        v-for="locale in availableLocalesToSelect"
+        :key="locale.code"
+        :class="$style.link"
+        :to="switchLocalePath(locale.code)"
+      >
+        <img
+          :src="getLanguageSvgUrl(locale.code)"
+          :alt="$t(`lang.${locale.code}`)"
+          :class="$style.icon"
+        />
+        {{ $t(`lang.${locale.code}`) }}
+      </b-dropdown-item>
+    </b-dropdown>
+  </div>
+</template>
 
-<style lang="scss">
-.language-switcher {
-  a {
-    text-decoration: none;
-  }
-
-  img {
-    width: 20px;
-    cursor: default;
-  }
+<style lang="scss" module>
+.link {
+  text-decoration: none;
+}
+.icon {
+  width: 24px;
+  cursor: default;
 }
 </style>
+
+<i18n lang="yaml">
+  en:
+    en: "English"
+    nl: "Nederlands"
+  nl:
+    en: "English"
+    nl: "Nederlands"
+</i18n>
