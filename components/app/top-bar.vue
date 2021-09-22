@@ -1,8 +1,12 @@
 <i18n lang="yaml">
   en:
+    requestLeave: "Request leave"
+    monthly: "Monthly overview"
     feedback: "Feedback"
     logout: "Logout"
   nl:
+    requestLeave: "Verlof aanvragen"
+    monthly: "Maand overzicht"
     feedback: "Feedback"
     logout: "Uitloggen"
 </i18n>
@@ -38,6 +42,31 @@
 
           <b-col v-if="isDev" class="development">
             USING DEVELOPMENT SERVER
+          </b-col>
+
+          <b-col class="text-right" cols="4">
+            <b-button-group class="navigation-buttons__date-group mr-2">
+              <b-button
+                class="mr-1"
+                variant="info"
+                href="https://bridge.hosted-tools.com/myprofile/absences"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {{$t('requestLeave')}}
+                <b-icon
+                  class="mr-1"
+                  icon="box-arrow-up-right"
+                  aria-hidden="true"
+                />
+              </b-button>
+
+              <nuxt-link :to="localePath('month')">
+                <b-button v-b-tooltip.hover :title="$t('goMonthly')">
+                  {{$t("monthly")}}
+                </b-button>
+              </nuxt-link>
+            </b-button-group>
           </b-col>
 
           <b-col class="text-right">
