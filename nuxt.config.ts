@@ -1,6 +1,7 @@
 import i18n from './i18n.config';
 
 export default {
+  target: 'static',
   /**
    * @nuxtjs/vercel-builder enables this on CI.
    */
