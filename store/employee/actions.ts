@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex';
+import type {ActionTree} from 'vuex';
 
 import EmployeesService from '~/services/employees-service';
 // import AuthService from '~/services/auth-service';

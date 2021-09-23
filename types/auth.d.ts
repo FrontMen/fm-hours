@@ -4,6 +4,7 @@ interface User {
   email: string;
   emailVerified: string;
   photoURL: photoURL | null;
+  samlToken: string;
 }
 
 interface AuthStoreState {

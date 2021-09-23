@@ -1,4 +1,4 @@
-import {MutationTree} from 'vuex';
+import type {MutationTree} from 'vuex';
 
 const mutations: MutationTree<AuthStoreState> = {
   ON_AUTH_STATE_CHANGED_MUTATION: (state, {authUser}) => {
@@ -9,13 +9,17 @@ const mutations: MutationTree<AuthStoreState> = {
 
     const {uid, email, emailVerified, displayName, photoURL} = authUser;
 
-    state.user = {
+    const user = {
       uid,
       displayName,
       email,
       emailVerified,
       photoURL: photoURL || null,
+      // TODO: investigate why we're doing this logic twice
+      samlToken: authUser.b.b.g,
     };
+
+    state.user = user;
   },
 
   setUser: (state, user: User) => {
