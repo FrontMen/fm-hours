@@ -7,6 +7,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         'saml.intracto'
       );
       const {user} = await this.$fire.auth.signInWithPopup(provider);
+
       if (user) {
         const {uid, email, emailVerified, displayName, photoURL} = user;
 
@@ -16,6 +17,8 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
           emailVerified,
           displayName,
           photoURL,
+          // TODO: fixme
+          samlToken: (user as any).b.b.a,
         });
         return true;
       }
@@ -39,13 +42,24 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
 
     const {uid, email, emailVerified, displayName, photoURL} = authUser;
 
-    commit('setUser', {
+    const user = {
       uid,
       email,
       emailVerified,
       displayName,
       photoURL,
-    });
+      samlToken: undefined,
+    };
+
+    /**
+     * On server side we don't have this information but we ALWAYS have it
+     * client side.
+     */
+    if (!process.server) {
+      user.samlToken = (authUser as any).b.b.g;
+    }
+
+    commit('setUser', user);
 
     if (!process.server) dispatch('employee/getEmployee', {}, {root: true});
   },
