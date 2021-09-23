@@ -183,22 +183,22 @@ import {
   useContext,
   ref,
 } from '@nuxtjs/composition-api';
-import { startOfISOWeek, subDays } from 'date-fns';
-import { buildWeek, getDayOnGMT } from '~/helpers/dates';
-import { uuidv4 } from '~/helpers/helpers';
+import {startOfISOWeek, subDays} from 'date-fns';
+import {buildWeek, getDayOnGMT} from '~/helpers/dates';
+import {uuidv4} from '~/helpers/helpers';
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
   kilometerFormatter,
   createLeaveProject,
 } from '~/helpers/timesheet';
-import { recordStatus } from '~/helpers/record-status';
+import {recordStatus} from '~/helpers/record-status';
 
 export default defineComponent({
   middleware: ['isAuthenticated'],
 
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const hasUnsavedChanges = ref<Boolean>(false);
@@ -343,7 +343,7 @@ export default defineComponent({
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
       messageInput.value = '';
-      store.dispatch('records/goToWeek', { bridgeUid, to });
+      store.dispatch('records/goToWeek', {bridgeUid, to});
     };
 
     const copyPreviousWeek = () => {
@@ -422,7 +422,7 @@ export default defineComponent({
       );
 
       return [
-        { text: i18n.t('chooseProject'), disabled: true },
+        {text: i18n.t('chooseProject'), disabled: true},
         ...selectable.map((entry) => ({
           value: entry.id,
           text: entry.name,
@@ -478,20 +478,20 @@ export default defineComponent({
 
       const newTimesheet = timesheetState.value.timesheets[0]
         ? {
-          ...timesheetState.value.timesheets[0],
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && { message: message.value }),
-        }
+            ...timesheetState.value.timesheets[0],
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          }
         : {
-          employeeId,
-          date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && { message: message.value }),
-        };
+            employeeId,
+            date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          };
 
       store.dispatch('timesheets/saveTimesheet', newTimesheet);
     };
@@ -537,15 +537,16 @@ export default defineComponent({
           totals.weekTotal - totals.expectedWeekTotal
         ).toFixed(2);
         confirmation = confirm(
-          `${difference === 1
-            ? i18n.t('weekError', {
-              n: difference,
-              expected: totals.expectedWeekTotal,
-            })
-            : i18n.t('weekErrors', {
-              n: difference,
-              expected: totals.expectedWeekTotal,
-            })
+          `${
+            difference === 1
+              ? i18n.t('weekError', {
+                  n: difference,
+                  expected: totals.expectedWeekTotal,
+                })
+              : i18n.t('weekErrors', {
+                  n: difference,
+                  expected: totals.expectedWeekTotal,
+                })
           }`
         );
       } else {
@@ -570,6 +571,7 @@ export default defineComponent({
     };
 
     return {
+      recordStatus,
       employee: currentEmployee,
       recordsState,
       timesheetState,
