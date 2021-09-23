@@ -89,3 +89,5 @@ dist
 static/firebase-auth-sw.js
 serviceAccount.json
 serviceAccount.js
+
+.vercel
