@@ -50,7 +50,7 @@
         />
         <h4>
           <strong>
-            {{ formatDate(monthDate) }} - {{ formatDate(endDate) }}
+            {{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}
           </strong>
         </h4>
       </b-col>
@@ -113,7 +113,7 @@
       </b-col>
       <b-col cols="12" sm="12" md="5" class="mb-3 mt-auto hide-print">
         <month-navigation-buttons
-          :selected-date="monthDate"
+          :selected-date="monthStartDate"
           @previous="goToPreviousMonth"
           @next="goToNextMonth"
           @current="goToCurrentMonth"
@@ -247,7 +247,8 @@ import {getTotalsByProp} from '~/helpers/helpers';
 export default defineComponent({
 
   setup() {
-    const {i18n} = useContext();
+
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -256,27 +257,25 @@ export default defineComponent({
 
     const selectedCustomers = ref<{value: string; label: string}[]>([]);
     const onlyBillable = ref<boolean>(false);
+    const monthStartDate = ref<Date>(startOfMonth(new Date()));
+    const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
     const employee = computed(() => {
       return store.state.employee.employee;
     });
 
     const getRecords = () => {
-      const startDate = monthDate.value;
-
       store.dispatch('records/getMonthlyTimeRecords', {
         employeeId: store.state.employee.employee!.id,
-        startDate,
-        endDate,
+        startDate: monthStartDate.value,
+        endDate: monthEndDate.value
       });
     };
 
-    const monthDate = ref<Date>(startOfMonth(new Date()));
-    let endDate: Date = endOfMonth(monthDate.value as Date);
     watch(
-      [monthDate, employee],
+      [monthStartDate, employee],
       () => {
-        endDate = endOfMonth(monthDate.value as Date);
+        monthEndDate.value = endOfMonth(monthStartDate.value as Date)
         getRecords();
       },
       {
@@ -326,7 +325,7 @@ export default defineComponent({
     });
 
     store.dispatch('reports/getMonthlyReportData', {
-      startDate: monthDate.value,
+      startDate: monthStartDate.value,
     });
 
     const handleFilterBillable = (
@@ -357,15 +356,15 @@ export default defineComponent({
     };
 
     const goToPreviousMonth = () => {
-      monthDate.value = subMonths(monthDate.value as Date, 1);
+      monthStartDate.value = subMonths(monthStartDate.value as Date, 1);
     };
 
     const goToNextMonth = () => {
-      monthDate.value = addMonths(monthDate.value as Date, 1);
+      monthStartDate.value = addMonths(monthStartDate.value as Date, 1);
     };
 
     const goToCurrentMonth = () => {
-      monthDate.value = startOfMonth(new Date());
+      monthStartDate.value = startOfMonth(new Date());
     };
 
     const triggerPrint = () => {
@@ -374,13 +373,14 @@ export default defineComponent({
 
     return {
       employee,
-      endDate,
+
       formatDate,
       goToPreviousMonth,
       goToNextMonth,
       goToCurrentMonth,
       monthReport,
-      monthDate,
+      monthStartDate,
+      monthEndDate,
       onlyBillable,
       projectOptions,
       selectedCustomers,
