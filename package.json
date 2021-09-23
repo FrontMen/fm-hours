@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "nuxt --dotenv .env.dev",
-    "build": "nuxt build",
+    "build": "nuxt build && nuxt generate",
     "start": "nuxt start",
-    "generate": "nuxt generate",
     "test": "jest",
     "test:types": "tsc -p tsconfig.json --noEmit ",
     "lint:eslint": "eslint --ext .js,.vue --ignore-path .eslintignore .",
