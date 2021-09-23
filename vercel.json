@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "api/**/*.ts",
+      "use": "@vercel/node"
+    },
+    {
       "src": "nuxt.config.ts",
       "use": "@nuxtjs/vercel-builder",
       "config": {
