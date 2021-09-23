@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex';
+import type {ActionTree} from 'vuex';
 
 import EmployeesService from '~/services/employees-service';
 // import AuthService from '~/services/auth-service';
@@ -14,7 +14,13 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       // //     if (!authService.getAuthCookie()) {
       // //       const ppid =
       // //         localStorage.getItem('@fm-hours/ppid') ||
-      // //         authService.getPPidFromJWTToken(payload.authUser.b.b.g);
+      // authService.getPPidFromJWTToken(payload.authUser.b.b.g);
+
+      // pass this to every api call
+      // payload.authUser.b.b.g
+      // fetch('/api/something',{
+
+      // })
       // //       if (!ppid)
       // //         throw new Error('User is not authenticated, please sign in again!');
       // //       await authService.setSessionCookieByPpid(ppid);

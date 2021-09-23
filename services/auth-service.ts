@@ -13,6 +13,7 @@ export default class AuthService {
   }
 
   setAuthCookie(cookieData: string, expires: Date): void {
+    // Cookie intracto expects!
     Cookies.set('hosted-tools-api-auth-2', cookieData, {
       expires,
       path: '',
@@ -42,7 +43,9 @@ export default class AuthService {
     return ppid;
   }
 
+  // ppid from firebase :35
   getToken(ppid: string): Promise<GetTokenResponse> {
+    // jwt
     return this.axios.$post(
       'https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/' +
         ppid
