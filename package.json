@@ -2,6 +2,10 @@
   "name": "fm-hours",
   "version": "1.1.0",
   "private": true,
+  "engines": {
+    "node": ">12",
+    "yarn": "<2"
+  },
   "scripts": {
     "dev": "nuxt --dotenv .env.dev",
     "build": "nuxt build && nuxt generate",
