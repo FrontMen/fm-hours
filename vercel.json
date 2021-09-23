@@ -1,5 +1,11 @@
 {
   "version": 2,
+  "routes": [
+    {
+      "src": "/api/test",
+      "dest": "/api/test.ts"
+    }
+  ],
   "builds": [
     {
       "src": "api/**/*.ts",
