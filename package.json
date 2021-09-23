@@ -10,12 +10,9 @@
     "test": "jest",
     "test:types": "tsc -p tsconfig.json --noEmit ",
     "lint:eslint": "eslint --ext .js,.vue --ignore-path .eslintignore .",
-    "lint:eslint:hook": "eslint --ext .js,.vue --ignore-path .eslintignore",
-    "lint:prettier": "prettier \"**/*.js\" \"**/*.vue\" --check --ignore-path .eslintignore .",
-    "lint:prettier:hook": "prettier --write",
-    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint": "npm run lint:eslint",
     "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
-    "format:prettier": "prettier \"**/*.js\" \"**/*.vue\" --write --ignore-path .eslintignore .",
+    "format:prettier": "npx pretty-quick --staged --ignore-path .eslintignore,.gitignore",
     "format": "npm run format:eslint && npm run format:prettier",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
@@ -26,8 +23,7 @@
   "lint-staged": {
     "*.{js,ts,vue}": [
       "npm run format:eslint",
-      "npm run format:prettier",
-      "npm run lint:eslint:hook"
+      "npm run format:prettier"
     ],
     "*.{js, ts}": [
       "bash -c 'npm run test:types'"
@@ -79,6 +75,7 @@
     "nuxt": "2.15.8",
     "nuxt-i18n": "6.28.1",
     "prettier": "2.4.1",
+    "pretty-quick": "^3.1.1",
     "sass": "~1.32.13",
     "sass-loader": "10.1.1",
     "standard-version": "9.3.1",
