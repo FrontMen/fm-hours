@@ -1,4 +1,6 @@
-module.exports = {
+export default {
+  // https://jestjs.io/docs/configuration#clearmocks-boolean
+  clearMocks: true,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^~/(.*)$': '<rootDir>/$1',
