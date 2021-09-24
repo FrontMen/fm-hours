@@ -175,7 +175,7 @@ export default defineComponent({
     border-top: 2px solid white;
     border-bottom: 2px solid white;
     border-radius: 0;
-    width: 30px;
+    min-width: 30px;
     height: 20px;
     background: transparent !important;
     position: relative;
