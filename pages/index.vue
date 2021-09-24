@@ -282,8 +282,9 @@ export default defineComponent({
     watch([currentEmployee], () => {
       employeeId = currentEmployee.value.id;
       bridgeUid = currentEmployee.value.bridgeUid;
-      const timestamp = router.currentRoute.params.start_timestamp;
-      const startTimestamp = timestamp ? new Date(timestamp) : new Date();
+      const routerTimestamp = router.currentRoute.params.start_timestamp;
+      const timestamp = typeof routerTimestamp === 'string' ? parseInt(routerTimestamp, 10) : routerTimestamp;
+      const startTimestamp = timestamp && !isNaN(timestamp) ? new Date(timestamp) : new Date();
 
       store.dispatch('records/getRecords', {
         employeeId,
