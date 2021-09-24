@@ -1,4 +1,5 @@
 import {ActionTree} from 'vuex/types/index';
+import {extractUserFromAuthUser} from '~/helpers/auth';
 
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
   async login({commit}) {
@@ -9,17 +10,10 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       const {user} = await this.$fire.auth.signInWithPopup(provider);
 
       if (user) {
-        const {uid, email, emailVerified, displayName, photoURL} = user;
+        const userToCommit = await extractUserFromAuthUser(user);
 
-        commit('setUser', {
-          uid,
-          email,
-          emailVerified,
-          displayName,
-          photoURL,
-          // TODO: fixme
-          samlToken: (user as any).b.b.a,
-        });
+        commit('setUser', userToCommit);
+
         return true;
       }
     } catch (error: any) {
@@ -34,30 +28,13 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     return true;
   },
 
-  onAuthStateChangedAction({commit, dispatch}, {authUser}) {
+  async onAuthStateChangedAction({commit, dispatch}, {authUser}) {
     if (!authUser) {
       commit('resetUser');
       return;
     }
 
-    const {uid, email, emailVerified, displayName, photoURL} = authUser;
-
-    const user = {
-      uid,
-      email,
-      emailVerified,
-      displayName,
-      photoURL,
-      samlToken: undefined,
-    };
-
-    /**
-     * On server side we don't have this information but we ALWAYS have it
-     * client side.
-     */
-    if (!process.server) {
-      user.samlToken = (authUser as any).b.b.g;
-    }
+    const user = await extractUserFromAuthUser(authUser);
 
     commit('setUser', user);
 
