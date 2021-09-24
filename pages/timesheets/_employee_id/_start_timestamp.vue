@@ -51,6 +51,8 @@
               :selected-week="recordsState.selectedWeek"
               :value-formatter="timesheetFormatter"
               :employee="employee"
+              @change="hasUnsavedChanges = true"
+              @remove="deleteProject(timesheet.projects[index])"
             />
 
             <weekly-timesheet-totals-row

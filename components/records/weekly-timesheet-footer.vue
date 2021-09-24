@@ -4,11 +4,13 @@
     waiting: "Waiting on approval"
     denied: "Resubmit for approval"
     submit: "Submit for approval"
+    save: "Save"
   nl:
     unsubmit: "Terugtrekken"
     waiting: "Wacht op akkoord"
     denied: "Opnieuw insturen voor akkoord"
     submit: "Verzenden"
+    save: "Opslaan"
 </i18n>
 
 <template>
@@ -23,7 +25,7 @@
       :disabled="isSaving || !hasUnsavedChanges"
       @click="handleSaveClick"
     >
-      {{$t('update')}}
+      {{$t('save')}}
     </b-button>
 
     <b-button
@@ -56,7 +58,6 @@ import {formatDistanceToNow} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 
 export default defineComponent({
-  emits: ["submit", "save", "unsubmit"],
   props: {
     hasUnsavedChanges: {
       type: Boolean,
@@ -69,12 +70,14 @@ export default defineComponent({
     lastSaved: {
       type: Date,
       required: false,
+      default: null,
     },
     status: {
       type: String as PropType<TimesheetStatus>,
       required: true,
     },
   },
+  emits: ["submit", "save", "unsubmit"],
   setup(props, {emit}) {
     const lastSavedLabel = ref("");
     let intervalHandle: NodeJS.Timeout;

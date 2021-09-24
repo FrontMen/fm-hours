@@ -61,11 +61,10 @@
         class="weekly-timesheet-row__value-input"
         type="text"
         inputmode="decimal"
-        :formatter="valueFormatter.formatter"
+        :formatter="valueFormatter && valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
-        @blur="handleBlur"
       />
     </b-col>
     <b-col cols="1" class="weekly-timesheet-row__total-column">
@@ -89,10 +88,7 @@ import {
   floatToTotalTimeString,
   timeStringToFloat,
 } from '~/helpers/timesheet';
-import {debounce} from '~/helpers/helpers';
 import {recordDayStatusProps} from '~/helpers/record-status';
-
-let self: any;
 
 export default defineComponent({
   props: {
@@ -114,13 +110,14 @@ export default defineComponent({
     },
     valueFormatter: {
       type: Object as PropType<{min: number; max: number; formatter(): void}>,
+      default: null,
     },
     employee: {
       type: Object as PropType<Employee>,
       required: true,
     },
   },
-  emits: ['remove', 'save'],
+  emits: ['remove'],
   setup(props, {emit}) {
     const tooltip = ref();
     const canRemove = computed(() => !props.readonly && props.removable);
@@ -132,14 +129,6 @@ export default defineComponent({
     const handleRemoveClick = () => {
       closeTooltip();
       emit('remove', props.project);
-    };
-
-    function autoSave() {
-      emit('save');
-    }
-
-    const handleBlur = () => {
-      self.autoSave();
     };
 
     // Act as middleware to intercept project values to format it for the view
@@ -206,8 +195,6 @@ export default defineComponent({
     return {
       tooltip,
       canRemove,
-      autoSave,
-      handleBlur,
       closeTooltip,
       handleRemoveClick,
       totalValue,
@@ -216,10 +203,6 @@ export default defineComponent({
       handleInputFocus,
       shouldShowDarkBG,
     };
-  },
-  created() {
-    self = this;
-    self.autoSave = debounce(self.autoSave, 5000);
   },
 });
 </script>
