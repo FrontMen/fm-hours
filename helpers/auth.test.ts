@@ -10,6 +10,8 @@ describe('fn: extractUserFromAuthUser', () => {
       displayName: 'Tester',
       photoURL: 'http://lorem-picsum.com/300/300',
       email: 'test@test.test',
+      // TODO: this should not be here
+      bridgeUid: 'mock-bridge-uuid',
       emailVerified: true,
       phoneNumber: null,
       isAnonymous: false,
@@ -49,6 +51,7 @@ describe('fn: extractUserFromAuthUser', () => {
       uid: 'mock-uid',
       photoURL: 'http://lorem-picsum.com/300/300',
       displayName: 'Tester',
+      bridgeUid: 'mock-bridge-uuid',
     };
 
     expect(await extractUserFromAuthUser(authUser)).toEqual(expectedObject);
@@ -99,6 +102,7 @@ describe('fn: extractUserFromAuthUser', () => {
       uid: 'mock-uid',
       photoURL: null,
       displayName: null,
+      bridgeUid: null,
     };
 
     expect(await extractUserFromAuthUser(authUser)).toEqual(expectedObject);
