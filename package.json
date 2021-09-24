@@ -11,7 +11,7 @@
     "build": "nuxt build && nuxt generate",
     "start": "nuxt start",
     "test": "jest --passWithNoTests",
-    "test:types": "tsc -p tsconfig.json --noEmit",
+    "test:types": "tsc",
     "lint": "eslint --ext .js,.vue .",
     "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
     "format": "npm run format:eslint && npm run format:prettier",
