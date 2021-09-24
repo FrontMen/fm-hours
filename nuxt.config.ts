@@ -2,6 +2,10 @@ import i18n from './i18n.config';
 
 export default {
   target: 'static',
+  loading: {
+    color: '#ff5900',
+    height: '5px',
+  },
   /**
    * @nuxtjs/vercel-builder enables this on CI.
    */
