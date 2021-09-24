@@ -18,12 +18,6 @@
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
-    <h6>selectedEmployee:</h6>
-    <p>{{ employee }}</p>
-
-    <h6>timesheet:</h6>
-    <p>{{ timesheet }}</p>
-
     <b-alert
       :show="showBridgeError || showEmployeeError"
       dismissible
