@@ -10,7 +10,7 @@
     "dev": "nuxt --dotenv .env.dev",
     "build": "nuxt build && nuxt generate",
     "start": "nuxt start",
-    "test": "jest",
+    "test": "jest --passWithNoTests",
     "test:types": "tsc -p tsconfig.json --noEmit ",
     "lint:eslint": "eslint --ext .js,.vue --ignore-path .eslintignore .",
     "lint": "npm run lint:eslint",

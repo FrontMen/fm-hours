@@ -48,25 +48,6 @@ export default {
     // https://composition-api.nuxtjs.org/
 
     '@nuxtjs/composition-api/module',
-    /**
-     * Internal Module to generate Service Account File.
-     * This is extremely important to enable SSR api calls correctly.
-     *
-     * It'll basically generate a `serviceAccount.json` file in the `.nuxt` folder
-     * so firebase api can auth both in client
-     *
-     * See more details here:
-     * https://firebase.nuxtjs.org/service-options/auth#credential
-     *
-     * Obs.: The path of the file generated needs to be bound to
-     * `firebase.services.auth.ssr.credentials` settings.
-     */
-    [
-      '~/modules/generateServiceAccountFile',
-      {
-        fileName: 'serviceAccount.json',
-      },
-    ],
   ],
 
   // Modules (https://go.nuxtjs.dev/config-modules)
@@ -109,11 +90,6 @@ export default {
         initialize: {
           onAuthStateChangedMutation: 'auth/ON_AUTH_STATE_CHANGED_MUTATION',
           onAuthStateChangedAction: 'auth/onAuthStateChangedAction',
-        },
-        ssr: {
-          // credential: serviceAccountPath,
-          credential: '.nuxt/serviceAccount.json',
-          serverLogin: true,
         },
       },
     },
