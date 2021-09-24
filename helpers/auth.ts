@@ -2,7 +2,11 @@ import get from 'lodash.get';
 
 export async function extractUserFromAuthUser(authUser: any): Promise<User> {
   try {
-    const samlToken = (await authUser.getIdToken()) || undefined;
+    /**
+     * Instead reaching obfuscated data, we can rely on getIdToken from
+     * firebase auth.
+     */
+    const samlToken = (await authUser.getIdToken()) || null;
 
     const user: User = {
       displayName: get(authUser, 'displayName'),
@@ -10,6 +14,7 @@ export async function extractUserFromAuthUser(authUser: any): Promise<User> {
       emailVerified: get(authUser, 'emailVerified'),
       uid: get(authUser, 'uid'),
       photoURL: get(authUser, 'photoURL', null),
+      bridgeUid: get(authUser, 'bridgeUid', null),
       samlToken,
     };
 
