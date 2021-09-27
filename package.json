@@ -75,7 +75,7 @@
     "hotkeys-js": "3.8.7",
     "husky": "7.0.2",
     "jest": "27.2.2",
-    "js-cookie": "2.2.1",
+    "js-cookie": "3.0.1",
     "jwt-decode": "3.1.2",
     "lint-staged": "11.1.2",
     "nuxt-i18n": "6.28.1",
