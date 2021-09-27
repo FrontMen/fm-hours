@@ -113,11 +113,17 @@
       </template>
       <template #cell()="scope">
         <div
+          v-if="scope.item[scope.field.key] !== 'empty'"
           :class="['container--cell', scope.item[scope.field.key]]"
           :title="$t(scope.item[scope.field.key])"
           @click="
             openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
           "
+        />
+        <div
+          v-else
+          :class="['container--cell', scope.item[scope.field.key]]"
+          :title="$t(scope.item[scope.field.key])"
         />
       </template>
     </b-table>
@@ -268,6 +274,10 @@ export default defineComponent({
   width: 30px;
   background-color: var(--color-medium-gray);
   cursor: pointer;
+}
+
+.container--cell.empty {
+  cursor: default;
 }
 
 .container--cell.pending {
