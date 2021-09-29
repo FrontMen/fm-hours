@@ -7,6 +7,8 @@
     leaveDay: "Leave days"
     addComment: "Add a comment here."
     employeeError: "Selected employee is not found"
+    denialReason: "Reason of denial"
+    denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
   nl:
     workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
     leaveRequest: "Voor verlof"
@@ -15,6 +17,8 @@
     leaveDay: "Verlofdagen"
     addComment: "Notitie toevoegen"
     employeeError: "Geselecteerde medewerker is niet gevonden"
+    denialReason: "Reden van afwijzing"
+    denialReasonPlaceholder: "Schrijf een korte notitie van de reden van afkeuren. Dit wordt getoond aan de medewerker."
 </i18n>
 <template>
   <div class="content-wrapper mt-5">
@@ -35,16 +39,6 @@
       @current="goToWeek('current')"
     />
 
-    <empty-timesheet
-      v-if="!timesheet.projects.length"
-      @copy-previous-week="copyPreviousWeek"
-    />
-
-    <select-project-dialog
-      :projects="selectableCustomers"
-      @project-selected="addProject"
-    />
-
     <form action="javascript:void(0);">
       <template v-if="timesheet.projects.length">
         <weekly-timesheet :selected-week="recordsState.selectedWeek">
@@ -53,23 +47,17 @@
               v-for="(project, index) in timesheet.projects"
               :key="`${project.customer.id}-${recordsState.selectedWeek[0].date}`"
               :project="timesheet.projects[index]"
-              :readonly="isReadonly || project.isExternal"
-              :removeable="!isReadonly && !project.isExternal"
+              :removeable="false"
               :selected-week="recordsState.selectedWeek"
               :value-formatter="timesheetFormatter"
               :employee="employee"
-              @save="saveTimesheet(recordStatus.NEW)"
-              @change="hasUnsavedChanges = true"
-              @remove="deleteProject(timesheet.projects[index])"
             />
 
             <weekly-timesheet-totals-row
               :projects="timesheet.projects"
               :selected-week="recordsState.selectedWeek"
               :work-scheme="recordsState.workScheme"
-              :show-add-project-button="
-                !isReadonly && selectableCustomers.length > 0
-              "
+              :show-add-project-button="false"
               @totals="setTotals"
             />
           </template>
@@ -85,13 +73,10 @@
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
                 :project="timesheet.standByProject"
-                :readonly="isReadonly"
                 :removable="false"
                 :selected-week="recordsState.selectedWeek"
                 :value-formatter="timesheetFormatter"
                 :employee="employee"
-                @change="hasUnsavedChanges = true"
-                @remove="deleteProject(timesheet.projects[index])"
               />
             </template>
           </weekly-timesheet>
@@ -107,12 +92,10 @@
               <weekly-timesheet-row
                 :key="recordsState.selectedWeek[0].date"
                 :project="timesheet.travelProject"
-                :readonly="isReadonly"
                 :removable="false"
                 :selected-week="recordsState.selectedWeek"
                 :value-formatter="kilometerFormatter"
                 :employee="employee"
-                @change="hasUnsavedChanges = true"
               />
             </template>
           </weekly-timesheet>
@@ -151,7 +134,7 @@
       </div>
 
       <b-form-textarea
-        v-if="!isReadonly && timesheet.projects.length"
+        v-if="timesheet.projects.length"
         id="message-textarea"
         v-model="messageInput"
         class="mt-4"
@@ -162,20 +145,40 @@
       />
     </form>
 
-    <weekly-timesheet-footer
+    <weekly-timesheet-admin-footer
       class="mt-5"
       :has-unsaved-changes="hasUnsavedChanges"
       :is-saving="recordsState.isSaving"
       :last-saved="recordsState.lastSaved"
       :status="timesheetStatus"
-      @save="saveTimesheet(recordStatus.NEW)"
-      @submit="submitTimesheet"
-      @unsubmit="saveTimesheet(recordStatus.NEW)"
+      @save="saveTimesheet(recordStatus.PENDING)"
+      @approve="saveTimesheet(recordStatus.APPROVED)"
+      @unapprove="saveTimesheet(recordStatus.NEW)"
+      @reminder="handleReminder"
     />
 
     <b-alert :show="timesheetDenyMessage !== ''" variant="danger" class="my-3">
       {{ timesheetDenyMessage }}
     </b-alert>
+
+    <b-modal
+      id="deny-modal"
+      centered
+      :title="$t('denialReason')"
+      cancel-variant="danger"
+      :ok-disabled="!reasonOfDenial"
+      :ok-title="$t('ok')"
+      :cancel-title="$t('cancel')"
+      @hidden="reasonOfDenial = ''"
+      @ok="handleDeny"
+    >
+      <b-form-textarea
+        id="textarea"
+        v-model="reasonOfDenial"
+        :placeholder="$t('denialReasonPlaceholder')"
+        rows="3"
+      />
+    </b-modal>
   </div>
 </template>
 
@@ -190,28 +193,29 @@ import {
   useContext,
   ref,
 } from '@nuxtjs/composition-api';
-import { startOfISOWeek, subDays } from 'date-fns';
-import { buildWeek, getDayOnGMT } from '~/helpers/dates';
-import { uuidv4 } from '~/helpers/helpers';
+
 import {
   createWeeklyTimesheet,
   timesheetFormatter,
   kilometerFormatter,
   createLeaveProject,
 } from '~/helpers/timesheet';
-import { recordStatus } from '~/helpers/record-status';
+import {recordStatus} from '~/helpers/record-status';
+import {uuidv4} from '~/helpers/helpers';
+import {buildEmailData} from '~/helpers/email';
 
 export default defineComponent({
   middleware: ['isAuthenticated'],
 
   setup() {
-    const { i18n, params } = useContext();
+    const {i18n, params} = useContext();
     const store = useStore<RootStoreState>();
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
     const messageInput = ref('');
     const showEmployeeError = ref(false);
-    const { employee_id: employeeId, start_timestamp: startTimestamp } =
+    const reasonOfDenial = ref('');
+    const {employee_id: employeeId, start_timestamp: startTimestamp} =
       params.value;
 
     const customers = computed(() => store.state.customers);
@@ -246,24 +250,6 @@ export default defineComponent({
       return timesheetState.value.timesheets[0]
         ? timesheetState.value.timesheets[0].status
         : (recordStatus.NEW as TimesheetStatus);
-    });
-
-    const isReadonly = computed(
-      () =>
-        timesheetStatus.value === recordStatus.APPROVED ||
-        timesheetStatus.value === recordStatus.PENDING
-    );
-
-    const hasRestDayHours = computed(() => {
-      return timesheet.value.projects.reduce((_, project) => {
-        return project.values.reduce((acc, value, index) => {
-          if (!value) return acc;
-
-          const day = recordsState.value.selectedWeek[index];
-
-          return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
-        }, false);
-      }, false);
     });
 
     const showStandby = computed(
@@ -363,69 +349,7 @@ export default defineComponent({
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
       messageInput.value = '';
-      store.dispatch('records/goToWeek', { bridgeUid, to });
-    };
-
-    const copyPreviousWeek = () => {
-      const startDate = new Date(
-        getDayOnGMT(recordsState.value.selectedWeek[0].date)
-      );
-      const prevStartDate = subDays(startDate, 7);
-      const previousWeek = buildWeek(startOfISOWeek(prevStartDate));
-
-      const previousWeekTimesheet = createWeeklyTimesheet({
-        week: previousWeek,
-        leaveDays: createLeaveProject(
-          recordsState.value.selectedWeek,
-          recordsState.value.workScheme
-        ),
-        timeRecords: recordsState.value.timeRecords,
-        travelRecords: recordsState.value.travelRecords,
-        workScheme: recordsState.value.workScheme,
-        standByRecords: recordsState.value.standByRecords,
-      });
-
-      const newTimesheet = {
-        projects: previousWeekTimesheet.projects
-          .filter((project) => {
-            const projectArchived = customers.value.customers.find(
-              (customer) => customer.id === project.customer.id
-            )?.archived;
-            if (projectArchived) {
-              alert(
-                `${project.customer.name} is already archived. We wont copy it to new timesheet`
-              );
-            }
-            return !projectArchived;
-          })
-          .map((project) => ({
-            ...project,
-            ids: new Array(7).fill(null),
-          })),
-        leaveDays: previousWeekTimesheet.leaveDays,
-        travelProject: {
-          ...previousWeekTimesheet.travelProject!,
-          ids: new Array(7).fill(null),
-        },
-        standByProject: {
-          ...previousWeekTimesheet.standByProject!,
-          ids: new Array(7).fill(null),
-        },
-      };
-
-      timesheet.value = newTimesheet;
-    };
-
-    const addProject = (id: string) => {
-      const allCustomers = store.state.customers.customers;
-      const customer = allCustomers.find((x) => x.id === id) as Customer;
-
-      timesheet.value.projects.push({
-        customer,
-        values: Array.from(Array(7), () => 0),
-        ids: Array.from(Array(7), () => null),
-        isExternal: false,
-      });
+      store.dispatch('records/goToWeek', {bridgeUid, to});
     };
 
     const selectableCustomers = computed(() => {
@@ -442,7 +366,7 @@ export default defineComponent({
       );
 
       return [
-        { text: i18n.t('chooseProject'), disabled: true },
+        {text: i18n.t('chooseProject'), disabled: true},
         ...selectable.map((entry) => ({
           value: entry.id,
           text: entry.name,
@@ -450,27 +374,21 @@ export default defineComponent({
       ];
     });
 
+    const setTotals = (calculatedTotals: TimesheetTotals) => {
+      totals = calculatedTotals;
+    };
+
     const saveTimesheet = (
       newTimesheetStatus: TimesheetStatus,
       denialMessage?: string
     ) => {
       if (
-        newTimesheetStatus === timesheetStatus.value &&
+        newTimesheetStatus === timesheetStatus?.value &&
         !hasUnsavedChanges.value
       )
         return;
 
-      if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
-        const confirmation = confirm(
-          'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
-        );
-
-        if (!confirmation) return;
-      }
-
       unsavedWeeklyTimesheet.value = undefined;
-
-      console.log('saving timesheet: ', employeeId);
 
       store.dispatch('records/saveTimesheet', {
         employeeId,
@@ -500,95 +418,77 @@ export default defineComponent({
 
       const newTimesheet = timesheetState.value.timesheets[0]
         ? {
-          ...timesheetState.value.timesheets[0],
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && { message: message.value }),
-        }
+            ...timesheetState.value.timesheets[0],
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          }
         : {
-          employeeId,
-          date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && { message: message.value }),
-        };
+            employeeId,
+            date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
+            status: newTimesheetStatus,
+            reasonOfDenial,
+            messages: newMessages,
+            ...(message.value && {message: message.value}),
+          };
 
       store.dispatch('timesheets/saveTimesheet', newTimesheet);
+
+      hasUnsavedChanges.value = false;
     };
 
-    const deleteProject = (project: TimesheetProject) => {
-      store.dispatch('records/deleteProjectRecords', {
-        week: recordsState.value.selectedWeek,
-        project,
+    const denyTimesheet = (employee: Employee, denialMessage: string) => {
+      unsavedWeeklyTimesheet.value = undefined;
+      const selectedTimesheet = timesheetState.value.timesheets[0];
+
+      if (
+        !selectedTimesheet ||
+        selectedTimesheet.status !== recordStatus.PENDING
+      )
+        return;
+
+      store.dispatch('records/saveTimesheet', {
         employeeId,
+        week: recordsState.value.selectedWeek,
+        timesheet: timesheet.value,
       });
 
-      unsavedWeeklyTimesheet.value = {
-        projects: timesheet.value.projects.filter(
-          (proj) => proj.customer.id !== project.customer.id
-        ),
-        leaveDays: timesheet.value.leaveDays,
-        travelProject: timesheet.value.travelProject,
-        standByProject: timesheet.value.standByProject,
+      const newTimesheet = {
+        ...selectedTimesheet,
+        status: recordStatus.DENIED,
+        denialMessage,
+        message: message.value || '',
       };
 
-      // if deleting the last project, clear the timesheet
-      if (timesheet.value.projects.length <= 1) {
-        store.dispatch('timesheets/deleteTimesheet', {
-          timesheetId: timesheetState.value?.timesheets[0]?.id,
-        });
-        messageInput.value = '';
-      }
+      const emailData = buildEmailData({
+        employee,
+        week: recordsState.value.selectedWeek,
+        denialMessage,
+      });
 
-      if (!unsavedWeeklyTimesheet.value?.projects.length) {
-        hasUnsavedChanges.value = false;
-      }
+      store.dispatch('timesheets/denyTimesheet', {
+        timesheet: newTimesheet,
+        emailData,
+      });
+
+      hasUnsavedChanges.value = false;
     };
 
-    const setTotals = (calculatedTotals: TimesheetTotals) => {
-      totals = calculatedTotals;
+    const handleDeny = () => {
+      if (!reasonOfDenial.value || !selectedEmployee.value) return;
+      denyTimesheet(selectedEmployee.value, reasonOfDenial.value);
     };
 
-    const submitTimesheet = () => {
-      let confirmation = true;
-
-      if (totals.weekTotal > totals.expectedWeekTotal && !showBridgeError) {
-        const difference = +(
-          totals.weekTotal - totals.expectedWeekTotal
-        ).toFixed(2);
-        confirmation = confirm(
-          `${difference === 1
-            ? i18n.t('weekError', {
-              n: difference,
-              expected: totals.expectedWeekTotal,
-            })
-            : i18n.t('weekErrors', {
-              n: difference,
-              expected: totals.expectedWeekTotal,
-            })
-          }`
-        );
-      } else {
-        // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.dayTotal.filter(
-          (hoursInDay, index) => {
-            const weekendHours =
-              !recordsState.value?.workScheme[index] && hoursInDay;
-            const exceedsExpectedHours =
-              recordsState.value?.workScheme[index]?.workHours;
-            return hoursInDay > exceedsExpectedHours || weekendHours;
-          }
-        );
-
-        if (daysExceedingExpected.length && !showBridgeError)
-          confirmation = confirm(i18n.t('dayError') as string);
-      }
-
-      if (!confirmation) return;
-
-      saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+    const handleReminder = () => {
+      if (!selectedEmployee.value) return;
+      const startDate = new Date(
+        recordsState.value?.selectedWeek[0].date
+      ).getTime();
+      store.dispatch('timesheets/emailReminder', {
+        employee: selectedEmployee.value,
+        startDate,
+      });
     };
 
     return {
@@ -600,7 +500,6 @@ export default defineComponent({
       showEmployeeError,
       selectableCustomers,
       timesheetStatus,
-      isReadonly,
       messages,
       message,
       timesheetDenyMessage,
@@ -609,15 +508,15 @@ export default defineComponent({
       showTravel,
       messageInput,
       hasUnsavedChanges,
+      reasonOfDenial,
+      recordStatus,
       goToWeek,
-      copyPreviousWeek,
-      addProject,
-      saveTimesheet,
       timesheetFormatter: timesheetFormatter(24),
       kilometerFormatter: kilometerFormatter(0, 9999),
-      deleteProject,
       setTotals,
-      submitTimesheet,
+      handleDeny,
+      handleReminder,
+      saveTimesheet,
     };
   },
 
