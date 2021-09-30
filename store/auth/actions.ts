@@ -2,7 +2,7 @@ import {ActionTree} from 'vuex/types/index';
 import {extractUserFromAuthUser} from '~/helpers/auth';
 
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
-  async login({dispatch}) {
+  async login({commit}) {
     try {
       const provider = new this.$fireModule.auth.SAMLAuthProvider(
         'saml.intracto'
@@ -10,7 +10,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       const {user} = await this.$fire.auth.signInWithPopup(provider);
 
       if (user) {
-        await dispatch('_saveUser', user);
+        commit('setUser', await extractUserFromAuthUser(user));
         return true;
       }
     } catch (error: any) {
@@ -36,37 +36,9 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       return;
     }
 
-    await dispatch('_saveUser', authUser);
+    commit('setUser', await extractUserFromAuthUser(authUser));
 
     if (!process.server) dispatch('employee/getEmployee', {}, {root: true});
-  },
-
-  /**
-   * Internals
-   */
-  async _saveUser({commit}, authUser) {
-    // 1. extract user data from auth
-    const user = await extractUserFromAuthUser(authUser);
-
-    // 2. check if it has userId
-    if (!user.bridgeUid) {
-      // TODO: maybe revert auth-service deletion and move this call there
-      // 3. if not, calls /api/user/me with samlToken to retried bridgeUid
-      const {data} = await this.$axios.get<{bridgeUid: number}>(
-        '/api/user/me',
-        {
-          headers: {Authorization: user.samlToken},
-        }
-      );
-
-      // 3.1 assigns bridgeUid to the user who's gonna be saved
-      user.bridgeUid = data.bridgeUid;
-
-      // 3.1 saves that bridgeUid to user (employee) with Firebase
-      // TODO: implement that
-    }
-
-    commit('setUser', user);
   },
 };
 

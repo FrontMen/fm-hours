@@ -1,5 +1,3 @@
-import get from 'lodash.get';
-
 export async function extractUserFromAuthUser(authUser: any): Promise<User> {
   try {
     /**
@@ -9,12 +7,12 @@ export async function extractUserFromAuthUser(authUser: any): Promise<User> {
     const samlToken = (await authUser.getIdToken()) || null;
 
     const user: User = {
-      displayName: get(authUser, 'displayName'),
-      email: get(authUser, 'email'),
-      emailVerified: get(authUser, 'emailVerified'),
-      uid: get(authUser, 'uid'),
-      photoURL: get(authUser, 'photoURL', null),
-      bridgeUid: get(authUser, 'bridgeUid', null),
+      displayName: authUser.displayName,
+      email: authUser.email,
+      emailVerified: authUser.emailVerified,
+      uid: authUser.uid,
+      photoURL: authUser.photoURL || null,
+      bridgeUid: authUser.bridgeUid || null,
       samlToken,
     };
 
