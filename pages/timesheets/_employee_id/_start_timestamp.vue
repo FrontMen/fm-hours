@@ -5,7 +5,6 @@
     bridge: "Bridge"
     standByHours: "Stand-by hours"
     leaveDay: "Leave days"
-    addComment: "Add a comment here."
     employeeError: "Selected employee is not found"
     denialReason: "Reason of denial"
     denialReasonPlaceholder: "Write a short description of the reason of denial and what the employee should do to fix it."
@@ -15,7 +14,6 @@
     bridge: "Bridge"
     standByHours: "Stand-by uren"
     leaveDay: "Verlofdagen"
-    addComment: "Notitie toevoegen"
     employeeError: "Geselecteerde medewerker is niet gevonden"
     denialReason: "Reden van afwijzing"
     denialReasonPlaceholder: "Schrijf een korte notitie van de reden van afkeuren. Dit wordt getoond aan de medewerker."
@@ -38,6 +36,10 @@
       @next="goToWeek('next')"
       @current="goToWeek('current')"
     />
+    <controls
+      @save="saveTimesheet(recordStatus.PENDING)"
+      @changeInput="updateUnsavedData"
+    ></controls>
 
     <form action="javascript:void(0);">
       <template v-if="timesheet.projects.length">
@@ -122,27 +124,6 @@
           </template>
         </weekly-timesheet>
       </template>-->
-
-      <div v-if="message || messages" class="mt-4">
-        <comment-block v-if="!!message" :text="message" />
-        <comment-block
-          v-for="msg in messages"
-          :key="msg.id"
-          :text="msg.text"
-          :date="msg.createdAt"
-        />
-      </div>
-
-      <b-form-textarea
-        v-if="timesheet.projects.length"
-        id="message-textarea"
-        v-model="messageInput"
-        class="mt-4"
-        :placeholder="$t('addComment')"
-        rows="1"
-        max-rows="4"
-        @change="hasUnsavedChanges = true"
-      />
     </form>
 
     <weekly-timesheet-admin-footer
@@ -201,7 +182,6 @@ import {
   createLeaveProject,
 } from '~/helpers/timesheet';
 import {recordStatus} from '~/helpers/record-status';
-import {uuidv4} from '~/helpers/helpers';
 import {buildEmailData} from '~/helpers/email';
 
 export default defineComponent({
@@ -212,7 +192,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
-    const messageInput = ref('');
+    const messageInput = ref<Message[]>();
     const showEmployeeError = ref(false);
     const reasonOfDenial = ref('');
     const {employee_id: employeeId, start_timestamp: startTimestamp} =
@@ -348,7 +328,6 @@ export default defineComponent({
 
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
-      messageInput.value = '';
       store.dispatch('records/goToWeek', {bridgeUid, to});
     };
 
@@ -373,6 +352,11 @@ export default defineComponent({
         })),
       ];
     });
+
+    const updateUnsavedData = (value: Array<Message>) => {
+      hasUnsavedChanges.value = true;
+      messageInput.value = value;
+    }
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals = calculatedTotals;
@@ -405,16 +389,7 @@ export default defineComponent({
       } else if (newTimesheetStatus === recordStatus.PENDING) {
         reasonOfDenial = '';
       }
-
-      const createNewMessage = (text: string): Message => ({
-        id: uuidv4(),
-        createdAt: new Date().getTime(),
-        text,
-      });
-
       const newMessages = messageInput.value
-        ? [...messages.value, createNewMessage(messageInput.value)]
-        : [...messages.value];
 
       const newTimesheet = timesheetState.value.timesheets[0]
         ? {
@@ -517,6 +492,7 @@ export default defineComponent({
       handleDeny,
       handleReminder,
       saveTimesheet,
+      updateUnsavedData
     };
   },
 
