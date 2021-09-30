@@ -8,6 +8,7 @@
       <div class="font-weight-bold">
         {{ employee.name }}
       </div>
+      <div class="font-weight-light">BridgeUid: {{ employee.bridgeUid }}</div>
     </b-col>
   </b-row>
 </template>

@@ -247,7 +247,7 @@ export default defineComponent({
     });
 
     const pageTitle = computed(() =>
-      employee.value ? `i18n.t("employees") - ${employee.value?.name}` : i18n.t("employees") as string
+      employee.value ? `${i18n.t("employees")} - ${employee.value?.name}` : i18n.t("employees") as string
     );
 
     const emailValidationState = computed(() => {
