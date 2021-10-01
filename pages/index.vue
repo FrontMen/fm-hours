@@ -181,9 +181,10 @@ import {
   watch,
   useMeta,
   useContext,
+  onMounted,
   ref,
 } from '@nuxtjs/composition-api';
-import {startOfISOWeek, subDays} from 'date-fns';
+import { startOfISOWeek, subDays, addWeeks } from 'date-fns';
 import {buildWeek, getDayOnGMT} from '~/helpers/dates';
 import {uuidv4} from '~/helpers/helpers';
 import {
@@ -198,7 +199,7 @@ export default defineComponent({
   middleware: ['isAuthenticated'],
 
   setup() {
-    const {i18n} = useContext();
+    const {i18n, localePath} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
     const hasUnsavedChanges = ref<Boolean>(false);
@@ -328,6 +329,14 @@ export default defineComponent({
       }
     );
 
+    onMounted(() => {
+      const routerTimestamp = router.currentRoute.params.start_timestamp;
+      const timestamp = typeof routerTimestamp === 'string' ? parseInt(routerTimestamp, 10) : routerTimestamp;
+      const startTimestamp = timestamp && !isNaN(timestamp) ? new Date(timestamp) : new Date();
+
+      store.dispatch('records/goToWeek', {bridgeUid, startDate: startTimestamp});
+    });
+
     useMeta(() => ({
       title: pageTitle.value,
     }));
@@ -344,7 +353,17 @@ export default defineComponent({
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
       messageInput.value = '';
-      store.dispatch('records/goToWeek', {bridgeUid, to});
+
+      const selectedWeek = recordsState.value?.selectedWeek[0].date || startOfISOWeek(new Date()).getTime();
+      const startOfWeek = new Date(selectedWeek);
+      const previousWeekStart = addWeeks(startOfWeek, -1).getTime();
+      const nextWeekStart = addWeeks(startOfWeek, 1).getTime();
+      const today = new Date().getTime();
+
+      const targetStart = to === 'current' ? today : to === 'previous' ? previousWeekStart : nextWeekStart;
+
+      // Push new path, including timestamp, to url.
+      router.push(localePath(`/${targetStart}`));
     };
 
     const copyPreviousWeek = () => {

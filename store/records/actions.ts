@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
-import {addDays, startOfISOWeek, subDays, isWithinInterval} from 'date-fns';
+import {startOfISOWeek, isWithinInterval} from 'date-fns';
 import {ActionTree} from 'vuex';
 
-import {buildWeek, checkNonWorkingDays, getDayOnGMT} from '~/helpers/dates';
+import {buildWeek, checkNonWorkingDays} from '~/helpers/dates';
 import {
   getTimeRecordsToSave,
   getTravelRecordsToSave,
@@ -99,19 +99,10 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   },
 
   async goToWeek(
-    {commit, state},
-    payload: {to: 'current' | 'next' | 'previous'; bridgeUid?: string}
+    {commit},
+    payload: {startDate: Date; bridgeUid?: string}
   ) {
-    const currentStartDate = state.selectedWeek[0].date;
-    let newStartDate = new Date();
-
-    if (payload.to === 'previous') {
-      newStartDate = subDays(getDayOnGMT(currentStartDate), 7);
-    } else if (payload.to === 'next') {
-      newStartDate = addDays(getDayOnGMT(currentStartDate), 7);
-    }
-
-    const workWeek = buildWeek(startOfISOWeek(newStartDate));
+    const workWeek = buildWeek(startOfISOWeek(payload.startDate));
 
     let workSchemeResult: WorkScheme[] | undefined;
     if (payload.bridgeUid) {

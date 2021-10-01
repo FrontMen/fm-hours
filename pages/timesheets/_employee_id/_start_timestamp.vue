@@ -167,13 +167,15 @@
 import {
   computed,
   defineComponent,
-  //   useRouter,
+  useRouter,
+  onMounted,
   useStore,
   watch,
   useMeta,
   useContext,
   ref,
 } from '@nuxtjs/composition-api';
+import { startOfISOWeek, addWeeks } from 'date-fns';
 
 import {
   createWeeklyTimesheet,
@@ -188,8 +190,9 @@ export default defineComponent({
   middleware: ['isAuthenticated'],
 
   setup() {
-    const {i18n, params} = useContext();
+    const {i18n, params, localePath} = useContext();
     const store = useStore<RootStoreState>();
+    const router = useRouter();
     const hasUnsavedChanges = ref<Boolean>(false);
     const unsavedWeeklyTimesheet = ref<WeeklyTimesheet>();
     const messageInput = ref<Message[]>();
@@ -264,6 +267,14 @@ export default defineComponent({
       dayTotal: [],
     };
 
+    onMounted(() => {
+      const routerTimestamp = params.value.start_timestamp;
+      const timestamp = typeof routerTimestamp === 'string' ? parseInt(routerTimestamp, 10) : routerTimestamp;
+      const startTimestamp = timestamp && !isNaN(timestamp) ? new Date(timestamp) : new Date();
+
+      store.dispatch('records/goToWeek', {bridgeUid, startDate: startTimestamp});
+    });
+
     watch([selectedEmployee], () => {
       bridgeUid = selectedEmployee.value.bridgeUid;
       const startDate = startTimestamp
@@ -328,7 +339,17 @@ export default defineComponent({
 
       unsavedWeeklyTimesheet.value = undefined;
       hasUnsavedChanges.value = false;
-      store.dispatch('records/goToWeek', {bridgeUid, to});
+
+      const selectedWeek = recordsState.value?.selectedWeek[0].date || startOfISOWeek(new Date()).getTime();
+      const startOfWeek = new Date(selectedWeek);
+      const previousWeekStart = addWeeks(startOfWeek, -1).getTime();
+      const nextWeekStart = addWeeks(startOfWeek, 1).getTime();
+      const today = new Date().getTime();
+
+      const targetStart = to === 'current' ? today : to === 'previous' ? previousWeekStart : nextWeekStart;
+
+      // Push new path, including timestamp, to url.
+      router.push(localePath(`/timesheets/${selectedEmployee.value.id}/${targetStart}`));
     };
 
     const selectableCustomers = computed(() => {
