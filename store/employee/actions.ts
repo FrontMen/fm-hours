@@ -35,12 +35,6 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       return employee;
     } catch (error: any) {
-      // dispatch(
-      //   'auth/setErrorMessage',
-      //   error.response
-      //     ? 'An unexpected error happened while trying to get the employee details'
-      //     : error.message
-      // );
       throw new Error(error);
     }
   },

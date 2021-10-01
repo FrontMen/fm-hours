@@ -11,8 +11,6 @@ export async function extractUserFromAuthUser(authUser: any): Promise<User> {
       email: authUser.email,
       emailVerified: authUser.emailVerified,
       uid: authUser.uid,
-      photoURL: authUser.photoURL || null,
-      bridgeUid: authUser.bridgeUid || null,
       samlToken,
     };
 
