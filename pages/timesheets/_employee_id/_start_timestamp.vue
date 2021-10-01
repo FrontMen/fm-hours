@@ -133,7 +133,7 @@
       :last-saved="recordsState.lastSaved"
       :status="timesheetStatus"
       @save="saveTimesheet(recordStatus.PENDING)"
-      @approve="saveTimesheet(recordStatus.APPROVED)"
+      @approve="handleApprove"
       @unapprove="saveTimesheet(recordStatus.NEW)"
       @reminder="handleReminder"
     />
@@ -183,6 +183,7 @@ import {
 } from '~/helpers/timesheet';
 import {recordStatus} from '~/helpers/record-status';
 import {buildEmailData} from '~/helpers/email';
+import useTimesheet from "~/composables/useTimesheet";
 
 export default defineComponent({
   middleware: ['isAuthenticated'],
@@ -252,6 +253,17 @@ export default defineComponent({
       travelProject: null,
       standByProject: null,
     });
+
+    const timesheetInstance = useTimesheet(
+      employeeId,
+      Number(startTimestamp),
+      selectedEmployee.value?.bridgeUid
+    );
+
+    const handleApprove = () => {
+      console.log('handle approve')
+      timesheetInstance.saveTimesheet(recordStatus.APPROVED as TimesheetStatus, undefined, () => timesheetInstance.goToWeek('next'))
+    }
 
     const messages = ref<Message[]>(
       timesheetState.value?.timesheets[0]?.messages || []
@@ -475,6 +487,7 @@ export default defineComponent({
       showEmployeeError,
       selectableCustomers,
       timesheetStatus,
+      handleApprove,
       messages,
       message,
       timesheetDenyMessage,
