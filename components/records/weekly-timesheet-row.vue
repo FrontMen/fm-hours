@@ -135,10 +135,14 @@ export default defineComponent({
     const isTravelAllowance = props.project.customer.name === 'Kilometers';
     const getInitialState = (project: TimesheetProject) => {
       return isTravelAllowance
-        ? project.values.map((val) => val.toString())
+        ? project.values.map((val) => {
+          if (props.readonly) return val.toString()
+          else return ''
+        })
         : project.values.map((num) => {
             if (num === 0) {
-              return '0';
+              if (props.readonly) return '0'
+              else return '';
             } else {
               return floatTo24TimeString(num);
             }
