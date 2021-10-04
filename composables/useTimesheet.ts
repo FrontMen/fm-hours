@@ -31,8 +31,8 @@ export default (
   const timesheetState = computed(() => store.state.timesheets);
   const customers = computed(() => store.state.customers);
   const message = computed(() => timesheetState.value?.timesheets[0]?.message);
-  const isApproved = computed(
-    () => timesheetStatus.value === recordStatus.APPROVED
+  const isApproved = computed(() =>
+    timesheetStatus ? timesheetStatus.value === recordStatus.APPROVED : false
   );
   const messageInput = ref('');
 
