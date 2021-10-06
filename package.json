@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "nuxt --dotenv .env.dev",
+    "vercel": "vercel dev",
     "build": "nuxt build && nuxt generate",
     "start": "nuxt start",
     "test": "jest --passWithNoTests",
@@ -86,6 +87,7 @@
     "standard-version": "9.3.1",
     "ts-jest": "27.0.5",
     "ts-node": "10.2.1",
+    "vercel": "^23.1.2",
     "vue-jest": "3.0.7",
     "vue-multiselect": "2.1.6"
   }

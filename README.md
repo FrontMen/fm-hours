@@ -27,17 +27,10 @@ Since this project uses Vercel's lambda functions (via `/api`), instead of using
 After doing login, run:
 
 ```
-vercel dev
+yarn vercel
 ```
 
-It might ask you some questions about the project like Organization and if you want to link an existing project:
-
-```
-Vercel CLI 23.1.2 dev (beta) — https://vercel.com/feedback
-? Set up and develop “~/development/fm-hours”? [Y/n] y
-? Which scope should contain your project? Frontmen
-? Found project “frontmen/fm-hours”. Link to it? [Y/n] y
-```
+It might ask you some questions about the project like Organization and if you want to link an existing project.
 
 After that, a `.vercel` folder will be created with some sensitive files and a server will be boot and up running at `http://localhost:3000`
 
