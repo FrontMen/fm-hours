@@ -389,14 +389,13 @@ export default defineComponent({
       } else if (newTimesheetStatus === recordStatus.PENDING) {
         reasonOfDenial = '';
       }
-      const newMessages = messageInput.value
+      // const newMessages = messageInput.value
 
       const newTimesheet = timesheetState.value.timesheets[0]
         ? {
             ...timesheetState.value.timesheets[0],
             status: newTimesheetStatus,
             reasonOfDenial,
-            messages: newMessages,
             ...(message.value && {message: message.value}),
           }
         : {
@@ -404,7 +403,6 @@ export default defineComponent({
             date: new Date(recordsState.value.selectedWeek[0].date).getTime(),
             status: newTimesheetStatus,
             reasonOfDenial,
-            messages: newMessages,
             ...(message.value && {message: message.value}),
           };
 
