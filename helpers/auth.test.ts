@@ -8,10 +8,7 @@ describe('fn: extractUserFromAuthUser', () => {
     const authUser = {
       uid: 'mock-uid',
       displayName: 'Tester',
-      photoURL: 'http://lorem-picsum.com/300/300',
       email: 'test@test.test',
-      // TODO: this should not be here
-      bridgeUid: 'mock-bridge-uuid',
       emailVerified: true,
       phoneNumber: null,
       isAnonymous: false,
@@ -49,9 +46,7 @@ describe('fn: extractUserFromAuthUser', () => {
       emailVerified: true,
       samlToken: mockSamlToken,
       uid: 'mock-uid',
-      photoURL: 'http://lorem-picsum.com/300/300',
       displayName: 'Tester',
-      bridgeUid: 'mock-bridge-uuid',
     };
 
     expect(await extractUserFromAuthUser(authUser)).toEqual(expectedObject);
@@ -61,7 +56,6 @@ describe('fn: extractUserFromAuthUser', () => {
     const authUser = {
       uid: 'mock-uid',
       displayName: null,
-      photoURL: null,
       email: 'test@test.test',
       emailVerified: true,
       phoneNumber: null,
@@ -100,9 +94,7 @@ describe('fn: extractUserFromAuthUser', () => {
       emailVerified: true,
       samlToken: mockSamlToken,
       uid: 'mock-uid',
-      photoURL: null,
       displayName: null,
-      bridgeUid: null,
     };
 
     expect(await extractUserFromAuthUser(authUser)).toEqual(expectedObject);
