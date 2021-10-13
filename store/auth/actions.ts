@@ -1,4 +1,5 @@
 import {ActionTree} from 'vuex/types/index';
+import {extractUserFromAuthUser} from '~/helpers/auth';
 
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
   async login({commit}) {
@@ -7,19 +8,14 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         'saml.intracto'
       );
       const {user} = await this.$fire.auth.signInWithPopup(provider);
-      if (user) {
-        const {uid, email, emailVerified, displayName, photoURL} = user;
 
-        commit('setUser', {
-          uid,
-          email,
-          emailVerified,
-          displayName,
-          photoURL,
-        });
+      if (user) {
+        commit('setUser', await extractUserFromAuthUser(user));
         return true;
       }
     } catch (error: any) {
+      // eslint-disable-next-line no-console
+      console.error('Something went wrong while Login');
       throw new Error(error);
     }
   },
@@ -31,21 +27,16 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     return true;
   },
 
-  onAuthStateChangedAction({commit, dispatch}, {authUser}) {
+  /**
+   * This actions is only called via Nuxt Firebase.
+   */
+  async onAuthStateChangedAction({commit, dispatch}, {authUser}) {
     if (!authUser) {
       commit('resetUser');
       return;
     }
 
-    const {uid, email, emailVerified, displayName, photoURL} = authUser;
-
-    commit('setUser', {
-      uid,
-      email,
-      emailVerified,
-      displayName,
-      photoURL,
-    });
+    commit('setUser', await extractUserFromAuthUser(authUser));
 
     if (!process.server) dispatch('employee/getEmployee', {}, {root: true});
   },

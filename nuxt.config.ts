@@ -92,7 +92,6 @@ export default {
       firestore: true,
       auth: {
         initialize: {
-          onAuthStateChangedMutation: 'auth/ON_AUTH_STATE_CHANGED_MUTATION',
           onAuthStateChangedAction: 'auth/onAuthStateChangedAction',
         },
       },
