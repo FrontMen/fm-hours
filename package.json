@@ -63,7 +63,7 @@
     "axios": "^0.21.4",
     "babel-core": "7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
-    "babel-jest": "27.2.4",
+    "babel-jest": "27.3.0",
     "bootstrap": "~4.6.0",
     "bootstrap-vue": "2.21.2",
     "date-fns": "2.25.0",
