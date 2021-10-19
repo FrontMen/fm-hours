@@ -29,6 +29,8 @@
       {{ showBridgeError ? $t('workschemeError') : $t('employeeError') }}
     </b-alert>
 
+    <employee-header :employee="employee" class="mb-5" />
+
     <navigation-buttons
       class="mb-5"
       :selected-week="recordsState.selectedWeek"
