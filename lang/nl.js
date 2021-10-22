@@ -10,7 +10,8 @@ export default {
   selectTeam: 'selecteer team',
   employees: 'medewerekers',
   errorEnddate: 'Selecteer een einddatum',
-  errorNameEmail: 'controleer de velden medewerker en email',
+  errorNameEmail: 'Selecteer een startdatum',
+  errorStartDate: 'Please select start date',
   confirmDelete: 'Weet je zeker dat je medewerker {name}, wil verwijderen?',
   reConfirmDelete:
     'Bij verwijderen van medewerker {name} heb je geen toegang meer tot timesheets en rapportage!',
@@ -60,4 +61,5 @@ export default {
   hours: 'uren',
   availableAll: 'Beschikbaar voor alle medewerkers',
   weekNo: 'week: {num}',
+  addEmployee: 'Medewerker toevoegen',
 };

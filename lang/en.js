@@ -10,6 +10,7 @@ export default {
   selectTeam: 'Select team',
   employees: 'Employees',
   errorEnddate: 'Please select an end date',
+  errorStartDate: 'Please select start date',
   errorNameEmail: 'Please set the employee name and email',
   confirmDelete: 'Are you sure you want to delete {name}?',
   reConfirmDelete:
@@ -58,4 +59,5 @@ export default {
   hours: 'Hours',
   availableAll: 'Available to all employeees',
   weekNo: 'week: {num}',
+  addEmployee: 'Add Employee',
 };

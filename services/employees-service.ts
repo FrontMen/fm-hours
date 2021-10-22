@@ -70,20 +70,10 @@ export default class EmployeesService {
     return null;
   }
 
-  async createEmployee(params: {
-    name: string;
-    email: string;
-    travelAllowance: boolean;
-    startDate: number;
-  }): Promise<Employee> {
+  async createEmployee(params: Omit<Employee, 'id'| 'picture'>): Promise<Employee> {
     const newEmployee = {
-      name: params.name,
+      ...params,
       picture: '',
-      email: params.email,
-      projects: [],
-      travelAllowance: params.travelAllowance,
-      endDate: null,
-      startDate: params.startDate,
       created: new Date().getTime(),
     };
 
