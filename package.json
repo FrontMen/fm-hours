@@ -73,7 +73,7 @@
     "eslint-plugin-prettier": "4.0.0",
     "firebase": "8.10.0",
     "hotkeys-js": "3.8.7",
-    "husky": "7.0.2",
+    "husky": "7.0.4",
     "jest": "27.3.0",
     "js-cookie": "2.2.1",
     "jwt-decode": "3.1.2",
