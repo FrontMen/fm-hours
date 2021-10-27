@@ -76,7 +76,6 @@
                 <b-button
                   size="sm"
                   variant="danger"
-                  :disabled="row.item.isDefault"
                   @click="handleProjectDelete(row.item.id)"
                 >
                   <b-icon-trash-fill />
@@ -226,9 +225,6 @@ export default defineComponent({
           ...customer,
           label: `${customer.name} (${customer.debtor})`,
         }))
-    );
-    const defaultCustomers = computed(
-      () => store.getters["customers/defaultCustomers"]
     );
 
     const employeeId = router.currentRoute.params.employee_id;
@@ -479,11 +475,11 @@ export default defineComponent({
       selectedCustomers.value = selectedCustomers.value.filter(
         (customer) => customer!.id !== customerId
       );
+      hasUnsavedChanges.value = true
     };
 
     const items = computed(() => [
       ...selectedCustomers.value,
-      ...defaultCustomers.value,
     ]);
 
     const fields = ["name", "debtor", "delete"];
@@ -504,7 +500,6 @@ export default defineComponent({
       errorMessage,
       fields,
       handleProjectDelete,
-      defaultCustomers,
       items,
       handleEmployeeDelete,
       standbyAllowed,
