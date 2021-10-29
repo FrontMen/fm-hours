@@ -41,10 +41,13 @@ interface TimesheetProject {
 }
 
 interface WeeklyTimesheet {
+  info: Timesheet | null;
+  week: WeekDate[];
   projects: TimesheetProject[];
   leaveDays: TimesheetProject | null;
   travelProject: TimesheetProject | null;
   standByProject: TimesheetProject | null;
+  workScheme: WorkScheme[];
 }
 
 interface RecordsStoreState {

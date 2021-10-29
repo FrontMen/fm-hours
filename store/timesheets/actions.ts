@@ -83,17 +83,6 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     await this.app.$mailService.sendMail(emailData);
   },
-
-  async deleteTimesheet({commit, state}, payload: {timesheetId: string}) {
-    if (!payload.timesheetId) return;
-
-    await this.app.$timesheetsService.deleteTimesheet(payload.timesheetId);
-
-    const newTimesheets = state.timesheets.filter(
-      (timesheet) => timesheet.id !== payload.timesheetId
-    );
-    commit('setTimesheets', {timesheets: newTimesheets});
-  },
 };
 
 export default actions;

@@ -65,14 +65,14 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
 
     const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
+    const leaveDays: WeekDate[] = selectedWeek.filter(
+      (day: WeekDate) => day.isLeaveDay
+    );
+
     const timeRecords =
       await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
         employeeId: payload.employeeId,
       });
-
-    const leaveDays: WeekDate[] = selectedWeek.filter(
-      (day: WeekDate) => day.isLeaveDay
-    );
 
     const standByRecords =
       await this.app.$timeRecordsService.getEmployeeRecords<StandbyRecord>(
@@ -198,37 +198,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
         ...standByRecords,
       ],
     });
-  },
-
-  async deleteProjectRecords(
-    {commit, state},
-    payload: {
-      employeeId: string;
-      week: WeekDate[];
-      project: TimesheetProject;
-    }
-  ) {
-    commit('setSaving', {isSaving: true});
-
-    const recordsToDelete = payload.project.values.map((value, index) => ({
-      id: payload.project.ids[index],
-      employeeId: payload.employeeId,
-      date: new Date(payload.week[index].date).getTime(),
-      hours: value,
-      customer: payload.project.customer,
-    }));
-
-    await this.app.$timeRecordsService.deleteEmployeeRecords<TimeRecord>({
-      recordsToDelete,
-    });
-
-    commit('updateRecords', {
-      timeRecords: state.timeRecords.filter(
-        (x) => !recordsToDelete.some((y) => y.id === x.id)
-      ),
-    });
-
-    commit('setSaving', {isSaving: false});
   },
 };
 

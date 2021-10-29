@@ -1,15 +1,6 @@
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
-    <b-col class="weekly-timesheet-totals-row__action" cols="4">
-      <b-button
-        v-if="showAddProjectButton"
-        v-b-modal.modal-add-project
-        variant="primary"
-      >
-        <b-icon icon="plus-square-fill" class="mr-1" />
-        {{$t('project')}}
-      </b-button>
-    </b-col>
+    <b-col class="weekly-timesheet__action-column" cols="4" />
 
     <b-col
       v-for="(value, index) in dayTotals"
@@ -45,11 +36,7 @@ export default defineComponent({
     workScheme: {
       type: Array as PropType<WorkScheme[]>,
       required: true,
-    },
-    showAddProjectButton: {
-      type: Boolean,
-      required: true,
-    },
+    }
   },
   setup(props, {emit}) {
     const weekTotal = computed(() => {
@@ -115,13 +102,6 @@ export default defineComponent({
   align-items: center;
   padding-top: 8px;
   padding-bottom: 8px;
-
-  &__action {
-    @media (max-width: 560px) {
-      flex: 100%;
-      max-width: 100%;
-    }
-  }
 
   &__column {
     flex: 1;

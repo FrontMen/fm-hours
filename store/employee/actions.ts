@@ -32,10 +32,15 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         });
       }
 
-      commit('setEmployee', {employee, isAdmin});
+      // Add project details
+      const projects = await this.app.$customersService.getCustomersByIds(
+        employee.projects
+      );
+
+      commit('setEmployee', {employee, isAdmin, projects});
 
       return employee;
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(error);
     }
   },

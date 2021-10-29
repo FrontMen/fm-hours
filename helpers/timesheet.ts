@@ -1,50 +1,54 @@
-import {isSameDay, isWithinInterval, getISOWeek} from 'date-fns';
+import {isSameDay, getISOWeek} from 'date-fns';
 
 import {recordStatus} from './record-status';
 import {getDayOnGMT, formatDate} from './dates';
 
 export const createWeeklyTimesheet = (params: {
+  sheet: Timesheet;
   week: WeekDate[];
+  projects: Customer[];
   timeRecords: TimeRecord[];
-  leaveDays: TimesheetProject | null;
   travelRecords: TravelRecord[];
   standByRecords: StandbyRecord[];
   workScheme: WorkScheme[];
 }): WeeklyTimesheet => {
-  const start = new Date(params.week[0].date);
-  const end = new Date(params.week[6].date);
-
-  const isWithinCurrentWeek = (
-    record: TimeRecord | TravelRecord | StandbyRecord
-  ) => isWithinInterval(new Date(record.date), {start, end});
-
-  const weeklyCustomers: Customer[] = [];
-  const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
-  const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStandByRecords =
-    params.standByRecords.filter(isWithinCurrentWeek);
-
-  weeklyTimeRecords.forEach((timeRecord) => {
-    if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
-      weeklyCustomers.push(timeRecord.customer);
-    }
-  });
-
   return {
+    info: params.sheet,
+    week: params.week,
     projects:
-      createCustomerProjects(params.week, weeklyCustomers, weeklyTimeRecords) ||
-      [],
-    leaveDays: params.leaveDays,
-    travelProject: createTravelProject(params.week, weeklyTravelRecords),
-    standByProject: createStandByProject(params.week, weeklyStandByRecords),
+      createCustomerProjects(
+        params.week,
+        params.timeRecords,
+        params.projects
+      ) || [],
+    leaveDays: createLeaveProject(params.week, params.workScheme),
+    travelProject: createTravelProject(params.week, params.travelRecords),
+    standByProject: createStandByProject(params.week, params.standByRecords),
+    workScheme: params.workScheme,
   };
 };
 
 const createCustomerProjects = (
   week: WeekDate[],
-  customers: Customer[],
-  timeRecords: TimeRecord[]
+  timeRecords: TimeRecord[],
+  availableCustomers: Customer[]
 ): TimesheetProject[] => {
+  const customers: Customer[] = [];
+
+  // Get customers from timeRecords
+  timeRecords.forEach((timeRecord) => {
+    if (!customers.some((x) => x.id === timeRecord.customer.id)) {
+      customers.push(timeRecord.customer);
+    }
+  });
+  // Add all availableCustomers as well
+  availableCustomers.forEach((customer) => {
+    if (!customers.some((x) => x.id === customer.id)) {
+      customers.push(customer);
+    }
+  });
+
+  // Add records to the right customers
   return customers.map((customer) => {
     const projectRecords = timeRecords.filter(
       (x) => x.customer.id === customer.id

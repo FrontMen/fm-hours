@@ -1,4 +1,12 @@
-import {format, isToday, isWeekend, startOfISOWeek, addWeeks} from 'date-fns';
+import {
+  format,
+  isToday,
+  isWeekend,
+  startOfISOWeek,
+  addWeeks,
+  startOfYear,
+  getDay,
+} from 'date-fns';
 
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
@@ -60,15 +68,6 @@ export function checkNonWorkingDays(
   });
 }
 
-// Based on a date, return the begindate of that week and the enddate of that week
-// return in this format so its usable for date-fns, which need the js new Date object.
-// wrap it in the format function to get rid of the hours
-export function getWeekRange(beginDate: string) {
-  const start = startOfISOWeek(getDayOnGMT(beginDate));
-  const end = addDays(start, 6);
-  return {start, end};
-}
-
 function buildWeekSpan(startDate: Date) {
   const start = startOfISOWeek(startDate);
   const end = addDays(start, 6);
@@ -117,4 +116,14 @@ export function getDayOnGMT(initialZonedValue: Date | number | string) {
     zonedDate.getTime() +
       zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
   );
+}
+
+export function getDateOfISOWeek(year: number, week: number, day: number) {
+  const startDayOfYear = startOfYear(new Date(year, 0, 1));
+  const diff = day - getDay(startDayOfYear);
+  const firstAppearanceOfYear = addDays(
+    startDayOfYear,
+    diff < 0 ? 7 + diff : diff
+  );
+  return addWeeks(firstAppearanceOfYear, week - 1);
 }

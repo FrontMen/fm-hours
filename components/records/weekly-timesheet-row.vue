@@ -1,49 +1,10 @@
-<i18n lang="yaml">
-  en:
-    remove: "Remove entries from timesheet?"
-  nl:
-    remove: "Wil je alle data van de urenregistratie verwijderen?"
-</i18n>
-
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <b-button
-        v-if="canRemove"
-        :id="project.customer.name"
-        class="weekly-timesheet-row__remove-button"
-        variant="outline-primary"
-      >
-        <b-icon icon="x-square" />
-      </b-button>
-
       <span>
         <strong>{{ project.customer.name }}</strong>
       </span>
     </b-col>
-
-    <b-tooltip
-      v-if="removable"
-      id="tooltip-confirmation"
-      ref="tooltip"
-      custom-class="tooltip-opacity"
-      :target="project.customer.name"
-      placement="bottom"
-      triggers="click blur"
-      variant="light"
-    >
-      <div class="container">
-        {{$t('remove')}}
-        <b-row class="mt-2 justify-content-around">
-          <b-button variant="secondary" @click="closeTooltip">
-            {{$t('cancel')}}
-          </b-button>
-          <b-button variant="danger" @click="handleRemoveClick">
-            {{$t('delete')}}
-          </b-button>
-        </b-row>
-      </div>
-    </b-tooltip>
 
     <b-col
       v-for="(value, index) in formattedProjectValues"
@@ -96,10 +57,6 @@ export default defineComponent({
       type: Object as PropType<TimesheetProject>,
       required: true,
     },
-    removable: {
-      type: Boolean,
-      default: true,
-    },
     readonly: {
       type: Boolean,
       default: false,
@@ -117,19 +74,8 @@ export default defineComponent({
       required: true,
     },
   },
-  emits: ['remove'],
-  setup(props, {emit}) {
+  setup(props) {
     const tooltip = ref();
-    const canRemove = computed(() => !props.readonly && props.removable);
-
-    const closeTooltip = () => {
-      tooltip.value.$emit('close');
-    };
-
-    const handleRemoveClick = () => {
-      closeTooltip();
-      emit('remove', props.project);
-    };
 
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.project.customer.name === 'Kilometers';
@@ -194,9 +140,6 @@ export default defineComponent({
 
     return {
       tooltip,
-      canRemove,
-      closeTooltip,
-      handleRemoveClick,
       totalValue,
       formattedProjectValues,
       isReadonlyList,
@@ -219,14 +162,6 @@ export default defineComponent({
     @media (min-width: 560px) {
       padding-top: 0;
     }
-  }
-
-  &__remove-button {
-    display: inline-flex;
-    align-items: center;
-    margin: 0 8px 0 -6px;
-    padding: 0.375rem;
-    border: 0;
   }
 
   &__action-column {
@@ -273,8 +208,5 @@ export default defineComponent({
       padding: 0 15px;
     }
   }
-}
-.tooltip-opacity {
-  opacity: 1;
 }
 </style>
