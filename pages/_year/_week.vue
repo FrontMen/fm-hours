@@ -216,8 +216,8 @@ export default defineComponent({
 
       const startEpoch = new Date(workWeek[0].date).getTime()
       const range = {
-        startDate: workWeek[0].date,
-        endDate: workWeek[6].date
+        startDate: new Date(workWeek[0].date).getTime().toString(),
+        endDate: new Date(workWeek[6].date).getTime().toString()
       }
 
       // TODO: get single timesheet
@@ -243,12 +243,9 @@ export default defineComponent({
       });
     }
 
-    if(employee.value !== null) {
-      getTimesheet();
-    }
     watch(employee, () => {
       getTimesheet();
-    });
+    }, { immediate: true });
 
     const saveTimesheet = (
       newTimesheetStatus: TimesheetStatus,

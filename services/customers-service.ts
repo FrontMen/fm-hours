@@ -43,10 +43,10 @@ export default class CustomersService {
     };
   }
 
-  async getCustomersAvailableToAll() {
+  async getDefaultCustomers() {
     const ref = this.fire.firestore
       .collection(Collections.CUSTOMERS)
-      .where('availableToAll', '==', true);
+      .where('isDefault', '==', true);
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({
