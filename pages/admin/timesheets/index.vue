@@ -142,8 +142,6 @@ import {recordStatus} from "~/helpers/record-status";
 import {TimesheetStatus} from "~/types/enums";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
-
   setup() {
     const { i18n, localePath } = useContext();
     const store = useStore<RootStoreState>();
@@ -192,7 +190,7 @@ export default defineComponent({
       employeeId: string,
       startTimestamp: number
     ) => {
-      router.push(localePath(`/timesheets/${employeeId}/${startTimestamp}`));
+      router.push(localePath(`/admin/timesheets/${employeeId}/${startTimestamp}`));
     };
 
     const handleFilterUpdates = () => {

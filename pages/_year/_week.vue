@@ -125,8 +125,6 @@ import {buildWeek, getDateOfISOWeek} from '~/helpers/dates';
 import {Collections} from "~/types/enums";
 
 export default defineComponent({
-  middleware: ['isAuthenticated'],
-
   setup() {
     const {i18n, app} = useContext();
     const router = useRouter();

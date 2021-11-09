@@ -187,8 +187,6 @@ import {recordStatus} from '~/helpers/record-status';
 import {buildEmailData} from '~/helpers/email';
 
 export default defineComponent({
-  middleware: ['isAuthenticated'],
-
   setup() {
     const {i18n, params} = useContext();
     const store = useStore<RootStoreState>();

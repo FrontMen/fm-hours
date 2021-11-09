@@ -200,7 +200,6 @@ import {formatDate, getDayOnGMT} from "~/helpers/dates";
 import {emailRegex} from "~/helpers/email";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
   setup() {
     const { i18n } = useContext();
     const router = useRouter();
