@@ -68,7 +68,6 @@ const createCustomerProjects = (
       customer,
       ids,
       values: hours,
-      isExternal: false,
     };
   });
 };
@@ -99,7 +98,6 @@ const createStandByProject = (
     },
     ids,
     values,
-    isExternal: false,
   };
 };
 
@@ -127,7 +125,6 @@ const createTravelProject = (
     },
     ids,
     values: hours,
-    isExternal: false,
   };
 };
 
@@ -150,7 +147,6 @@ export const createLeaveProject = (
         },
         ids: new Array(hours.length).fill(null),
         values: hours,
-        isExternal: false,
       }
     : null;
 };
@@ -262,18 +258,17 @@ export function kilometerFormatter(min: number, max: number) {
 }
 
 export const getTimeRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
   timesheet.projects.forEach((project) => {
-    if (project.isExternal) return;
-
     project.values.forEach((value, index) => {
+      if (value === 0) return;
+
       timeRecordsToSave.push({
         id: project.ids ? project.ids[index] : null,
-        date: new Date(week[index].date).getTime(),
+        date: new Date(timesheet.week[index].date).getTime(),
         customer: project.customer,
         hours: value,
       });
@@ -284,15 +279,16 @@ export const getTimeRecordsToSave = (
 };
 
 export const getStandByRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): StandbyRecord[] => {
   const standByRecordsToSave: StandbyRecord[] = [];
 
   timesheet.standByProject?.values.forEach((value, index) => {
+    if (value === 0) return;
+
     standByRecordsToSave.push({
       id: timesheet.standByProject?.ids[index] || null,
-      date: new Date(week[index].date).getTime(),
+      date: new Date(timesheet.week[index].date).getTime(),
       hours: value,
     });
   });
@@ -301,15 +297,16 @@ export const getStandByRecordsToSave = (
 };
 
 export const getTravelRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
   timesheet.travelProject?.values.forEach((value, index) => {
+    if (value === 0) return;
+
     travelRecordsToSave.push({
       id: timesheet.travelProject?.ids[index] || null,
-      date: new Date(week[index].date).getTime(),
+      date: new Date(timesheet.week[index].date).getTime(),
       kilometers: value,
     });
   });

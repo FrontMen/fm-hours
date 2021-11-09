@@ -1,7 +1,8 @@
-<template></template>
+<template>
+  <p></p>
+</template>
 
 <script lang="ts">
-
 import {defineComponent, useRouter} from "@nuxtjs/composition-api";
 import {format} from "date-fns";
 

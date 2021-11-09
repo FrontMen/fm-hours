@@ -29,10 +29,9 @@
             v-for="(project) in timesheet.projects"
             :key="project.customer.id"
             :project="project"
-            :readonly="isReadonly || project.isExternal"
+            :readonly="isReadonly"
             :selected-week="timesheet.week"
             :employee="employee"
-            @save="saveTimesheet(recordStatus.NEW)"
             @change="hasUnsavedChanges = true"
           />
 
@@ -115,9 +114,15 @@ import {
 } from '@nuxtjs/composition-api';
 import {startOfISOWeek} from "date-fns";
 import {uuidv4} from '~/helpers/helpers';
-import {createWeeklyTimesheet,} from '~/helpers/timesheet';
+import {
+  createWeeklyTimesheet,
+  getStandByRecordsToSave,
+  getTimeRecordsToSave,
+  getTravelRecordsToSave,
+} from '~/helpers/timesheet';
 import {recordStatus} from '~/helpers/record-status';
 import {buildWeek, getDateOfISOWeek} from '~/helpers/dates';
+import {Collections} from "~/types/enums";
 
 export default defineComponent({
   middleware: ['isAuthenticated'],
@@ -220,7 +225,6 @@ export default defineComponent({
         endDate: new Date(workWeek[6].date).getTime().toString()
       }
 
-      // TODO: get single timesheet
       const [timeRecords, standByRecords, travelRecords, timesheets] = await Promise.all([
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
         app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range},'standby_records'),
@@ -247,9 +251,8 @@ export default defineComponent({
       getTimesheet();
     }, { immediate: true });
 
-    const saveTimesheet = (
+    const saveTimesheet = async (
       newTimesheetStatus: TimesheetStatus,
-      denialMessage?: string
     ) => {
       if(!employee.value) return;
 
@@ -267,19 +270,27 @@ export default defineComponent({
         if (!confirmation) return;
       }
 
-      store.dispatch('records/saveTimesheet', {
-        employeeId: employee.value.id,
-        week: timesheet.value.week,
-        timesheet: timesheet.value,
-      });
+      const employeeId = employee.value.id;
 
-      let reasonOfDenial = '';
-      if (timesheet.value.info) {
-        reasonOfDenial = timesheet.value.info.reasonOfDenial;
-      }
-      if (newTimesheetStatus === recordStatus.DENIED && denialMessage) {
-        reasonOfDenial = denialMessage;
-      }
+      await Promise.all([
+        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
+          employeeId,
+          timeRecords: getTimeRecordsToSave(timesheet.value),
+        }),
+
+        app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>(
+          {
+            employeeId,
+            timeRecords: getStandByRecordsToSave(timesheet.value),
+          },
+          Collections.STANDBYREC
+        ),
+
+        app.$travelRecordsService.saveEmployeeRecords({
+          employeeId,
+          travelRecords: getTravelRecordsToSave(timesheet.value),
+        })
+      ]);
 
       const createNewMessage = (text: string): Message => ({
         id: uuidv4(),
@@ -291,6 +302,10 @@ export default defineComponent({
         ? [...messages.value, createNewMessage(messageInput.value)]
         : [...messages.value];
 
+      let reasonOfDenial = '';
+      if (timesheet.value.info) {
+        reasonOfDenial = timesheet.value.info.reasonOfDenial;
+      }
       const newTimesheet = timesheet.value.info
         ? {
             ...timesheet.value.info,
@@ -308,7 +323,7 @@ export default defineComponent({
             ...(message.value && {message: message.value}),
           };
 
-      store.dispatch('timesheets/saveTimesheet', newTimesheet);
+      await app.$timesheetsService.saveTimesheet(newTimesheet)
     };
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {

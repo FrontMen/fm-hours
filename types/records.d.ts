@@ -37,7 +37,6 @@ interface TimesheetProject {
   customer: Customer;
   values: number[];
   ids: Array<string | null>;
-  isExternal: boolean;
 }
 
 interface WeeklyTimesheet {

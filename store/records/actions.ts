@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {addDays, startOfISOWeek, subDays, isWithinInterval} from 'date-fns';
-import {ActionTree} from 'vuex';
+import {ActionTree} from 'vuex/types';
 
 import {buildWeek, checkNonWorkingDays, getDayOnGMT} from '~/helpers/dates';
 import {
@@ -147,20 +147,9 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       record: TimeRecord | TravelRecord | StandbyRecord
     ) => !isWithinInterval(new Date(record.date), {start, end});
 
-    const timeRecordsToSave = getTimeRecordsToSave(
-      payload.timesheet,
-      payload.week
-    );
-
-    const travelRecordsToSave = getTravelRecordsToSave(
-      payload.timesheet,
-      payload.week
-    );
-
-    const standByRecordsToSave = getStandByRecordsToSave(
-      payload.timesheet,
-      payload.week
-    );
+    const timeRecordsToSave = getTimeRecordsToSave(payload.timesheet);
+    const travelRecordsToSave = getTravelRecordsToSave(payload.timesheet);
+    const standByRecordsToSave = getStandByRecordsToSave(payload.timesheet);
 
     const timeRecords =
       await this.app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
