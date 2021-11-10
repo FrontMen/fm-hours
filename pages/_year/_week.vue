@@ -87,8 +87,8 @@
     <weekly-timesheet-footer
       class="mt-5"
       :has-unsaved-changes="hasUnsavedChanges"
-      :is-saving="recordsState.isSaving"
-      :last-saved="recordsState.lastSaved"
+      :is-saving="isSaving"
+      :last-saved="lastSaved"
       :status="timesheetStatus"
       @save="saveTimesheet(recordStatus.NEW)"
       @submit="submitTimesheet"
@@ -129,11 +129,15 @@ export default defineComponent({
     const {i18n, app} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
+
     const hasUnsavedChanges = ref<Boolean>(false);
+    const isSaving = ref<Boolean>(false);
+    const lastSaved = ref<Date>();
+
     const messageInput = ref('');
+
     const employee = computed(() => store.state.employee.employee);
     const projects = computed(() => store.state.employee.projects);
-    const recordsState = computed(() => store.state.records);
 
     const pageTitle = computed(() =>
       `${i18n.t('timesheets')} - ${employee.value?.name}`
@@ -249,6 +253,11 @@ export default defineComponent({
       getTimesheet();
     }, { immediate: true });
 
+    const setSaving = (saving: boolean) => {
+      lastSaved.value = !saving ? new Date() : lastSaved.value;
+      isSaving.value = saving;
+    }
+
     const saveTimesheet = async (
       newTimesheetStatus: TimesheetStatus,
     ) => {
@@ -268,26 +277,23 @@ export default defineComponent({
         if (!confirmation) return;
       }
 
+      setSaving(true);
+
       const employeeId = employee.value.id;
 
-      await Promise.all([
-        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
-          employeeId,
-          timeRecords: getTimeRecordsToSave(timesheet.value),
-        }),
+      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+      const standByRecordsToSave = getStandByRecordsToSave(timesheet.value);
+      const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
 
-        app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>(
-          {
+      await Promise.all([
+        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({employeeId, timeRecords: timeRecordsToSave }),
+        app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>({
             employeeId,
-            timeRecords: getStandByRecordsToSave(timesheet.value),
+            timeRecords: standByRecordsToSave
           },
           Collections.STANDBYREC
         ),
-
-        app.$travelRecordsService.saveEmployeeRecords({
-          employeeId,
-          travelRecords: getTravelRecordsToSave(timesheet.value),
-        })
+        app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave })
       ]);
 
       const createNewMessage = (text: string): Message => ({
@@ -321,7 +327,9 @@ export default defineComponent({
             ...(message.value && {message: message.value}),
           };
 
-      await app.$timesheetsService.saveTimesheet(newTimesheet)
+      await app.$timesheetsService.saveTimesheet(newTimesheet);
+
+      setSaving(false);
     };
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
@@ -377,7 +385,6 @@ export default defineComponent({
       startDate,
       recordStatus,
       employee,
-      recordsState,
       timesheet,
       showBridgeError,
       projects,
@@ -390,6 +397,8 @@ export default defineComponent({
       showTravel,
       messageInput,
       hasUnsavedChanges,
+      isSaving,
+      lastSaved,
       saveTimesheet,
       setTotals,
       submitTimesheet,
