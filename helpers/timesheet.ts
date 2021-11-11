@@ -264,8 +264,6 @@ export const getTimeRecordsToSave = (
 
   timesheet.projects.forEach((project) => {
     project.values.forEach((value, index) => {
-      if (value === 0) return;
-
       timeRecordsToSave.push({
         id: project.ids ? project.ids[index] : null,
         date: new Date(timesheet.week[index].date).getTime(),
@@ -284,8 +282,6 @@ export const getStandByRecordsToSave = (
   const standByRecordsToSave: StandbyRecord[] = [];
 
   timesheet.standByProject?.values.forEach((value, index) => {
-    if (value === 0) return;
-
     standByRecordsToSave.push({
       id: timesheet.standByProject?.ids[index] || null,
       date: new Date(timesheet.week[index].date).getTime(),
@@ -302,8 +298,6 @@ export const getTravelRecordsToSave = (
   const travelRecordsToSave: TravelRecord[] = [];
 
   timesheet.travelProject?.values.forEach((value, index) => {
-    if (value === 0) return;
-
     travelRecordsToSave.push({
       id: timesheet.travelProject?.ids[index] || null,
       date: new Date(timesheet.week[index].date).getTime(),

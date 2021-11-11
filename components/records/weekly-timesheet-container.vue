@@ -1,6 +1,5 @@
 <i18n lang="yaml">
   en:
-    notActive: "Not active for employee"
     TODAY: "today"
     TDY: "tdy"
     T: "t"
@@ -14,7 +13,6 @@
     PTD: "ptd"
     P: "p"
   nl:
-    notActive: "Niet actief voor huidige medewerker"
     TODAY: "vandaag"
     TDY: "vdg"
     T: "V"
@@ -29,54 +27,43 @@
     P: "Dt"
 </i18n>
 <template>
-  <div>
-    <h3
-      v-if="title"
-      class="mt-5 mb-3 d-inline-block"
-      :class="{ 'inactive-section text-danger': !active }"
-      :title="$t('notActive')"
-    >
-      {{ title }}
-      <b-icon-exclamation-triangle v-if="!active" variant="danger" />
-    </h3>
-    <div class="weekly-timesheet" :class="{ 'inactive-section': !active }">
-      <b-container fluid>
-        <b-row cols="14">
-          <b-col class="weekly-timesheet__action-column" cols="4" />
+  <div class="weekly-timesheet">
+    <b-container fluid>
+      <b-row cols="14">
+        <b-col class="weekly-timesheet__action-column" cols="4" />
 
-          <b-col
-            v-for="date in selectedWeek"
-            :key="date.weekDay"
-            cols="1"
-            class="weekly-timesheet__date-column"
-          >
-            <span v-if="shouldShowCaption(date)" class="caption text-uppercase">
-              {{ $t(getCaptionText(date)) }}
+        <b-col
+          v-for="date in selectedWeek"
+          :key="date.weekDay"
+          cols="1"
+          class="weekly-timesheet__date-column"
+        >
+          <span v-if="shouldShowCaption(date)" class="caption text-uppercase">
+            {{ $t(getCaptionText(date)) }}
+          </span>
+
+          <strong class="d-block text-capitalize">
+            <span class="d-md-none">
+              {{$d(new Date(date.date), 'dayNarrow')}}
             </span>
+            <span class="d-none d-md-block">
+              {{$d(new Date(date.date), 'dayShort')}}
+            </span>
+          </strong>
 
-            <strong class="d-block text-capitalize">
-              <span class="d-md-none">
-                {{$d(new Date(date.date), 'dayNarrow')}}
-              </span>
-              <span class="d-none d-md-block">
-                {{$d(new Date(date.date), 'dayShort')}}
-              </span>
-            </strong>
+          <small>
+            <span class="d-none d-md-inline">
+              {{$d(new Date(date.date), 'dateMonth')}}
+            </span>
+            <span class="d-md-none">{{$d(new Date(date.date), 'date')}}</span>
+          </small>
+        </b-col>
 
-            <small>
-              <span class="d-none d-md-inline">
-                {{$d(new Date(date.date), 'dateMonth')}}
-              </span>
-              <span class="d-md-none">{{$d(new Date(date.date), 'date')}}</span>
-            </small>
-          </b-col>
+        <b-col cols="1" />
+      </b-row>
 
-          <b-col cols="1" />
-        </b-row>
-
-        <slot name="rows" />
-      </b-container>
-    </div>
+      <slot name="rows" />
+    </b-container>
   </div>
 </template>
 
@@ -87,14 +74,6 @@ import { recordDayStatus, recordDayStatusProps } from '~/helpers/record-status'
 
 export default defineComponent({
   props: {
-    title: {
-      type: String,
-      default: null,
-    },
-    active: {
-      type: Boolean,
-      default: true,
-    },
     selectedWeek: {
       type: Array as PropType<WeekDate[]>,
       default: () => [],
@@ -137,9 +116,6 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.inactive-section {
-  opacity: 0.5;
-}
 .weekly-timesheet {
   background-color: var(--color-primary);
   color: var(--color-primary-text);

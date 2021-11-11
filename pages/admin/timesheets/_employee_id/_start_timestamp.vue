@@ -45,7 +45,7 @@
 
     <form action="javascript:void(0);">
       <template v-if="timesheet.projects.length">
-        <weekly-timesheet :selected-week="recordsState.selectedWeek">
+        <weekly-timesheet-container :selected-week="recordsState.selectedWeek">
           <template #rows>
             <weekly-timesheet-row
               v-for="(project, index) in timesheet.projects"
@@ -65,7 +65,7 @@
               @totals="setTotals"
             />
           </template>
-        </weekly-timesheet>
+        </weekly-timesheet-container>
 
         <template v-if="showStandby">
           <weekly-timesheet

@@ -23,10 +23,10 @@
     <navigation-buttons class="mb-5" :start-date="startDate" />
 
     <form action="javascript:void(0);">
-      <weekly-timesheet :selected-week="timesheet.week">
+      <weekly-timesheet-container :selected-week="timesheet.week">
         <template #rows>
           <weekly-timesheet-row-hours
-            v-for="(project) in timesheet.projects"
+            v-for="(project) in projectsOrdered"
             :key="project.customer.id"
             :project="project"
             :readonly="isReadonly"
@@ -60,7 +60,7 @@
             @totals="setTotals"
           />
         </template>
-      </weekly-timesheet>
+      </weekly-timesheet-container>
 
       <div v-if="message || messages" class="mt-4">
         <comment-block v-if="!!message" :text="message" />
@@ -186,6 +186,15 @@ export default defineComponent({
         employee &&
         employee.value?.travelAllowance &&
         timesheet.value.travelProject
+    );
+
+    // Show client projects first (alphabetic) and then default projects available for everyone
+    const projectsOrdered = computed(() =>
+       timesheet?.value?.projects.sort(({ customer: customerA }, { customer: customerB }) => {
+         // Casting because TS doesn't like to subtract booleans
+         const defaultCompare = +customerA.isDefault - +customerB.isDefault;
+         return defaultCompare !== 0 ? defaultCompare : customerA.name.localeCompare(customerB.name);
+       })
     );
 
     const { year, week } = router.currentRoute.params;
@@ -387,6 +396,7 @@ export default defineComponent({
       recordStatus,
       employee,
       timesheet,
+      projectsOrdered,
       showBridgeError,
       projects,
       timesheetStatus,
