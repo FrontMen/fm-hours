@@ -281,6 +281,7 @@ export default defineComponent({
 
       const employeeId = employee.value.id;
 
+      // TODO: there doesn't seem to be a reason to save all of these when hasUnsavedChanges is false
       const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
       const standByRecordsToSave = getStandByRecordsToSave(timesheet.value);
       const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
@@ -327,7 +328,7 @@ export default defineComponent({
             ...(message.value && {message: message.value}),
           };
 
-      await app.$timesheetsService.saveTimesheet(newTimesheet);
+      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
 
       setSaving(false);
     };
