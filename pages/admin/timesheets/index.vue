@@ -112,12 +112,10 @@
         </div>
       </template>
       <template #cell()="scope">
-        <div
+        <nuxt-link
           :class="['container--cell', scope.item[scope.field.key]]"
           :title="$t(scope.item[scope.field.key])"
-          @click="
-            openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
-          "
+          :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
         />
       </template>
     </b-table>
@@ -261,6 +259,7 @@ export default defineComponent({
 }
 
 .container--cell {
+  display: block;
   margin: auto;
   height: 30px;
   width: 30px;

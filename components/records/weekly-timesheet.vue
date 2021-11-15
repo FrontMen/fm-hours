@@ -130,7 +130,14 @@ export default defineComponent({
 
     const messageInput = ref('');
 
-    const projects = computed(() => store.state.employee.projects);
+    const projects = computed(() => {
+      if(employee.id === store.state.employee.employee?.id) {
+        return store.state.employee.projects;
+      } else {
+        // TODO: fetch projects, similar to employee/actions.ts getEmployee line 36
+        return [];
+      }
+    });
 
     const message = computed(
       () => timesheet.value.info?.message
