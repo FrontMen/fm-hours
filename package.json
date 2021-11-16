@@ -85,7 +85,7 @@
     "sass": "~1.32.13",
     "sass-loader": "10.2.0",
     "standard-version": "9.3.2",
-    "ts-jest": "27.0.5",
+    "ts-jest": "27.0.7",
     "ts-node": "10.4.0",
     "vercel": "^23.1.2",
     "vue-jest": "3.0.7",
