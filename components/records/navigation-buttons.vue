@@ -48,6 +48,10 @@ export default defineComponent({
       type: Date,
       default: false
     },
+    routePrefix: {
+      type: String,
+      default: ''
+    }
   },
   emits: ['previous', 'next', 'current'],
   setup(props) {
@@ -56,9 +60,9 @@ export default defineComponent({
     const start = computed(() => startOfISOWeek(getDayOnGMT(props.startDate)));
     const end = computed(() => addDays(start.value, 6));
     const weekNr = computed(() => getISOWeek(start.value));
-    const currURL = computed(() => format(new Date(), '/yyyy/I'));
-    const prevURL = computed(() => format(addWeeks(start.value, -1), '/yyyy/I'));
-    const nextURL = computed(() => format(addWeeks(start.value, 1), '/yyyy/I'));
+    const currURL = computed(() => props.routePrefix + format(new Date(), '/yyyy/I'));
+    const prevURL = computed(() => props.routePrefix + format(addWeeks(start.value, -1), '/yyyy/I'));
+    const nextURL = computed(() => props.routePrefix + format(addWeeks(start.value, 1), '/yyyy/I'));
 
     const weekLabel = computed(() => {
       if (!props.startDate) return '';

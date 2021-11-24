@@ -12,7 +12,18 @@ nl:
       {{ $t('workschemeError') }}
     </b-alert>
 
-    <navigation-buttons class="mb-5" :start-date="startDate" />
+    <navigation-buttons
+      class="mb-5"
+      :start-date="startDate"
+      :route-prefix="routePrefix"
+    />
+
+    <weekly-timesheet-messages
+      v-if="timesheet.info"
+      :comments="timesheet.info.messages"
+      :readonly="isReadonly"
+      @add="addMessage"
+    ></weekly-timesheet-messages>
 
     <weekly-timesheet-container :selected-week="timesheet.week">
       <template #rows>
@@ -53,41 +64,21 @@ nl:
       </template>
     </weekly-timesheet-container>
 
-    <div v-if="message || messages" class="mt-4">
-      <comment-block v-if="!!message" :text="message" />
-      <comment-block
-        v-for="msg in messages"
-        :key="msg.id"
-        :text="msg.text"
-        :date="msg.createdAt"
-      />
-    </div>
-
-    <b-form-textarea
-      v-if="!isReadonly && timesheet.projects.length"
-      id="message-textarea"
-      v-model="messageInput"
-      class="mt-4"
-      :placeholder="$t('addComment')"
-      rows="1"
-      max-rows="4"
-      @change="hasUnsavedChanges = true"
-    />
-
     <weekly-timesheet-footer
       class="mt-5"
       :has-unsaved-changes="hasUnsavedChanges"
       :is-saving="isSaving"
       :last-saved="lastSaved"
       :status="timesheetStatus"
-      @save="saveTimesheet(recordStatus.NEW)"
-      @submit="submitTimesheet"
-      @unsubmit="saveTimesheet(recordStatus.NEW)"
+      :is-admin="isAdmin"
+      @save="handleSave"
+      @submit="handleSubmit"
+      @unsubmit="handleUnsubmit"
+      @approve="handleApprove"
+      @deny="handleDeny"
+      @unapprove="handleUnapprove"
+      @reminder="handleReminder"
     />
-
-    <b-alert :show="timesheetDenyMessage !== ''" variant="danger" class="my-3">
-      {{ timesheetDenyMessage }}
-    </b-alert>
   </div>
 </template>
 
@@ -104,6 +95,7 @@ import {
 } from "~/helpers/timesheet";
 import {Collections} from "~/types/enums";
 import {uuidv4} from "~/helpers/helpers";
+import {createDenialEmal, createReminderEmail} from "~/helpers/email";
 
 export default defineComponent({
   props: {
@@ -118,6 +110,14 @@ export default defineComponent({
     week: {
       type: Number,
       required: true
+    },
+    isAdmin: {
+      type: Boolean,
+      default: false
+    },
+    routePrefix: {
+      type: String,
+      default: undefined
     }
   },
   setup({employee, year, week}) {
@@ -128,26 +128,22 @@ export default defineComponent({
     const isSaving = ref<Boolean>(false);
     const lastSaved = ref<Date>();
 
-    const messageInput = ref('');
+    const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
+    const customers = computed(() => store.state.customers.customers);
+
+    // Fetch all customers if we haven't fetched them before
+    if(customers.value.length === 0) {
+      store.dispatch("customers/getCustomers");
+    }
 
     const projects = computed(() => {
-      if(employee.id === store.state.employee.employee?.id) {
-        return store.state.employee.projects;
-      } else {
-        // TODO: fetch projects, similar to employee/actions.ts getEmployee line 36
-        return [];
-      }
+      const employeeCustomers = customers.value.filter((customer) => employee.projects.includes(customer.id));
+      return [...employeeCustomers, ...defaultCustomers.value];
     });
 
-    const message = computed(
-      () => timesheet.value.info?.message
-    );
     const showBridgeError = computed(() => {
       return !!store.state.records.errorMessageWorkscheme;
     });
-    const timesheetDenyMessage = computed(
-      () => timesheet.value.info?.reasonOfDenial || ''
-    );
     const timesheetStatus = computed(() => {
       return timesheet.value.info ? timesheet.value.info.status: (recordStatus.NEW as TimesheetStatus);
     });
@@ -196,10 +192,6 @@ export default defineComponent({
       workScheme: []
     });
 
-    const messages = ref<Message[]>(
-      timesheet.value.info?.messages || []
-    );
-
     const totals = ref<TimesheetTotals>({
       weekTotal: 0,
       expectedWeekTotal: 0,
@@ -241,18 +233,12 @@ export default defineComponent({
       });
     }
 
-    const saveTimesheet = async (
-      newTimesheetStatus: TimesheetStatus,
-    ) => {
+    const saveRecords = async () => {
       if(!employee) return;
 
-      if (
-        newTimesheetStatus === timesheetStatus.value &&
-        !hasUnsavedChanges.value
-      )
-        return;
+      if (!hasUnsavedChanges.value) return;
 
-      if (newTimesheetStatus === recordStatus.NEW && hasRestDayHours.value) {
+      if (hasRestDayHours.value) {
         const confirmation = confirm(
           'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
         );
@@ -264,7 +250,6 @@ export default defineComponent({
 
       const employeeId = employee.id;
 
-      // TODO: there doesn't seem to be a reason to save all of these when hasUnsavedChanges is false
       const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
       const standByRecordsToSave = getStandByRecordsToSave(timesheet.value);
       const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
@@ -280,48 +265,56 @@ export default defineComponent({
         app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave })
       ]);
 
-      const createNewMessage = (text: string): Message => ({
-        id: uuidv4(),
-        createdAt: new Date().getTime(),
-        text,
-      });
-
-      const newMessages = messageInput.value
-        ? [...messages.value, createNewMessage(messageInput.value)]
-        : [...messages.value];
-
-      let reasonOfDenial = '';
-      if (timesheet.value.info) {
-        reasonOfDenial = timesheet.value.info.reasonOfDenial;
-      }
-      const newTimesheet = timesheet.value.info
-        ? {
-          ...timesheet.value.info,
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && {message: message.value}),
-        }
-        : {
-          employeeId,
-          date: new Date(timesheet.value.week[0].date).getTime(),
-          status: newTimesheetStatus,
-          reasonOfDenial,
-          messages: newMessages,
-          ...(message.value && {message: message.value}),
-        };
-
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
-
       lastSaved.value = new Date();
       isSaving.value = false;
     };
+
+    const changeStatus = async (status: TimesheetStatus,) => {
+      // TODO: creating a new timesheet should be extracted
+      const newTimesheet = timesheet.value.info
+        ? {
+          ...timesheet.value.info,
+          status,
+        }
+        : {
+          employeeId: employee.id,
+          date: new Date(timesheet.value.week[0].date).getTime(),
+          status,
+          messages: []
+        };
+
+      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
+    }
+
+    const addMessage = async (message: string) => {
+      const newMessage = {
+        id: uuidv4(),
+        createdAt: new Date().getTime(),
+        text: message,
+      };
+
+      const newTimesheet = timesheet.value.info
+        ? {
+          ...timesheet.value.info,
+          messages: [...timesheet.value.info?.messages, newMessage]
+        }
+        : {
+          employeeId: employee.id,
+          date: new Date(timesheet.value.week[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [newMessage]
+        };
+
+      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
+    }
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals.value = calculatedTotals;
     };
 
-    const submitTimesheet = () => {
+    const handleSave = saveRecords;
+
+    const handleSubmit = () => {
       let confirmation = true;
 
       if (totals.value.weekTotal > totals.value.expectedWeekTotal && !showBridgeError) {
@@ -359,32 +352,57 @@ export default defineComponent({
 
       if (!confirmation) return;
 
-      saveTimesheet(recordStatus.PENDING as TimesheetStatus);
+      saveRecords();
+      changeStatus(recordStatus.PENDING as TimesheetStatus);
+    };
+
+    const handleUnsubmit = () => changeStatus(recordStatus.NEW as TimesheetStatus);
+
+    const handleApprove = () => changeStatus(recordStatus.APPROVED as TimesheetStatus);
+
+    const handleDeny = async () => {
+      await app.$mailService.sendMail(createDenialEmal({
+        employee,
+        week: timesheet.value.week
+      }));
+
+      await changeStatus(recordStatus.DENIED as TimesheetStatus);
+    };
+
+    const handleUnapprove = () => changeStatus(recordStatus.NEW as TimesheetStatus);
+
+    const handleReminder = async () => {
+      const startDate = new Date(timesheet.value?.week[0].date).getTime();
+
+      await app.$mailService.sendMail(createReminderEmail({
+        employee,
+        startDate,
+      }));
     };
 
     getTimesheet();
 
     return {
       startDate,
-      recordStatus,
       timesheet,
       projectsOrdered,
       showBridgeError,
-      projects,
       timesheetStatus,
       isReadonly,
-      messages,
-      message,
-      timesheetDenyMessage,
       showStandby,
       showTravel,
-      messageInput,
       hasUnsavedChanges,
       isSaving,
       lastSaved,
-      saveTimesheet,
       setTotals,
-      submitTimesheet,
+      handleSave,
+      handleSubmit,
+      handleUnsubmit,
+      handleApprove,
+      handleDeny,
+      handleUnapprove,
+      handleReminder,
+      addMessage
     };
   }
 });

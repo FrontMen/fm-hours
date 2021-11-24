@@ -32,15 +32,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         });
       }
 
-      // Add project details
-      const [employeeProjects, defaultProjects] = await Promise.all([
-        await this.app.$customersService.getCustomersByIds(employee.projects),
-        await this.app.$customersService.getDefaultCustomers(),
-      ]);
-
-      const projects = [...employeeProjects, ...defaultProjects];
-
-      commit('setEmployee', {employee, isAdmin, projects});
+      commit('setEmployee', {employee, isAdmin});
 
       return employee;
     } catch (error) {

@@ -127,7 +127,6 @@ import {
   ref,
   computed,
   defineComponent,
-  useRouter,
   useStore,
   useContext,
   useMeta,
@@ -141,7 +140,7 @@ import {TimesheetStatus} from "~/types/enums";
 
 export default defineComponent({
   setup() {
-    const { i18n, localePath } = useContext();
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -182,14 +181,6 @@ export default defineComponent({
         return {value: field.timestamp, text: dateLabel};
       }).filter(option => option);
     });
-
-    const router = useRouter();
-    const openEmployeeTimesheetPage = (
-      employeeId: string,
-      startTimestamp: number
-    ) => {
-      router.push(localePath(`/admin/timesheets/${employeeId}/${startTimestamp}`));
-    };
 
     const handleFilterUpdates = () => {
       if (store.getters["filters/getTimesheetFilterBy"] !== selected.value) {
@@ -238,7 +229,6 @@ export default defineComponent({
       filter: getSelected,
       sortDescending,
       recordStatus,
-      openEmployeeTimesheetPage,
       tableData,
       sortCompare,
       reminderOptions,

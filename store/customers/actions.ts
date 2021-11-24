@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex';
+import {ActionTree} from 'vuex/types';
 
 const actions: ActionTree<CustomersStoreState, RootStoreState> = {
   async getCustomers({commit}) {

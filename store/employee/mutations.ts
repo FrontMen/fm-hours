@@ -1,13 +1,9 @@
-import {MutationTree} from 'vuex';
+import {MutationTree} from 'vuex/types';
 
 const mutations: MutationTree<EmployeeStoreState> = {
-  setEmployee: (
-    state,
-    payload: {employee: Employee; isAdmin: boolean; projects: Customer[]}
-  ) => {
+  setEmployee: (state, payload: {employee: Employee; isAdmin: boolean}) => {
     state.employee = payload.employee;
     state.isAdmin = payload.isAdmin;
-    state.projects = payload.projects;
   },
 };
 

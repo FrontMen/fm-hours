@@ -13,7 +13,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         commit('setUser', await extractUserFromAuthUser(user));
         return true;
       }
-    } catch (error: any) {
+    } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Something went wrong while Login');
       throw new Error(error);
