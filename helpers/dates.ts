@@ -118,6 +118,7 @@ export function getDayOnGMT(initialZonedValue: Date | number | string) {
   );
 }
 
+// TODO: refactor this because it is really unclear
 export function getDateOfISOWeek(year: number, week: number, day: number) {
   const startDayOfYear = startOfYear(new Date(year, 0, 1));
   const diff = day - getDay(startDayOfYear);

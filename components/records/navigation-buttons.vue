@@ -73,7 +73,7 @@ export default defineComponent({
     });
 
     const isCurrentWeek = computed(() => {
-      if (!props.startDate) return 0;
+      if (!props.startDate) return false;
 
       const today = new Date();
 
