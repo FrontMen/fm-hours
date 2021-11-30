@@ -312,7 +312,13 @@ export default defineComponent({
       totals.value = calculatedTotals;
     };
 
-    const handleSave = saveRecords;
+    const handleSave = () => {
+      if(timesheetStatus.value === recordStatus.DENIED) {
+        changeStatus(recordStatus.NEW as TimesheetStatus);
+      }
+
+      saveRecords();
+    }
 
     const handleSubmit = () => {
       let confirmation = true;

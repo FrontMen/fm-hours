@@ -53,7 +53,6 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['previous', 'next', 'current'],
   setup(props) {
     const {i18n} = useContext();
 
