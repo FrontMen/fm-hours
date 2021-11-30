@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {addDays, startOfISOWeek, subDays, isWithinInterval} from 'date-fns';
-import {ActionTree} from 'vuex/types';
+import type {ActionTree} from 'vuex';
 
 import {buildWeek, checkNonWorkingDays, getDayOnGMT} from '~/helpers/dates';
 import {
@@ -53,7 +53,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
           startDate: new Date(workWeek[0].date),
           endDate: new Date(workWeek[6].date),
         });
-      } catch (error: any) {
+      } catch (error) {
         commit(
           'setErrorMessageWorkscheme',
           error.response

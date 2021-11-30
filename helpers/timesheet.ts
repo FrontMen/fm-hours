@@ -41,6 +41,7 @@ const createCustomerProjects = (
       customers.push(timeRecord.customer);
     }
   });
+
   // Add all availableCustomers as well
   availableCustomers.forEach((customer) => {
     if (!customers.some((x) => x.id === customer.id)) {
