@@ -12,8 +12,10 @@ import {timesheetFormatter} from "~/helpers/timesheet";
 
 export default defineComponent({
   setup() {
+    const MAX_HOURS_PER_DAY = 24;
+
     return {
-      timesheetFormatter: timesheetFormatter(24)
+      timesheetFormatter: timesheetFormatter(MAX_HOURS_PER_DAY)
     }
   }
 });

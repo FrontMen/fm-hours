@@ -9,19 +9,19 @@
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button-group class="navigation-buttons__date-group">
-        <b-button :to="prevURL">
+        <b-button :to="localePath(prevWeekURL)">
           <b-icon icon="arrow-left" />
         </b-button>
 
         <b-button
           :disabled="isCurrentWeek"
           class="text-capitalize"
-          :to="currURL"
+          :to="localePath(currWeekURL)"
         >
           {{$t('today')}}
         </b-button>
 
-        <b-button :to="nextURL">
+        <b-button :to="localePath(nextWeekURL)">
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
@@ -59,9 +59,9 @@ export default defineComponent({
     const start = computed(() => startOfISOWeek(getDayOnGMT(props.startDate)));
     const end = computed(() => addDays(start.value, 6));
     const weekNr = computed(() => getISOWeek(start.value));
-    const currURL = computed(() => props.routePrefix + format(new Date(), '/yyyy/I'));
-    const prevURL = computed(() => props.routePrefix + format(addWeeks(start.value, -1), '/yyyy/I'));
-    const nextURL = computed(() => props.routePrefix + format(addWeeks(start.value, 1), '/yyyy/I'));
+    const currWeekURL = computed(() => props.routePrefix + format(new Date(), '/yyyy/I'));
+    const prevWeekURL = computed(() => props.routePrefix + format(addWeeks(start.value, -1), '/yyyy/I'));
+    const nextWeekURL = computed(() => props.routePrefix + format(addWeeks(start.value, 1), '/yyyy/I'));
 
     const weekLabel = computed(() => {
       if (!props.startDate) return '';
@@ -84,9 +84,9 @@ export default defineComponent({
     return {
       weekLabel,
       isCurrentWeek,
-      currURL,
-      prevURL,
-      nextURL,
+      currWeekURL,
+      prevWeekURL,
+      nextWeekURL,
     };
   }
 });

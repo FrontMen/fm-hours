@@ -50,7 +50,7 @@
 import {
   computed,
   defineComponent, PropType,
-  ref,
+  ref, watch,
 } from '@nuxtjs/composition-api';
 import {format} from "date-fns";
 
@@ -77,9 +77,16 @@ export default defineComponent({
         }))
     );
 
+    // Clear the input when we get new comments
+    watch(
+      () => props.comments,
+      () => {
+        messageInput.value = ''
+      }
+    );
+
     const onAddCommentClick = () => {
       emit('add', messageInput.value);
-      messageInput.value = '';
     };
 
     return {

@@ -12,8 +12,10 @@ import {kilometerFormatter} from "~/helpers/timesheet";
 
 export default defineComponent({
   setup() {
+    const MAX_KILOMETERS_PER_DAY = 9999;
+
     return {
-      kilometerFormatter: kilometerFormatter(0, 9999),
+      kilometerFormatter: kilometerFormatter(0, MAX_KILOMETERS_PER_DAY),
     }
   }
 });
