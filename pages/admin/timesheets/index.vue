@@ -112,12 +112,10 @@
         </div>
       </template>
       <template #cell()="scope">
-        <div
+        <nuxt-link
           :class="['container--cell', scope.item[scope.field.key]]"
           :title="$t(scope.item[scope.field.key])"
-          @click="
-            openEmployeeTimesheetPage(scope.item.id, scope.field.timestamp)
-          "
+          :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
         />
       </template>
     </b-table>
@@ -129,7 +127,6 @@ import {
   ref,
   computed,
   defineComponent,
-  useRouter,
   useStore,
   useContext,
   useMeta,
@@ -142,10 +139,8 @@ import {recordStatus} from "~/helpers/record-status";
 import {TimesheetStatus} from "~/types/enums";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
-
   setup() {
-    const { i18n, localePath } = useContext();
+    const { i18n } = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -186,14 +181,6 @@ export default defineComponent({
         return {value: field.timestamp, text: dateLabel};
       }).filter(option => option);
     });
-
-    const router = useRouter();
-    const openEmployeeTimesheetPage = (
-      employeeId: string,
-      startTimestamp: number
-    ) => {
-      router.push(localePath(`/timesheets/${employeeId}/${startTimestamp}`));
-    };
 
     const handleFilterUpdates = () => {
       if (store.getters["filters/getTimesheetFilterBy"] !== selected.value) {
@@ -242,7 +229,6 @@ export default defineComponent({
       filter: getSelected,
       sortDescending,
       recordStatus,
-      openEmployeeTimesheetPage,
       tableData,
       sortCompare,
       reminderOptions,
@@ -263,6 +249,7 @@ export default defineComponent({
 }
 
 .container--cell {
+  display: block;
   margin: auto;
   height: 30px;
   width: 30px;

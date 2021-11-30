@@ -118,7 +118,7 @@
         <div class="ml-auto d-flex">
           <nuxt-link
             class="btn btn-info"
-            :to="localePath(`/employees/${employee.id}`)"
+            :to="localePath(`/admin/employees/${employee.id}`)"
           >
             {{$t('manageEmployee')}}
           </nuxt-link>
@@ -169,15 +169,12 @@ import {
   useContext,
 } from "@nuxtjs/composition-api";
 
-import {validateEmail} from "../../helpers/validation";
+import {validateEmail} from "~/helpers/validation";
 import {formatDate} from "~/helpers/dates";
 import {checkEmployeeAvailability} from "~/helpers/employee";
 import {queryOnString} from "~/helpers/helpers";
 
 export default defineComponent({
-
-  middleware: ["isAdmin"],
-
   setup() {
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();

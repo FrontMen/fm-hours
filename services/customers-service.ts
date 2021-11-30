@@ -1,5 +1,7 @@
 import {NuxtFireInstance} from '@nuxtjs/firebase';
+import firebase from 'firebase';
 import {Collections} from '~/types/enums';
+import FieldPath = firebase.firestore.FieldPath;
 
 export default class CustomersService {
   fire: NuxtFireInstance;
@@ -18,6 +20,19 @@ export default class CustomersService {
     }));
   }
 
+  async getCustomersByIds(ids: Array<String>) {
+    const ref = this.fire.firestore
+      .collection(Collections.CUSTOMERS)
+      .where(FieldPath.documentId(), 'in', ids);
+
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
+  }
+
   async addCustomer(customer: Omit<Customer, 'id'>) {
     const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
     const {id} = await ref.add(customer);
@@ -28,10 +43,10 @@ export default class CustomersService {
     };
   }
 
-  async getCustomersAvailableToAll() {
+  async getDefaultCustomers() {
     const ref = this.fire.firestore
       .collection(Collections.CUSTOMERS)
-      .where('availableToAll', '==', true);
+      .where('isDefault', '==', true);
     const snapshot = await ref.get();
 
     return snapshot.docs.map((res: any) => ({

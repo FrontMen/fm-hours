@@ -18,7 +18,10 @@
     <template v-else>
       <b-container class="mb-5">
         <div class="mb-5">
-          <nuxt-link :to="localePath('/customers')" class="btn btn-primary">
+          <nuxt-link
+            :to="localePath('/admin/customers')"
+            class="btn btn-primary"
+          >
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
             {{$t('customers')}}
           </nuxt-link>
@@ -111,7 +114,6 @@ import {
 import { format } from "date-fns";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
   setup() {
     const { i18n } = useContext();
     const router = useRouter();

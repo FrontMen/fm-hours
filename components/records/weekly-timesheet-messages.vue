@@ -2,11 +2,9 @@
   en:
     AddComment: "Add comment"
     Comments: "Comments"
-    SaveComment: "Save comment"
   nl:
     AddComment: "Notitie toevoegen"
     Comments: "Comments"
-    SaveComment: "Save comment"
 </i18n>
 
 <template>
@@ -14,7 +12,7 @@
     <b-row align-h="end" class="m-2">
       <b-dropdown offset="-160">
         <template #button-content>
-          {{ $t("Comments") }}
+          {{ $t("Comments") }} ({{formatedComments.length}})
         </template>
         <div>
           <b-dropdown-text
@@ -28,27 +26,19 @@
             </p>
             <b-dropdown-divider></b-dropdown-divider>
           </b-dropdown-text>
-          <b-button
-            class="addComment"
-            style="width: 260px;"
-            @click="onAddCommentClick"
-          >
-            {{ $t("AddComment") }}
-          </b-button>
         </div>
 
-        <b-dropdown-form v-if="showCommentForm">
+        <b-dropdown-form v-if="!readonly">
           <b-form-group label-for="dropdown-form-comment" @submit.stop.prevent>
             <b-form-textarea
               id="dropdown-form-comment"
               v-model="messageInput"
               placeholder="add your comment"
               rows="3"
-              @change="handleChange"
             ></b-form-textarea>
           </b-form-group>
-          <b-button variant="primary" size="sm" @click="handleSaveClick">
-            {{ $t("SaveComment") }}
+          <b-button variant="primary" size="sm" @click="onAddCommentClick">
+            {{ $t("AddComment") }}
           </b-button>
         </b-dropdown-form>
       </b-dropdown>
@@ -59,61 +49,53 @@
 <script lang="ts">
 import {
   computed,
-  defineComponent,
-  ref,
-  useStore,
+  defineComponent, PropType,
+  ref, watch,
 } from '@nuxtjs/composition-api';
 import {format} from "date-fns";
-import { uuidv4 } from '~/helpers/helpers';
-
 
 export default defineComponent({
-  emits: ['save'],
+  props: {
+    comments: {
+      type: Array as PropType<Message[]>,
+      required: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    }
+  },
+  emits: ['add'],
 
-  setup(_, {emit}) {
-    const store = useStore<RootStoreState>();
+  setup(props, {emit}) {
     const messageInput = ref('');
-    const hasUnsavedChanges = ref<Boolean>(false);
-    const showCommentForm = ref<Boolean>(false);
-    const comments = computed(() => store.state.timesheets?.timesheets[0]?.messages || []);
-    const formatedComments = computed(() => comments.value
+
+    const formatedComments = computed(() => props.comments
         .map((comment) => ({
           ...comment,
-          createdAt: formatDate(comment.createdAt),
+          createdAt: format(comment.createdAt, "dd/MM/yyyy HH:mm"),
         }))
     );
 
-    const formatDate = (timestamp: number) => format(timestamp, "dd/MM/yyyy HH:mm");
-    const handleSaveClick = () => {
-      messageInput.value = '';
-      showCommentForm.value = false;
-      emit('save')
-    };
-    const handleChange = () => emit('changeInput', [...comments.value, createNewMessage(messageInput.value)]);
-    const createNewMessage = (text: string): Message => ({
-        id: uuidv4(),
-        createdAt: new Date().getTime(),
-        text,
-      });
+    // Clear the input when we get new comments
+    watch(
+      () => props.comments,
+      () => {
+        messageInput.value = ''
+      }
+    );
+
     const onAddCommentClick = () => {
-      showCommentForm.value = true;
-    };
-    const onSaveCommentClick = () => {
-      showCommentForm.value = false;
+      emit('add', messageInput.value);
     };
 
     return {
       onAddCommentClick,
-      onSaveCommentClick,
-      handleSaveClick,
-      handleChange,
-      hasUnsavedChanges,
       formatedComments,
-      showCommentForm,
       messageInput
     }
   },
-  })
+})
 </script>
 
 <style lang="scss">
@@ -136,11 +118,6 @@ export default defineComponent({
 
 .dateFormat {
   font-size: smaller;
-}
-
-.addComment {
-  margin: 0 auto;
-  display: block;
 }
 
 #dropdown-form-comment {

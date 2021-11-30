@@ -75,8 +75,6 @@ import useMonthlyKilometersReport from '~/composables/useMonthlyKilometersReport
 import useMonthlyStandByReport from '~/composables/useMonthlyStandbyReport';
 
 export default defineComponent({
-  middleware: ['isAdmin'],
-
   setup() {
     const {i18n} = useContext();
 

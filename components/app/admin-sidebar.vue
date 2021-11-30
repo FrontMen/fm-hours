@@ -42,22 +42,22 @@ export default defineComponent({
         icon: "house",
       },
       {
-        href: "/customers",
+        href: "/admin/customers",
         name: "customers",
         icon: "building",
       },
       {
-        href: "/employees",
+        href: "/admin/employees",
         name: "employees",
         icon: "people",
       },
       {
-        href: "/timesheets",
+        href: "/admin/timesheets",
         name: "timesheets",
         icon: "calendar",
       },
       {
-        href: "/reports",
+        href: "/admin/reports",
         name: "reports",
         icon: "file-bar-graph",
       },

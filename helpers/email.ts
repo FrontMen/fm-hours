@@ -1,9 +1,8 @@
 import {format} from 'date-fns';
 
-interface BuildEmailDataProps {
+interface DenialEmailProps {
   employee: Employee;
   week: WeekDate[];
-  denialMessage: string;
 }
 
 interface ReminderEmailProps {
@@ -35,17 +34,12 @@ const buildEmail = ({employee, content, subject}: BuildEmailProps) => {
 
 const getDayLabel = (day: WeekDate) => `${day.monthDay}/${day.month}`;
 
-export const buildEmailData = ({
-  employee,
-  week,
-  denialMessage,
-}: BuildEmailDataProps) => {
+export const createDenialEmal = ({employee, week}: DenialEmailProps) => {
   const startDate = getDayLabel(week[0]);
   const endDate = getDayLabel(week[6]);
 
   const content = `
-  <p>Your timesheet for <strong>${startDate}</strong> to <strong>${endDate}</strong> has been denied with the following reason:</p>
-  <blockquote cite="Frontmen Hours Team" style="padding: 15px; background: #eee; border-radius: 5px;">${denialMessage}</blockquote>
+  <p>Your timesheet for <strong>${startDate}</strong> to <strong>${endDate}</strong> has been denied.</p>
   <p>Please amend your timesheet & submit it again.</p>
   `;
 

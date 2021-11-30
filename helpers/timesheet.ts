@@ -1,50 +1,55 @@
-import {isSameDay, isWithinInterval, getISOWeek} from 'date-fns';
+import {isSameDay, getISOWeek, getYear} from 'date-fns';
 
 import {recordStatus} from './record-status';
 import {getDayOnGMT, formatDate} from './dates';
 
 export const createWeeklyTimesheet = (params: {
+  sheet: Timesheet;
   week: WeekDate[];
+  projects: Customer[];
   timeRecords: TimeRecord[];
-  leaveDays: TimesheetProject | null;
   travelRecords: TravelRecord[];
   standByRecords: StandbyRecord[];
   workScheme: WorkScheme[];
 }): WeeklyTimesheet => {
-  const start = new Date(params.week[0].date);
-  const end = new Date(params.week[6].date);
-
-  const isWithinCurrentWeek = (
-    record: TimeRecord | TravelRecord | StandbyRecord
-  ) => isWithinInterval(new Date(record.date), {start, end});
-
-  const weeklyCustomers: Customer[] = [];
-  const weeklyTimeRecords = params.timeRecords.filter(isWithinCurrentWeek);
-  const weeklyTravelRecords = params.travelRecords.filter(isWithinCurrentWeek);
-  const weeklyStandByRecords =
-    params.standByRecords.filter(isWithinCurrentWeek);
-
-  weeklyTimeRecords.forEach((timeRecord) => {
-    if (!weeklyCustomers.some((x) => x.id === timeRecord.customer.id)) {
-      weeklyCustomers.push(timeRecord.customer);
-    }
-  });
-
   return {
+    info: params.sheet,
+    week: params.week,
     projects:
-      createCustomerProjects(params.week, weeklyCustomers, weeklyTimeRecords) ||
-      [],
-    leaveDays: params.leaveDays,
-    travelProject: createTravelProject(params.week, weeklyTravelRecords),
-    standByProject: createStandByProject(params.week, weeklyStandByRecords),
+      createCustomerProjects(
+        params.week,
+        params.timeRecords,
+        params.projects
+      ) || [],
+    leaveDays: createLeaveProject(params.week, params.workScheme),
+    travelProject: createTravelProject(params.week, params.travelRecords),
+    standByProject: createStandByProject(params.week, params.standByRecords),
+    workScheme: params.workScheme,
   };
 };
 
 const createCustomerProjects = (
   week: WeekDate[],
-  customers: Customer[],
-  timeRecords: TimeRecord[]
+  timeRecords: TimeRecord[],
+  availableCustomers: Customer[]
 ): TimesheetProject[] => {
+  const customers: Customer[] = [];
+
+  // Get customers from timeRecords
+  timeRecords.forEach((timeRecord) => {
+    if (!customers.some((x) => x.id === timeRecord.customer.id)) {
+      customers.push(timeRecord.customer);
+    }
+  });
+
+  // Add all availableCustomers as well
+  availableCustomers.forEach((customer) => {
+    if (!customers.some((x) => x.id === customer.id)) {
+      customers.push(customer);
+    }
+  });
+
+  // Add records to the right customers
   return customers.map((customer) => {
     const projectRecords = timeRecords.filter(
       (x) => x.customer.id === customer.id
@@ -64,7 +69,6 @@ const createCustomerProjects = (
       customer,
       ids,
       values: hours,
-      isExternal: false,
     };
   });
 };
@@ -95,7 +99,6 @@ const createStandByProject = (
     },
     ids,
     values,
-    isExternal: false,
   };
 };
 
@@ -123,7 +126,6 @@ const createTravelProject = (
     },
     ids,
     values: hours,
-    isExternal: false,
   };
 };
 
@@ -146,7 +148,6 @@ export const createLeaveProject = (
         },
         ids: new Array(hours.length).fill(null),
         values: hours,
-        isExternal: false,
       }
     : null;
 };
@@ -258,18 +259,15 @@ export function kilometerFormatter(min: number, max: number) {
 }
 
 export const getTimeRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): TimeRecord[] => {
   const timeRecordsToSave: TimeRecord[] = [];
 
   timesheet.projects.forEach((project) => {
-    if (project.isExternal) return;
-
     project.values.forEach((value, index) => {
       timeRecordsToSave.push({
         id: project.ids ? project.ids[index] : null,
-        date: new Date(week[index].date).getTime(),
+        date: new Date(timesheet.week[index].date).getTime(),
         customer: project.customer,
         hours: value,
       });
@@ -280,15 +278,14 @@ export const getTimeRecordsToSave = (
 };
 
 export const getStandByRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): StandbyRecord[] => {
   const standByRecordsToSave: StandbyRecord[] = [];
 
   timesheet.standByProject?.values.forEach((value, index) => {
     standByRecordsToSave.push({
       id: timesheet.standByProject?.ids[index] || null,
-      date: new Date(week[index].date).getTime(),
+      date: new Date(timesheet.week[index].date).getTime(),
       hours: value,
     });
   });
@@ -297,15 +294,14 @@ export const getStandByRecordsToSave = (
 };
 
 export const getTravelRecordsToSave = (
-  timesheet: WeeklyTimesheet,
-  week: WeekDate[]
+  timesheet: WeeklyTimesheet
 ): TravelRecord[] => {
   const travelRecordsToSave: TravelRecord[] = [];
 
   timesheet.travelProject?.values.forEach((value, index) => {
     travelRecordsToSave.push({
       id: timesheet.travelProject?.ids[index] || null,
-      date: new Date(week[index].date).getTime(),
+      date: new Date(timesheet.week[index].date).getTime(),
       kilometers: value,
     });
   });
@@ -348,6 +344,7 @@ export const createTimesheetTableData = (params: {
     formatedStartDate: week.start.formatedDate,
     formatedEndDate: week.end.formatedDate,
     weekNumber: getISOWeek(week.start.date),
+    year: getYear(week.start.date),
   }));
 
   const fields = [

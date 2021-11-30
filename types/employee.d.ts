@@ -16,4 +16,5 @@ interface Employee {
 interface EmployeeStoreState {
   employee: Employee | null;
   isAdmin: boolean;
+  projects: Customer[];
 }

@@ -35,7 +35,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       commit('setEmployee', {employee, isAdmin});
 
       return employee;
-    } catch (error: any) {
+    } catch (error) {
       throw new Error(error);
     }
   },

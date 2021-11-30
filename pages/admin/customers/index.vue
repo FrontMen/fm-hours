@@ -111,7 +111,7 @@
       <template #cell(actions)="scope">
         <div class="text-right">
           <nuxt-link
-            :to="localePath(`/customers/${scope.item.id}`)"
+            :to="localePath(`/admin/customers/${scope.item.id}`)"
             class="btn btn-primary align-self-center"
             :title="$t('manageCustomer')"
           >
@@ -161,8 +161,6 @@ import {
 import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
-
   setup() {
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();
