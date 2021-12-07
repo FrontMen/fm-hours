@@ -1,7 +1,11 @@
 <i18n lang="yaml">
   en:
+    previousHint: "Or use keyboard left to go to previous week"
+    nextHint: "Or use keyboard right to go to next week"
     today: "today"
   nl:
+    previousHint: "Of gebruikt de pijltjestoets links om naar vorige week te navigeren"
+    nextHint: "Of gebruikt de pijltjestoets rechts om naar volgende week te navigeren"
     today: "vandaag"
 </i18n>
 
@@ -9,7 +13,11 @@
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button-group class="navigation-buttons__date-group">
-        <b-button :to="localePath(prevWeekURL)">
+        <b-button
+          v-b-tooltip.hover
+          :title="$t('previousHint')"
+          :to="localePath(prevWeekURL)"
+        >
           <b-icon icon="arrow-left" />
         </b-button>
 
@@ -21,7 +29,11 @@
           {{$t('today')}}
         </b-button>
 
-        <b-button :to="localePath(nextWeekURL)">
+        <b-button
+          v-b-tooltip.hover
+          :title="$t('nextHint')"
+          :to="localePath(nextWeekURL)"
+        >
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
@@ -37,9 +49,11 @@ import {
   computed,
   defineComponent,
   useContext,
+  useRouter,
+  onMounted
 } from '@nuxtjs/composition-api';
-import {addWeeks, getISOWeek, startOfISOWeek, format} from 'date-fns';
-import differenceInCalendarWeeks from 'date-fns/differenceInCalendarWeeks';
+import {addWeeks, getISOWeek, startOfISOWeek, format, differenceInCalendarWeeks} from 'date-fns';
+import hotkeys from 'hotkeys-js';
 import {getDayOnGMT, addDays} from '~/helpers/dates';
 
 export default defineComponent({
@@ -55,6 +69,7 @@ export default defineComponent({
   },
   setup(props) {
     const {i18n} = useContext();
+    const router = useRouter();
 
     const start = computed(() => startOfISOWeek(getDayOnGMT(props.startDate)));
     const end = computed(() => addDays(start.value, 6));
@@ -81,6 +96,11 @@ export default defineComponent({
       return diff === 0;
     });
 
+    onMounted(() => {
+      hotkeys('right', () => { router.push(nextWeekURL.value); });
+      hotkeys('left', () => { router.push(prevWeekURL.value); });
+    });
+
     return {
       weekLabel,
       isCurrentWeek,
@@ -88,7 +108,11 @@ export default defineComponent({
       prevWeekURL,
       nextWeekURL,
     };
-  }
+  },
+  beforeDestroy() {
+    hotkeys.unbind('right');
+    hotkeys.unbind('left');
+  },
 });
 </script>
 
