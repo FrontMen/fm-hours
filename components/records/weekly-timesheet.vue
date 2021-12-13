@@ -132,7 +132,7 @@ export default defineComponent({
     const customers = computed(() => store.state.customers.customers);
 
     // Fetch all customers if we haven't fetched them before
-    if(customers.value.length === 0) {
+    if (customers.value.length === 0) {
       store.dispatch("customers/getCustomers");
     }
 
@@ -145,7 +145,7 @@ export default defineComponent({
       return !!store.state.records.errorMessageWorkscheme;
     });
     const timesheetStatus = computed(() => {
-      return timesheet.value.info ? timesheet.value.info.status: (recordStatus.NEW as TimesheetStatus);
+      return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
     });
 
     const isReadonly = computed(
@@ -171,7 +171,7 @@ export default defineComponent({
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet?.value?.projects.sort(({ customer: customerA }, { customer: customerB }) => {
+      timesheet?.value?.projects.sort(({customer: customerA}, {customer: customerB}) => {
         // Casting because TS doesn't like to subtract booleans
         const defaultCompare = +customerA.isDefault - +customerB.isDefault;
         return defaultCompare !== 0 ? defaultCompare : customerA.name.localeCompare(customerB.name);
@@ -199,7 +199,7 @@ export default defineComponent({
     });
 
     const getTimesheet = async () => {
-      if(!employee) return;
+      if (!employee) return;
 
       const employeeId = employee.id;
 
@@ -213,7 +213,7 @@ export default defineComponent({
 
       const [timeRecords, standByRecords, travelRecords, timesheets] = await Promise.all([
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
-        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range},'standby_records'),
+        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
         app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
       ]);
@@ -234,7 +234,7 @@ export default defineComponent({
     }
 
     const saveRecords = async () => {
-      if(!employee) return;
+      if (!employee) return;
 
       if (!hasUnsavedChanges.value) return;
 
@@ -255,15 +255,18 @@ export default defineComponent({
       const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
 
       await Promise.all([
-        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({employeeId, timeRecords: timeRecordsToSave }),
+        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({employeeId, timeRecords: timeRecordsToSave}),
         app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>({
             employeeId,
             timeRecords: standByRecordsToSave
           },
           Collections.STANDBYREC
         ),
-        app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave })
+        app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave})
       ]);
+
+      // TODO: use the responses from the save above instead of getting the entire timesheet again
+      await getTimesheet();
 
       lastSaved.value = new Date();
       isSaving.value = false;
@@ -313,7 +316,7 @@ export default defineComponent({
     };
 
     const handleSave = () => {
-      if(timesheetStatus.value === recordStatus.DENIED) {
+      if (timesheetStatus.value === recordStatus.DENIED) {
         changeStatus(recordStatus.NEW as TimesheetStatus);
       }
 
