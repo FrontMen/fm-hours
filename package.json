@@ -7,7 +7,7 @@
     "yarn": "<2"
   },
   "scripts": {
-    "dev": "nuxt --dotenv .env.dev",
+    "dev": "nuxt",
     "vercel": "vercel dev",
     "build": "nuxt build && nuxt generate",
     "start": "nuxt start",
@@ -50,6 +50,7 @@
     "@nuxt/typescript-build": "2.1.0",
     "@nuxtjs/axios": "5.13.6",
     "@nuxtjs/composition-api": "0.30.0",
+    "@nuxtjs/dotenv": "^1.4.1",
     "@nuxtjs/eslint-config": "7.0.0",
     "@nuxtjs/eslint-config-typescript": "7.0.2",
     "@nuxtjs/eslint-module": "3.0.2",
