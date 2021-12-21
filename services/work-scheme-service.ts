@@ -1,6 +1,6 @@
-// import {format} from 'date-fns';
+import {format} from 'date-fns';
 
-import {NuxtAxiosInstance} from '@nuxtjs/axios';
+import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 
 export default class WorkSchemeService {
   axios: NuxtAxiosInstance;
@@ -9,35 +9,20 @@ export default class WorkSchemeService {
     this.axios = axios;
   }
 
-  getWorkScheme(params: {
+  async getWorkScheme(params: {
     bridgeUid: string;
     startDate: Date;
     endDate: Date;
-  }): Promise<WorkScheme[] | undefined> {
+  }): Promise<WorkScheme[]> {
     const {bridgeUid, startDate, endDate} = params;
 
-    // eslint-disable-next-line no-console
-    console.log(bridgeUid, startDate, endDate);
-
-    return Promise.resolve(undefined);
-
-    // const response = await this.axios.$get<WorkSchemeResponse>(
-    //   `/api/v1/users/${bridgeUid}/worktime?date_from=${format(
-    //     startDate,
-    //     'yyyy-MM-dd'
-    //   )}&date_to=${format(endDate, 'yyyy-MM-dd')}`,
-    //   {
-    //     withCredentials: true,
-    //   }
-    // );
-
-    // /* map API response to expected format */
-    // return response.data.map((ws) => ({
-    //   date: ws.date,
-    //   theoreticalHours: ws.theoretical_hours,
-    //   absenceHours: ws.absence_hours,
-    //   workHours: ws.work_hours,
-    //   holiday: !!ws.holiday,
-    // }));
+    const path = `/api/bridge/workscheme/${bridgeUid}`;
+    const {data} = await this.axios.$get<WorkSchemeResponse>(path, {
+      params: {
+        date_from: format(startDate, 'yyyy-MM-dd'),
+        date_to: format(endDate, 'yyyy-MM-dd'),
+      },
+    });
+    return data;
   }
 }

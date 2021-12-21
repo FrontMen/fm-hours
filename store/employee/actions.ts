@@ -18,16 +18,12 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       // Retrieve BridgeUid if we haven't done this before
       if (!employee.bridgeUid) {
-        const {
-          data: {bridgeUid},
-        } = await this.$axios.get<{bridgeUid: string}>('/api/user/me', {
-          headers: {Authorization: user.samlToken},
-        });
+        employee.bridgeUid = await this.app.$bridgeService.getMe();
 
         await employeesService.updateEmployee({
           ...employee!,
           picture: employee.picture || generateAvatarURL(employee.name),
-          bridgeUid: employee.bridgeUid || bridgeUid,
+          bridgeUid: employee.bridgeUid,
           standBy: employee.standBy || false,
         });
       }

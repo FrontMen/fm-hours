@@ -83,7 +83,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, useContext, useStore} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -121,12 +121,14 @@ export default defineComponent({
     }
   },
   setup({employee, year, week}) {
-    const {i18n, app} = useContext();
+    const {i18n, app, localePath} = useContext();
     const store = useStore<RootStoreState>();
+    const router = useRouter();
 
     const hasUnsavedChanges = ref<Boolean>(false);
     const isSaving = ref<Boolean>(false);
     const lastSaved = ref<Date>();
+    const showBridgeError = ref<Boolean>(false);
 
     const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
@@ -141,9 +143,6 @@ export default defineComponent({
       return [...employeeCustomers, ...defaultCustomers.value];
     });
 
-    const showBridgeError = computed(() => {
-      return !!store.state.records.errorMessageWorkscheme;
-    });
     const timesheetStatus = computed(() => {
       return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
     });
@@ -205,6 +204,23 @@ export default defineComponent({
 
       const workWeek = buildWeek(startOfISOWeek(startDate));
 
+      let workScheme: WorkScheme[] = [];
+
+      try {
+        workScheme = await app.$workSchemeService.getWorkScheme({
+          bridgeUid: employee.bridgeUid || '',
+          startDate: new Date(workWeek[0].date),
+          endDate: new Date(workWeek[6].date),
+        });
+        showBridgeError.value = false;
+      } catch ({response}) {
+        if (response.status === 401) {
+          await logout();
+        } else {
+          showBridgeError.value = true;
+        }
+      }
+
       const startEpoch = new Date(workWeek[0].date).getTime()
       const range = {
         startDate: new Date(workWeek[0].date).getTime().toString(),
@@ -218,9 +234,6 @@ export default defineComponent({
         app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
       ]);
 
-      // TODO: implement workscheme logic
-      const workScheme: WorkScheme[] = [];
-
       // Combine everything in a single timesheet
       timesheet.value = createWeeklyTimesheet({
         sheet: timesheets[0],
@@ -232,6 +245,11 @@ export default defineComponent({
         workScheme,
       });
     }
+
+    const logout = async () => {
+      const authState = await store.dispatch('auth/logout');
+      if (authState) router.push(localePath('/login'));
+    };
 
     const saveRecords = async () => {
       if (!employee) return;
@@ -326,7 +344,7 @@ export default defineComponent({
     const handleSubmit = () => {
       let confirmation = true;
 
-      if (totals.value.weekTotal > totals.value.expectedWeekTotal && !showBridgeError) {
+      if (totals.value.weekTotal > totals.value.expectedWeekTotal && !showBridgeError.value) {
         const difference = +(
           totals.value.weekTotal - totals.value.expectedWeekTotal
         ).toFixed(2);
@@ -355,7 +373,7 @@ export default defineComponent({
           }
         );
 
-        if (daysExceedingExpected.length && !showBridgeError)
+        if (daysExceedingExpected.length && !showBridgeError.value)
           confirmation = confirm(i18n.t('dayError') as string);
       }
 
