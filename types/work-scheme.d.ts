@@ -7,17 +7,8 @@ interface WorkScheme {
   holiday: boolean;
 }
 
-interface ApiWorkSchema {
-  absence_hours: number;
-  date: string;
-  holiday: 0 | 1;
-  present_hours: number;
-  theoretical_hours: number;
-  work_hours: number;
-}
-
 interface WorkSchemeResponse {
   status: number;
   message: string;
-  data: ApiWorkSchema[];
+  data: WorkScheme[];
 }

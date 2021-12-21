@@ -36,9 +36,14 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       return;
     }
 
-    commit('setUser', await extractUserFromAuthUser(authUser));
+    const user = await extractUserFromAuthUser(authUser);
+    commit('setUser', user);
 
-    if (!process.server) dispatch('employee/getEmployee', {}, {root: true});
+    await this.$axios.$get('/api/bridge/auth', {
+      headers: {Authorization: user?.samlToken || ''},
+    });
+
+    dispatch('employee/getEmployee', {}, {root: true});
   },
 };
 

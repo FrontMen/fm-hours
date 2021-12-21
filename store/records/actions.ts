@@ -46,23 +46,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const workWeek = buildWeek(startOfISOWeek(payload.startDate));
     let workSchemeResult: WorkScheme[] | undefined;
 
-    if (payload.bridgeUid) {
-      try {
-        workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-          bridgeUid: payload.bridgeUid,
-          startDate: new Date(workWeek[0].date),
-          endDate: new Date(workWeek[6].date),
-        });
-      } catch (error) {
-        commit(
-          'setErrorMessageWorkscheme',
-          error.response
-            ? 'An unexpected error happened while trying to retrieve WorkScheme'
-            : error.message
-        );
-      }
-    }
-
     const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
     const leaveDays: WeekDate[] = selectedWeek.filter(
@@ -98,7 +81,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     });
   },
 
-  async goToWeek(
+  goToWeek(
     {commit, state},
     payload: {to: 'current' | 'next' | 'previous'; bridgeUid?: string}
   ) {
@@ -114,13 +97,6 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
     const workWeek = buildWeek(startOfISOWeek(newStartDate));
 
     let workSchemeResult: WorkScheme[] | undefined;
-    if (payload.bridgeUid) {
-      workSchemeResult = await this.app.$workSchemeService.getWorkScheme({
-        bridgeUid: payload.bridgeUid,
-        startDate: new Date(workWeek[0].date),
-        endDate: new Date(workWeek[6].date),
-      });
-    }
 
     const selectedWeek = checkNonWorkingDays(workWeek, workSchemeResult);
 
