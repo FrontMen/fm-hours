@@ -53,7 +53,7 @@ nl:
     <weekly-timesheet-container
       v-if="showStandby || showTravel"
       :show-header="false"
-      class="mt-2"
+      class="mt-4"
     >
       <template #rows>
         <weekly-timesheet-row-hours
