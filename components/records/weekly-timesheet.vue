@@ -216,7 +216,6 @@ export default defineComponent({
       } catch ({response}) {
         if (response.status === 401) {
           await logout();
-          return;
         } else {
           showBridgeError.value = true;
         }
