@@ -37,6 +37,10 @@ nl:
           @change="hasUnsavedChanges = true"
         />
 
+        <weekly-timesheet-row-leave
+          :workscheme="timesheet.workScheme"
+        ></weekly-timesheet-row-leave>
+
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
           :selected-week="timesheet.week"
