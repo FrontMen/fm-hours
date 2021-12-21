@@ -132,7 +132,7 @@ export default defineComponent({
       default: undefined
     }
   },
-  setup({employee, year, week}) {
+  setup({employee, year, week}: { employee: Employee, year: Number, week: Number }) {
     const {i18n, app, localePath} = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
@@ -157,6 +157,10 @@ export default defineComponent({
 
     const timesheetStatus = computed(() => {
       return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
+    });
+
+    const isOwnTimesheet = computed(() => {
+      return store.state.employee.employee?.id === employee.id;
     });
 
     const isReadonly = computed(
@@ -221,7 +225,7 @@ export default defineComponent({
       const startEpoch = new Date(workWeek[0].date).getTime();
       const [sheet] = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
 
-      if (!sheet || sheet.status === recordStatus.NEW) {
+      if ((!sheet || sheet.status === recordStatus.NEW) && isOwnTimesheet.value) {
         try {
           workScheme = await app.$workSchemeService.getWorkScheme({
             bridgeUid: employee.bridgeUid || '',
