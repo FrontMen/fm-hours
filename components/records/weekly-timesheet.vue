@@ -206,37 +206,41 @@ export default defineComponent({
 
       let workScheme: WorkScheme[] = [];
 
-      try {
-        workScheme = await app.$workSchemeService.getWorkScheme({
-          bridgeUid: employee.bridgeUid || '',
-          startDate: new Date(workWeek[0].date),
-          endDate: new Date(workWeek[6].date),
-        });
-        showBridgeError.value = false;
-      } catch ({response}) {
-        if (response.status === 401) {
-          await logout();
-        } else {
-          showBridgeError.value = true;
+      const startEpoch = new Date(workWeek[0].date).getTime()
+      const [sheet] = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
+
+      if (sheet.status === recordStatus.NEW) {
+        try {
+          workScheme = await app.$workSchemeService.getWorkScheme({
+            bridgeUid: employee.bridgeUid || '',
+            startDate: new Date(workWeek[0].date),
+            endDate: new Date(workWeek[6].date),
+          });
+          showBridgeError.value = false;
+        } catch ({response}) {
+          if (response.status === 401) {
+            await logout();
+          } else {
+            showBridgeError.value = true;
+          }
         }
       }
 
-      const startEpoch = new Date(workWeek[0].date).getTime()
       const range = {
         startDate: new Date(workWeek[0].date).getTime().toString(),
         endDate: new Date(workWeek[6].date).getTime().toString()
       }
 
-      const [timeRecords, standByRecords, travelRecords, timesheets] = await Promise.all([
+      const [timeRecords, standByRecords, travelRecords] = await Promise.all([
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
         app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
-        app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
+
       ]);
 
       // Combine everything in a single timesheet
       timesheet.value = createWeeklyTimesheet({
-        sheet: timesheets[0],
+        sheet,
         week: workWeek,
         projects: projects.value,
         timeRecords,
