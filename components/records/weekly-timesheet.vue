@@ -218,10 +218,10 @@ export default defineComponent({
 
       let workScheme: WorkScheme[] = [];
 
-      const startEpoch = new Date(workWeek[0].date).getTime()
-      const [sheet] = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
+      const startEpoch = new Date(workWeek[0].date).getTime();
+      const [sheet] = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
 
-      if (sheet.status === recordStatus.NEW) {
+      if (!sheet || sheet.status === recordStatus.NEW) {
         try {
           workScheme = await app.$workSchemeService.getWorkScheme({
             bridgeUid: employee.bridgeUid || '',
@@ -247,7 +247,6 @@ export default defineComponent({
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
         app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
-
       ]);
 
       // Combine everything in a single timesheet
