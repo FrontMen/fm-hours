@@ -13,7 +13,7 @@ nl:
     </b-alert>
 
     <navigation-buttons
-      class="mb-5"
+      class="mb-3"
       :start-date="startDate"
       :route-prefix="routePrefix"
     />
@@ -37,6 +37,21 @@ nl:
           @change="hasUnsavedChanges = true"
         />
 
+        <weekly-timesheet-totals-row
+          :projects="timesheet.projects"
+          :selected-week="timesheet.week"
+          :work-scheme="timesheet.workScheme"
+          @totals="setTotals"
+        />
+      </template>
+    </weekly-timesheet-container>
+
+    <weekly-timesheet-container
+      v-if="showStandby || showTravel"
+      :show-header="false"
+      class="mt-2"
+    >
+      <template #rows>
         <weekly-timesheet-row-hours
           v-if="showStandby"
           :project="timesheet.standByProject"
@@ -53,13 +68,6 @@ nl:
           :selected-week="timesheet.week"
           :employee="employee"
           @change="hasUnsavedChanges = true"
-        />
-
-        <weekly-timesheet-totals-row
-          :projects="timesheet.projects"
-          :selected-week="timesheet.week"
-          :work-scheme="timesheet.workScheme"
-          @totals="setTotals"
         />
       </template>
     </weekly-timesheet-container>
