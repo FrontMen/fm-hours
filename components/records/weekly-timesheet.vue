@@ -2,18 +2,20 @@
 en:
   workschemeError: "Could not get workschema data. Holidays, leave, or total hours will not be shown correctly, but you can still fill in and submit your timesheet"
   addComment: "Add a comment here."
+  restDayHours: "You have added hours on weekends or holidays, are you sure you want to save this timesheet?"
 nl:
   workschemeError: "Kan het werkschema, vakantiedagen en totalen niet ophalen van de server. Je kan nog steeds je uren registreren."
   addComment: "Notitie toevoegen"
+  restDayHours: "Je hebt uren geschreven in het weekend of op een vrije dag, weet je zeker dat je de timesheet wil opslaan?"
 </i18n>
 <template>
-  <div>
+  <div v-if="!isLoading">
     <b-alert :show="showBridgeError" dismissible variant="warning" class="mb-3">
       {{ $t('workschemeError') }}
     </b-alert>
 
     <navigation-buttons
-      class="mb-5"
+      class="mb-3"
       :start-date="startDate"
       :route-prefix="routePrefix"
     />
@@ -37,6 +39,25 @@ nl:
           @change="hasUnsavedChanges = true"
         />
 
+        <weekly-timesheet-row-leave
+          :workscheme="timesheet.workScheme"
+        ></weekly-timesheet-row-leave>
+
+        <weekly-timesheet-totals-row
+          :projects="timesheet.projects"
+          :selected-week="timesheet.week"
+          :work-scheme="timesheet.workScheme"
+          @totals="setTotals"
+        />
+      </template>
+    </weekly-timesheet-container>
+
+    <weekly-timesheet-container
+      v-if="showStandby || showTravel"
+      :show-header="false"
+      class="mt-4"
+    >
+      <template #rows>
         <weekly-timesheet-row-hours
           v-if="showStandby"
           :project="timesheet.standByProject"
@@ -53,13 +74,6 @@ nl:
           :selected-week="timesheet.week"
           :employee="employee"
           @change="hasUnsavedChanges = true"
-        />
-
-        <weekly-timesheet-totals-row
-          :projects="timesheet.projects"
-          :selected-week="timesheet.week"
-          :work-scheme="timesheet.workScheme"
-          @totals="setTotals"
         />
       </template>
     </weekly-timesheet-container>
@@ -120,10 +134,12 @@ export default defineComponent({
       default: undefined
     }
   },
-  setup({employee, year, week}) {
+  setup({employee, year, week}: { employee: Employee, year: number, week: number }) {
     const {i18n, app, localePath} = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
+
+    const isLoading = ref<Boolean>(true);
 
     const hasUnsavedChanges = ref<Boolean>(false);
     const isSaving = ref<Boolean>(false);
@@ -206,37 +222,57 @@ export default defineComponent({
 
       let workScheme: WorkScheme[] = [];
 
-      try {
-        workScheme = await app.$workSchemeService.getWorkScheme({
-          bridgeUid: employee.bridgeUid || '',
-          startDate: new Date(workWeek[0].date),
-          endDate: new Date(workWeek[6].date),
-        });
-        showBridgeError.value = false;
-      } catch ({response}) {
-        if (response.status === 401) {
-          await logout();
-        } else {
-          showBridgeError.value = true;
+      const startEpoch = new Date(workWeek[0].date).getTime();
+
+      const sheets = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
+
+      let sheet: Optional<Timesheet, 'id'>;
+      sheet = sheets[0];
+
+      if (!sheet) {
+        sheet = {
+          employeeId: employee.id,
+          date: new Date(workWeek[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [],
         }
       }
 
-      const startEpoch = new Date(workWeek[0].date).getTime()
+      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
+
+      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
+        try {
+          workScheme = await app.$workSchemeService.getWorkScheme({
+            bridgeUid: employee.bridgeUid || '',
+            startDate: new Date(workWeek[0].date),
+            endDate: new Date(workWeek[6].date),
+          });
+          showBridgeError.value = false;
+        } catch ({response}) {
+          if (response.status === 401) {
+            await logout();
+          } else {
+            showBridgeError.value = true;
+          }
+        }
+      } else {
+        workScheme = sheet.workscheme || [];
+      }
+
       const range = {
         startDate: new Date(workWeek[0].date).getTime().toString(),
         endDate: new Date(workWeek[6].date).getTime().toString()
       }
 
-      const [timeRecords, standByRecords, travelRecords, timesheets] = await Promise.all([
+      const [timeRecords, standByRecords, travelRecords] = await Promise.all([
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
         app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
-        app.$timesheetsService.getTimesheets({employeeId, date: startEpoch})
       ]);
 
       // Combine everything in a single timesheet
       timesheet.value = createWeeklyTimesheet({
-        sheet: timesheets[0],
+        sheet,
         week: workWeek,
         projects: projects.value,
         timeRecords,
@@ -244,6 +280,8 @@ export default defineComponent({
         standByRecords,
         workScheme,
       });
+
+      isLoading.value = false;
     }
 
     const logout = async () => {
@@ -257,9 +295,7 @@ export default defineComponent({
       if (!hasUnsavedChanges.value) return;
 
       if (hasRestDayHours.value) {
-        const confirmation = confirm(
-          'You have add hours on weekends or holidays, are you sure you want to save this timesheet?'
-        );
+        const confirmation = confirm(i18n.t('restDayHours') as string);
 
         if (!confirmation) return;
       }
@@ -290,43 +326,35 @@ export default defineComponent({
       isSaving.value = false;
     };
 
-    const changeStatus = async (status: TimesheetStatus,) => {
-      // TODO: creating a new timesheet should be extracted
-      const newTimesheet = timesheet.value.info
-        ? {
-          ...timesheet.value.info,
-          status,
-        }
-        : {
-          employeeId: employee.id,
-          date: new Date(timesheet.value.week[0].date).getTime(),
-          status,
-          messages: []
-        };
+    const saveTimesheet = async () => {
+      const sheet = {
+        ...timesheet.value.info,
+        workscheme: timesheet.value.workScheme
+      } as Optional<Timesheet, 'id'>;
 
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
+      timesheet.value.info = await app.$timesheetsService.saveTimesheet(sheet);
+    }
+
+    const changeStatus = async (status: TimesheetStatus,) => {
+      if (timesheet.value.info === null) return;
+
+      timesheet.value.info.status = status;
+
+      await saveTimesheet();
     }
 
     const addMessage = async (message: string) => {
+      if (timesheet.value.info === null) return;
+
       const newMessage = {
         id: uuidv4(),
         createdAt: new Date().getTime(),
         text: message,
       };
 
-      const newTimesheet = timesheet.value.info
-        ? {
-          ...timesheet.value.info,
-          messages: [...timesheet.value.info?.messages, newMessage]
-        }
-        : {
-          employeeId: employee.id,
-          date: new Date(timesheet.value.week[0].date).getTime(),
-          status: recordStatus.NEW as TimesheetStatus,
-          messages: [newMessage]
-        };
+      timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];
 
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(newTimesheet);
+      await saveTimesheet();
     }
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
@@ -363,15 +391,15 @@ export default defineComponent({
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.value.dayTotal.filter(
-          (hoursInDay, index) => {
-            const weekendHours =
-              !timesheet.value?.workScheme[index] && hoursInDay;
-            const exceedsExpectedHours =
-              timesheet.value?.workScheme[index]?.workHours;
-            return hoursInDay > exceedsExpectedHours || weekendHours;
-          }
-        );
+        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay, index) => {
+          const workSchemeDay = timesheet.value.workScheme?.[index];
+
+          if (!workSchemeDay) return false;
+
+          const weekendHours = !workSchemeDay && hoursInDay;
+          const exceedsExpectedHours = workSchemeDay?.workHours;
+          return hoursInDay > exceedsExpectedHours || weekendHours;
+        });
 
         if (daysExceedingExpected.length && !showBridgeError.value)
           confirmation = confirm(i18n.t('dayError') as string);
@@ -410,6 +438,7 @@ export default defineComponent({
     getTimesheet();
 
     return {
+      isLoading,
       startDate,
       timesheet,
       projectsOrdered,

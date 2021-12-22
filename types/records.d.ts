@@ -18,6 +18,7 @@ interface StandbyRecord {
   hours: number;
   employeeId?: string;
 }
+
 interface TimeRecord {
   id: string | null;
   date: number;
@@ -40,13 +41,13 @@ interface TimesheetProject {
 }
 
 interface WeeklyTimesheet {
-  info: Timesheet | null;
+  info: Optional<Timesheet, 'id'> | null;
   week: WeekDate[];
   projects: TimesheetProject[];
   leaveDays: TimesheetProject | null;
   travelProject: TimesheetProject | null;
   standByProject: TimesheetProject | null;
-  workScheme: WorkScheme[];
+  workScheme: WorkScheme[] | null;
 }
 
 interface RecordsStoreState {

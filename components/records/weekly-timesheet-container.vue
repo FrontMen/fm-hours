@@ -1,36 +1,36 @@
 <i18n lang="yaml">
-  en:
-    TODAY: "today"
-    TDY: "tdy"
-    T: "t"
-    HOLIDAY: "holiday"
-    HOLI: "holi"
-    H: "h"
-    LEAVE: "leave"
-    LVD: "lvd"
-    L: "l"
-    PART-TIME: "part-time"
-    PTD: "ptd"
-    P: "p"
-  nl:
-    TODAY: "vandaag"
-    TDY: "vdg"
-    T: "V"
-    HOLIDAY: "Vakantie"
-    HOLI: "Vak"
-    H: "Vk"
-    LEAVE: "Verlof"
-    LVD: "Vlf"
-    L: "Vf"
-    PART-TIME: "Deeltijd"
-    PTD: "Dt"
-    P: "Dt"
+en:
+  TODAY: "today"
+  TDY: "tdy"
+  T: "t"
+  HOLIDAY: "holiday"
+  HOLI: "holi"
+  H: "h"
+  LEAVE: "leave"
+  LVD: "lvd"
+  L: "l"
+  PART-TIME: "part-time"
+  PTD: "ptd"
+  P: "p"
+nl:
+  TODAY: "vandaag"
+  TDY: "vdg"
+  T: "V"
+  HOLIDAY: "Vakantie"
+  HOLI: "Vak"
+  H: "Vk"
+  LEAVE: "Verlof"
+  LVD: "Vlf"
+  L: "Vf"
+  PART-TIME: "Deeltijd"
+  PTD: "Dt"
+  P: "Dt"
 </i18n>
 <template>
-  <div class="weekly-timesheet">
+  <div class="weekly-timesheet" :class="{ 'weekly-timesheet--no-header': !showHeader }">
     <b-container fluid>
-      <b-row cols="14">
-        <b-col class="weekly-timesheet__action-column" cols="4" />
+      <b-row v-if="showHeader" cols="14">
+        <b-col class="weekly-timesheet__action-column" cols="4"/>
 
         <b-col
           v-for="date in selectedWeek"
@@ -44,33 +44,33 @@
 
           <strong class="d-block text-capitalize">
             <span class="d-md-none">
-              {{$d(new Date(date.date), 'dayNarrow')}}
+              {{ $d(new Date(date.date), 'dayNarrow') }}
             </span>
             <span class="d-none d-md-block">
-              {{$d(new Date(date.date), 'dayShort')}}
+              {{ $d(new Date(date.date), 'dayShort') }}
             </span>
           </strong>
 
           <small>
             <span class="d-none d-md-inline">
-              {{$d(new Date(date.date), 'dateMonth')}}
+              {{ $d(new Date(date.date), 'dateMonth') }}
             </span>
-            <span class="d-md-none">{{$d(new Date(date.date), 'date')}}</span>
+            <span class="d-md-none">{{ $d(new Date(date.date), 'date') }}</span>
           </small>
         </b-col>
 
-        <b-col cols="1" />
+        <b-col cols="1"/>
       </b-row>
 
-      <slot name="rows" />
+      <slot name="rows"/>
     </b-container>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from '@nuxtjs/composition-api'
+import {defineComponent, PropType} from '@nuxtjs/composition-api'
 
-import { recordDayStatus, recordDayStatusProps } from '~/helpers/record-status'
+import {recordDayStatus, recordDayStatusProps} from '~/helpers/record-status'
 
 export default defineComponent({
   props: {
@@ -78,6 +78,10 @@ export default defineComponent({
       type: Array as PropType<WeekDate[]>,
       default: () => [],
     },
+    showHeader: {
+      type: Boolean,
+      default: true,
+    }
   },
   setup() {
     const captionSizes = ['LONG', 'MID', 'SHORT']
@@ -92,7 +96,7 @@ export default defineComponent({
       const captionSizeIndex = dayStatusScore > 2 ? 2 : dayStatusScore
       const captionSize = captionSizes[
         captionSizeIndex
-      ] as keyof typeof recordDayStatus[0]
+        ] as keyof typeof recordDayStatus[0]
 
       const captionText = recordDayStatusProps.reduce((acc, prop) => {
         if (day[prop]) {
@@ -123,6 +127,10 @@ export default defineComponent({
   border-bottom: 8px solid var(--color-primary);
   border-left: 1px solid var(--color-primary);
   border-radius: 8px;
+
+  &--no-header {
+    border-top: 8px solid var(--color-primary);
+  }
 
   &__action-column {
     display: none;

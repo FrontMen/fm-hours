@@ -39,9 +39,16 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     const user = await extractUserFromAuthUser(authUser);
     commit('setUser', user);
 
-    await this.$axios.$get('/api/bridge/auth', {
-      headers: {Authorization: user?.samlToken || ''},
-    });
+    try {
+      await this.$axios.$get('/api/bridge/auth', {
+        headers: {Authorization: user?.samlToken || ''},
+      });
+    } catch {
+      const authState = await dispatch('logout');
+      if (authState) {
+        this.$router.push(this.localePath('/login'));
+      }
+    }
 
     dispatch('employee/getEmployee', {}, {root: true});
   },
