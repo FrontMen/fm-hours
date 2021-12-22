@@ -238,8 +238,8 @@ export default defineComponent({
         }
       }
 
-      // const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
-      const isOwnTimesheet = false;
+      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
+
       if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
         try {
           workScheme = await app.$workSchemeService.getWorkScheme({
