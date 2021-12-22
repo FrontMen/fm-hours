@@ -256,7 +256,6 @@ export default defineComponent({
           }
         }
       } else {
-        console.log(sheet.workscheme);
         workScheme = sheet.workscheme || [];
       }
 
