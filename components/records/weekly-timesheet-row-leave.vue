@@ -20,7 +20,11 @@ nl:
     >
       {{ value }}
     </b-col>
-    <b-col cols="3" class="weekly-timesheet-row__total-column">
+    <b-col
+      v-if="leaveDays.length > 0"
+      cols="3"
+      class="weekly-timesheet-row__total-column"
+    >
       {{ totalValue }}
     </b-col>
   </b-row>

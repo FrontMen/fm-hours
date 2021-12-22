@@ -45,7 +45,9 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       });
     } catch {
       const authState = await dispatch('logout');
-      if (authState) this.$router.push(this.localePath('/login'));
+      if (authState) {
+        this.$router.push(this.localePath('/login'));
+      }
     }
 
     dispatch('employee/getEmployee', {}, {root: true});

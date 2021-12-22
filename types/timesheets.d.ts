@@ -5,6 +5,7 @@ declare enum TimesheetStatus {
   DENIED = 'denied',
   EMPTY = 'empty',
 }
+
 interface Message {
   id: string;
   text: string;
@@ -18,6 +19,7 @@ interface Timesheet {
   status: TimesheetStatus;
   messages: Message[];
   message?: string /** Only present on old timesheets with single comment */;
+  workscheme?: WorkScheme[];
 }
 
 interface TimesheetTableField {

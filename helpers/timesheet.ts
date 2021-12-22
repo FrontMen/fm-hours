@@ -4,7 +4,7 @@ import {recordStatus} from './record-status';
 import {getDayOnGMT, formatDate} from './dates';
 
 export const createWeeklyTimesheet = (params: {
-  sheet: Timesheet;
+  sheet: Optional<Timesheet, 'id'>;
   week: WeekDate[];
   projects: Customer[];
   timeRecords: TimeRecord[];
