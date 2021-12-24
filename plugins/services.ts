@@ -8,9 +8,11 @@ import EmployeesService from '~/services/employees-service';
 import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
 import MailService from '~/services/mail-service';
+import ContractsService from '~/services/contracts-service';
 import BridgeService from '~/services/bridge-service';
 
 export default defineNuxtPlugin(({$fire, $axios}, inject) => {
+  inject('contractsService', new ContractsService($axios));
   inject('customersService', new CustomersService($fire));
   inject('holidaysService', new HolidaysService($fire));
   inject('timeRecordsService', new TimeRecordsService($fire));

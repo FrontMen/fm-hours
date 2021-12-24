@@ -1,6 +1,6 @@
-import * as admin from "firebase-admin";
+import * as admin from 'firebase-admin';
 
-import { sendMail } from "./sendMail";
+import {sendMail} from './sendMail';
 
 admin.initializeApp();
 

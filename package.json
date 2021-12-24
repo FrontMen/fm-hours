@@ -9,7 +9,8 @@
     "start": "nuxt start",
     "test": "jest --passWithNoTests",
     "test:types": "tsc",
-    "lint": "eslint --ext .js,.vue .",
+    "lint": "eslint --ext .js,.ts,.vue .",
+    "prettier": "prettier \"**/*.{js,ts,json,vue,scss}\" --ignore-path .gitignore --check",
     "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
     "format": "npm run format:eslint && npm run format:prettier",
     "release": "standard-version",
@@ -27,15 +28,9 @@
       "npm run test:types"
     ]
   },
-  "eslintConfig": {
-    "extends": [
-      "@nuxtjs/eslint-config",
-      "@nuxtjs/eslint-config-typescript",
-      "eslint-config-prettier"
-    ]
-  },
   "dependencies": {
     "core-js": "3.20.1",
+    "crypto-js": "^4.1.1",
     "nuxt": "2.15.8"
   },
   "devDependencies": {
@@ -53,6 +48,7 @@
     "@nuxtjs/firebase": "8.1.1",
     "@nuxtjs/proxy": "2.1.0",
     "@nuxtjs/pwa": "3.3.5",
+    "@types/crypto-js": "^4.0.2",
     "@types/jest": "27.0.3",
     "@types/jwt-decode": "3.1.0",
     "@vercel/node": "1.12.1",

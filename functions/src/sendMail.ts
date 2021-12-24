@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import * as functions from "firebase-functions";
-import { createTransport, SendMailOptions, TransportOptions } from "nodemailer";
-import { google } from "googleapis";
-const cors = require("cors")({ origin: true });
+import * as functions from 'firebase-functions';
+import {createTransport, SendMailOptions, TransportOptions} from 'nodemailer';
+import {google} from 'googleapis';
+const cors = require('cors')({origin: true});
 const OAuth2 = google.auth.OAuth2;
 
 export const sendMail = functions.https.onRequest((req, res) => {
@@ -11,7 +11,7 @@ export const sendMail = functions.https.onRequest((req, res) => {
       const oauth2Client = new OAuth2(
         functions.config().mail.clientid,
         functions.config().mail.clientsecret,
-        "https://developers.google.com/oauthplayground"
+        'https://developers.google.com/oauthplayground'
       );
 
       oauth2Client.setCredentials({
@@ -21,16 +21,16 @@ export const sendMail = functions.https.onRequest((req, res) => {
       const accessToken = await new Promise((resolve, reject) => {
         oauth2Client.getAccessToken((err, token) => {
           if (err) {
-            reject(new Error("Failed to create access token"));
+            reject(new Error('Failed to create access token'));
           }
           resolve(token);
         });
       });
 
       const transporter = createTransport({
-        service: "gmail",
+        service: 'gmail',
         auth: {
-          type: "OAuth2",
+          type: 'OAuth2',
           user: functions.config().mail.user,
           accessToken,
           clientId: functions.config().mail.clientid,
@@ -42,7 +42,7 @@ export const sendMail = functions.https.onRequest((req, res) => {
       return transporter;
     };
 
-    const { to, subject, html } = req.body;
+    const {to, subject, html} = req.body;
 
     const mailOptions = {
       from: `Uren <${functions.config().mail.user}>"`,
@@ -56,17 +56,17 @@ export const sendMail = functions.https.onRequest((req, res) => {
 
       return emailTransporter.sendMail(emailOptions, (error) => {
         if (error) {
-          functions.logger.log("error", error);
+          functions.logger.log('error', error);
           return res.status(500).send(error.toString());
         }
-        return res.send("E-mail sent successfully!");
+        return res.send('E-mail sent successfully!');
       });
     };
 
     try {
       return sendEmail(mailOptions);
     } catch (err) {
-      functions.logger.log("error", err);
+      functions.logger.log('error', err);
       return res.status(500).send(err.toString());
     }
   });
