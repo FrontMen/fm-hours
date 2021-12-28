@@ -77,7 +77,9 @@
           lg="2"
           class="d-flex align-items-end justify-content-end mb-3"
         >
-          <b-button v-b-modal.modal-center>+ {{$t('newEmployee')}}</b-button>
+          <nuxt-link class="btn btn-primary" :to="localePath(`/employees/add`)">
+            + {{$t('newEmployee')}}
+          </nuxt-link>
         </b-col>
       </b-row>
     </b-container>
@@ -125,37 +127,6 @@
         </div>
       </b-row>
     </b-container>
-    <b-modal
-      id="modal-center"
-      centered
-      :title="$t('addEmployee')"
-      cancel-variant="danger"
-      :ok-disabled="!canAddEmployee"
-      :ok-title="$t('ok')"
-      :cancel-title="$t('cancel')"
-      @ok="addEmployee()"
-    >
-      <b-form-input
-        v-model="newEmployee.name"
-        :placeholder="$t('employeeName')"
-      />
-      <b-form-input
-        v-model="newEmployee.email"
-        type="email"
-        :placeholder="$t('employeeEmail')"
-        class="mt-3"
-      />
-      <label for="employee-start-date" class="mt-3">Start date:</label>
-      <b-form-datepicker
-        id="employee-start-date"
-        v-model="newEmployee.startDate"
-        :locale="isoLocale"
-        class="w-75"
-      />
-      <b-form-checkbox v-model="newEmployee.travelAllowance" class="mt-3">
-        {{$t('travelAllowance')}}
-      </b-form-checkbox>
-    </b-modal>
   </div>
 </template>
 
@@ -169,8 +140,6 @@ import {
   useContext,
 } from "@nuxtjs/composition-api";
 
-import {validateEmail} from "~/helpers/validation";
-import {formatDate} from "~/helpers/dates";
 import {checkEmployeeAvailability} from "~/helpers/employee";
 import {queryOnString} from "~/helpers/helpers";
 
@@ -302,36 +271,9 @@ export default defineComponent({
       });
     });
 
-    const newEmployee = ref({
-      name: "",
-      email: "",
-      startDate: formatDate(new Date()),
-      travelAllowance: false,
-    });
-
-    const canAddEmployee = computed(() => {
-      const {name, email} = newEmployee.value;
-      return name && validateEmail(email);
-    });
-
-    const addEmployee = () => {
-      store.dispatch("employees/addNewEmployee", {
-        ...newEmployee.value,
-        startDate: new Date(newEmployee.value.startDate).getTime(),
-        email: newEmployee.value.email.toLowerCase(),
-      });
-
-      newEmployee.value.name = "";
-      newEmployee.value.email = "";
-      newEmployee.value.startDate = formatDate(new Date());
-      newEmployee.value.travelAllowance = false;
-    };
 
     return {
       employees,
-      newEmployee,
-      canAddEmployee,
-      addEmployee,
       filteredEmployees,
       filterBy,
       filterByOptions,

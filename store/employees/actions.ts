@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex';
+import {ActionTree} from 'vuex/types';
 
 const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   async getEmployees({commit}) {
@@ -16,15 +16,7 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit('updateEmployee', {employee: newEmployee});
   },
 
-  async addNewEmployee(
-    {commit},
-    payload: {
-      name: string;
-      email: string;
-      travelAllowance: boolean;
-      startDate: number;
-    }
-  ) {
+  async addNewEmployee({commit}, payload: Omit<Employee, 'id' | 'picture'>) {
     const newEmployee = await this.app.$employeesService.createEmployee(
       payload
     );

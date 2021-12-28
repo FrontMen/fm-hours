@@ -43,6 +43,7 @@ export default {
       '~/components/app',
       '~/components/records',
       '~/components/reports',
+      '~/components/employees',
     ],
   },
 
