@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex/types/index';
+import {ActionTree} from 'vuex';
 
 export const actions: ActionTree<AuthStoreState, RootStoreState> = {
   async nuxtServerInit({dispatch}, {res}) {
