@@ -1,4 +1,4 @@
-import {ActionTree} from 'vuex/types/index';
+import {ActionTree} from 'vuex';
 import {extractUserFromAuthUser} from '~/helpers/auth';
 
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
@@ -50,7 +50,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       }
     }
 
-    dispatch('employee/getEmployee', {}, {root: true});
+    await dispatch('employee/getEmployee', {}, {root: true});
   },
 };
 
