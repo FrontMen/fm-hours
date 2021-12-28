@@ -1,5 +1,5 @@
-import {NuxtFireInstance} from '@nuxtjs/firebase';
-import firebase from 'firebase';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
+import firebase from 'firebase/compat';
 import {Collections} from '~/types/enums';
 import FieldPath = firebase.firestore.FieldPath;
 

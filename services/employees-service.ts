@@ -1,4 +1,4 @@
-import {NuxtFireInstance} from '@nuxtjs/firebase';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {DocumentSnapshot} from '@firebase/firestore-types';
 import {Collections} from '~/types/enums';
 
@@ -70,7 +70,9 @@ export default class EmployeesService {
     return null;
   }
 
-  async createEmployee(params: Omit<Employee, 'id'| 'picture'>): Promise<Employee> {
+  async createEmployee(
+    params: Omit<Employee, 'id' | 'picture'>
+  ): Promise<Employee> {
     const newEmployee = {
       ...params,
       picture: '',
