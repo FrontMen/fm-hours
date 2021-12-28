@@ -1,50 +1,50 @@
 <i18n lang="yaml">
-  en:
-    notFoundEmployee: "Employee not found"
-    editTeam: "Edit team"
-    manageProjects: "Manage Projects"
-    customerSearchPlaceholder: "Click or search for a customer here"
-    employeeSettings: "Employee Settings"
-    email: "Email"
-    admin: "Admin"
-    standBy: "Standby"
-    endDate: "End date"
-    startDate: "Start date"
-    noDate: "No date selected"
-    save: "Save"
-  nl:
-    notFoundEmployee: "Medewerker niet gevonden"
-    editTeam: "Team bewerken"
-    manageProjects: "Projecten bewerkern"
-    customerSearchPlaceholder: "Klik of zoek naar een klant"
-    employeeSettings: "Medewerker instellingen"
-    email: "Email"
-    admin: "Administrator"
-    standBy: "Stand-by"
-    endDate: "Eind datum"
-    startDate: "Start datum"
-    noDate: "Geen datum geselcteerd"
-    save: "Opslaan"
+en:
+  notFoundEmployee: "Employee not found"
+  editTeam: "Edit team"
+  manageProjects: "Manage Projects"
+  customerSearchPlaceholder: "Click or search for a customer here"
+  employeeSettings: "Employee Settings"
+  email: "Email"
+  admin: "Admin"
+  standBy: "Standby"
+  endDate: "End date"
+  startDate: "Start date"
+  noDate: "No date selected"
+  save: "Save"
+nl:
+  notFoundEmployee: "Medewerker niet gevonden"
+  editTeam: "Team bewerken"
+  manageProjects: "Projecten bewerkern"
+  customerSearchPlaceholder: "Klik of zoek naar een klant"
+  employeeSettings: "Medewerker instellingen"
+  email: "Email"
+  admin: "Administrator"
+  standBy: "Stand-by"
+  endDate: "Eind datum"
+  startDate: "Start datum"
+  noDate: "Geen datum geselcteerd"
+  save: "Opslaan"
 </i18n>
 
 <template>
   <div class="page-wrapper">
     <div class="content-wrapper my-5">
       <template v-if="mode === 'edit' && !employee">
-        <p>{{$t('notFoundEmployee')}}</p>
+        <p>{{ $t('notFoundEmployee') }}</p>
       </template>
       <template v-else>
-        <employee-header v-if="mode==='edit'" :employee="employee" />
+        <employee-header v-if="mode === 'edit'" :employee="employee" />
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">{{$t('editTeam')}}:</h6>
+            <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
             <b-form-select
               v-model="selectedTeam"
               :options="teamList"
               class="mb-3"
               @change="hasUnsavedChanges = true"
             />
-            <h6 class="mb-3">{{$t('manageProjects')}}</h6>
+            <h6 class="mb-3">{{ $t('manageProjects') }}</h6>
             <multiselect
               v-model="selectedCustomers"
               track-by="id"
@@ -88,9 +88,9 @@
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">{{$t('employeeSettings')}}</h6>
+            <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>
 
-            {{$t('name')}}:
+            {{ $t('name') }}:
             <b-form-input
               v-model="name"
               type="text"
@@ -101,7 +101,7 @@
               @change="(nameTouched = true), (hasUnsavedChanges = true)"
             />
 
-            {{$t('email')}}:
+            {{ $t('email') }}:
             <b-form-input
               v-model="email"
               type="email"
@@ -118,7 +118,7 @@
               class="mt-2 mr-3"
               @change="hasUnsavedChanges = true"
             >
-              {{$t('admin')}}
+              {{ $t('admin') }}
             </b-form-checkbox>
             <b-form-checkbox
               v-model="isTravelAllowed"
@@ -126,7 +126,7 @@
               switch
               @change="hasUnsavedChanges = true"
             >
-              {{$t('travelAllowance')}}
+              {{ $t('travelAllowance') }}
             </b-form-checkbox>
             <b-form-checkbox
               v-model="standbyAllowed"
@@ -134,10 +134,10 @@
               class="mt-2 mr-3"
               @change="hasUnsavedChanges = true"
             >
-              {{$t('standBy')}}
+              {{ $t('standBy') }}
             </b-form-checkbox>
             <label class="mt-2" for="start-datepicker">
-              {{$t('startDate')}}:
+              {{ $t('startDate') }}:
             </label>
             <b-form-datepicker
               id="start-datepicker"
@@ -153,7 +153,7 @@
               switch
               @change="hasUnsavedChanges = true"
             >
-              {{$t('endDate')}}:
+              {{ $t('endDate') }}:
             </b-form-checkbox>
             <b-form-datepicker
               id="end-datepicker"
@@ -167,14 +167,14 @@
           </b-col>
         </b-row>
         <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
-          {{$t('save')}}
+          {{ $t('save') }}
         </b-button>
         <b-button
           v-if="employee"
           variant="danger"
           @click="handleEmployeeDelete"
         >
-          {{$t('delete')}}
+          {{ $t('delete') }}
         </b-button>
         <b-row>
           <b-col cols="12" md="5">
@@ -193,12 +193,12 @@ import {
   computed,
   defineComponent,
   onMounted,
-  useStore,
-  useRouter,
-  useMeta,
-  watch,
   ref,
   useContext,
+  useMeta,
+  useRouter,
+  useStore,
+  watch,
 } from "@nuxtjs/composition-api";
 
 import {formatDate, getDayOnGMT} from "~/helpers/dates";
@@ -206,7 +206,7 @@ import {emailRegex} from "~/helpers/email";
 
 export default defineComponent({
   middleware: ["isAdmin"],
-  props:{
+  props: {
     mode: {
       type: String,
       required: true,
@@ -215,15 +215,15 @@ export default defineComponent({
       }
     }
   },
-  setup(props) {
+  setup(props: { mode: string }) {
 
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
-    const hasUnsavedChanges = ref(false);
-    const errorMessage = ref("");
+    const hasUnsavedChanges = ref<boolean>(false);
+    const errorMessage = ref<string>("");
     const selectedTeam = ref<string | null>(null);
     const emailTouched = ref<boolean | null>(null);
     const nameTouched = ref<boolean | null>(null);
@@ -318,8 +318,8 @@ export default defineComponent({
         selectedCustomers.value =
           employee.value?.projects && customers.value.length
             ? employee.value.projects.map((project) =>
-                customers.value.find((customer) => customer.id === project)
-              )
+              customers.value.find((customer) => customer.id === project)
+            )
             : [];
       },
       {immediate: true}
@@ -345,7 +345,7 @@ export default defineComponent({
       () => {
         standbyAllowed.value = !!employee.value?.standBy;
       },
-      { immediate: true }
+      {immediate: true}
     );
 
 
@@ -472,7 +472,7 @@ export default defineComponent({
       };
 
 
-      if(props.mode === 'edit') {
+      if (props.mode === 'edit') {
         store.dispatch("employees/updateEmployee", newEmployee);
       } else {
         store.dispatch('employees/addNewEmployee', newEmployee)
