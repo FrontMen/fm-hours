@@ -1,5 +1,4 @@
 import {format} from 'date-fns';
-
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 
 export default class WorkSchemeService {

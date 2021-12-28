@@ -1,4 +1,4 @@
-import {NuxtAxiosInstance} from '@nuxtjs/axios';
+import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 
 export default class mailService {
   axios: NuxtAxiosInstance;

@@ -1,6 +1,5 @@
-import {NuxtFireInstance} from '@nuxtjs/firebase';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {Collections} from '~/types/enums';
-/* eslint-disable camelcase */
 
 export default class RecordsService {
   fire: NuxtFireInstance;

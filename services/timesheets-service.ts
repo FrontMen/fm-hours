@@ -1,5 +1,5 @@
 import {DocumentData} from '@google-cloud/firestore';
-import {NuxtFireInstance} from '@nuxtjs/firebase';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {Collections} from '~/types/enums';
 
 import {recordStatus} from '~/helpers/record-status';

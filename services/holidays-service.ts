@@ -1,4 +1,4 @@
-import {NuxtFireInstance} from '@nuxtjs/firebase';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {compareAsc} from 'date-fns';
 import {Collections} from '~/types/enums';
 
