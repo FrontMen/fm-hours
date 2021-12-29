@@ -1,4 +1,3 @@
-/* eslint-disable camelcase */
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import axios from 'axios';
 

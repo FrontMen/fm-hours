@@ -16,13 +16,13 @@ Clone this repo and install the dependencies:
 yarn install
 ```
 
-Create a `.env` based on `.env.defaults`. You can reach one of the team members for the credentials, or, if you have access to Vercel, get it from there.
+Create a `.env` based on `.env.defaults`. You can reach one of the team members for the credentials, or, if you have access to Vercel, get it from there with the following command: `vercel env pull`.
 
 > 💡 Be sure you're using development keys.
 
 ### Development
 
-Since this project uses Vercel's lambda functions (via `/api`), instead of using the traditional `yarn dev`, you'll need to use `Vercel CLI`.
+Since this project uses Vercel's serverless (lambda) functions (via `/api`), instead of using the traditional `yarn dev`, you'll need to use `Vercel CLI`.
 
 After doing login, run:
 
