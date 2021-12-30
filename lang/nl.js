@@ -9,7 +9,7 @@ export default {
   debtorName: 'debiteur',
   selectTeam: 'selecteer team',
   employees: 'medewerekers',
-  errorEnddate: 'Selecteer een einddatum',
+  errorEndDate: 'Selecteer een einddatum',
   errorNameEmail: 'Selecteer een startdatum',
   errorStartDate: 'Please select start date',
   confirmDelete: 'Weet je zeker dat je medewerker {name}, wil verwijderen?',
