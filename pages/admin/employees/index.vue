@@ -77,7 +77,7 @@
           lg="2"
           class="d-flex align-items-end justify-content-end mb-3"
         >
-          <nuxt-link class="btn btn-primary" :to="localePath(`/employees/add`)">
+          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/employees/add`)">
             + {{$t('newEmployee')}}
           </nuxt-link>
         </b-col>
