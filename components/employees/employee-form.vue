@@ -217,7 +217,7 @@ export default defineComponent({
   },
   setup(props: { mode: string }) {
 
-    const {i18n} = useContext();
+    const {i18n, localePath} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -245,7 +245,7 @@ export default defineComponent({
       () => store.getters["customers/defaultCustomers"]
     );
 
-    const employeeId = router.currentRoute.params.employee_id;
+    const employeeId = router.currentRoute.params.id;
     const employees = computed(() => store.state.employees.employees);
     const employee = computed(() =>
       employees.value.find((x) => x.id === employeeId)
@@ -439,7 +439,7 @@ export default defineComponent({
       if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
     };
 
-    const saveProjects = () => {
+    const saveProjects = async () => {
       nameTouched.value = true;
       emailTouched.value = true;
 
@@ -454,7 +454,7 @@ export default defineComponent({
       }
 
       if (hasEndDate.value && !endDate.value) {
-        errorMessage.value = i18n.t('errorEnddate') as string;
+        errorMessage.value = i18n.t('errorEndDate') as string;
         return;
       }
 
@@ -473,15 +473,17 @@ export default defineComponent({
 
 
       if (props.mode === 'edit') {
-        store.dispatch("employees/updateEmployee", newEmployee);
+        await store.dispatch("employees/updateEmployee", newEmployee);
       } else {
-        store.dispatch('employees/addNewEmployee', newEmployee)
+        await store.dispatch('employees/addNewEmployee', newEmployee)
       }
 
-      router.push("/employees");
+      hasUnsavedChanges.value = false;
+      nameTouched.value = null;
+      emailTouched.value = null;
     };
 
-    const handleEmployeeDelete = () => {
+    const handleEmployeeDelete = async () => {
       const confirmation = confirm(
         i18n.t('confirmDelete', {name: employee.value?.name}) as string
       );
@@ -494,8 +496,8 @@ export default defineComponent({
 
       if (!confirmation2) return;
 
-      store.dispatch("employees/deleteEmployee", employeeId);
-      router.push("/employees");
+      await store.dispatch("employees/deleteEmployee", employeeId);
+      router.push(localePath("/admin/employees"));
     };
 
     const handleProjectDelete = (customerId: string) => {
