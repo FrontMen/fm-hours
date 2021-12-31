@@ -28,8 +28,8 @@ nl:
 </i18n>
 
 <template>
-  <div class="page-wrapper">
-    <div class="content-wrapper my-5">
+  <main class="page-wrapper">
+    <section class="content-wrapper my-5">
       <template v-if="mode === 'edit' && !employee">
         <p>{{ $t('notFoundEmployee') }}</p>
       </template>
@@ -184,8 +184,8 @@ nl:
           </b-col>
         </b-row>
       </template>
-    </div>
-  </div>
+    </section>
+  </main>
 </template>
 
 <script lang="ts">
@@ -193,6 +193,7 @@ import {
   computed,
   defineComponent,
   onMounted,
+  PropType,
   ref,
   useContext,
   useMeta,
@@ -211,11 +212,16 @@ export default defineComponent({
       type: String,
       required: true,
       validator: (value: string) => {
-        return ['add', 'edit'].includes(value)
+        return ['add', 'edit', 'view'].includes(value)
       }
+    },
+    employee: {
+      type: Object as PropType<Employee>,
+      required: false,
+      default: null
     }
   },
-  setup(props: { mode: string }) {
+  setup(props: { mode: string, employee: Employee }) {
 
     const {i18n, localePath} = useContext();
     const router = useRouter();
@@ -247,9 +253,6 @@ export default defineComponent({
 
     const employeeId = router.currentRoute.params.id;
     const employees = computed(() => store.state.employees.employees);
-    const employee = computed(() =>
-      employees.value.find((x) => x.id === employeeId)
-    );
 
     const teamList = computed(() => {
       const parsedTeam = store.getters["employees/teamList"].map(
@@ -261,7 +264,7 @@ export default defineComponent({
     });
 
     const pageTitle = computed(() =>
-      employee.value ? `${i18n.t("employees")} - ${employee.value?.name}` : i18n.t("addEmployee") as string
+      props.employee ? `${i18n.t("employees")} - ${props.employee.name}` : i18n.t("addEmployee") as string
     );
 
     const emailValidationState = computed(() => {
@@ -298,26 +301,26 @@ export default defineComponent({
       store.dispatch("employees/getAdminList");
       store.dispatch("employees/getTeamList");
 
-      if (employee?.value?.endDate) {
+      if (props.employee?.endDate) {
         hasEndDate.value = true;
-        endDate.value = formatDate(getDayOnGMT(employee.value.endDate));
+        endDate.value = formatDate(getDayOnGMT(props.employee.endDate));
       }
     });
 
     watch(
-      () => employee.value?.team,
+      () => props.employee?.team,
       () => {
-        selectedTeam.value = employee.value?.team || null;
+        selectedTeam.value = props.employee?.team || null;
       },
       {immediate: true}
     );
 
     watch(
-      () => [employee.value?.projects, customers.value],
+      () => [props.employee?.projects, customers.value],
       () => {
         selectedCustomers.value =
-          employee.value?.projects && customers.value.length
-            ? employee.value.projects.map((project) =>
+          props.employee?.projects && customers.value.length
+            ? props.employee.projects.map((project) =>
               customers.value.find((customer) => customer.id === project)
             )
             : [];
@@ -326,60 +329,60 @@ export default defineComponent({
     );
 
     const isAdmin = ref<boolean>(
-      store.getters["employees/adminList"].includes(employee.value?.email)
+      store.getters["employees/adminList"].includes(props.employee?.email)
     );
     watch(
       () =>
-        store.getters["employees/adminList"].includes(employee.value?.email),
+        store.getters["employees/adminList"].includes(props.employee?.email),
       () => {
         isAdmin.value = store.getters["employees/adminList"].includes(
-          employee.value?.email
+          props.employee?.email
         );
       },
       {immediate: true}
     );
 
-    const standbyAllowed = ref<boolean>(!!employee.value?.standBy);
+    const standbyAllowed = ref<boolean>(!!props.employee?.standBy);
     watch(
-      () => employee.value?.standBy,
+      () => props.employee?.standBy,
       () => {
-        standbyAllowed.value = !!employee.value?.standBy;
+        standbyAllowed.value = !!props.employee?.standBy;
       },
       {immediate: true}
     );
 
 
-    const isTravelAllowed = ref<boolean>(!!employee.value?.travelAllowance);
+    const isTravelAllowed = ref<boolean>(!!props.employee?.travelAllowance);
     watch(
-      () => employee.value?.travelAllowance,
+      () => props.employee?.travelAllowance,
       () => {
-        isTravelAllowed.value = !!employee.value?.travelAllowance;
+        isTravelAllowed.value = !!props.employee?.travelAllowance;
       },
       {immediate: true}
     );
 
     const startDate = ref<string>(
-      employee.value ? formatDate(getDayOnGMT(employee.value.startDate)) : ""
+      props.employee ? formatDate(getDayOnGMT(props.employee.startDate)) : ""
     );
     watch(
-      () => employee.value?.startDate,
+      () => props.employee?.startDate,
       () => {
-        startDate.value = employee.value
-          ? formatDate(getDayOnGMT(employee.value.startDate))
+        startDate.value = props.employee
+          ? formatDate(getDayOnGMT(props.employee.startDate))
           : "";
       },
       {immediate: true}
     );
 
-    const hasEndDate = ref(!!employee?.value?.endDate);
+    const hasEndDate = ref(!!props.employee?.endDate);
     const endDate = ref<string | null>(null);
 
     watch(
-      () => employee.value,
+      () => props.employee,
       () => {
-        if (employee?.value?.endDate) {
+        if (props.employee?.endDate) {
           hasEndDate.value = true;
-          endDate.value = formatDate(getDayOnGMT(employee.value.endDate));
+          endDate.value = formatDate(getDayOnGMT(props.employee.endDate));
         }
       }
     );
@@ -403,26 +406,26 @@ export default defineComponent({
       }
     );
 
-    const name = ref<String | undefined>(employee.value?.name);
+    const name = ref<String | undefined>(props.employee?.name);
     watch(
-      () => employee.value?.name,
+      () => props.employee?.name,
       () => {
-        name.value = employee.value?.name;
+        name.value = props.employee?.name;
       }
     );
 
-    const email = ref<String | undefined>(employee.value?.email);
+    const email = ref<String | undefined>(props.employee?.email);
     watch(
-      () => employee.value?.email,
+      () => props.employee?.email,
       () => {
-        email.value = employee.value?.email;
+        email.value = props.employee?.email;
       }
     );
 
     const handleAdminToggle = (): void => {
       let valueChanged = false;
       let adminList = [...store.getters["employees/adminList"]];
-      const email = employee.value?.email;
+      const email = props.employee?.email;
       const alreadyContained = adminList.includes(email);
       const adminValue = isAdmin.value;
 
@@ -460,7 +463,7 @@ export default defineComponent({
 
       handleAdminToggle();
       const newEmployee = {
-        ...employee.value,
+        ...props.employee,
         name: name.value,
         email: email.value,
         team: selectedTeam.value,
@@ -485,13 +488,13 @@ export default defineComponent({
 
     const handleEmployeeDelete = async () => {
       const confirmation = confirm(
-        i18n.t('confirmDelete', {name: employee.value?.name}) as string
+        i18n.t('confirmDelete', {name: props.employee?.name}) as string
       );
 
       if (!confirmation) return;
 
       const confirmation2 = confirm(
-        i18n.t('reConfirmDelete', {name: employee.value?.name}) as string
+        i18n.t('reConfirmDelete', {name: props.employee?.name}) as string
       );
 
       if (!confirmation2) return;
@@ -513,7 +516,6 @@ export default defineComponent({
 
     return {
       isAdmin,
-      employee,
       customerOptions,
       selectedCustomers,
       selectedTeam,

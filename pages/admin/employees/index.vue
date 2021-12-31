@@ -145,12 +145,14 @@ import {queryOnString} from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
+    console.log('index')
     const { i18n } = useContext();
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
 
     onMounted(() => {
+      console.log('index mounted')
       if (employees.value.length === 0) {
         store.dispatch("employees/getEmployees");
       }
