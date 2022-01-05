@@ -67,7 +67,7 @@
     "firebase": "9.6.1",
     "hotkeys-js": "3.8.7",
     "husky": "7.0.4",
-    "jest": "27.4.5",
+    "jest": "27.4.6",
     "js-cookie": "3.0.1",
     "jwt-decode": "3.1.2",
     "lint-staged": "12.1.4",
