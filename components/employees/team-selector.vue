@@ -8,30 +8,40 @@ nl:
   <div>
     <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
     <b-form-select
-      v-model="selectedTeam"
+      :value="selectedTeam"
       :options="teamList"
       class="mb-3"
-      @change="edited"
+      @change="$emit('update', $event)"
     />
   </div>
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, useContext, useStore} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   props: {
     selectedTeam: {
-      type: String,
+      type: String as PropType<string>,
       required: false,
       default: '',
     },
-    teamList: {
-      type: String,
-      required: true,
-    }
+  },
+  emits: ['update'],
+  setup() {
+    const {i18n} = useContext();
+    const store = useStore<RootStoreState>();
+
+    const teamList = computed(() => {
+      const parsedTeam = store.getters["employees/teamList"].map(
+        (team: string) => {
+          return {value: team, text: team};
+        }
+      );
+      return [{value: null, text: i18n.t("selectTeam")}, ...parsedTeam];
+    });
+
+    return {teamList}
   }
 });
 </script>
-
-<style scoped></style>

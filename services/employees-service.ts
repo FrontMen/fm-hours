@@ -11,7 +11,7 @@ export default class EmployeesService {
     this.fire = fire;
   }
 
-  async getEmployees() {
+  async getEmployees(): Promise<Employee[]> {
     const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
     const snapshot = await ref.get();
 
@@ -35,7 +35,7 @@ export default class EmployeesService {
     return null;
   }
 
-  async getEmployeeInformation(email: string): Promise<Employee | null> {
+  async getEmployeeByMail(email: string): Promise<Employee | null> {
     const ref = this.fire.firestore
       .collection(Collections.EMPLOYEES)
       .where('email', '==', email);
@@ -64,7 +64,7 @@ export default class EmployeesService {
     return {...newEmployee, id};
   }
 
-  async updateEmployee(employee: Employee) {
+  async updateEmployee(employee: Employee): Promise<void> {
     const newEmployee = {...employee} as any;
     delete newEmployee.id;
 
@@ -74,14 +74,14 @@ export default class EmployeesService {
       .set(newEmployee, {merge: true});
   }
 
-  async deleteEmployee(id: string) {
+  async deleteEmployee(id: string): Promise<void> {
     return await this.fire.firestore
       .collection(Collections.EMPLOYEES)
       .doc(id)
       .delete();
   }
 
-  async isAdmin(email: string) {
+  async isAdmin(email: string): Promise<boolean> {
     const adminEmails = await this.getAdminEmails();
     return adminEmails.includes(email);
   }
@@ -91,7 +91,7 @@ export default class EmployeesService {
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
 
-    return result as unknown as string[];
+    return result as string[];
   }
 
   async getTeams(): Promise<string[]> {
@@ -99,12 +99,12 @@ export default class EmployeesService {
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().teams || [];
 
-    return result as unknown as string[];
+    return result as string[];
   }
 
   async updateAdminEmails(adminList: string[]): Promise<string[]> {
     const docs = await this.fire.firestore.collection(Collections.ADMINS).get();
-    const docId = await docs.docs[0].id;
+    const docId = docs.docs[0].id;
     const ref = await this.fire.firestore
       .collection(Collections.ADMINS)
       .doc(docId);

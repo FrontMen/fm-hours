@@ -1,5 +1,5 @@
 <template>
-  <employee-form mode="edit" :employee="employee" />
+  <employee-form :mode="employeeFormMode" :employee="employee" />
 </template>
 
 <script lang="ts">
@@ -13,9 +13,11 @@ export default defineComponent({
 
     const employeeId = router.currentRoute.params.id;
     const employee = useAsync(() => app.$employeesService.getEmployee(employeeId));
+    const employeeFormMode = 'edit';
 
     return {
-      employee
+      employee,
+      employeeFormMode
     }
   }
 });

@@ -11,9 +11,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       const employeesService = new EmployeesService(this.$fire);
       const {user} = rootState.auth;
 
-      const employee = await employeesService.getEmployeeInformation(
-        user.email
-      );
+      const employee = await employeesService.getEmployeeByMail(user.email);
       const isAdmin = await employeesService.isAdmin(user.email);
 
       if (!employee) throw new Error('Employee not found!');

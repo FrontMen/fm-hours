@@ -1,7 +1,6 @@
 <i18n lang="yaml">
 en:
   notFoundEmployee: "Employee not found"
-  editTeam: "Edit team"
   manageProjects: "Manage Projects"
   customerSearchPlaceholder: "Click or search for a customer here"
   employeeSettings: "Employee Settings"
@@ -14,7 +13,6 @@ en:
   save: "Save"
 nl:
   notFoundEmployee: "Medewerker niet gevonden"
-  editTeam: "Team bewerken"
   manageProjects: "Projecten bewerkern"
   customerSearchPlaceholder: "Klik of zoek naar een klant"
   employeeSettings: "Medewerker instellingen"
@@ -30,150 +28,110 @@ nl:
 <template>
   <main class="page-wrapper">
     <section class="content-wrapper my-5">
-      <template v-if="mode === 'edit' && !employee">
+      <template v-if="mode !== 'add' && !employee">
         <p>{{ $t('notFoundEmployee') }}</p>
       </template>
       <template v-else>
-        <employee-header v-if="mode === 'edit'" :employee="employee" />
+        <employee-header v-if="mode !== 'add'" :employee="employee" />
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
-            <b-form-select
-              v-model="selectedTeam"
-              :options="teamList"
-              class="mb-3"
-              @change="hasUnsavedChanges = true"
-            />
-            <h6 class="mb-3">{{ $t('manageProjects') }}</h6>
-            <multiselect
-              v-model="selectedCustomers"
-              track-by="id"
-              label="label"
-              class="mb-3"
-              :options="customerOptions"
-              :close-on-select="false"
-              :multiple="true"
-              :taggable="false"
-              :placeholder="$t('customerSearchPlaceholder')"
-              @input="hasUnsavedChanges = true"
-            >
-              <template slot="selection" slot-scope="{values}">
-                <span v-if="values.length" class="multiselect__single">
-                  {{ $t('noOptions', {num: values.length}) }}
-                </span>
-              </template>
-            </multiselect>
-
-            <b-table
-              :items="items"
-              :fields="['name', 'debtor', 'delete']"
-              class="rounded"
-              small
-              striped
-              table-variant="light"
-            >
-              <template #cell(delete)="row">
-                <b-button
-                  size="sm"
-                  variant="danger"
-                  :disabled="row.item.isDefault"
-                  @click="handleProjectDelete(row.item.id)"
-                >
-                  <b-icon-trash-fill />
-                </b-button>
-              </template>
-            </b-table>
+            <team-selector
+              :selected-team="selectedTeam"
+              @update="updateTeam"
+            ></team-selector>
+            <project-selector
+              :selected-customers="selectedCustomers"
+              :customers="customers"
+              @update-selected-customers="updateSelectedCustomers"
+            ></project-selector>
           </b-col>
 
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>
+            <employee-settings :employee="employee"></employee-settings>
+            <!--            <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>-->
 
-            {{ $t('name') }}:
-            <b-form-input
-              v-model="name"
-              type="text"
-              class="mt-2 w-75 mb-2"
-              :placeholder="$t('employeeName')"
-              :trim="true"
-              :state="nameValidationState"
-              @change="(nameTouched = true), (hasUnsavedChanges = true)"
-            />
+            <!--            {{ $t('name') }}:-->
+            <!--            <b-form-input-->
+            <!--              v-model="name"-->
+            <!--              type="text"-->
+            <!--              class="mt-2 w-75 mb-2"-->
+            <!--              :placeholder="$t('employeeName')"-->
+            <!--              :trim="true"-->
+            <!--              :state="nameValidationState"-->
+            <!--              @change="(nameTouched = true), (hasUnsavedChanges = true)"-->
+            <!--            />-->
 
-            {{ $t('email') }}:
-            <b-form-input
-              v-model="email"
-              type="email"
-              class="mt-2 w-75 mb-2"
-              :placeholder="$t('employeeEmail')"
-              :state="emailValidationState"
-              :trim="true"
-              @change="(emailTouched = true), (hasUnsavedChanges = true)"
-            />
+            <!--            {{ $t('email') }}:-->
+            <!--            <b-form-input-->
+            <!--              v-model="email"-->
+            <!--              type="email"-->
+            <!--              class="mt-2 w-75 mb-2"-->
+            <!--              :placeholder="$t('employeeEmail')"-->
+            <!--              :state="emailValidationState"-->
+            <!--              :trim="true"-->
+            <!--              @change="(emailTouched = true), (hasUnsavedChanges = true)"-->
+            <!--            />-->
 
-            <b-form-checkbox
-              v-model="isAdmin"
-              switch
-              class="mt-2 mr-3"
-              @change="hasUnsavedChanges = true"
-            >
-              {{ $t('admin') }}
-            </b-form-checkbox>
-            <b-form-checkbox
-              v-model="isTravelAllowed"
-              name="check-button"
-              switch
-              @change="hasUnsavedChanges = true"
-            >
-              {{ $t('travelAllowance') }}
-            </b-form-checkbox>
-            <b-form-checkbox
-              v-model="standbyAllowed"
-              switch
-              class="mt-2 mr-3"
-              @change="hasUnsavedChanges = true"
-            >
-              {{ $t('standBy') }}
-            </b-form-checkbox>
-            <label class="mt-2" for="start-datepicker">
-              {{ $t('startDate') }}:
-            </label>
-            <b-form-datepicker
-              id="start-datepicker"
-              v-model="startDate"
-              :locale="isoLocale"
-              class="w-75 mb-2"
-              :label-no-date-selected="$t('noDate')"
-              @input="hasUnsavedChanges = true"
-            />
-            <b-form-checkbox
-              v-model="hasEndDate"
-              name="check-button"
-              switch
-              @change="hasUnsavedChanges = true"
-            >
-              {{ $t('endDate') }}:
-            </b-form-checkbox>
-            <b-form-datepicker
-              id="end-datepicker"
-              v-model="endDate"
-              :locale="isoLocale"
-              class="mt-2 w-75 mb-2"
-              :disabled="!hasEndDate"
-              :label-no-date-selected="$t('noDate')"
-              @input="hasUnsavedChanges = true"
-            />
+            <!--            <b-form-checkbox-->
+            <!--              v-model="isAdmin"-->
+            <!--              switch-->
+            <!--              class="mt-2 mr-3"-->
+            <!--              @change="hasUnsavedChanges = true"-->
+            <!--            >-->
+            <!--              {{ $t('admin') }}-->
+            <!--            </b-form-checkbox>-->
+            <!--            <b-form-checkbox-->
+            <!--              v-model="isTravelAllowed"-->
+            <!--              name="check-button"-->
+            <!--              switch-->
+            <!--              @change="hasUnsavedChanges = true"-->
+            <!--            >-->
+            <!--              {{ $t('travelAllowance') }}-->
+            <!--            </b-form-checkbox>-->
+            <!--            <b-form-checkbox-->
+            <!--              v-model="standbyAllowed"-->
+            <!--              switch-->
+            <!--              class="mt-2 mr-3"-->
+            <!--              @change="hasUnsavedChanges = true"-->
+            <!--            >-->
+            <!--              {{ $t('standBy') }}-->
+            <!--            </b-form-checkbox>-->
+            <!--            <label class="mt-2" for="start-datepicker">-->
+            <!--              {{ $t('startDate') }}:-->
+            <!--            </label>-->
+            <!--            <b-form-datepicker-->
+            <!--              id="start-datepicker"-->
+            <!--              v-model="startDate"-->
+            <!--              :locale="isoLocale"-->
+            <!--              class="w-75 mb-2"-->
+            <!--              :label-no-date-selected="$t('noDate')"-->
+            <!--              @input="hasUnsavedChanges = true"-->
+            <!--            />-->
+            <!--            <b-form-checkbox-->
+            <!--              v-model="hasEndDate"-->
+            <!--              name="check-button"-->
+            <!--              switch-->
+            <!--              @change="hasUnsavedChanges = true"-->
+            <!--            >-->
+            <!--              {{ $t('endDate') }}:-->
+            <!--            </b-form-checkbox>-->
+            <!--            <b-form-datepicker-->
+            <!--              id="end-datepicker"-->
+            <!--              v-model="endDate"-->
+            <!--              :locale="isoLocale"-->
+            <!--              class="mt-2 w-75 mb-2"-->
+            <!--              :disabled="!hasEndDate"-->
+            <!--              :label-no-date-selected="$t('noDate')"-->
+            <!--              @input="hasUnsavedChanges = true"-->
+            <!--            />-->
           </b-col>
         </b-row>
-        <b-button :disabled="!hasUnsavedChanges" @click="saveProjects">
+        <b-button :disabled="!hasUnsavedChanges" @click="saveEmployee">
           {{ $t('save') }}
         </b-button>
-        <b-button
-          v-if="employee"
-          variant="danger"
-          @click="handleEmployeeDelete"
-        >
+        <b-button v-if="employee" variant="danger" @click="deleteEmployee">
           {{ $t('delete') }}
         </b-button>
         <b-row>
@@ -206,7 +164,6 @@ import {formatDate, getDayOnGMT} from "~/helpers/dates";
 import {emailRegex} from "~/helpers/email";
 
 export default defineComponent({
-  middleware: ["isAdmin"],
   props: {
     mode: {
       type: String,
@@ -222,7 +179,6 @@ export default defineComponent({
     }
   },
   setup(props: { mode: string, employee: Employee }) {
-
     const {i18n, localePath} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
@@ -239,29 +195,9 @@ export default defineComponent({
     });
 
     const customers = computed(() => store.state.customers.customers);
-    const customerOptions = computed(() =>
-      customers.value
-        .filter((customer) => !customer.isDefault && !customer.archived)
-        .map((customer) => ({
-          ...customer,
-          label: `${customer.name} (${customer.debtor})`,
-        }))
+    const isAdmin = ref<boolean>(
+      store.getters["employees/adminList"].includes(props.employee?.email)
     );
-    const defaultCustomers = computed(
-      () => store.getters["customers/defaultCustomers"]
-    );
-
-    const employeeId = router.currentRoute.params.id;
-    const employees = computed(() => store.state.employees.employees);
-
-    const teamList = computed(() => {
-      const parsedTeam = store.getters["employees/teamList"].map(
-        (team: string) => {
-          return {value: team, text: team};
-        }
-      );
-      return [{value: null, text: i18n.t("selectTeam")}, ...parsedTeam];
-    });
 
     const pageTitle = computed(() =>
       props.employee ? `${i18n.t("employees")} - ${props.employee.name}` : i18n.t("addEmployee") as string
@@ -290,14 +226,7 @@ export default defineComponent({
     useMeta(() => ({title: pageTitle.value}));
 
     onMounted(() => {
-      if (employees.value.length === 0) {
-        store.dispatch("employees/getEmployees");
-      }
-
-      if (customers.value.length === 0) {
-        store.dispatch("customers/getCustomers");
-      }
-
+      store.dispatch("customers/getCustomers");
       store.dispatch("employees/getAdminList");
       store.dispatch("employees/getTeamList");
 
@@ -328,9 +257,7 @@ export default defineComponent({
       {immediate: true}
     );
 
-    const isAdmin = ref<boolean>(
-      store.getters["employees/adminList"].includes(props.employee?.email)
-    );
+    // How can this watcher being fired? Because we don't fetch this adminList while being on the page right?
     watch(
       () =>
         store.getters["employees/adminList"].includes(props.employee?.email),
@@ -442,7 +369,7 @@ export default defineComponent({
       if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
     };
 
-    const saveProjects = async () => {
+    const saveEmployee = async () => {
       nameTouched.value = true;
       emailTouched.value = true;
 
@@ -486,7 +413,7 @@ export default defineComponent({
       emailTouched.value = null;
     };
 
-    const handleEmployeeDelete = async () => {
+    const deleteEmployee = async () => {
       const confirmation = confirm(
         i18n.t('confirmDelete', {name: props.employee?.name}) as string
       );
@@ -499,27 +426,28 @@ export default defineComponent({
 
       if (!confirmation2) return;
 
-      await store.dispatch("employees/deleteEmployee", employeeId);
+      await store.dispatch("employees/deleteEmployee", props.employee?.id);
       router.push(localePath("/admin/employees"));
     };
 
-    const handleProjectDelete = (customerId: string) => {
-      selectedCustomers.value = selectedCustomers.value.filter(
-        (customer) => customer!.id !== customerId
-      );
-    };
+    const updateTeam = (teamName: string) => {
+      selectedTeam.value = teamName;
+      hasUnsavedChanges.value = true;
+    }
 
-    const items = computed(() => [
-      ...selectedCustomers.value,
-      ...defaultCustomers.value,
-    ]);
+    const updateSelectedCustomers = (list: Customer[]) => {
+      selectedCustomers.value = list;
+      hasUnsavedChanges.value = true;
+    }
 
     return {
+      updateTeam,
+      updateSelectedCustomers,
       isAdmin,
-      customerOptions,
+      customers,
       selectedCustomers,
       selectedTeam,
-      saveProjects,
+      saveEmployee,
       hasUnsavedChanges,
       isTravelAllowed,
       isoLocale,
@@ -527,12 +455,8 @@ export default defineComponent({
       hasEndDate,
       endDate,
       errorMessage,
-      handleProjectDelete,
-      defaultCustomers,
-      items,
-      handleEmployeeDelete,
+      deleteEmployee,
       standbyAllowed,
-      teamList,
       name,
       nameValidationState,
       nameTouched,
