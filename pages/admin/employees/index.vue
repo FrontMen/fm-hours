@@ -1,22 +1,22 @@
 <i18n lang="yaml">
-  en:
-    searchEmployeeByName: "Search by employee name"
-    namePlaceholder: "Ex.: \"John\""
-    showInactive: "Show inactive"
-    newEmployee: "New employee"
-    noEmployeeFound: "No employee found"
-    inactive: "Inactive"
-    manageEmployee: "Manage employee"
-    addEmployee: "Add an employee"
-  nl:
-    searchEmployeeByName: "Zoek medeerker op naam"
-    namePlaceholder: "Bv.: \"John\""
-    showInactive: "Laat inactieve medeerkers zien"
-    newEmployee: "Nieuwe medewerker"
-    noEmployeeFound: "Geen medewerker(s) gevonden"
-    inactive: "Inactief"
-    manageEmployee: "Medewerker bewerken"
-    addEmployee: "Medewerker toevoegen"
+en:
+  searchEmployeeByName: "Search by employee name"
+  namePlaceholder: "Ex.: \"John\""
+  showInactive: "Show inactive"
+  newEmployee: "New employee"
+  noEmployeeFound: "No employee found"
+  inactive: "Inactive"
+  manageEmployee: "Manage employee"
+  addEmployee: "Add an employee"
+nl:
+  searchEmployeeByName: "Zoek medeerker op naam"
+  namePlaceholder: "Bv.: \"John\""
+  showInactive: "Laat inactieve medeerkers zien"
+  newEmployee: "Nieuwe medewerker"
+  noEmployeeFound: "Geen medewerker(s) gevonden"
+  inactive: "Inactief"
+  manageEmployee: "Medewerker bewerken"
+  addEmployee: "Medewerker toevoegen"
 </i18n>
 
 <template>
@@ -25,7 +25,7 @@
       <b-row :no-gutters="true">
         <b-col cols="12" sm="6" lg="2" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="status-select">
-            {{$t('filterBy')}}:
+            {{ $t('filterBy') }}:
           </label>
           <b-form-select
             id="status-select"
@@ -35,7 +35,7 @@
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
-            {{$t('searchEmployeeByName')}}:
+            {{ $t('searchEmployeeByName') }}:
           </label>
           <b-input
             id="employee-search"
@@ -46,7 +46,7 @@
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="mb-3 pr-2">
           <label class="employee-status__label" for="customer-select">
-            {{$t('filterByCustomer')}}:
+            {{ $t('filterByCustomer') }}:
           </label>
           <multiselect
             id="customer-select"
@@ -69,7 +69,7 @@
         </b-col>
         <b-col cols="6" lg="2" class="mt-auto pb-2 mb-3 pr-2">
           <b-form-checkbox v-model="showInactive" switch class="mr-3 ml-auto">
-            {{$t('showInactive')}}
+            {{ $t('showInactive') }}
           </b-form-checkbox>
         </b-col>
         <b-col
@@ -77,8 +77,11 @@
           lg="2"
           class="d-flex align-items-end justify-content-end mb-3"
         >
-          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/employees/add`)">
-            + {{$t('newEmployee')}}
+          <nuxt-link
+            class="btn btn-primary"
+            :to="localePath(`/admin/employees/add`)"
+          >
+            + {{ $t('newEmployee') }}
           </nuxt-link>
         </b-col>
       </b-row>
@@ -86,7 +89,7 @@
     <b-container fluid class="app-table">
       <b-row class="app-table__top-row py-3">
         <b-col>
-          <span class="font-weight-bold">{{$t('employees')}}</span>
+          <span class="font-weight-bold">{{ $t('employees') }}</span>
         </b-col>
       </b-row>
 
@@ -95,7 +98,7 @@
         class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
       >
         <b-icon-person-x class="mr-2" />
-        {{$t('noEmployeeFound')}}.
+        {{ $t('noEmployeeFound') }}.
       </b-row>
 
       <b-row
@@ -113,7 +116,7 @@
             v-if="!checkEmployeeAvailability(employee, new Date())"
             variant="danger"
           >
-            {{$t('inactive')}}
+            {{ $t('inactive') }}
           </b-badge>
         </div>
 
@@ -122,7 +125,7 @@
             class="btn btn-info"
             :to="localePath(`/admin/employees/${employee.id}`)"
           >
-            {{$t('manageEmployee')}}
+            {{ $t('manageEmployee') }}
           </nuxt-link>
         </div>
       </b-row>
@@ -131,21 +134,14 @@
 </template>
 
 <script lang="ts">
-import {
-  ref,
-  computed,
-  defineComponent,
-  useStore,
-  onMounted,
-  useContext,
-} from "@nuxtjs/composition-api";
+import {computed, defineComponent, onMounted, ref, useContext, useStore,} from "@nuxtjs/composition-api";
 
 import {checkEmployeeAvailability} from "~/helpers/employee";
 import {queryOnString} from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
@@ -307,6 +303,7 @@ export default defineComponent({
     padding-top: 6px;
     border-color: #ced4da;
   }
+
   .multiselect__placeholder {
     padding-top: 0px;
   }
