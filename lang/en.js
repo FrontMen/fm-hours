@@ -11,7 +11,8 @@ export default {
   employees: 'Employees',
   errorEndDate: 'Please select an end date',
   errorStartDate: 'Please select start date',
-  errorNameEmail: 'Please set the employee name and email',
+  errorName: 'Please set the employee name',
+  errorEmail: 'Please set the employee email',
   confirmDelete: 'Are you sure you want to delete {name}?',
   reConfirmDelete:
     "You won't be able to access the timesheets / reports of {name}!",

@@ -14,7 +14,7 @@ nl:
   standBy: "Stand-by"
   endDate: "Eind datum"
   startDate: "Start datum"
-  noDate: "Geen datum geselcteerd"
+  noDate: "Geen datum geselecteerd"
 </i18n>
 
 <template>
@@ -29,7 +29,7 @@ nl:
       :placeholder="$t('employeeName')"
       :trim="true"
       :state="nameValidationState"
-      @change="nameTouched = true"
+      @input="$emit('changed')"
     />
 
     {{ $t('email') }}:
@@ -40,50 +40,79 @@ nl:
       :placeholder="$t('employeeEmail')"
       :state="emailValidationState"
       :trim="true"
-      @change="emailTouched = true"
+      @input="$emit('changed')"
     />
 
-    <b-form-checkbox v-model="isAdmin" switch class="mt-2 mr-3">
+    <b-form-checkbox
+      v-model="localIsAdmin"
+      switch
+      class="mt-2 mr-3"
+      @change="$emit('changed')"
+    >
       {{ $t('admin') }}
     </b-form-checkbox>
     <b-form-checkbox
       v-model="localEmployee.travelAllowance"
       name="check-button"
       switch
+      @change="$emit('changed')"
     >
       {{ $t('travelAllowance') }}
     </b-form-checkbox>
-    <b-form-checkbox v-model="localEmployee.standBy" switch class="mt-2 mr-3">
+    <b-form-checkbox
+      v-model="localEmployee.standBy"
+      switch
+      class="mt-2 mr-3"
+      @change="$emit('changed')"
+    >
       {{ $t('standBy') }}
     </b-form-checkbox>
     <label class="mt-2" for="start-datepicker">{{ $t('startDate') }}:</label>
     <b-form-datepicker
       id="start-datepicker"
-      v-model="localEmployee.startDate"
+      v-model="startDate"
       :locale="isoLocale"
       class="w-75 mb-2"
       :label-no-date-selected="$t('noDate')"
+      @input="$emit('changed')"
     />
-    <b-form-checkbox v-model="hasEndDate" name="check-button" switch>
+    <b-form-checkbox
+      v-model="hasEndDate"
+      name="check-button"
+      switch
+      @change="$emit('changed')"
+    >
       {{ $t('endDate') }}:
     </b-form-checkbox>
     <b-form-datepicker
       id="end-datepicker"
-      v-model="localEmployee.endDate"
+      v-model="endDate"
       :locale="isoLocale"
       class="mt-2 w-75 mb-2"
-      :disabled="!!localEmployee.endDate"
+      :disabled="!hasEndDate"
       :label-no-date-selected="$t('noDate')"
+      @input="$emit('changed')"
     />
   </section>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, reactive, Ref, ref, useContext, watch} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  SetupContext,
+  toRefs,
+  useContext,
+  watch
+} from "@nuxtjs/composition-api";
 import {emailRegex} from "~/helpers/email";
+import {formatDate, getDayOnGMT} from "~/helpers/dates";
 
 interface EmployeeSettingsProps {
   employee: Employee,
+  isAdmin: boolean,
 }
 
 export default defineComponent({
@@ -92,69 +121,71 @@ export default defineComponent({
       type: Object as PropType<Employee>,
       required: true,
     },
+    isAdmin: {
+      type: Boolean as PropType<boolean>,
+      required: true
+    }
   },
-  emits: ['update-selected-customers'],
-  setup(props: EmployeeSettingsProps, {emit}) {
-    const localEmployee: Ref<Employee> = reactive<Employee>(props.employee)
+  emits: ['changed', 'error-state'],
+  setup(props: EmployeeSettingsProps, {emit}: SetupContext) {
+    const {employee: localEmployee, isAdmin: localIsAdmin} = toRefs(props)
     const {i18n} = useContext();
 
-    const isAdmin = true;
-    const isoLocale = computed(() => i18n.localeProperties.iso);
-    const hasEndDate = ref<boolean>(!!localEmployee.endDate);
+    const hasEndDate = ref<boolean>(!!localEmployee.value.endDate);
+    const startDate = ref<string>(formatDate(getDayOnGMT(localEmployee.value.startDate)));
+    const endDate = ref<string | null>(localEmployee.value.endDate ? formatDate(getDayOnGMT(localEmployee.value.endDate)) : null);
     const emailTouched = ref<boolean | null>(null);
     const nameTouched = ref<boolean | null>(null);
 
-    const emailValidationState = computed(() => {
-      if (!emailTouched.value) {
-        return null;
-      } else {
-        return localEmployee.email.match(emailRegex)
+    const isoLocale = computed(() => i18n.localeProperties.iso);
+    const emailValidationState = computed(() => !!localEmployee.value.email.match(emailRegex));
+    const nameValidationState = computed(() => !!localEmployee.value.name);
+
+    const checkValidity = () => {
+      if (!nameValidationState.value) {
+        emit('error-state', {message: i18n.t('errorName')})
+        return;
+      }
+
+      if (!emailValidationState.value) {
+        emit('error-state', {message: i18n.t('errorEmail')})
+        return;
+      }
+
+      if (!startDate.value) {
+        emit('error-state', {message: i18n.t('errorStartDate')})
+        return;
+      }
+
+      if (hasEndDate.value && !endDate.value) {
+        emit('error-state', {message: i18n.t('errorEndDate')})
+      }
+    }
+
+    watch(localEmployee.value, checkValidity)
+    watch([startDate, endDate], checkValidity)
+
+    watch(startDate, () => {
+      localEmployee.value.startDate = new Date(startDate.value).getTime()
+    });
+
+    watch(endDate, () => {
+      if (endDate.value) {
+        localEmployee.value.endDate = new Date(endDate.value).getTime()
       }
     });
-
-    const nameValidationState = computed(() => {
-      if (!nameTouched.value) {
-        return null;
-      } else {
-        return !!localEmployee.name
-      }
-    });
-
-
-    watch(localEmployee, () => {
-      console.log(localEmployee)
-    });
-    // id: string;
-    // name: string;
-    // email: string;
-    // picture: string;
-    // travelAllowance: boolean;
-    // projects: string[];
-    // endDate: number | null;
-    // startDate: number;
-    // created: number;
-    // bridgeUid?: string;
-    // team?: string;
-    // standBy: boolean;
 
     return {
       localEmployee,
       hasEndDate,
       isoLocale,
-      isAdmin,
-      // isAdmin,
-      // standbyAllowed,
-      // name,
       nameValidationState,
       nameTouched,
-      // email,
       emailValidationState,
       emailTouched,
-      // isTravelAllowed,
-      // isoLocale,
-      // startDate,
-      // hasEndDate,
-      // endDate,
+      startDate,
+      endDate,
+      localIsAdmin,
     }
   },
 });

@@ -49,83 +49,12 @@ nl:
           <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <employee-settings :employee="employee"></employee-settings>
-            <!--            <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>-->
-
-            <!--            {{ $t('name') }}:-->
-            <!--            <b-form-input-->
-            <!--              v-model="name"-->
-            <!--              type="text"-->
-            <!--              class="mt-2 w-75 mb-2"-->
-            <!--              :placeholder="$t('employeeName')"-->
-            <!--              :trim="true"-->
-            <!--              :state="nameValidationState"-->
-            <!--              @change="(nameTouched = true), (hasUnsavedChanges = true)"-->
-            <!--            />-->
-
-            <!--            {{ $t('email') }}:-->
-            <!--            <b-form-input-->
-            <!--              v-model="email"-->
-            <!--              type="email"-->
-            <!--              class="mt-2 w-75 mb-2"-->
-            <!--              :placeholder="$t('employeeEmail')"-->
-            <!--              :state="emailValidationState"-->
-            <!--              :trim="true"-->
-            <!--              @change="(emailTouched = true), (hasUnsavedChanges = true)"-->
-            <!--            />-->
-
-            <!--            <b-form-checkbox-->
-            <!--              v-model="isAdmin"-->
-            <!--              switch-->
-            <!--              class="mt-2 mr-3"-->
-            <!--              @change="hasUnsavedChanges = true"-->
-            <!--            >-->
-            <!--              {{ $t('admin') }}-->
-            <!--            </b-form-checkbox>-->
-            <!--            <b-form-checkbox-->
-            <!--              v-model="isTravelAllowed"-->
-            <!--              name="check-button"-->
-            <!--              switch-->
-            <!--              @change="hasUnsavedChanges = true"-->
-            <!--            >-->
-            <!--              {{ $t('travelAllowance') }}-->
-            <!--            </b-form-checkbox>-->
-            <!--            <b-form-checkbox-->
-            <!--              v-model="standbyAllowed"-->
-            <!--              switch-->
-            <!--              class="mt-2 mr-3"-->
-            <!--              @change="hasUnsavedChanges = true"-->
-            <!--            >-->
-            <!--              {{ $t('standBy') }}-->
-            <!--            </b-form-checkbox>-->
-            <!--            <label class="mt-2" for="start-datepicker">-->
-            <!--              {{ $t('startDate') }}:-->
-            <!--            </label>-->
-            <!--            <b-form-datepicker-->
-            <!--              id="start-datepicker"-->
-            <!--              v-model="startDate"-->
-            <!--              :locale="isoLocale"-->
-            <!--              class="w-75 mb-2"-->
-            <!--              :label-no-date-selected="$t('noDate')"-->
-            <!--              @input="hasUnsavedChanges = true"-->
-            <!--            />-->
-            <!--            <b-form-checkbox-->
-            <!--              v-model="hasEndDate"-->
-            <!--              name="check-button"-->
-            <!--              switch-->
-            <!--              @change="hasUnsavedChanges = true"-->
-            <!--            >-->
-            <!--              {{ $t('endDate') }}:-->
-            <!--            </b-form-checkbox>-->
-            <!--            <b-form-datepicker-->
-            <!--              id="end-datepicker"-->
-            <!--              v-model="endDate"-->
-            <!--              :locale="isoLocale"-->
-            <!--              class="mt-2 w-75 mb-2"-->
-            <!--              :disabled="!hasEndDate"-->
-            <!--              :label-no-date-selected="$t('noDate')"-->
-            <!--              @input="hasUnsavedChanges = true"-->
-            <!--            />-->
+            <employee-settings
+              :employee="employee"
+              :is-admin="isAdmin"
+              @changed="hasUnsavedChanges = true, errorMessage = null"
+              @error-state="handleFormError"
+            ></employee-settings>
           </b-col>
         </b-row>
         <b-button :disabled="!hasUnsavedChanges" @click="saveEmployee">
@@ -160,9 +89,6 @@ import {
   watch,
 } from "@nuxtjs/composition-api";
 
-import {formatDate, getDayOnGMT} from "~/helpers/dates";
-import {emailRegex} from "~/helpers/email";
-
 export default defineComponent({
   props: {
     mode: {
@@ -187,12 +113,6 @@ export default defineComponent({
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref<string>("");
     const selectedTeam = ref<string | null>(null);
-    const emailTouched = ref<boolean | null>(null);
-    const nameTouched = ref<boolean | null>(null);
-
-    const isoLocale = computed(() => {
-      return i18n.localeProperties.iso;
-    });
 
     const customers = computed(() => store.state.customers.customers);
     const isAdmin = ref<boolean>(
@@ -203,46 +123,13 @@ export default defineComponent({
       props.employee ? `${i18n.t("employees")} - ${props.employee.name}` : i18n.t("addEmployee") as string
     );
 
-    const emailValidationState = computed(() => {
-      if (!emailTouched.value) {
-        return null;
-      } else if (!email.value?.match(emailRegex)) {
-        return false;
-      }
-
-      return true;
-    });
-
-    const nameValidationState = computed(() => {
-      if (!nameTouched.value) {
-        return null;
-      } else if (!name.value) {
-        return false;
-      }
-
-      return true;
-    });
-
     useMeta(() => ({title: pageTitle.value}));
 
     onMounted(() => {
       store.dispatch("customers/getCustomers");
       store.dispatch("employees/getAdminList");
       store.dispatch("employees/getTeamList");
-
-      if (props.employee?.endDate) {
-        hasEndDate.value = true;
-        endDate.value = formatDate(getDayOnGMT(props.employee.endDate));
-      }
     });
-
-    watch(
-      () => props.employee?.team,
-      () => {
-        selectedTeam.value = props.employee?.team || null;
-      },
-      {immediate: true}
-    );
 
     watch(
       () => [props.employee?.projects, customers.value],
@@ -257,7 +144,7 @@ export default defineComponent({
       {immediate: true}
     );
 
-    // How can this watcher being fired? Because we don't fetch this adminList while being on the page right?
+    // We probably shouldn't watch a store getter imho
     watch(
       () =>
         store.getters["employees/adminList"].includes(props.employee?.email),
@@ -267,86 +154,6 @@ export default defineComponent({
         );
       },
       {immediate: true}
-    );
-
-    const standbyAllowed = ref<boolean>(!!props.employee?.standBy);
-    watch(
-      () => props.employee?.standBy,
-      () => {
-        standbyAllowed.value = !!props.employee?.standBy;
-      },
-      {immediate: true}
-    );
-
-
-    const isTravelAllowed = ref<boolean>(!!props.employee?.travelAllowance);
-    watch(
-      () => props.employee?.travelAllowance,
-      () => {
-        isTravelAllowed.value = !!props.employee?.travelAllowance;
-      },
-      {immediate: true}
-    );
-
-    const startDate = ref<string>(
-      props.employee ? formatDate(getDayOnGMT(props.employee.startDate)) : ""
-    );
-    watch(
-      () => props.employee?.startDate,
-      () => {
-        startDate.value = props.employee
-          ? formatDate(getDayOnGMT(props.employee.startDate))
-          : "";
-      },
-      {immediate: true}
-    );
-
-    const hasEndDate = ref(!!props.employee?.endDate);
-    const endDate = ref<string | null>(null);
-
-    watch(
-      () => props.employee,
-      () => {
-        if (props.employee?.endDate) {
-          hasEndDate.value = true;
-          endDate.value = formatDate(getDayOnGMT(props.employee.endDate));
-        }
-      }
-    );
-
-    watch(
-      () => hasEndDate.value,
-      () => {
-        if (!hasEndDate.value) {
-          endDate.value = null;
-          errorMessage.value = "";
-        }
-      }
-    );
-
-    watch(
-      () => endDate.value,
-      () => {
-        if (endDate.value) {
-          errorMessage.value = "";
-        }
-      }
-    );
-
-    const name = ref<String | undefined>(props.employee?.name);
-    watch(
-      () => props.employee?.name,
-      () => {
-        name.value = props.employee?.name;
-      }
-    );
-
-    const email = ref<String | undefined>(props.employee?.email);
-    watch(
-      () => props.employee?.email,
-      () => {
-        email.value = props.employee?.email;
-      }
     );
 
     const handleAdminToggle = (): void => {
@@ -370,35 +177,12 @@ export default defineComponent({
     };
 
     const saveEmployee = async () => {
-      nameTouched.value = true;
-      emailTouched.value = true;
-
-      if (!(emailValidationState.value && nameValidationState.value)) {
-        errorMessage.value = i18n.t('errorNameEmail') as string;
-        return;
-      }
-
-      if (!startDate.value) {
-        errorMessage.value = i18n.t('errorStartDate') as string;
-        return;
-      }
-
-      if (hasEndDate.value && !endDate.value) {
-        errorMessage.value = i18n.t('errorEndDate') as string;
-        return;
-      }
-
       handleAdminToggle();
+
       const newEmployee = {
         ...props.employee,
-        name: name.value,
-        email: email.value,
         team: selectedTeam.value,
-        standBy: standbyAllowed.value,
         projects: selectedCustomers.value.map((customer) => customer!.id),
-        travelAllowance: isTravelAllowed.value,
-        startDate: new Date(startDate.value).getTime(),
-        endDate: endDate?.value ? new Date(endDate.value).getTime() : null,
       };
 
 
@@ -409,8 +193,6 @@ export default defineComponent({
       }
 
       hasUnsavedChanges.value = false;
-      nameTouched.value = null;
-      emailTouched.value = null;
     };
 
     const deleteEmployee = async () => {
@@ -440,6 +222,10 @@ export default defineComponent({
       hasUnsavedChanges.value = true;
     }
 
+    const handleFormError = (error: { message: string }) => {
+      errorMessage.value = error.message;
+    }
+
     return {
       updateTeam,
       updateSelectedCustomers,
@@ -449,20 +235,9 @@ export default defineComponent({
       selectedTeam,
       saveEmployee,
       hasUnsavedChanges,
-      isTravelAllowed,
-      isoLocale,
-      startDate,
-      hasEndDate,
-      endDate,
       errorMessage,
       deleteEmployee,
-      standbyAllowed,
-      name,
-      nameValidationState,
-      nameTouched,
-      email,
-      emailValidationState,
-      emailTouched,
+      handleFormError,
     };
   },
   head: {},
