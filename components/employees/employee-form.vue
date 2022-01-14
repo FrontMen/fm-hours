@@ -53,6 +53,7 @@ nl:
               :employee="employee"
               :is-admin="isAdmin"
               @changed="hasUnsavedChanges = true, errorMessage = null"
+              @changed-admin="changedAdmin"
               @error-state="handleFormError"
             ></employee-settings>
           </b-col>
@@ -222,6 +223,11 @@ export default defineComponent({
       hasUnsavedChanges.value = true;
     }
 
+    const changedAdmin = (adminValue: boolean) => {
+      isAdmin.value = adminValue;
+      hasUnsavedChanges.value = true;
+    }
+
     const handleFormError = (error: { message: string }) => {
       errorMessage.value = error.message;
     }
@@ -237,6 +243,7 @@ export default defineComponent({
       hasUnsavedChanges,
       errorMessage,
       deleteEmployee,
+      changedAdmin,
       handleFormError,
     };
   },

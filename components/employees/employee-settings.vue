@@ -44,10 +44,10 @@ nl:
     />
 
     <b-form-checkbox
-      v-model="localIsAdmin"
+      :checked="localIsAdmin"
       switch
       class="mt-2 mr-3"
-      @change="$emit('changed')"
+      @change="$emit('changed-admin', !localIsAdmin)"
     >
       {{ $t('admin') }}
     </b-form-checkbox>
@@ -126,7 +126,7 @@ export default defineComponent({
       required: true
     }
   },
-  emits: ['changed', 'error-state'],
+  emits: ['changed', 'changed-admin', 'error-state'],
   setup(props: EmployeeSettingsProps, {emit}: SetupContext) {
     const {employee: localEmployee, isAdmin: localIsAdmin} = toRefs(props)
     const {i18n} = useContext();
