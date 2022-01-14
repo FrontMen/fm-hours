@@ -147,13 +147,8 @@ export default defineComponent({
     const customers = computed(() => store.state.customers.customers);
 
     onMounted(() => {
-      if (employees.value.length === 0) {
-        store.dispatch("employees/getEmployees");
-      }
-
-      if (customers.value.length === 0) {
-        store.dispatch("customers/getCustomers");
-      }
+      store.dispatch("employees/getEmployees");
+      store.dispatch("customers/getCustomers");
     });
 
     const isoLocale = computed(() => {
@@ -225,8 +220,7 @@ export default defineComponent({
     const employeeStatusChecker = (status: boolean, employee: Employee) => {
       if (status) return true;
 
-      const isActive = checkEmployeeAvailability(employee, new Date());
-      return isActive;
+      return checkEmployeeAvailability(employee, new Date());
     };
 
     const employeeByProp = (employee: Employee, query: string, filterByProp: keyof Employee) => {

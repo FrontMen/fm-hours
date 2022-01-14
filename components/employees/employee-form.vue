@@ -189,11 +189,11 @@ export default defineComponent({
 
       if (props.mode === 'edit') {
         await store.dispatch("employees/updateEmployee", newEmployee);
+        hasUnsavedChanges.value = false;
       } else {
-        await store.dispatch('employees/addNewEmployee', newEmployee)
+        await store.dispatch('employees/addNewEmployee', newEmployee);
+        router.push(localePath("/admin/employees"));
       }
-
-      hasUnsavedChanges.value = false;
     };
 
     const deleteEmployee = async () => {

@@ -138,7 +138,7 @@ export default defineComponent({
     const nameTouched = ref<boolean | null>(null);
 
     const isoLocale = computed(() => i18n.localeProperties.iso);
-    const emailValidationState = computed(() => !!localEmployee.value.email.match(emailRegex));
+    const emailValidationState = computed(() => !!localEmployee.value.email?.match(emailRegex));
     const nameValidationState = computed(() => !!localEmployee.value.name);
 
     const checkValidity = () => {
