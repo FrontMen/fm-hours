@@ -30,6 +30,7 @@ interface TimesheetTableField {
   formatedStartDate?: string;
   formatedEndDate?: string;
   weekNumber?: number;
+  isThisWeek?: boolean;
   timestamp?: number;
   timestampEnd?: number;
 }
