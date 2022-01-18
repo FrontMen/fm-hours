@@ -162,7 +162,7 @@ export default defineComponent({
       }
     }
 
-    watch(localEmployee.value, checkValidity)
+    watch(localEmployee, checkValidity)
     watch([startDate, endDate], checkValidity)
 
     watch(startDate, () => {
