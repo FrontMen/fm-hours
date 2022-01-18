@@ -5,18 +5,17 @@ nl:
   employeeError: "Geselecteerde medewerker is niet gevonden"
 </i18n>
 <template>
-  <div class="mt-5 content-wrapper">
+  <div class="mt-2 content-wrapper">
     <b-alert
       :show="showEmployeeError"
       dismissible
       variant="warning"
       class="mb-3"
     >
-      {{$t('employeeError') }}
+      {{ $t('employeeError') }}
     </b-alert>
 
     <template v-if="employee">
-      <employee-header :employee="employee" class="mb-5" />
       <weekly-timesheet
         :key="`${employee.id}-${year}-${week}`"
         :employee="employee"
@@ -62,7 +61,7 @@ export default defineComponent({
 
     const year = computed(() => parseInt(route.value.params.year, 10));
     const week = computed(() => parseInt(route.value.params.week, 10));
-    const pageTitle = computed(() =>`${i18n.t('timesheets')} - ${employee.value?.name}`);
+    const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
     const routePrefix = computed(() => `/admin/timesheets/${employee.value?.id}`);
 
     // TODO: Overview should retrieve all employees
