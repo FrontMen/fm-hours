@@ -9,11 +9,9 @@ export default defineComponent({
   middleware: ["isAdmin"],
   setup() {
     const employee = ref({});
-    const employeeFormMode = 'add';
 
     return {
       employee,
-      employeeFormMode
     }
   }
 });
