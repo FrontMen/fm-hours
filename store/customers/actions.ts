@@ -1,7 +1,9 @@
 import type {ActionTree} from 'vuex';
 
 const actions: ActionTree<CustomersStoreState, RootStoreState> = {
-  async getCustomers({commit}) {
+  async getCustomers({commit, getters}) {
+    if (getters['customers/customerList']?.length) return;
+
     const customers = await this.app.$customersService.getCustomers();
     commit('getCustomersSuccess', {customers});
   },

@@ -1,7 +1,9 @@
 import {ActionTree} from 'vuex/types';
 
 const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
-  async getEmployees({commit}) {
+  async getEmployees({commit, getters}) {
+    if (getters['employees/employeesList']?.length) return;
+
     const employees = await this.app.$employeesService.getEmployees();
     commit('setEmployees', {employees});
   },
