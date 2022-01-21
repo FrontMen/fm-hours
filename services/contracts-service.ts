@@ -1,21 +1,75 @@
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {CancelToken} from 'axios';
+
+interface Contract {
+  billingcontact_id: number;
+  billingcontact_name: string;
+  brand_group_id: number;
+  brand_name: string;
+  closed: boolean;
+  company_id: number;
+  company_name: string;
+  group_name: string;
+  id: number;
+  jira_id: number;
+  name: string;
+  odoo_id: number;
+  project_billingentity_id: string;
+  project_billingentity_name: string;
+  project_brand_id: string;
+  project_id: number;
+  project_jira_id: string;
+  project_key: string;
+  project_name: string;
+  projectlead: string;
+}
+
+interface ContractListItemResult {
+  [key: number]: Contract;
+}
+
+interface ContractListResult {
+  numRows: number;
+  contractList: Contract[];
+}
 
 export default class ContractsService {
   axios: NuxtAxiosInstance;
+  readonly contractsEndpoint = 'api/bridge/contracts';
 
   constructor(axios: NuxtAxiosInstance) {
     this.axios = axios;
   }
 
   async getContracts(): Promise<unknown> {
-    const contractsEndpoint = 'api/bridge/contracts';
-
-    return await this.axios.get(contractsEndpoint);
+    return await this.axios.get(this.contractsEndpoint);
   }
 
-  async getContract(id: number): Promise<unknown> {
-    const contractEndpoint = `api/bridge/contracts/${id}`;
-
-    return await this.axios.get(contractEndpoint);
+  async getContractByParam(
+    axiosCancelToken: CancelToken,
+    params: {
+      contractId?: number;
+      jiraId?: string;
+      projectId?: string;
+      projectJiraId?: string;
+      projectKey?: string;
+      search?: string;
+    }
+  ): Promise<ContractListResult> {
+    return await this.axios
+      .get(this.contractsEndpoint, {
+        cancelToken: axiosCancelToken,
+        params,
+      })
+      .then(({data: result}) => result.data)
+      .then(
+        (contractResult: {
+          numrows: number;
+          results: ContractListItemResult;
+        }) => ({
+          numRows: contractResult.numrows,
+          contractList: Object.values(contractResult.results),
+        })
+      );
   }
 }

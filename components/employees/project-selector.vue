@@ -2,9 +2,15 @@
 en:
   manageProjects: "Manage Projects"
   customerSearchPlaceholder: "Click or search for a customer here"
+  addContractModalTitle: "Add contract"
+  addContractModalInputPlaceholder: "Search term"
+  noContractsFound: "No contracts found by search term"
 nl:
   manageProjects: "Projecten bewerkern"
   customerSearchPlaceholder: "Klik of zoek naar een klant"
+  addContractModalTitle: "Voeg contract toe"
+  addContractModalInputPlaceholder: "Zoek term"
+noContractsFound: "Geen contracten gevonden voor de zoek term"
 </i18n>
 
 <template>
@@ -31,12 +37,17 @@ nl:
 
     <b-table
       :items="selectedCustomers"
-      :fields="['name', 'debtor', 'delete']"
+      :fields="['name', 'debtor', {key: 'contract', class: 'text-center'}, {key: 'delete', class: 'text-center'}]"
       class="rounded"
       small
       striped
       table-variant="light"
     >
+      <template #cell(contract)="row" class="text-center">
+        <b-button size="sm" variant="success" v-b-modal.add-contract>
+          <b-icon-plus/>
+        </b-button>
+      </template>
       <template #cell(delete)="row">
         <b-button
           size="sm"
@@ -44,15 +55,35 @@ nl:
           :disabled="row.item.isDefault"
           @click="handleProjectDelete(row.item.id)"
         >
-          <b-icon-trash-fill />
+          <b-icon-trash-fill/>
         </b-button>
       </template>
     </b-table>
+
+    <b-modal id="add-contract" scrollable :title="$t('addContractModalTitle')">
+      <b-form-input
+        v-model="searchQuery"
+        type="text"
+        :placeholder="$t('addContractModalInputPlaceholder')"
+        :trim="true"
+        :debounce="300"
+        @update="callSearch"
+      />
+      <b-table
+        :items="foundContracts"
+        :fields="['name']"
+        class="rounded"
+        small
+        striped
+        table-variant="light"
+      ></b-table>
+    </b-modal>
   </section>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent} from "@nuxtjs/composition-api";
+import {computed, defineComponent, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
+import {Canceler} from "axios";
 
 interface ProjectSelectorProps {
   selectedCustomers: Customer[],
@@ -73,7 +104,9 @@ export default defineComponent({
     },
   },
   emits: ['update-selected-customers'],
-  setup(props: ProjectSelectorProps, {emit}) {
+  setup(props: ProjectSelectorProps, {emit}: SetupContext) {
+    const {app, i18n} = useContext();
+
     const handleProjectDelete = (projectId: string) => {
       const newList = props.selectedCustomers.filter((customer: Customer) => customer.id !== projectId);
 
@@ -89,7 +122,30 @@ export default defineComponent({
         }))
     );
 
-    return {handleProjectDelete, customerOptions}
+    const searchQuery = ref('');
+    const foundContracts = ref([]);
+    const axiosSource = app.$axios.CancelToken.source();
+    let request: { cancel: Canceler } | null;
+
+    const callSearch = async (value: string) => {
+      if (request) {
+        request.cancel()
+      }
+
+      try {
+        request = {cancel: axiosSource.cancel}
+
+        const {contractList} = await app.$contractsService.getContractByParam(axiosSource.token, {search: value});
+
+        foundContracts.value = contractList.length > 0 ? contractList : [{name: i18n.t('noContractsFound')}];
+      } catch (e) {
+        console.error(e);
+      } finally {
+        request = null;
+      }
+    }
+
+    return {searchQuery, foundContracts, callSearch, handleProjectDelete, customerOptions}
   },
 });
 </script>
