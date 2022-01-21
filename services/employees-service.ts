@@ -36,9 +36,13 @@ export default class EmployeesService {
   }
 
   async getEmployeeByMail(email: string): Promise<Employee | null> {
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
     const ref = this.fire.firestore
       .collection(Collections.EMPLOYEES)
-      .where('email', '==', email);
+      .where('email', 'in', [fmMail, ioMail]);
 
     const snapshot = await ref.get();
 
@@ -82,8 +86,12 @@ export default class EmployeesService {
   }
 
   async isAdmin(email: string): Promise<boolean> {
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
     const adminEmails = await this.getAdminEmails();
-    return adminEmails.includes(email);
+    return adminEmails.some((mail) => [fmMail, ioMail].includes(mail));
   }
 
   async getAdminEmails(): Promise<string[]> {
