@@ -14,6 +14,7 @@ export default {
   errorName: 'Please set the employee name',
   errorEmail: 'Please set the employee email',
   confirmDelete: 'Are you sure you want to delete {name}?',
+  noContractsFound: 'No contracts found by search term',
   reConfirmDelete:
     "You won't be able to access the timesheets / reports of {name}!",
   noOptions: '{num} options selected',

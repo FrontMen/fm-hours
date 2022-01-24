@@ -1,5 +1,4 @@
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
-import {CancelToken} from 'axios';
 
 interface Contract {
   billingcontact_id: number;
@@ -46,7 +45,7 @@ export default class ContractsService {
   }
 
   async getContractByParam(
-    axiosCancelToken: CancelToken,
+    abortControllerSignal: AbortSignal,
     params: {
       contractId?: number;
       jiraId?: string;
@@ -56,11 +55,13 @@ export default class ContractsService {
       search?: string;
     }
   ): Promise<ContractListResult> {
+    const axiosConfig = {
+      signal: abortControllerSignal,
+      params,
+    };
+
     return await this.axios
-      .get(this.contractsEndpoint, {
-        cancelToken: axiosCancelToken,
-        params,
-      })
+      .get(this.contractsEndpoint, axiosConfig)
       .then(({data: result}) => result.data)
       .then(
         (contractResult: {

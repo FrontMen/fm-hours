@@ -1,14 +1,14 @@
 <i18n lang="yaml">
-  en:
-    requestLeave: "Request leave"
-    monthly: "Monthly overview"
-    feedback: "Feedback"
-    logout: "Logout"
-  nl:
-    requestLeave: "Verlof aanvragen"
-    monthly: "Maand overzicht"
-    feedback: "Feedback"
-    logout: "Uitloggen"
+en:
+  requestLeave: "Request leave"
+  monthly: "Monthly overview"
+  feedback: "Feedback"
+  logout: "Logout"
+nl:
+  requestLeave: "Verlof aanvragen"
+  monthly: "Maand overzicht"
+  feedback: "Feedback"
+  logout: "Uitloggen"
 </i18n>
 
 <template>
@@ -70,7 +70,7 @@
           </b-col>
 
           <b-col class="text-right">
-            <LanguageSwitch class="language" />
+            <LanguageSwitch class="language"/>
           </b-col>
 
           <b-col>
@@ -84,7 +84,7 @@
 
               <b-dropdown right class="employee__dropdown">
                 <template v-if="employee" #button-content>
-                  <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
+                  <b-avatar :src="employee.picture" class="flex-shrink mr-1"/>
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">
@@ -100,12 +100,7 @@
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  PropType,
-  useRouter,
-  useContext,
-} from '@nuxtjs/composition-api';
+import {defineComponent, PropType, SetupContext, useContext, useRouter,} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   emit: ['logout'],
@@ -116,15 +111,16 @@ export default defineComponent({
     },
     employee: {
       type: Object as PropType<Employee>,
+      default: null
     },
     isDev: {
       type: Boolean,
       default: false,
     },
   },
-  setup(_, { emit }) {
+  setup(_: unknown, {emit}: SetupContext) {
     const router = useRouter();
-    const { localePath } = useContext();
+    const {localePath} = useContext();
 
     const handleLogoClick = () => router.push(localePath('/'));
     const handleLogoutClick = () => emit('logout');

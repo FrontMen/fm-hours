@@ -4,13 +4,11 @@ en:
   customerSearchPlaceholder: "Click or search for a customer here"
   addContractModalTitle: "Add contract"
   addContractModalInputPlaceholder: "Search term"
-  noContractsFound: "No contracts found by search term"
 nl:
   manageProjects: "Projecten bewerkern"
   customerSearchPlaceholder: "Klik of zoek naar een klant"
   addContractModalTitle: "Voeg contract toe"
   addContractModalInputPlaceholder: "Zoek term"
-noContractsFound: "Geen contracten gevonden voor de zoek term"
 </i18n>
 
 <template>
@@ -43,9 +41,9 @@ noContractsFound: "Geen contracten gevonden voor de zoek term"
       striped
       table-variant="light"
     >
-      <template #cell(contract)="row" class="text-center">
-        <b-button size="sm" variant="success" v-b-modal.add-contract>
-          <b-icon-plus/>
+      <template #cell(contract)>
+        <b-button v-b-modal.add-contract size="sm" variant="success">
+          <b-icon-plus />
         </b-button>
       </template>
       <template #cell(delete)="row">
@@ -55,14 +53,20 @@ noContractsFound: "Geen contracten gevonden voor de zoek term"
           :disabled="row.item.isDefault"
           @click="handleProjectDelete(row.item.id)"
         >
-          <b-icon-trash-fill/>
+          <b-icon-trash-fill />
         </b-button>
       </template>
     </b-table>
 
-    <b-modal id="add-contract" scrollable :title="$t('addContractModalTitle')">
+    <b-modal
+      id="add-contract"
+      size="xl"
+      scrollable
+      :title="$t('addContractModalTitle')"
+    >
       <b-form-input
         v-model="searchQuery"
+        autofocus
         type="text"
         :placeholder="$t('addContractModalInputPlaceholder')"
         :trim="true"
@@ -71,7 +75,7 @@ noContractsFound: "Geen contracten gevonden voor de zoek term"
       />
       <b-table
         :items="foundContracts"
-        :fields="['name']"
+        :fields="['name', 'project_name', 'project_billingentity_name']"
         class="rounded"
         small
         striped
@@ -83,7 +87,6 @@ noContractsFound: "Geen contracten gevonden voor de zoek term"
 
 <script lang="ts">
 import {computed, defineComponent, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
-import {Canceler} from "axios";
 
 interface ProjectSelectorProps {
   selectedCustomers: Customer[],
@@ -124,24 +127,22 @@ export default defineComponent({
 
     const searchQuery = ref('');
     const foundContracts = ref([]);
-    const axiosSource = app.$axios.CancelToken.source();
-    let request: { cancel: Canceler } | null;
+    let axiosAbortController: AbortController;
 
     const callSearch = async (value: string) => {
-      if (request) {
-        request.cancel()
+      if (axiosAbortController) {
+        axiosAbortController.abort();
       }
+      axiosAbortController = new AbortController();
 
       try {
-        request = {cancel: axiosSource.cancel}
-
-        const {contractList} = await app.$contractsService.getContractByParam(axiosSource.token, {search: value});
+        const {contractList} = await app.$contractsService.getContractByParam(axiosAbortController.signal, {search: value});
 
         foundContracts.value = contractList.length > 0 ? contractList : [{name: i18n.t('noContractsFound')}];
       } catch (e) {
-        console.error(e);
-      } finally {
-        request = null;
+        if (e.name !== 'AbortError') {
+          console.error(e);
+        }
       }
     }
 

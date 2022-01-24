@@ -32,7 +32,7 @@ nl:
         <p>{{ $t('notFoundEmployee') }}</p>
       </template>
       <template v-else>
-        <employee-header v-if="mode !== 'add'" :employee="employee"/>
+        <employee-header v-if="mode !== 'add'" :employee="employee" />
         <b-row class="my-5">
           <b-col cols="12" md="5">
             <team-selector
@@ -46,7 +46,7 @@ nl:
             ></project-selector>
           </b-col>
 
-          <b-col md="1"/>
+          <b-col md="1" />
 
           <b-col cols="12" md="6">
             <employee-settings
@@ -111,10 +111,10 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
 
     const projects = ref(props.employee?.projects);
+    const selectedTeam = ref<string | null>(null);
     const selectedCustomers = ref<(Customer | undefined)[]>([]);
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref<string>("");
-    const selectedTeam = ref<string | null>(null);
 
     const customers = computed(() => store.state.customers.customers);
     const isAdmin = ref<boolean>(
@@ -132,6 +132,12 @@ export default defineComponent({
       store.dispatch("employees/getAdminList");
       store.dispatch("employees/getTeamList");
     });
+
+    watch(() => props.employee, () => {
+      if (props.employee?.team) {
+        selectedTeam.value = props.employee.team
+      }
+    }, {immediate: true})
 
     watch([projects, customers],
       () => {

@@ -10,10 +10,11 @@ export default {
   selectTeam: 'selecteer team',
   employees: 'medewerkers',
   errorEndDate: 'Selecteer een einddatum',
+  errorStartDate: 'Selecteer de gewenste startdatum',
   errorName: 'Vul voor de medewerker een naam in',
   errorEmail: 'Vul voor de medewerker een email in',
-  errorStartDate: 'Selecteer de gewenste startdatum',
   confirmDelete: 'Weet je zeker dat je medewerker {name}, wil verwijderen?',
+  noContractsFound: 'Geen contracten gevonden voor de zoek term',
   reConfirmDelete:
     'Bij verwijderen van medewerker {name} heb je geen toegang meer tot timesheets en rapportage!',
   noOptions: '{num} geselecteerd',
