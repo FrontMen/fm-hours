@@ -1,7 +1,7 @@
 <template>
   <div class="mt-5 content-wrapper">
     <weekly-timesheet
-      v-if="employee"
+      v-if="employee && year && week"
       :employee="employee"
       :year="year"
       :week="week"
@@ -10,14 +10,8 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  useContext,
-  useMeta,
-  useRouter,
-  useStore,
-} from '@nuxtjs/composition-api';
+import {computed, defineComponent, useContext, useMeta, useRouter, useStore,} from '@nuxtjs/composition-api';
+import {format} from "date-fns";
 
 export default defineComponent({
   setup() {
@@ -28,7 +22,16 @@ export default defineComponent({
     const employee = computed(() => store.state.employee.employee);
     const year = computed(() => parseInt(router.currentRoute.params.year, 10));
     const week = computed(() => parseInt(router.currentRoute.params.week, 10));
-    const pageTitle = computed(() =>`${i18n.t('timesheets')} - ${employee.value?.name}`);
+    const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
+
+    // need to check explicit for false because for "old" accounts can also be null which shouldn't be redirected
+    if (employee.value?.billable === false) {
+      router.push(store.state.employee.isAdmin ? '/admin/reports' : '/welcome')
+    }
+
+    if (!router.currentRoute.params.year || !router.currentRoute.params.week) {
+      router.replace(format(new Date(), '/yyyy/I'));
+    }
 
     useMeta(() => ({
       title: pageTitle.value,
