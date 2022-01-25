@@ -1,6 +1,6 @@
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 
-export default class WorkSchemeService {
+export default class BridgeService {
   axios: NuxtAxiosInstance;
 
   constructor(axios: NuxtAxiosInstance) {
