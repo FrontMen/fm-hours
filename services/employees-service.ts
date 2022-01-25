@@ -1,6 +1,8 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {DocumentSnapshot} from '@firebase/firestore-types';
+import firebase from 'firebase/compat';
 import {Collections} from '~/types/enums';
+import FieldPath = firebase.firestore.FieldPath;
 
 export default class EmployeesService {
   fire: NuxtFireInstance;
@@ -9,7 +11,7 @@ export default class EmployeesService {
     this.fire = fire;
   }
 
-  async getEmployees() {
+  async getEmployees(): Promise<Employee[]> {
     const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
     const snapshot = await ref.get();
 
@@ -20,52 +22,33 @@ export default class EmployeesService {
   }
 
   async getEmployee(employeeId: string): Promise<Employee | null> {
-    const doc: DocumentSnapshot | null = await this.getEmployeeInformation(
-      employeeId
-    );
+    const ref = this.fire.firestore
+      .collection(Collections.EMPLOYEES)
+      .where(FieldPath.documentId(), '==', employeeId);
 
-    if (doc !== null && doc.exists) {
-      const {
-        name,
-        email,
-        picture,
-        projects,
-        travelAllowance,
-        standBy,
-        endDate,
-        startDate,
-        created,
-        bridgeUid,
-      } = doc.data() as Employee;
+    const snapshot = await ref.get();
 
-      return {
-        id: doc.id,
-        name,
-        email,
-        picture,
-        projects,
-        travelAllowance,
-        standBy,
-        endDate,
-        startDate,
-        created,
-        bridgeUid,
-      };
+    if (!snapshot.empty) {
+      return this.mapEmployeeFromDocument(snapshot.docs[0]);
     }
 
     return null;
   }
 
-  async getEmployeeInformation(
-    email: string
-  ): Promise<DocumentSnapshot | null> {
+  async getEmployeeByMail(email: string): Promise<Employee | null> {
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
     const ref = this.fire.firestore
       .collection(Collections.EMPLOYEES)
-      .where('email', '==', email);
+      .where('email', 'in', [fmMail, ioMail]);
 
     const snapshot = await ref.get();
 
-    if (!snapshot.empty) return snapshot.docs[0];
+    if (!snapshot.empty) {
+      return this.mapEmployeeFromDocument(snapshot.docs[0]);
+    }
 
     return null;
   }
@@ -85,7 +68,7 @@ export default class EmployeesService {
     return {...newEmployee, id};
   }
 
-  async updateEmployee(employee: Employee) {
+  async updateEmployee(employee: Employee): Promise<void> {
     const newEmployee = {...employee} as any;
     delete newEmployee.id;
 
@@ -95,42 +78,53 @@ export default class EmployeesService {
       .set(newEmployee, {merge: true});
   }
 
-  async deleteEmployee(id: string) {
+  async deleteEmployee(id: string): Promise<void> {
     return await this.fire.firestore
       .collection(Collections.EMPLOYEES)
       .doc(id)
       .delete();
   }
 
-  public async isAdmin(email: string) {
+  async isAdmin(email: string): Promise<boolean> {
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
     const adminEmails = await this.getAdminEmails();
-    return adminEmails.includes(email);
+    return adminEmails.some((mail) => [fmMail, ioMail].includes(mail));
   }
 
-  public async getAdminEmails(): Promise<string[]> {
+  async getAdminEmails(): Promise<string[]> {
     const ref = this.fire.firestore.collection(Collections.ADMINS);
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().admins || [];
 
-    return result as unknown as string[];
+    return result as string[];
   }
 
-  public async getTeams(): Promise<string[]> {
+  async getTeams(): Promise<string[]> {
     const ref = this.fire.firestore.collection(Collections.TEAMS);
     const snapshot = await ref.get();
     const result = snapshot.docs[0].data().teams || [];
 
-    return result as unknown as string[];
+    return result as string[];
   }
 
-  public async updateAdminEmails(adminList: string[]): Promise<string[]> {
+  async updateAdminEmails(adminList: string[]): Promise<string[]> {
     const docs = await this.fire.firestore.collection(Collections.ADMINS).get();
-    const docId = await docs.docs[0].id;
+    const docId = docs.docs[0].id;
     const ref = await this.fire.firestore
       .collection(Collections.ADMINS)
       .doc(docId);
 
     await ref.update({admins: adminList});
     return adminList;
+  }
+
+  private mapEmployeeFromDocument(doc: DocumentSnapshot): Employee {
+    return {
+      ...(doc.data() as Employee),
+      id: doc.id,
+    };
   }
 }
