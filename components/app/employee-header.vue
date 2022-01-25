@@ -1,16 +1,14 @@
 <template>
-  <b-row no-gutters align-v="center">
-    <b-col cols="0" class="mr-2">
-      <b-avatar :src="employee.picture" />
-    </b-col>
+  <header class="employee-header">
+    <img :src="employee.picture" alt="avatar" class="avatar" />
 
-    <b-col>
-      <div class="font-weight-bold">
+    <div class="employee-details">
+      <span class="bold">
         {{ employee.name }}
-      </div>
-      <div class="font-weight-light">BridgeUid: {{ employee.bridgeUid }}</div>
-    </b-col>
-  </b-row>
+      </span>
+      <span class="light">BridgeUid: {{ employee.bridgeUid }}</span>
+    </div>
+  </header>
 </template>
 
 <script lang="ts">
@@ -25,3 +23,32 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+
+.employee-header {
+  align-items: center;
+  display: flex;
+}
+
+.avatar {
+  display: flex;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.employee-details {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin-left: 15px;
+
+  .bold {
+    font-weight: 700;
+  }
+
+  .light {
+    font-weight: 200;
+  }
+}
+</style>

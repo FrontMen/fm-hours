@@ -14,11 +14,17 @@ export default async function Auth(
     });
   }
 
-  const authCookie = await getAuthCookieValue(request.headers.authorization);
-  const secondsInADay = 86400;
+  try {
+    const authCookie = await getAuthCookieValue(request.headers.authorization);
+    const secondsInADay = 86400;
 
-  response.setHeader('Set-Cookie', [
-    `${authCookie}; Path=/; Secure; Max-Age=${secondsInADay}; Same-Site=Lax`,
-  ]);
-  return response.end('OK');
+    response.setHeader('Set-Cookie', [
+      `${authCookie}; Path=/; Secure; Max-Age=${secondsInADay}; Same-Site=Lax`,
+    ]);
+    return response.end('OK');
+  } catch (e) {
+    return response.status(401).json({
+      message: e.message,
+    });
+  }
 }
