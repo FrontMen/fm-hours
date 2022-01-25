@@ -41,6 +41,8 @@ nl:
 
         <weekly-timesheet-row-leave
           :workscheme="timesheet.workScheme"
+          :status="timesheet.info.status"
+          @refresh="refreshLeave"
         ></weekly-timesheet-row-leave>
 
         <weekly-timesheet-totals-row
@@ -97,7 +99,15 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  useContext,
+  useRouter,
+  useStore
+} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -139,12 +149,12 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const isLoading = ref<Boolean>(true);
+    const isLoading = ref<boolean>(true);
 
-    const hasUnsavedChanges = ref<Boolean>(false);
-    const isSaving = ref<Boolean>(false);
+    const hasUnsavedChanges = ref<boolean>(false);
+    const isSaving = ref<boolean>(false);
     const lastSaved = ref<Date>();
-    const showBridgeError = ref<Boolean>(false);
+    const showBridgeError = ref<boolean>(false);
 
     const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
@@ -220,8 +230,6 @@ export default defineComponent({
 
       const workWeek = buildWeek(startOfISOWeek(startDate));
 
-      let workScheme: WorkScheme[] = [];
-
       const startEpoch = new Date(workWeek[0].date).getTime();
 
       const sheets = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
@@ -238,26 +246,7 @@ export default defineComponent({
         }
       }
 
-      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
-
-      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
-        try {
-          workScheme = await app.$workSchemeService.getWorkScheme({
-            bridgeUid: employee.bridgeUid || '',
-            startDate: new Date(workWeek[0].date),
-            endDate: new Date(workWeek[6].date),
-          });
-          showBridgeError.value = false;
-        } catch ({response}) {
-          if (response.status === 401) {
-            await logout();
-          } else {
-            showBridgeError.value = true;
-          }
-        }
-      } else {
-        workScheme = sheet.workscheme || [];
-      }
+      const workScheme: WorkScheme[] = await getWorkScheme(sheet, workWeek);
 
       const range = {
         startDate: new Date(workWeek[0].date).getTime().toString(),
@@ -282,6 +271,41 @@ export default defineComponent({
       });
 
       isLoading.value = false;
+    }
+
+    const getWorkScheme = async (
+      sheet: Optional<Timesheet, 'id'>,
+      workWeek: WeekDate[]
+    ): Promise<WorkScheme[]> => {
+      let workScheme: WorkScheme[] = [];
+      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
+
+      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
+        try {
+          workScheme = await app.$workSchemeService.getWorkScheme({
+            bridgeUid: employee.bridgeUid || '',
+            startDate: new Date(workWeek[0].date),
+            endDate: new Date(workWeek[6].date),
+          });
+          showBridgeError.value = false;
+        } catch (error) {
+          if (error.response?.status === 401) {
+            await logout();
+          } else {
+            showBridgeError.value = true;
+          }
+        }
+      } else {
+        workScheme = sheet.workscheme || [];
+      }
+      return workScheme
+    };
+
+    const refreshLeave = async () => {
+      const {info, week} = timesheet.value;
+      const workScheme = await getWorkScheme(info, week);
+
+      timesheet.value.workScheme = workScheme;
     }
 
     const logout = async () => {
@@ -458,7 +482,8 @@ export default defineComponent({
       handleDeny,
       handleUnapprove,
       handleReminder,
-      addMessage
+      addMessage,
+      refreshLeave
     };
   }
 });
