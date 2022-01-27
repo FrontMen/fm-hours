@@ -99,15 +99,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  PropType,
-  ref,
-  useContext,
-  useRouter,
-  useStore
-} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -180,7 +172,7 @@ export default defineComponent({
     );
 
     const hasRestDayHours = computed(() => {
-      return timesheet.value.projects.reduce((_, project) => {
+      return timesheet.value.projects.reduce((_: boolean, project: TimesheetProject) => {
         return project.values.reduce((acc, value, index) => {
           if (!value) return acc;
 
@@ -196,7 +188,7 @@ export default defineComponent({
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet?.value?.projects.sort(({customer: customerA}, {customer: customerB}) => {
+      timesheet.value?.projects.sort(({customer: customerA}: TimesheetProject, {customer: customerB}: TimesheetProject) => {
         // Casting because TS doesn't like to subtract booleans
         const defaultCompare = +customerA.isDefault - +customerB.isDefault;
         return defaultCompare !== 0 ? defaultCompare : customerA.name.localeCompare(customerB.name);
@@ -302,10 +294,9 @@ export default defineComponent({
     };
 
     const refreshLeave = async () => {
-      const {info, week} = timesheet.value;
-      const workScheme = await getWorkScheme(info, week);
+      if (!timesheet.value?.info || !timesheet.value?.week) return;
 
-      timesheet.value.workScheme = workScheme;
+      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week);
     }
 
     const logout = async () => {
@@ -415,7 +406,7 @@ export default defineComponent({
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay, index) => {
+        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay: number, index: number) => {
           const workSchemeDay = timesheet.value.workScheme?.[index];
 
           if (!workSchemeDay) return false;
