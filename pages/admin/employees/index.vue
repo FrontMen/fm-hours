@@ -7,6 +7,7 @@ en:
   showInactive: "Show Inactive"
   expandSearchMenu: "More filters"
   showNotBillable: "Show not billable"
+  notBillable: "Not billable"
   newEmployee: "Add employee"
   noEmployeeFound: "No employee found"
   inactive: "Inactive"
@@ -20,6 +21,7 @@ nl:
   showInactive: "Toon Inactieve"
   expandSearchMenu: "Meer filters"
   showNotBillable: "Toon niet billable"
+  notBillable: "Niet billable"
   newEmployee: "Nieuwe medewerker"
   noEmployeeFound: "Geen medewerker(s) gevonden"
   inactive: "Inactief"
@@ -144,6 +146,12 @@ nl:
           >
             {{ $t('inactive') }}
           </b-badge>
+          <b-badge
+            v-if="!checkEmployeeBillable(false, employee)"
+            variant="warning"
+          >
+            {{ $t('notBillable') }}
+          </b-badge>
         </div>
 
         <div class="ml-auto d-flex">
@@ -257,6 +265,7 @@ export default defineComponent({
       showInactive,
       showMoreFilters,
       showNotBillable,
+      checkEmployeeBillable,
       checkEmployeeAvailability,
     };
   },
