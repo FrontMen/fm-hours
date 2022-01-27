@@ -1,4 +1,4 @@
-import {startOfMonth, addMonths, startOfISOWeek} from 'date-fns';
+import {addMonths, startOfISOWeek, startOfMonth} from 'date-fns';
 import {ActionTree} from 'vuex';
 
 import {checkEmployeeAvailability} from '../../helpers/employee';
@@ -66,13 +66,15 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       timesheets
     );
 
-    const activeEmployees = employees.filter((employee) =>
-      checkEmployeeAvailability(employee, startDate, endDate)
+    const activeEmployeesAndBillable = employees.filter(
+      (employee) =>
+        checkEmployeeAvailability(employee, startDate, endDate) &&
+        (employee.billable || employee.billable === undefined)
     );
 
     commit('setIsLoading', {isLoading: false});
     commit('createMonthlyReportData', {
-      employees: activeEmployees,
+      employees: activeEmployeesAndBillable,
       customers,
       timeRecords: approvedTimeRecords,
       travelRecords: approvedTravelRecords,

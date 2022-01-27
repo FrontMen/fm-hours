@@ -1,10 +1,12 @@
 <i18n lang="yaml">
-  en:
-    totals: "Totals"
-    standBy: "Stand-by"
-  nl:
-    totals: "Totalen"
-    standBy: "Stand-by"
+en:
+  totals: "Totals"
+  standBy: "Stand-by"
+  notBillable: "Not billable"
+nl:
+  totals: "Totalen"
+  standBy: "Stand-by"
+  notBillable: "Niet billable"
 </i18n>
 
 <template>
@@ -53,26 +55,28 @@
           :csv-file-name="`${$t('standBy')}-${formattedMonthDate}`"
         />
       </b-tab>
+
+      <b-tab :title="$t('notBillable')" lazy>
+        <reports-table
+          :busy="isLoading || !nonBillableItems.length"
+          :items="nonBillableItems"
+          :fields="nonBillableFields"
+          :csv-file-name="`${$t('notBillable')}-${formattedMonthDate}`"
+        />
+      </b-tab>
     </b-tabs>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  ref,
-  useContext,
-  useMeta,
-  useStore,
-  watch,
-} from '@nuxtjs/composition-api';
-import {format, addMonths, subMonths} from 'date-fns';
+import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
+import {addMonths, format, subMonths} from 'date-fns';
 
 import useMonthlyTotalsReport from '~/composables/useMonthlyTotalsReport';
 import useMonthlyProjectsReport from '~/composables/useMonthlyProjectsReport';
 import useMonthlyKilometersReport from '~/composables/useMonthlyKilometersReport';
 import useMonthlyStandByReport from '~/composables/useMonthlyStandbyReport';
+import useMonthlyNotBillableReport from "~/composables/useMonthlyNotBillableReport";
 
 export default defineComponent({
   setup() {
@@ -86,6 +90,7 @@ export default defineComponent({
     const {createProjectsFields, createProjectsItems} =
       useMonthlyProjectsReport();
     const {createStandByFields, createStandByItems} = useMonthlyStandByReport();
+    const {createNotBillableFields, createNotBillableItems} = useMonthlyNotBillableReport();
 
     const {createKilometersFields, createKilometersItems} =
       useMonthlyKilometersReport();
@@ -106,6 +111,9 @@ export default defineComponent({
 
     const standByFields = computed(() => createStandByFields());
     const standByItems = computed(() => createStandByItems(reportData.value));
+
+    const nonBillableFields = computed(() => createNotBillableFields());
+    const nonBillableItems = computed(() => createNotBillableItems(reportData.value));
 
     const kilometersFields = createKilometersFields();
     const kilometersItems = computed(() =>
@@ -129,7 +137,7 @@ export default defineComponent({
     };
 
     watch(
-      () => monthDate.value,
+      monthDate,
       () => {
         store.dispatch('reports/getMonthlyReportData', {
           startDate: monthDate.value,
@@ -149,6 +157,8 @@ export default defineComponent({
       standByItems,
       kilometersFields,
       kilometersItems,
+      nonBillableFields,
+      nonBillableItems,
       isLoading,
       goToPreviousMonth,
       goToNextMonth,
@@ -156,7 +166,7 @@ export default defineComponent({
     };
   },
   head: {
-    title: 'Reports',
+    title: 'Reportssss',
   },
 });
 </script>
