@@ -1,17 +1,25 @@
 <i18n lang="yaml">
 en:
   searchEmployeeByName: "Search by employee name"
+  searchEmployeeByTeam: "Search by employee team"
   namePlaceholder: "Ex.: \"John\""
-  showInactive: "Show inactive"
-  newEmployee: "New employee"
+  teamPlaceholder: "Ex.: \"Classics\""
+  showInactive: "Show Inactive"
+  expandSearchMenu: "More filters"
+  showNotBillable: "Show not billable"
+  newEmployee: "Add employee"
   noEmployeeFound: "No employee found"
   inactive: "Inactive"
   manageEmployee: "Manage employee"
   addEmployee: "Add an employee"
 nl:
-  searchEmployeeByName: "Zoek medeerker op naam"
+  searchEmployeeByName: "Zoek medewerker op naam"
+  searchEmployeeByTeam: "Zoek medewerker op team"
   namePlaceholder: "Bv.: \"John\""
-  showInactive: "Laat inactieve medeerkers zien"
+  teamPlaceholder: "Bv.: \"Classics\""
+  showInactive: "Toon Inactieve"
+  expandSearchMenu: "Meer filters"
+  showNotBillable: "Toon niet billable"
   newEmployee: "Nieuwe medewerker"
   noEmployeeFound: "Geen medewerker(s) gevonden"
   inactive: "Inactief"
@@ -21,8 +29,8 @@ nl:
 
 <template>
   <div class="content-wrapper mt-5">
-    <b-container class="mx-0 px-0 mb-3" fluid>
-      <b-row :no-gutters="true">
+    <b-container class="mx-0 px-0" fluid :class="{'mb-3': !showMoreFilters}">
+      <b-row no-gutters>
         <b-col cols="12" sm="6" lg="2" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="status-select">
             {{ $t('filterBy') }}:
@@ -35,13 +43,17 @@ nl:
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
-            {{ $t('searchEmployeeByName') }}:
+            {{
+              filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam')
+
+
+            }}:
           </label>
           <b-input
             id="employee-search"
             v-model="searchInput"
             type="search"
-            :placeholder="$t('namePlaceholder')"
+            :placeholder="filterBy === 'name' ? $t('namePlaceholder'): $t('teamPlaceholder')"
           />
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="mb-3 pr-2">
@@ -67,10 +79,14 @@ nl:
             </template>
           </multiselect>
         </b-col>
-        <b-col cols="6" lg="2" class="mt-auto pb-2 mb-3 pr-2">
-          <b-form-checkbox v-model="showInactive" switch class="mr-3 ml-auto">
-            {{ $t('showInactive') }}
-          </b-form-checkbox>
+        <b-col cols="6" lg="2" class="align-self-center">
+          <b-button variant="link" @click="showMoreFilters = !showMoreFilters">
+            <span>
+              {{ $t('expandSearchMenu') }}
+              <b-icon-chevron-up v-if="showMoreFilters"/>
+              <b-icon-chevron-down v-else/>
+            </span>
+          </b-button>
         </b-col>
         <b-col
           cols="6"
@@ -78,12 +94,22 @@ nl:
           class="d-flex align-items-end justify-content-end mb-3"
         >
           <nuxt-link
-            class="btn btn-primary"
+            class="btn btn-success"
             :to="localePath(`/admin/employees/add`)"
           >
-            + {{ $t('newEmployee') }}
+            {{ $t('newEmployee') }}
           </nuxt-link>
         </b-col>
+      </b-row>
+    </b-container>
+    <b-container v-if="showMoreFilters" fluid class="mb-3">
+      <b-row no-gutters>
+        <b-form-checkbox v-model="showInactive" switch class="mr-3">
+          {{ $t('showInactive') }}
+        </b-form-checkbox>
+        <b-form-checkbox v-model="showNotBillable" switch>
+          {{ $t('showNotBillable') }}
+        </b-form-checkbox>
       </b-row>
     </b-container>
     <b-container fluid class="app-table">
@@ -97,7 +123,7 @@ nl:
         v-if="!filteredEmployees.length"
         class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
       >
-        <b-icon-person-x class="mr-2" />
+        <b-icon-person-x class="mr-2"/>
         {{ $t('noEmployeeFound') }}.
       </b-row>
 
@@ -107,7 +133,7 @@ nl:
         :key="employee.id"
         class="app-table__row employee-row p-3 mr-0"
       >
-        <b-avatar :src="employee.picture" />
+        <b-avatar :src="employee.picture"/>
 
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
@@ -145,14 +171,11 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
+    const showMoreFilters = ref<boolean>(false);
 
     onMounted(() => {
       store.dispatch("employees/getEmployees");
       store.dispatch("customers/getCustomers");
-    });
-
-    const isoLocale = computed(() => {
-      return i18n.localeProperties.iso;
     });
 
     const customerOptions = computed(() =>
@@ -164,9 +187,7 @@ export default defineComponent({
         }))
     );
 
-    const selectedCustomers = ref<Customer[]>(
-      store.getters["filters/getEmployeeFilterByCustomer"]
-    );
+    const selectedCustomers = ref<Customer[]>([]);
 
     const filterByOptions: { value: keyof Employee; text: string; }[] = [
       {
@@ -178,88 +199,51 @@ export default defineComponent({
         text: i18n.t('team') as string,
       }
     ];
-    const filterBy = ref<keyof Employee>(
-      store.getters["filters/getEmployeeFilterBy"]
-    );
+    const filterBy = ref<keyof Employee>('name');
+    const showInactive = ref<boolean>(false);
+    const showNotBillable = ref<boolean>(false);
+    const searchInput = ref<string>('');
 
-    const showInactive = ref<boolean>(
-      store.getters["filters/getEmployeeShowInactive"]
-    );
-
-    const searchInput = ref<string>(
-      store.getters["filters/getEmployeeSearchTerm"]
-    );
-
-    const handleFilterUpdates = () => {
-      if (
-        store.getters["filters/getEmployeeSearchTerm"] !== searchInput.value
-      ) {
-        store.dispatch("filters/updateEmployeeSearchTerm", searchInput.value);
-      }
-      if (
-        store.getters["filters/getEmployeeFilterBy"] !== filterBy.value
-      ) {
-        store.dispatch("filters/updateEmployeeFilterBy", filterBy.value);
-      }
-      if (
-        store.getters["filters/getEmployeeFilterByCustomer"] !==
-        selectedCustomers.value
-      ) {
-        store.dispatch(
-          "filters/updateEmployeeFilterByCustomer",
-          selectedCustomers.value
-        );
-      }
-      if (
-        store.getters["filters/getEmployeeShowInactive"] !== showInactive.value
-      ) {
-        store.dispatch("filters/updateEmployeeShowInactive", showInactive.value);
-      }
-    };
-
-    const employeeStatusChecker = (status: boolean, employee: Employee) => {
+    const checkEmployeeActiveStatus = (status: boolean, employee: Employee) => {
       if (status) return true;
 
       return checkEmployeeAvailability(employee, new Date());
     };
 
-    const employeeByProp = (employee: Employee, query: string, filterByProp: keyof Employee) => {
+    const checkEmployeeBillable = (showNotBillable: boolean, employee: Employee) => {
+      if (showNotBillable) return true;
+
+      // undefined is for the "old" profiles where this boolean is not set
+      return employee.billable || employee.billable === undefined;
+    };
+
+    const checkEmployeeProp = (employee: Employee, query: string, filterByProp: keyof Employee) => {
       if (!query || !employee) return true;
       if (!employee[filterByProp]) return;
 
       return queryOnString(employee[filterByProp] as string, query);
     };
 
-    const employeeProjectsChecker = (
+    const checkEmployeeProjects = (
       employeeProjectsIds: string[],
       selectedProjects: Customer[]
     ) => {
       if (!selectedProjects?.length) return true;
       if (!employeeProjectsIds?.length) return false;
 
-      return employeeProjectsIds.every((id) =>
+      return employeeProjectsIds.some((id) =>
         selectedProjects.some((project) => project.id === id)
       );
     };
 
-    const filteredEmployees = computed(() => {
-      handleFilterUpdates();
-      // Avoid traverse array when no filter is set
-      if (
-        showInactive.value &&
-        !searchInput.value &&
-        !selectedCustomers.value?.length
-      )
-        return [...employees.value];
-
-      return employees.value.filter((employee) => {
-        return (
-          employeeStatusChecker(showInactive.value, employee) &&
-          employeeByProp(employee, searchInput.value, filterBy.value) &&
-          employeeProjectsChecker(employee.projects, selectedCustomers.value)
-        );
-      });
-    });
+    const filteredEmployees = computed(() =>
+      employees.value.filter((employee) =>
+        (
+          checkEmployeeActiveStatus(showInactive.value, employee) &&
+          checkEmployeeBillable(showNotBillable.value, employee) &&
+          checkEmployeeProp(employee, searchInput.value, filterBy.value) &&
+          checkEmployeeProjects(employee.projects, selectedCustomers.value)
+        )));
 
 
     return {
@@ -267,15 +251,15 @@ export default defineComponent({
       filteredEmployees,
       filterBy,
       filterByOptions,
-      isoLocale,
       searchInput,
       customerOptions,
       selectedCustomers,
       showInactive,
+      showMoreFilters,
+      showNotBillable,
       checkEmployeeAvailability,
     };
   },
-
   head: {
     title: "Employees",
   },
