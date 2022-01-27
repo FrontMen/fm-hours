@@ -1,15 +1,15 @@
 <i18n lang="yaml">
-  en:
-    export: "Export"
+en:
+  export: "Export"
 
-  nl:
-    export: "Exporteren"
+nl:
+  export: "Exporteren"
 </i18n>
 
 <template>
   <div class="reports-table">
     <div class="reports-table__btn mb-4">
-      <b-btn @click="exportToCsv">{{$t('export')}}</b-btn>
+      <b-btn @click="exportToCsv">{{ $t('export') }}</b-btn>
     </div>
 
     <b-table
@@ -24,7 +24,7 @@
       v-on="$listeners"
     >
       <template #head()="data">
-        {{$t(data.column)}}
+        {{ $t(data.column) }}
       </template>
     </b-table>
   </div>
@@ -48,7 +48,7 @@ export default defineComponent({
   },
   setup(props) {
     const downloadCsv = (csv: any, filename: string) => {
-      const csvFile = new Blob(["\uFEFF"+csv], {type: "text/csv; charset=utf-18"});
+      const csvFile = new Blob(["\uFEFF" + csv], {type: "text/csv; charset=utf-18"});
       const downloadLink = document.createElement("a");
 
       downloadLink.download = filename;
@@ -75,6 +75,7 @@ export default defineComponent({
             ""
           );
 
+          textContent = textContent.trim();
           row.push(isNumeric(textContent) ? convertDecimalToEuropeanStyle(textContent) : textContent);
         });
 
