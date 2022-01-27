@@ -41,6 +41,8 @@ nl:
 
         <weekly-timesheet-row-leave
           :workscheme="timesheet.workScheme"
+          :status="timesheet.info.status"
+          @refresh="refreshLeave"
         ></weekly-timesheet-row-leave>
 
         <weekly-timesheet-totals-row
@@ -139,12 +141,12 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const isLoading = ref<Boolean>(true);
+    const isLoading = ref<boolean>(true);
 
-    const hasUnsavedChanges = ref<Boolean>(false);
-    const isSaving = ref<Boolean>(false);
+    const hasUnsavedChanges = ref<boolean>(false);
+    const isSaving = ref<boolean>(false);
     const lastSaved = ref<Date>();
-    const showBridgeError = ref<Boolean>(false);
+    const showBridgeError = ref<boolean>(false);
 
     const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
@@ -170,7 +172,7 @@ export default defineComponent({
     );
 
     const hasRestDayHours = computed(() => {
-      return timesheet.value.projects.reduce((_, project) => {
+      return timesheet.value.projects.reduce((_: boolean, project: TimesheetProject) => {
         return project.values.reduce((acc, value, index) => {
           if (!value) return acc;
 
@@ -186,7 +188,7 @@ export default defineComponent({
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet?.value?.projects.sort(({customer: customerA}, {customer: customerB}) => {
+      timesheet.value?.projects.sort(({customer: customerA}: TimesheetProject, {customer: customerB}: TimesheetProject) => {
         // Casting because TS doesn't like to subtract booleans
         const defaultCompare = +customerA.isDefault - +customerB.isDefault;
         return defaultCompare !== 0 ? defaultCompare : customerA.name.localeCompare(customerB.name);
@@ -220,8 +222,6 @@ export default defineComponent({
 
       const workWeek = buildWeek(startOfISOWeek(startDate));
 
-      let workScheme: WorkScheme[] = [];
-
       const startEpoch = new Date(workWeek[0].date).getTime();
 
       const sheets = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
@@ -238,26 +238,7 @@ export default defineComponent({
         }
       }
 
-      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
-
-      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
-        try {
-          workScheme = await app.$workSchemeService.getWorkScheme({
-            bridgeUid: employee.bridgeUid || '',
-            startDate: new Date(workWeek[0].date),
-            endDate: new Date(workWeek[6].date),
-          });
-          showBridgeError.value = false;
-        } catch ({response}) {
-          if (response.status === 401) {
-            await logout();
-          } else {
-            showBridgeError.value = true;
-          }
-        }
-      } else {
-        workScheme = sheet.workscheme || [];
-      }
+      const workScheme: WorkScheme[] = await getWorkScheme(sheet, workWeek);
 
       const range = {
         startDate: new Date(workWeek[0].date).getTime().toString(),
@@ -282,6 +263,40 @@ export default defineComponent({
       });
 
       isLoading.value = false;
+    }
+
+    const getWorkScheme = async (
+      sheet: Optional<Timesheet, 'id'>,
+      workWeek: WeekDate[]
+    ): Promise<WorkScheme[]> => {
+      let workScheme: WorkScheme[] = [];
+      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
+
+      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
+        try {
+          workScheme = await app.$workSchemeService.getWorkScheme({
+            bridgeUid: employee.bridgeUid || '',
+            startDate: new Date(workWeek[0].date),
+            endDate: new Date(workWeek[6].date),
+          });
+          showBridgeError.value = false;
+        } catch (error) {
+          if (error.response?.status === 401) {
+            await logout();
+          } else {
+            showBridgeError.value = true;
+          }
+        }
+      } else {
+        workScheme = sheet.workscheme || [];
+      }
+      return workScheme
+    };
+
+    const refreshLeave = async () => {
+      if (!timesheet.value?.info || !timesheet.value?.week) return;
+
+      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week);
     }
 
     const logout = async () => {
@@ -391,7 +406,7 @@ export default defineComponent({
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay, index) => {
+        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay: number, index: number) => {
           const workSchemeDay = timesheet.value.workScheme?.[index];
 
           if (!workSchemeDay) return false;
@@ -458,7 +473,8 @@ export default defineComponent({
       handleDeny,
       handleUnapprove,
       handleReminder,
-      addMessage
+      addMessage,
+      refreshLeave
     };
   }
 });
