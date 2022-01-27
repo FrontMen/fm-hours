@@ -77,6 +77,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       timeRecords: approvedTimeRecords,
       travelRecords: approvedTravelRecords,
       standByRecords: approvedStandByRecords,
+      timesheets,
     });
   },
 };
