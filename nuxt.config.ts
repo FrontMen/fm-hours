@@ -44,6 +44,7 @@ export default {
       '~/components/records',
       '~/components/reports',
       '~/components/employees',
+      '~/components/generic',
     ],
   },
 

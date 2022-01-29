@@ -9,6 +9,7 @@ interface ReminderEmailProps {
   employee: {name: string; email: string};
   startDate: number;
 }
+
 interface BuildEmailProps {
   employee: {name: string; email: string};
   content: string;
@@ -50,12 +51,13 @@ export const createReminderEmail = ({
   employee,
   startDate,
 }: ReminderEmailProps) => {
-  const dayLabel = format(startDate, 'dd MMMM');
+  const dayLabel = format(startDate, 'MMMM');
   const baseUrl = location.origin;
 
   const content = `
-    <p>This is a reminder to submit the following <a href="${baseUrl}/${startDate}" target="_blank">timesheet</a>.</p>
+    <p>This is a reminder to submit the timesheets of ${dayLabel}.</p>
     <p>Please take some time to fill it in and submit it for approval.</p>
+    <a href="${baseUrl}" target="_blank">Fill in your hours</a>
   `;
 
   return buildEmail({
