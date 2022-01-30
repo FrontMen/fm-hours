@@ -102,7 +102,7 @@ export default defineComponent({
     }));
 
     const startDate = ref<Date>(startOfMonth(new Date()));
-    const firstMonday = computed(() => setDay(startDate.value, 1, {weekStartsOn: getDay(startDate.value)}));
+    const firstMonday = computed(() => setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)}));
     const endDate = computed(() => endOfMonth(startDate.value as Date));
 
     const hideDone = ref<boolean>(false);
