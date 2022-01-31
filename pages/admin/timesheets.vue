@@ -1,88 +1,46 @@
 <i18n lang="yaml">
 en:
-  all: "All"
-  emailReminder: "Email reminder:"
-  selectWeek: "Select week"
-  week: "Week"
-  empty: "empty"
-  pending: "pending"
-  new: "new"
+  emailReminder: "Send an email reminder to everyone missing timesheets in this month"
+  confirmReminder: 'Are you sure you want to remind {people}?'
+  hideDone: "Hide done"
+  emptyTable: "No employees to show"
 nl:
-  all: "Alles"
-  emailReminder: "Email herinnering:"
-  selectWeek: "Selecteer week"
-  week: "Week"
-  empty: "leeg"
-  pending: "in afwachting"
-  new: "Nieuw"
+  emailReminder: "Verstuur een e-mail herinnering naar iedereen met missende timesheets deze maand"
+  confirmReminder: 'Are you sure you want to remind {people}?'
+  hideDone: "Verberg klaar"
+  emptyTable: "Geen medewerkers om te tonen"
 </i18n>
 
 <template>
   <div class="my-5 content-wrapper">
-    <b-row no-gutters align-v="center">
-      <b-col cols="5" sd="4" lg="3" class="mr-4">
-        <b-form-group
-          :label="$t('filterBy') + ':'"
-          label-for="filter-select"
-          label-class="font-weight-bold"
-          class="filter"
-        >
-          <b-form-select
-            id="filter-select"
-            v-model="selected"
-            :options="options"
-            class="filter__select"
-          >
-            <template #first>
-              <b-form-select-option :value="null">
-                {{ $t('all') }}
-              </b-form-select-option>
-            </template>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col cols="7" sd="4" lg="3" class="mr-2">
-        <b-form-group
-          :label="$t('emailReminder')"
-          label-for="select-reminder-week"
-          label-class="font-weight-bold"
-          class="filter"
-        >
-          <b-form-select
-            id="select-reminder-week"
-            v-model="selectedReminderStartDate"
-            :options="reminderOptions"
-            class="filter__select"
-          >
-            <template #first>
-              <b-form-select-option :value="undefined">
-                {{ $t('selectWeek') }}
-              </b-form-select-option>
-            </template>
-          </b-form-select>
-        </b-form-group>
-      </b-col>
-      <b-col class="mt-auto mb-3">
-        <b-button
-          variant="warning"
-          :disabled="!selectedReminderStartDate"
-          @click="sendReminders"
-        >
-          {{ $t('sendReminder') }}
-        </b-button>
-      </b-col>
-    </b-row>
-
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
+        <div class="actions-toolbar flex mb-3">
+          <MonthPicker v-model="startDate" />
+
+          <b-button
+            v-b-tooltip.hover
+            :title="$t('emailReminder')"
+            @click="sendReminders"
+          >
+            <b-icon icon="envelope" />
+          </b-button>
+
+          <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
+            {{ $t('hideDone') }}
+          </b-form-checkbox>
+        </div>
+
         <b-table
           class="timesheet-table"
           responsive
-          :items="tableData.items"
-          :fields="tableData.fields"
-          :filter="filter"
-          sort-by="id"
+          :items="tableDataFiltered.items"
+          :fields="tableDataFiltered.fields"
+          sort-by="name"
         >
+          <template #empty>
+            <p>{{ $t('emptyTable') }}</p>
+          </template>
           <template #head(id)>&nbsp;</template>
           <template #head()="scope">
             <p
@@ -125,18 +83,13 @@ nl:
 
 <script lang="ts">
 import {
-  ref,
   computed,
   defineComponent,
   useStore,
   useContext,
-  useMeta,
+  useMeta, ref, watch,
 } from "@nuxtjs/composition-api";
-import {
-  format,
-} from 'date-fns';
-
-import {recordStatus} from "~/helpers/record-status";
+import {endOfMonth, getDay, setDay, startOfMonth} from "date-fns";
 import {TimesheetStatus} from "~/types/enums";
 
 export default defineComponent({
@@ -148,82 +101,55 @@ export default defineComponent({
       title: i18n.t('timesheets') as string,
     }));
 
-    const options = Object.entries(TimesheetStatus)
-      .map(([value, text]) => ({
-        value,
-        text,
-      }))
-      .sort((a, b) => a.text.localeCompare(b.text));
+    const startDate = ref<Date>(startOfMonth(new Date()));
+    const firstMonday = computed(() => setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)}));
+    const endDate = computed(() => endOfMonth(startDate.value as Date));
 
-    const sortDescending = ref<boolean>(
-      store.getters["filters/getTimesheetSortDescending"]
-    );
-    const selected = ref(store.getters["filters/getTimesheetFilterBy"]);
-    const selectedReminderStartDate = ref<number>();
-    const getSelected = computed(() => selected.value);
+    const hideDone = ref<boolean>(false);
+    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
-    const weeksBefore = 6;
-    const weeksAfter = 2;
-
-    const tableData = computed(() => {
-      handleFilterUpdates();
-      return store.state.timesheets.timesheetTableData;
-    });
-    store.dispatch("timesheets/getTableData", {
-      weeksBefore,
-      weeksAfter,
+    const employeesWithMissingTimesheets = computed(() => {
+      return tableData.value?.items?.filter((employee) => weekDateProperties.value.some((d) => employee[d] !== TimesheetStatus.APPROVED));
     });
 
-    const reminderOptions = computed(() => {
-      return store.state.timesheets?.timesheetTableData?.fields?.map((field: TimesheetTableField) => {
-        if (!field.timestamp || !field.timestampEnd) return null;
+    const tableDataFiltered = computed(() => {
+      if (!hideDone.value) return tableData.value;
 
-        const dateLabel = `${i18n.d(new Date(field.timestamp as number), "dateMonth")} - ${i18n.d(new Date(field.timestampEnd as number), "dateMonth")} (${i18n.t('weekNo', {num: field.weekNumber})})`;
-        return {value: field.timestamp, text: dateLabel};
-      }).filter(option => option);
-    });
-
-    const handleFilterUpdates = () => {
-      if (store.getters["filters/getTimesheetFilterBy"] !== selected.value) {
-        store.dispatch("filters/updateTimesheetFilterBy", selected.value);
+      return {
+        fields: tableData.value.fields,
+        items: tableData.value.items.filter((item) => {
+          return employeesWithMissingTimesheets.value.some((employee) => employee.id === item.id);
+        })
       }
-      if (
-        store.getters["filters/getTimesheetSortDescending"] !==
-        sortDescending.value
-      ) {
-        store.dispatch(
-          "filters/updateTimesheetSortDescending",
-          sortDescending.value
-        );
-      }
-    };
+    });
 
     const sendReminders = () => {
-      if (!selectedReminderStartDate.value) return;
-      const formattedData = format(new Date(selectedReminderStartDate.value), "yyyy-MM-dd");
+      const names = employeesWithMissingTimesheets.value.map(e => e.name).sort();
+      const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
 
-      tableData.value?.items?.forEach((employee) => {
-        if (!employee.email || !(employee[formattedData] === TimesheetStatus.EMPTY || employee[formattedData] === TimesheetStatus.DENIED)) return;
-        store.dispatch('timesheets/emailReminder', {
-          employee: {
-            name: employee.name,
-            email: employee.email,
-          },
-          startDate: selectedReminderStartDate.value,
-        });
-      });
+      if (confirmed) {
+        employeesWithMissingTimesheets.value.forEach((employee) => {
+          store.dispatch('timesheets/emailReminder', {
+            employee,
+            startDate: startDate.value,
+          });
+        })
+      }
     };
 
+    watch(startDate, () => {
+      store.dispatch("timesheets/getTableData", {
+        startDate: firstMonday.value,
+        endDate: endDate.value,
+      });
+    }, {immediate: true});
+
     return {
-      options,
-      selected,
-      filter: getSelected,
-      sortDescending,
-      recordStatus,
-      tableData,
-      reminderOptions,
-      selectedReminderStartDate,
-      sendReminders,
+      hideDone,
+      tableDataFiltered,
+      startDate,
+      sendReminders
     };
   },
 
@@ -243,18 +169,18 @@ export default defineComponent({
   margin: auto;
   height: 16px;
   width: 16px;
-  background-color: var(--color-medium-gray);
-  border: solid 2px var(--color-medium-gray-darker);
+  background-color: var(--color-primary-text);
+  border: solid 2px var(--color-secondary);
   cursor: pointer;
 
   &.pending {
-    background-color: var(--color-alert);
-    border: solid 2px var(--color-alert-darker);
+    background-color: var(--color-tertiary);
+    border: solid 2px var(--color-tertiary-darker);
   }
 
   &.new {
-    background-color: var(--color-success);
-    border: solid 2px var(--color-success-darker);
+    background-color: var(--color-medium-gray);
+    border: solid 2px var(--color-medium-gray-darker);
   }
 
   &.denied {
@@ -263,11 +189,10 @@ export default defineComponent({
   }
 
   &.approved {
-    background-color: var(--color-tertiary);
-    border: solid 2px var(--color-tertiary-darker);
+    background-color: var(--color-success);
+    border: solid 2px var(--color-success-darker);
   }
 }
-
 
 .table-cell-wrapper {
   display: flex;

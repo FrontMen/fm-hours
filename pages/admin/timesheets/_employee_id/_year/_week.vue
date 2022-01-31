@@ -5,7 +5,7 @@ nl:
   employeeError: "Geselecteerde medewerker is niet gevonden"
 </i18n>
 <template>
-  <div class="mt-2 content-wrapper">
+  <div class="content-wrapper">
     <b-alert
       :show="showEmployeeError"
       dismissible

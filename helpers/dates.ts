@@ -6,6 +6,7 @@ import {
   addWeeks,
   startOfYear,
   getDay,
+  isBefore,
 } from 'date-fns';
 
 export function formatDate(dirtyDate: string | number | Date) {
@@ -86,22 +87,16 @@ function buildWeekSpan(startDate: Date) {
   };
 }
 
-export function getWeeksSpan(
-  weeksBefore: number,
-  weeksAfter: number
-): WeekSpan[] {
-  const totalWeeks = weeksBefore + weeksAfter + 1;
-  const currentWeekSpan = buildWeekSpan(new Date());
+export function getWeeksInMonth(startDate: Date, endDate: Date): WeekSpan[] {
+  const weeksSpan = [buildWeekSpan(startDate)];
 
-  const weeksSpan = Array.from(Array(totalWeeks)).map((_, index) => {
-    const weeksDiff = index - weeksBefore;
-
-    if (!weeksDiff) {
-      return currentWeekSpan;
-    }
-
-    return buildWeekSpan(addWeeks(currentWeekSpan.start.date, weeksDiff));
-  });
+  let failSafe = 0;
+  // @ts-ignore
+  while (isBefore(weeksSpan.at(-1).end.date, endDate) && failSafe < 10) {
+    // @ts-ignore
+    weeksSpan.push(buildWeekSpan(addDays(weeksSpan.at(-1).end.date, 1)));
+    failSafe += 1;
+  }
 
   return weeksSpan;
 }

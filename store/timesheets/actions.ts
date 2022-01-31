@@ -2,7 +2,7 @@
 import {ActionTree} from 'vuex';
 
 import {createTimesheetTableData} from '~/helpers/timesheet';
-import {getWeeksSpan} from '~/helpers/dates';
+import {getWeeksInMonth} from '~/helpers/dates';
 import {createReminderEmail} from '~/helpers/email';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
@@ -23,18 +23,16 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   async getTableData(
     {commit},
     payload: {
-      weeksBefore: number;
-      weeksAfter: number;
+      startDate: Date;
+      endDate: Date;
     }
   ) {
-    const weeksSpan = getWeeksSpan(payload.weeksBefore, payload.weeksAfter);
+    const weeksSpan = getWeeksInMonth(payload.startDate, payload.endDate);
 
     const employeesPromise = this.app.$employeesService.getEmployees();
     const timesheetsPromise = this.app.$timesheetsService.getTimesheets({
-      startDate: new Date(weeksSpan[0].start.ISO).getTime(),
-      endDate: new Date(
-        weeksSpan[payload.weeksBefore + payload.weeksAfter].start.ISO
-      ).getTime(),
+      startDate: payload.startDate.getTime(),
+      endDate: payload.endDate.getTime(),
     });
 
     const [employees, timesheets] = await Promise.all([
