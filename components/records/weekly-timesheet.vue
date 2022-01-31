@@ -267,12 +267,13 @@ export default defineComponent({
 
     const getWorkScheme = async (
       sheet: Optional<Timesheet, 'id'>,
-      workWeek: WeekDate[]
+      workWeek: WeekDate[],
+      checkOwn: boolean = true
     ): Promise<WorkScheme[]> => {
       let workScheme: WorkScheme[] = [];
       const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
 
-      if (sheet.status === recordStatus.NEW && isOwnTimesheet) {
+      if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
         try {
           workScheme = await app.$workSchemeService.getWorkScheme({
             bridgeUid: employee.bridgeUid || '',
@@ -296,7 +297,7 @@ export default defineComponent({
     const refreshLeave = async () => {
       if (!timesheet.value?.info || !timesheet.value?.week) return;
 
-      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week);
+      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week, false);
     }
 
     const logout = async () => {
