@@ -101,7 +101,10 @@ export default defineComponent({
     const endDate = computed(() => endOfMonth(startDate.value as Date));
 
     const hideDone = ref<boolean>(false);
-    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const tableData = computed(() => ({
+      fields: store.state.timesheets.timesheetTableData.fields,
+      items: store.state.timesheets.timesheetTableData.items?.filter(item => (item.billable || item.billable === undefined))
+    }));
     const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
     const employeesWithMissingTimesheets = computed(() => {

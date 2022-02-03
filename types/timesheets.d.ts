@@ -56,10 +56,6 @@ interface TimesheetEmployee extends Employee {
   pendingTravelRecords: TravelRecord[];
 }
 
-interface TimesheetPendingWeek {
-  week: WeekDate[];
-}
-
 interface TimesheetsStoreState {
   timesheetTableData: TimesheetTableData;
 }
