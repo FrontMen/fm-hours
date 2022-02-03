@@ -1,26 +1,26 @@
 <i18n lang="yaml">
-  en:
-    customer: "Customer"
-    backToWeek: "Back to week view"
-    print: "Print"
-    totalBillableHours: "Total billable hours"
-    totalSelectedHours: "Total for selected projects"
-    onlyBillable: "Only billable"
-    noResultsMonth: "No records available for selected month"
-    approvedBy: "Approved by"
-    date: "Date"
-    selectProjects: "Select projects"
-  nl:
-    customer: "Klant"
-    backToWeek: "Terug naar weekoverzicht"
-    print: "Afdrukken"
-    totalBillableHours: "Totaal facturabele uren"
-    totalSelectedHours: "Totaal voor geselecteerde periode"
-    onlyBillable: "Alleen facturabele uren"
-    noResultsMonth: "Geen resultaten gevonden voor de geselecteerde maand"
-    approvedBy: "Geakkoordeerd door"
-    date: "Datum"
-    selectProjects: "Selecteer projecten"
+en:
+  customer: "Customer"
+  backToWeek: "Back to week view"
+  print: "Print"
+  totalBillableHours: "Total billable hours"
+  totalSelectedHours: "Total for selected projects"
+  onlyBillable: "Only billable"
+  noResultsMonth: "No records available for selected month"
+  approvedBy: "Approved by"
+  date: "Date"
+  selectProjects: "Select projects"
+nl:
+  customer: "Klant"
+  backToWeek: "Terug naar weekoverzicht"
+  print: "Afdrukken"
+  totalBillableHours: "Totaal facturabele uren"
+  totalSelectedHours: "Totaal voor geselecteerde periode"
+  onlyBillable: "Alleen facturabele uren"
+  noResultsMonth: "Geen resultaten gevonden voor de geselecteerde maand"
+  approvedBy: "Geakkoordeerd door"
+  date: "Datum"
+  selectProjects: "Selecteer projecten"
 </i18n>
 
 <template>
@@ -33,12 +33,12 @@
         >
           <b-button class="mb-3">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            {{$t('backToWeek')}}
+            {{ $t('backToWeek') }}
           </b-button>
         </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
           <b-icon-printer />
-          &nbsp;{{$t('print')}}
+          &nbsp;{{ $t('print') }}
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
@@ -58,16 +58,16 @@
         <b-row>
           <b-col cols="12" sm="6">
             <p>
-              <strong>{{$t('employee')}}:</strong>
+              <strong>{{ $t('employee') }}:</strong>
               {{ employee.name }}
             </p>
             <p>
               <strong
                 v-if="selectedCustomers && selectedCustomers.length !== 1"
               >
-                {{$t('projects')}}:
+                {{ $t('projects') }}:
               </strong>
-              <strong v-else>{{$t('project')}}:</strong>
+              <strong v-else>{{ $t('project') }}:</strong>
               <span v-if="selectedCustomers && selectedCustomers.length">
                 <span
                   v-for="(project, i) in selectedCustomers"
@@ -88,7 +88,8 @@
                   v-for="(project, i) in projectOptions"
                   :key="project.value"
                 >
-                  {{ project.value
+                  {{
+                    project.value
                   }}
                   <span v-if="i !== projectOptions.length - 1">,&nbsp;</span>
                 </span>
@@ -97,15 +98,15 @@
           </b-col>
           <b-col cols="12" sm="6">
             <p>
-              <strong>{{$t('totalHours')}}:</strong>
+              <strong>{{ $t('totalHours') }}:</strong>
               {{ totalHours.total }}
             </p>
             <p>
-              <strong>{{$t('totalBillableHours')}}:</strong>
+              <strong>{{ $t('totalBillableHours') }}:</strong>
               {{ totalHours.billable }}
             </p>
             <p>
-              <strong>{{$t('totalSelectedHours')}}:</strong>
+              <strong>{{ $t('totalSelectedHours') }}:</strong>
               {{ totalHours.selected }}
             </p>
           </b-col>
@@ -121,7 +122,7 @@
       </b-col>
       <b-col cols="4" md="3" class="mb-3 mt-auto hide-print">
         <label class="employee-status__label" for="customer-select">
-          <strong>{{$t('filterByCustomer')}}:</strong>
+          <strong>{{ $t('filterByCustomer') }}:</strong>
         </label>
         <multiselect
           id="customer-select"
@@ -144,7 +145,7 @@
       </b-col>
       <b-col cols="3" class="mt-auto mb-3 hide-print">
         <b-form-checkbox v-model="onlyBillable" switch class="mr-3 ml-auto">
-          {{$t('onlyBillable')}}
+          {{ $t('onlyBillable') }}
         </b-form-checkbox>
       </b-col>
     </b-row>
@@ -169,7 +170,7 @@
       </template>
 
       <template #empty>
-        <p>{{$t('noResultsMonth')}}</p>
+        <p>{{ $t('noResultsMonth') }}</p>
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
@@ -178,7 +179,7 @@
           variant="success"
           class="hide-print"
         >
-          {{$t('billable')}}
+          {{ $t('billable') }}
         </b-badge>
       </template>
       <template #cell(debtor)="scope">
@@ -193,7 +194,7 @@
 
       <template #foot(hours)="">
         <span>
-          <strong>{{$t('totalHours')}}:</strong>
+          <strong>{{ $t('totalHours') }}:</strong>
           {{ totalHours.selected }}
         </span>
       </template>
@@ -202,9 +203,9 @@
 
     <b-row class="no-break only-print">
       <b-col cols="6">
-        {{$t('approvedBy')}}
+        {{ $t('approvedBy') }}
         <br />
-        {{$t('date')}}:
+        {{ $t('date') }}:
         <br />
         <br />
         <br />
@@ -232,30 +233,22 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  ref,
-  useContext,
-  useMeta,
-  useStore,
-  watch,
-} from '@nuxtjs/composition-api';
-import {startOfMonth, endOfMonth, format, addMonths, subMonths} from 'date-fns';
+import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
+import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
 
   setup() {
 
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
       title: i18n.t('monthlyReport') as string,
     }));
 
-    const selectedCustomers = ref<{value: string; label: string}[]>([]);
+    const selectedCustomers = ref<{ value: string; label: string }[]>([]);
     const onlyBillable = ref<boolean>(false);
     const monthStartDate = ref<Date>(startOfMonth(new Date()));
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
@@ -298,13 +291,11 @@ export default defineComponent({
       const conditionalBillable = handleFilterBillable(records);
       const selectedBillable = handleSelectedProjects(conditionalBillable);
 
-      const totals = {
+      return {
         billable: getTotalsByProp<TimeRecord>(billableRecords, 'hours'),
         selected: getTotalsByProp<TimeRecord>(selectedBillable, 'hours'),
         total: getTotalsByProp<TimeRecord>(records, 'hours'),
       };
-
-      return totals;
     });
 
     const projectOptions = computed(() => {
@@ -317,11 +308,7 @@ export default defineComponent({
           projects.push(record.customer.name);
       });
 
-      const mappedProjects = projects.map((project) => {
-        return {value: project, label: project};
-      });
-
-      return mappedProjects;
+      return projects.map((project) => ({value: project, label: project}));
     });
 
     store.dispatch('reports/getMonthlyReportData', {
@@ -373,7 +360,6 @@ export default defineComponent({
 
     return {
       employee,
-
       formatDate,
       goToPreviousMonth,
       goToNextMonth,
@@ -398,6 +384,7 @@ export default defineComponent({
     display: none;
   }
 }
+
 @media print {
   .no-break {
     page-break-inside: avoid;

@@ -82,19 +82,14 @@ nl:
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  useStore,
-  useContext,
-  useMeta, ref, watch,
-} from "@nuxtjs/composition-api";
+import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from "@nuxtjs/composition-api";
 import {endOfMonth, getDay, setDay, startOfMonth} from "date-fns";
 import {TimesheetStatus} from "~/types/enums";
+import {createReminderEmail} from "~/helpers/email";
 
 export default defineComponent({
   setup() {
-    const {i18n} = useContext();
+    const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -130,16 +125,18 @@ export default defineComponent({
 
       if (confirmed) {
         employeesWithMissingTimesheets.value.forEach((employee) => {
-          store.dispatch('timesheets/emailReminder', {
+          const emailData = createReminderEmail({
             employee,
-            startDate: startDate.value,
+            startDate: startDate.value.getTime(),
           });
+
+          app.$mailService.sendMail(emailData);
         })
       }
     };
 
     watch(startDate, () => {
-      store.dispatch("timesheets/getTableData", {
+      store.dispatch('timesheets/getTableData', {
         startDate: firstMonday.value,
         endDate: endDate.value,
       });

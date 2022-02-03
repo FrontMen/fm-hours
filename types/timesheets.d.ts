@@ -61,9 +61,6 @@ interface TimesheetPendingWeek {
 }
 
 interface TimesheetsStoreState {
-  employees: TimesheetEmployee[];
-  selectedEmployeeId: string;
-  timesheets: Timesheet[];
   timesheetTableData: TimesheetTableData;
 }
 
