@@ -74,10 +74,14 @@ export default () => {
     };
   };
 
-  const createTotalsItems = (report: MonthlyReportData | null) => {
-    return report?.employees.map((employee) =>
-      createTotalsProject(employee, report)
-    );
+  const createTotalsItems = (
+    report: MonthlyReportData | null
+  ): ReportEmployee[] | undefined => {
+    return report?.employees
+      .filter(
+        (employee) => employee.billable || employee.billable === undefined
+      )
+      .map((employee) => createTotalsProject(employee, report));
   };
 
   return {createTotalsFields, createTotalsItems};

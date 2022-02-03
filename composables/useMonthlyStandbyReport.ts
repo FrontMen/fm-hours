@@ -21,9 +21,13 @@ export default () => {
   const createStandByItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.employees.forEach((employee) => {
-      items.push(createItem(employee));
-    });
+    report?.employees
+      .filter(
+        (employee) => employee.billable || employee.billable === undefined
+      )
+      .forEach((employee) => {
+        items.push(createItem(employee));
+      });
 
     return items;
   };

@@ -66,15 +66,13 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       timesheets
     );
 
-    const activeEmployeesAndBillable = employees.filter(
-      (employee) =>
-        checkEmployeeAvailability(employee, startDate, endDate) &&
-        (employee.billable || employee.billable === undefined)
+    const activeEmployees = employees.filter((employee) =>
+      checkEmployeeAvailability(employee, startDate, endDate)
     );
 
     commit('setIsLoading', {isLoading: false});
     commit('createMonthlyReportData', {
-      employees: activeEmployeesAndBillable,
+      employees: activeEmployees,
       customers,
       timeRecords: approvedTimeRecords,
       travelRecords: approvedTravelRecords,

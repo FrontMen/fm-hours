@@ -1,11 +1,8 @@
-import {getTotalsByProp} from '~/helpers/helpers';
-
 export default () => {
   const createNotBillableFields = () => {
     return [
       {key: 'name', sortable: true},
       {key: 'team', sortable: true},
-      {key: 'nonBillable', sortable: true},
     ];
   };
 
@@ -13,17 +10,19 @@ export default () => {
     return {
       name: employee.name,
       team: employee.team,
-      nonBillable:
-        getTotalsByProp<TimeRecord>(employee.nonBillableRecords, 'hours') || 0,
     };
   };
 
   const createNotBillableItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.employees.forEach((employee) => {
-      items.push(createItem(employee));
-    });
+    report?.employees
+      .filter(
+        (employee) => !employee.billable && employee.billable !== undefined
+      )
+      .forEach((employee) => {
+        items.push(createItem(employee));
+      });
 
     return items;
   };
