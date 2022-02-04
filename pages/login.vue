@@ -1,20 +1,20 @@
 <i18n lang="yaml">
-  en:
-    login: "Login"
-    loginHint: "Login to use the hours registration tool"
-    loading: "Loading..."
-  nl:
-    login: "Inloggen"
-    loginHint: "Log in voor uren registratie en rapportage"
-    loading: "Laden.."
+en:
+  login: "Login"
+  loginHint: "Login to use the hours registration tool"
+  loading: "Loading..."
+nl:
+  login: "Inloggen"
+  loginHint: "Log in voor uren registratie en rapportage"
+  loading: "Laden.."
 </i18n>
 
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
     <b-card align="center" class="main-card">
       <img src="@/assets/images/logo.png" alt="Frontmen logo" />
-      <h1>{{$t('login')}}</h1>
-      <b-card-text>{{$t('loginHint')}}</b-card-text>
+      <h1>{{ $t('login') }}</h1>
+      <b-card-text>{{ $t('loginHint') }}</b-card-text>
 
       <language-switch class="mb-2"></language-switch>
 
@@ -30,13 +30,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  useStore,
-  useRouter,
-  useContext,
-} from '@nuxtjs/composition-api';
+import {computed, defineComponent, useContext, useRouter, useStore,} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   layout: 'login',

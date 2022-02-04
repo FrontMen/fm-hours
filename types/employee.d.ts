@@ -4,6 +4,7 @@ interface Employee {
   email: string;
   picture: string;
   travelAllowance: boolean;
+  billable: boolean;
   projects: string[];
   endDate: number | null;
   startDate: number;

@@ -4,6 +4,7 @@ en:
   email: "Email"
   admin: "Admin"
   standBy: "Standby"
+  shouldWriteHours: "Billable"
   endDate: "End date"
   startDate: "Start date"
   noDate: "No date selected"
@@ -12,6 +13,7 @@ nl:
   email: "Email"
   admin: "Administrator"
   standBy: "Stand-by"
+  shouldWriteHours: "Facturabel"
   endDate: "Eind datum"
   startDate: "Start datum"
   noDate: "Geen datum geselecteerd"
@@ -66,6 +68,14 @@ nl:
       @change="$emit('changed')"
     >
       {{ $t('standBy') }}
+    </b-form-checkbox>
+    <b-form-checkbox
+      v-model="localEmployee.billable"
+      switch
+      class="mt-2 mr-3"
+      @change="$emit('changed')"
+    >
+      {{ $t('shouldWriteHours') }}
     </b-form-checkbox>
     <label class="mt-2" for="start-datepicker">{{ $t('startDate') }}:</label>
     <b-form-datepicker

@@ -12,20 +12,22 @@ export default () => {
   const createKilometersItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.employees.forEach((employee) => {
-      const kilometers = getTotalsByProp<TravelRecord>(
-        employee.travelRecords,
-        'kilometers'
-      );
+    report?.employees
+      .filter((employee) => employee.billable)
+      .forEach((employee) => {
+        const kilometers = getTotalsByProp<TravelRecord>(
+          employee.travelRecords,
+          'kilometers'
+        );
 
-      if (kilometers > 0) {
-        items.push({
-          name: employee.name,
-          team: employee.team,
-          kilometers,
-        });
-      }
-    });
+        if (kilometers > 0) {
+          items.push({
+            name: employee.name,
+            team: employee.team,
+            kilometers,
+          });
+        }
+      });
 
     return items;
   };

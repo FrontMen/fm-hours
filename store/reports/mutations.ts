@@ -1,7 +1,7 @@
 import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<ReportsStoreState> = {
-  setIsLoading(state, payload: { isLoading: boolean }) {
+  setIsLoading(state, payload: {isLoading: boolean}) {
     state.isLoading = payload.isLoading;
   },
 
@@ -77,6 +77,7 @@ const mutations: MutationTree<ReportsStoreState> = {
       return {
         name: employee.name,
         team: employee.team,
+        billable: employee.billable,
         travelRecords: employeeTravelRecords,
         billableRecords: employeeBillableRecords,
         nonBillableRecords: employeeNonBillableRecords,

@@ -51,17 +51,7 @@ interface WeeklyTimesheet {
 }
 
 interface RecordsStoreState {
-  isLoading: boolean;
-  isSaving: boolean;
-  lastSaved: Date | null;
-  selectedWeek: WeekDate[];
-  leaveDays: WeekDate[];
   timeRecords: TimeRecord[];
-  travelRecords: TravelRecord[];
-  workScheme: WorkScheme[];
-  standByRecords: StandbyRecord[];
-  errorMessage: string;
-  errorMessageWorkscheme: string;
 }
 
 interface RecordDayStatus {

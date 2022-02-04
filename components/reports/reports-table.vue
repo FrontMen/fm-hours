@@ -34,7 +34,6 @@ nl:
 import {defineComponent} from "@vue/composition-api";
 
 function isNumeric(str: string) {
-  if (typeof str !== "string") return false;
   return !isNaN(Number(str)) && !isNaN(parseFloat(str));
 }
 
@@ -46,7 +45,7 @@ export default defineComponent({
   props: {
     csvFileName: {type: String, default: "export"},
   },
-  setup(props) {
+  setup(props: { csvFileName: string }) {
     const downloadCsv = (csv: any, filename: string) => {
       const csvFile = new Blob(["\uFEFF" + csv], {type: "text/csv; charset=utf-18"});
       const downloadLink = document.createElement("a");

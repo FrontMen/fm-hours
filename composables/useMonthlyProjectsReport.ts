@@ -28,14 +28,16 @@ export default () => {
   const createProjectsItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.employees.forEach((employee) => {
-      const customers = employee.billableRecords.map((x) => x.customer);
-      const uniqueCustomers = uniqueByKey(customers, 'id');
+    report?.employees
+      .filter((employee) => employee.billable)
+      .forEach((employee) => {
+        const customers = employee.billableRecords.map((x) => x.customer);
+        const uniqueCustomers = uniqueByKey(customers, 'id');
 
-      uniqueCustomers.forEach((customer) => {
-        items.push(createItem(employee, customer));
+        uniqueCustomers.forEach((customer) => {
+          items.push(createItem(employee, customer));
+        });
       });
-    });
 
     return items;
   };

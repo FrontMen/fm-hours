@@ -25,6 +25,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
           picture: employee.picture || generateAvatarURL(employee.name),
           bridgeUid: employee.bridgeUid,
           standBy: employee.standBy || false,
+          billable: employee.billable,
         });
       }
 

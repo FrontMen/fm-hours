@@ -82,19 +82,14 @@ nl:
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  useStore,
-  useContext,
-  useMeta, ref, watch,
-} from "@nuxtjs/composition-api";
+import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from "@nuxtjs/composition-api";
 import {endOfMonth, getDay, setDay, startOfMonth} from "date-fns";
 import {TimesheetStatus} from "~/types/enums";
+import {createReminderEmail} from "~/helpers/email";
 
 export default defineComponent({
   setup() {
-    const {i18n} = useContext();
+    const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
 
     useMeta(() => ({
@@ -106,7 +101,10 @@ export default defineComponent({
     const endDate = computed(() => endOfMonth(startDate.value as Date));
 
     const hideDone = ref<boolean>(false);
-    const tableData = computed(() => store.state.timesheets.timesheetTableData);
+    const tableData = computed(() => ({
+      fields: store.state.timesheets.timesheetTableData.fields,
+      items: store.state.timesheets.timesheetTableData.items?.filter(item => (item.billable || item.billable === undefined))
+    }));
     const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
     const employeesWithMissingTimesheets = computed(() => {
@@ -130,16 +128,18 @@ export default defineComponent({
 
       if (confirmed) {
         employeesWithMissingTimesheets.value.forEach((employee) => {
-          store.dispatch('timesheets/emailReminder', {
+          const emailData = createReminderEmail({
             employee,
-            startDate: startDate.value,
+            startDate: startDate.value.getTime(),
           });
+
+          app.$mailService.sendMail(emailData);
         })
       }
     };
 
     watch(startDate, () => {
-      store.dispatch("timesheets/getTableData", {
+      store.dispatch('timesheets/getTableData', {
         startDate: firstMonday.value,
         endDate: endDate.value,
       });

@@ -30,19 +30,6 @@ const getters: GetterTree<FiltersStoreState, RootStoreState> = {
   getTimesheetSortDescending(state) {
     return state.timesheetFilters.sortDescending;
   },
-
-  // Employee
-  getEmployeeFilterBy(state): keyof Employee {
-    return state.employeeFilters.filterBy;
-  },
-
-  getEmployeeShowInactive(state): boolean {
-    return state.employeeFilters.showInactive;
-  },
-
-  getEmployeeSearchTerm(state) {
-    return state.employeeFilters.searchTerm;
-  },
 };
 
 export default getters;

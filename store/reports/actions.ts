@@ -1,4 +1,4 @@
-import {startOfMonth, addMonths, startOfISOWeek} from 'date-fns';
+import {addMonths, startOfISOWeek, startOfMonth} from 'date-fns';
 import {ActionTree} from 'vuex';
 
 import {checkEmployeeAvailability} from '../../helpers/employee';
