@@ -27,7 +27,7 @@ export const sendMail = functions.https.onRequest((req, res) => {
         });
       });
 
-      const transporter = createTransport({
+      return createTransport({
         service: 'gmail',
         auth: {
           type: 'OAuth2',
@@ -38,8 +38,6 @@ export const sendMail = functions.https.onRequest((req, res) => {
           refreshToken: functions.config().mail.refreshtoken,
         },
       } as TransportOptions);
-
-      return transporter;
     };
 
     const {to, subject, html} = req.body;

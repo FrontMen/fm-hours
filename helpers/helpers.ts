@@ -3,10 +3,6 @@ export const uniqueByKey = <T>(array: T[], key: string): T[] => [
   ...new Map(array.map((item) => [item[key], item])).values(),
 ];
 
-export const sleep = (milliseconds: number) => {
-  return new Promise((resolve) => setTimeout(resolve, milliseconds));
-};
-
 // Remove accents from strings
 export const normalizeText = (text: string) =>
   text.normalize('NFD').replace(/[\u0300-\u036F]/g, '');
@@ -16,17 +12,6 @@ export const queryOnString = (target: string, query: string) =>
   normalizeText(target)
     .toUpperCase()
     .includes(normalizeText(query).toUpperCase());
-
-export function debounce(func: any, timeout = 300) {
-  let timer: any;
-  return function (...args: any[]) {
-    clearTimeout(timer);
-    timer = setTimeout(function () {
-      // @ts-ignore
-      func.apply(this, args);
-    }, timeout);
-  };
-}
 
 export const sortByProp = <T>(
   a: T,
