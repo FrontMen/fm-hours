@@ -78,9 +78,7 @@ export default () => {
     report: MonthlyReportData | null
   ): ReportEmployee[] | undefined => {
     return report?.employees
-      .filter(
-        (employee) => employee.billable || employee.billable === undefined
-      )
+      .filter((employee) => employee.billable)
       .map((employee) => createTotalsProject(employee, report));
   };
 

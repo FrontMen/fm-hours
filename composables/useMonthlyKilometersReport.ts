@@ -13,9 +13,7 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter(
-        (employee) => employee.billable || employee.billable === undefined
-      )
+      .filter((employee) => employee.billable)
       .forEach((employee) => {
         const kilometers = getTotalsByProp<TravelRecord>(
           employee.travelRecords,

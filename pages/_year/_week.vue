@@ -24,8 +24,7 @@ export default defineComponent({
     const week = computed(() => parseInt(router.currentRoute.params.week, 10));
     const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
 
-    // need to check explicit for false because for "old" accounts can also be null which shouldn't be redirected
-    if (employee.value?.billable === false) {
+    if (!employee.value?.billable) {
       router.push(store.state.employee.isAdmin ? '/admin/reports' : '/welcome')
     }
 
