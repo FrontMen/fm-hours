@@ -60,7 +60,7 @@ export default async function Workscheme(
       data: workScheme,
     });
   } catch (e) {
-    return response.status(401).json({
+    return response.status(e.response.status).json({
       message: e.message,
     });
   }

@@ -31,12 +31,13 @@ function getPpid(token: string): string {
   return signInAttrs[SIGN_IN_ATTR];
 }
 
-export async function getAuthCookieValue(
+export async function getAuthCookie(
   token: string | undefined
 ): Promise<string> {
   if (!token) {
     throw new Error('Missing auth token');
   }
+  const secondsInADay = 86400;
 
   const ppid = getPpid(token);
 
@@ -45,5 +46,21 @@ export async function getAuthCookieValue(
       `https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/${ppid}`
     );
 
-  return `hosted-tools-api-auth-2=${connectionInfo.cookie_value}`;
+  return `hosted-tools-api-auth-2=${connectionInfo.cookie_value}; Path=/; Secure; Max-Age=${secondsInADay}; Same-Site=Lax`;
+}
+
+export async function getCiSessionCookie(authCookie: string): Promise<string> {
+  try {
+    // Is going to throw a 307 Temporary Redirect
+    await axios.get('https://bridge.hosted-tools.com/apps/', {
+      maxRedirects: 0,
+      headers: {
+        Cookie: authCookie,
+      },
+    });
+  } catch (e) {
+    return e.response.headers['set-cookie'][0];
+  }
+
+  return '';
 }
