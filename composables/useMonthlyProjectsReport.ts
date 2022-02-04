@@ -29,9 +29,7 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter(
-        (employee) => employee.billable || employee.billable === undefined
-      )
+      .filter((employee) => employee.billable)
       .forEach((employee) => {
         const customers = employee.billableRecords.map((x) => x.customer);
         const uniqueCustomers = uniqueByKey(customers, 'id');

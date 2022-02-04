@@ -4,7 +4,7 @@ interface Employee {
   email: string;
   picture: string;
   travelAllowance: boolean;
-  billable?: boolean; // undefined is for the "old" profiles where this boolean is not set
+  billable: boolean;
   projects: string[];
   endDate: number | null;
   startDate: number;

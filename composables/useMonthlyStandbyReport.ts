@@ -22,9 +22,7 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter(
-        (employee) => employee.billable || employee.billable === undefined
-      )
+      .filter((employee) => employee.billable)
       .forEach((employee) => {
         items.push(createItem(employee));
       });

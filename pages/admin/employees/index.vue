@@ -46,7 +46,6 @@ nl:
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
             {{ filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam')
-
             }}:
           </label>
           <b-input
@@ -211,10 +210,7 @@ export default defineComponent({
     };
 
     const checkEmployeeBillable = (showNotBillable: boolean, employee: Employee) => {
-      if (showNotBillable) return true;
-
-      // undefined is for the "old" profiles where this boolean is not set
-      return employee.billable || employee.billable === undefined;
+      return showNotBillable || employee.billable
     };
 
     const checkEmployeeProp = (employee: Employee, query: string, filterByProp: keyof Employee) => {
