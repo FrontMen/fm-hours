@@ -71,14 +71,6 @@
           <div class="d-flex justify-content-end mt-5">
             <b-button
               type="button"
-              variant="danger"
-              class="mr-2"
-              @click="deleteCustomer"
-            >
-              {{$t('delete')}}
-            </b-button>
-            <b-button
-              type="button"
               variant="warning"
               class="mr-2 text-capitalize"
               @click="archiveCustomerToggle(!form.archived)"
@@ -157,17 +149,6 @@ export default defineComponent({
     );
     useMeta(() => ({title: pageTitle.value}));
 
-    const deleteCustomer = () => {
-      const confirmation = confirm(
-        i18n.t('customerDeleteConfirmation', {name: customer.value?.name || ''}) as string
-      );
-
-      if (!confirmation) return;
-
-      store.dispatch("customers/deleteCustomer", customerId);
-      router.push("/customers");
-    };
-
     const archiveCustomerToggle = (archive: boolean) => {
       const archiveData = {
         archived: archive,
@@ -221,7 +202,6 @@ export default defineComponent({
       hasUnsavedChanges,
       form,
       archiveCustomerToggle,
-      deleteCustomer,
       handleSubmit,
       formatDate,
     };

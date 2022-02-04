@@ -8,13 +8,6 @@ interface Customer {
   archivedDate?: number;
 }
 
-interface CustomerOption {
-  text: string;
-  value?: string;
-  disabled?: boolean;
-}
-
 interface CustomersStoreState {
   customers: Customer[];
-  selectedCustomer: Customer | null;
 }

@@ -45,9 +45,7 @@ nl:
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
-            {{
-              filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam')
-
+            {{ filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam')
 
             }}:
           </label>
@@ -85,8 +83,8 @@ nl:
           <b-button variant="link" @click="showMoreFilters = !showMoreFilters">
             <span>
               {{ $t('expandSearchMenu') }}
-              <b-icon-chevron-up v-if="showMoreFilters"/>
-              <b-icon-chevron-down v-else/>
+              <b-icon-chevron-up v-if="showMoreFilters" />
+              <b-icon-chevron-down v-else />
             </span>
           </b-button>
         </b-col>
@@ -125,7 +123,7 @@ nl:
         v-if="!filteredEmployees.length"
         class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
       >
-        <b-icon-person-x class="mr-2"/>
+        <b-icon-person-x class="mr-2" />
         {{ $t('noEmployeeFound') }}.
       </b-row>
 
@@ -135,7 +133,7 @@ nl:
         :key="employee.id"
         class="app-table__row employee-row p-3 mr-0"
       >
-        <b-avatar :src="employee.picture"/>
+        <b-avatar :src="employee.picture" />
 
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
@@ -182,8 +180,8 @@ export default defineComponent({
     const showMoreFilters = ref<boolean>(false);
 
     onMounted(() => {
-      store.dispatch("employees/getEmployees");
-      store.dispatch("customers/getCustomers");
+      store.dispatch('employees/getEmployees');
+      store.dispatch('customers/getCustomers');
     });
 
     const customerOptions = computed(() =>
@@ -198,14 +196,8 @@ export default defineComponent({
     const selectedCustomers = ref<Customer[]>([]);
 
     const filterByOptions: { value: keyof Employee; text: string; }[] = [
-      {
-        value: 'name',
-        text: i18n.t('name') as string,
-      },
-      {
-        value: 'team',
-        text: i18n.t('team') as string,
-      }
+      {value: 'name', text: i18n.t('name') as string},
+      {value: 'team', text: i18n.t('team') as string}
     ];
     const filterBy = ref<keyof Employee>('name');
     const showInactive = ref<boolean>(false);

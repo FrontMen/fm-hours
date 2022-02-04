@@ -22,10 +22,6 @@ const mutations: MutationTree<EmployeesStoreState> = {
       employee.id === payload.employee.id ? payload.employee : employee
     );
   },
-
-  deleteEmployeeSuccess: (state, deletedId: string) => {
-    state.employees = state.employees.filter((i) => i.id !== deletedId);
-  },
 };
 
 export default mutations;

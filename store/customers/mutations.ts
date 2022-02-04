@@ -15,10 +15,6 @@ const mutations: MutationTree<CustomersStoreState> = {
       return cust;
     });
   },
-
-  deleteCustomerSuccess(state, payload) {
-    state.customers = state.customers.filter((i) => i.id !== payload);
-  },
 };
 
 export default mutations;

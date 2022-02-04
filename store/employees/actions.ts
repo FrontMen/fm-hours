@@ -30,11 +30,6 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit('updateEmployee', {employee: payload});
   },
 
-  async deleteEmployee({commit}, id: string) {
-    await this.app.$employeesService.deleteEmployee(id);
-    commit('deleteEmployeeSuccess', id);
-  },
-
   async getAdminList({commit, getters}) {
     if (getters['employees/adminList']?.length) return;
 
