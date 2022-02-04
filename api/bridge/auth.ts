@@ -1,6 +1,6 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import {validateHeaders} from '../../lib/request';
-import {getAuthCookieValue} from '../../lib/intracto';
+import {getAuthCookie, getCiSessionCookie} from '../../lib/intracto';
 
 export default async function Auth(
   request: VercelRequest,
@@ -15,12 +15,16 @@ export default async function Auth(
   }
 
   try {
-    const authCookie = await getAuthCookieValue(request.headers.authorization);
-    const secondsInADay = 86400;
+    const cookies = [];
+    const authCookie = await getAuthCookie(request.headers.authorization);
+    cookies.push(authCookie);
 
-    response.setHeader('Set-Cookie', [
-      `${authCookie}; Path=/; Secure; Max-Age=${secondsInADay}; Same-Site=Lax`,
-    ]);
+    const ciSession = await getCiSessionCookie(authCookie);
+    if (ciSession !== '') {
+      cookies.push(ciSession);
+    }
+
+    response.setHeader('Set-Cookie', cookies);
     return response.end('OK');
   } catch (e) {
     return response.status(401).json({
