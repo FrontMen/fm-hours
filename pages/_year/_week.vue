@@ -10,7 +10,7 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, useContext, useMeta, useRouter, useStore,} from '@nuxtjs/composition-api';
+import {computed, defineComponent, useContext, useMeta, useRouter, useStore, watch,} from '@nuxtjs/composition-api';
 import {format} from "date-fns";
 
 export default defineComponent({
@@ -24,13 +24,15 @@ export default defineComponent({
     const week = computed(() => parseInt(router.currentRoute.params.week, 10));
     const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
 
-    if (!employee.value?.billable) {
-      router.push(store.state.employee.isAdmin ? '/admin/reports' : '/welcome')
-    }
-
     if (!router.currentRoute.params.year || !router.currentRoute.params.week) {
       router.replace(format(new Date(), '/yyyy/I'));
     }
+
+    watch([employee], () => {
+      if (employee.value && !employee.value?.billable) {
+        router.push(store.state.employee.isAdmin ? '/admin/reports' : '/welcome')
+      }
+    });
 
     useMeta(() => ({
       title: pageTitle.value,
