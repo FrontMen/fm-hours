@@ -30,7 +30,7 @@ export default class RecordsService {
 
     const snapshot = await query.get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as RecordType),
     }));
@@ -50,15 +50,13 @@ export default class RecordsService {
       .orderBy('date', 'asc')
       .get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as RecordType),
     }));
   }
 
-  async saveEmployeeRecords<
-    RecordType extends {id: string | null; hours: number}
-  >(
+  async saveEmployeeRecords<RecordType extends {id: string | null; hours: number}>(
     params: {
       employeeId: string;
       timeRecords: RecordType[];
@@ -69,20 +67,18 @@ export default class RecordsService {
 
     const updatedRecords = await Promise.all(
       params.timeRecords.map(async (timeRecord: RecordType) => {
-        return await this.updateRecord<RecordType>(
-          ref,
-          params.employeeId,
-          timeRecord
-        );
+        return await this.updateRecord<RecordType>(ref, params.employeeId, timeRecord);
       })
     );
 
-    return updatedRecords.filter((x) => !!x.id);
+    return updatedRecords.filter(x => !!x.id);
   }
 
-  private async updateRecord<
-    RecordType extends {id: string | null; hours: number}
-  >(ref: any, employeeId: string, record: RecordType): Promise<RecordType> {
+  private async updateRecord<RecordType extends {id: string | null; hours: number}>(
+    ref: any,
+    employeeId: string,
+    record: RecordType
+  ): Promise<RecordType> {
     const {id, hours} = record;
 
     const newRecord: any = {...record};
@@ -120,7 +116,7 @@ export default class RecordsService {
   ): Promise<void> {
     const batch = this.fire.firestore.batch();
 
-    params.recordsToDelete.forEach((record) => {
+    params.recordsToDelete.forEach(record => {
       if (record.id) {
         const ref = this.fire.firestore.collection(collection).doc(record.id!);
 

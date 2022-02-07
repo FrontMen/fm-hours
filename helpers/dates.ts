@@ -47,18 +47,14 @@ export function buildWeek(startDate: string | number | Date): WeekDate[] {
   });
 }
 
-export function checkNonWorkingDays(
-  days: WeekDate[],
-  workScheme?: WorkScheme[]
-): WeekDate[] {
-  return days.map((day) => {
-    const workSchemeDay = workScheme?.find((ws) => ws.date === day.date);
+export function checkNonWorkingDays(days: WeekDate[], workScheme?: WorkScheme[]): WeekDate[] {
+  return days.map(day => {
+    const workSchemeDay = workScheme?.find(ws => ws.date === day.date);
     const isPublicHoliday = !!workSchemeDay?.holiday;
     // Holidays also register absence hours, prevent double label.
     const isLeaveDay = !!workSchemeDay?.absenceHours && !isPublicHoliday;
 
-    const isPartTime =
-      !isPublicHoliday && !!workSchemeDay && workSchemeDay.theoreticalHours < 8;
+    const isPartTime = !isPublicHoliday && !!workSchemeDay && workSchemeDay.theoreticalHours < 8;
 
     return {
       ...day,
@@ -107,19 +103,13 @@ export function getWeeksInMonth(startDate: Date, endDate: Date): WeekSpan[] {
 export function getDayOnGMT(initialZonedValue: Date | number | string) {
   const MILLISECONDS_IN_MINUTES = 60000;
   const zonedDate = new Date(initialZonedValue);
-  return new Date(
-    zonedDate.getTime() +
-      zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES
-  );
+  return new Date(zonedDate.getTime() + zonedDate.getTimezoneOffset() * MILLISECONDS_IN_MINUTES);
 }
 
 // TODO: refactor this because it is really unclear
 export function getDateOfISOWeek(year: number, week: number, day: number) {
   const startDayOfYear = startOfYear(new Date(year, 0, 1));
   const diff = day - getDay(startDayOfYear);
-  const firstAppearanceOfYear = addDays(
-    startDayOfYear,
-    diff < 0 ? 7 + diff : diff
-  );
+  const firstAppearanceOfYear = addDays(startDayOfYear, diff < 0 ? 7 + diff : diff);
   return addWeeks(firstAppearanceOfYear, week - 1);
 }

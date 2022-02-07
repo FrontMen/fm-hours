@@ -13,12 +13,7 @@ export default class TimesheetsService {
     this.isServer = process.server;
   }
 
-  async getTimesheets({
-    date,
-    startDate,
-    endDate,
-    employeeId,
-  }: GetTimesheetsProps) {
+  async getTimesheets({date, startDate, endDate, employeeId}: GetTimesheetsProps) {
     // Only do firebase calls on client side
     if (this.isServer) return [];
 
@@ -30,26 +25,21 @@ export default class TimesheetsService {
 
     if (date && !startDate && !endDate) query = query.where('date', '==', date);
 
-    if (startDate && !date)
-      query = query.where('date', '>=', new Date(startDate).getTime());
+    if (startDate && !date) query = query.where('date', '>=', new Date(startDate).getTime());
 
-    if (endDate && !date)
-      query = query.where('date', '<=', new Date(endDate).getTime());
+    if (endDate && !date) query = query.where('date', '<=', new Date(endDate).getTime());
 
     if (employeeId) query = query.where('employeeId', '==', employeeId);
 
     const snapshot = await query.get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as Omit<Timesheet, 'id'>),
     }));
   }
 
-  async getApprovedTimesheets(params: {
-    startDate: number;
-    endDate: number;
-  }): Promise<Timesheet[]> {
+  async getApprovedTimesheets(params: {startDate: number; endDate: number}): Promise<Timesheet[]> {
     const snapshot = await this.fire.firestore
       .collection(Collections.TIMESHEETS)
       .where('status', '==', recordStatus.APPROVED)
@@ -58,15 +48,13 @@ export default class TimesheetsService {
       .orderBy('date', 'asc')
       .get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as Omit<Timesheet, 'id'>),
     }));
   }
 
-  async saveTimesheet(
-    timesheet: Optional<Timesheet, 'id'>
-  ): Promise<Timesheet> {
+  async saveTimesheet(timesheet: Optional<Timesheet, 'id'>): Promise<Timesheet> {
     const ref = this.fire.firestore.collection(Collections.TIMESHEETS);
 
     const {id, ...newTimesheet} = timesheet;

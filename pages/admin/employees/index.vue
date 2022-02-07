@@ -34,19 +34,12 @@ nl:
     <b-container class="mx-0 px-0" fluid :class="{'mb-3': !showMoreFilters}">
       <b-row no-gutters>
         <b-col cols="12" sm="6" lg="2" class="pl-0 mb-3 pr-2">
-          <label class="employee-status__label" for="status-select">
-            {{ $t('filterBy') }}:
-          </label>
-          <b-form-select
-            id="status-select"
-            v-model="filterBy"
-            :options="filterByOptions"
-          />
+          <label class="employee-status__label" for="status-select">{{ $t('filterBy') }}:</label>
+          <b-form-select id="status-select" v-model="filterBy" :options="filterByOptions" />
         </b-col>
         <b-col cols="12" sm="6" lg="3" class="pl-0 mb-3 pr-2">
           <label class="employee-status__label" for="employee-search">
-            {{ filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam')
-            }}:
+            {{ filterBy === 'name' ? $t('searchEmployeeByName') : $t('searchEmployeeByTeam') }}:
           </label>
           <b-input
             id="employee-search"
@@ -87,15 +80,8 @@ nl:
             </span>
           </b-button>
         </b-col>
-        <b-col
-          cols="6"
-          lg="2"
-          class="d-flex align-items-end justify-content-end mb-3"
-        >
-          <nuxt-link
-            class="btn btn-success"
-            :to="localePath(`/admin/employees/add`)"
-          >
+        <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end mb-3">
+          <nuxt-link class="btn btn-success" :to="localePath(`/admin/employees/add`)">
             {{ $t('newEmployee') }}
           </nuxt-link>
         </b-col>
@@ -137,25 +123,16 @@ nl:
         <div class="font-weight-bold employee-row__name my-2 mx-3">
           {{ employee.name }}
           <small v-if="employee.team">- {{ employee.team }}</small>
-          <b-badge
-            v-if="!checkEmployeeAvailability(employee, new Date())"
-            variant="danger"
-          >
+          <b-badge v-if="!checkEmployeeAvailability(employee, new Date())" variant="danger">
             {{ $t('inactive') }}
           </b-badge>
-          <b-badge
-            v-if="!checkEmployeeBillable(false, employee)"
-            variant="warning"
-          >
+          <b-badge v-if="!checkEmployeeBillable(false, employee)" variant="warning">
             {{ $t('notBillable') }}
           </b-badge>
         </div>
 
         <div class="ml-auto d-flex">
-          <nuxt-link
-            class="btn btn-info"
-            :to="localePath(`/admin/employees/${employee.id}`)"
-          >
+          <nuxt-link class="btn btn-info" :to="localePath(`/admin/employees/${employee.id}`)">
             {{ $t('manageEmployee') }}
           </nuxt-link>
         </div>

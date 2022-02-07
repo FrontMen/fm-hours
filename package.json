@@ -12,7 +12,6 @@
     "lint": "eslint --ext .js,.ts,.vue .",
     "prettier": "prettier \"**/*.{js,ts,json,vue,scss}\" --ignore-path .gitignore --check",
     "format:eslint": "eslint --ext .js,.vue . --fix --ignore-path .eslintignore .",
-    "format": "npm run format:eslint && npm run format:prettier",
     "release": "standard-version",
     "release:minor": "standard-version --release-as minor",
     "release:patch": "standard-version --release-as patch",

@@ -14,11 +14,7 @@ nl:
       {{ $t('workschemeError') }}
     </b-alert>
 
-    <navigation-buttons
-      class="mb-3"
-      :start-date="startDate"
-      :route-prefix="routePrefix"
-    />
+    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix" />
 
     <weekly-timesheet-messages
       v-if="timesheet.info"
@@ -54,11 +50,7 @@ nl:
       </template>
     </weekly-timesheet-container>
 
-    <weekly-timesheet-container
-      v-if="showStandby || showTravel"
-      :show-header="false"
-      class="mt-4"
-    >
+    <weekly-timesheet-container v-if="showStandby || showTravel" :show-header="false" class="mt-4">
       <template #rows>
         <weekly-timesheet-row-hours
           v-if="showStandby"

@@ -18,11 +18,7 @@ nl:
         <div class="actions-toolbar flex mb-3">
           <MonthPicker v-model="startDate" />
 
-          <b-button
-            v-b-tooltip.hover
-            :title="$t('emailReminder')"
-            @click="sendReminders"
-          >
+          <b-button v-b-tooltip.hover :title="$t('emailReminder')" @click="sendReminders">
             <b-icon icon="envelope" />
           </b-button>
 
@@ -52,11 +48,7 @@ nl:
             </p>
           </template>
           <template #cell(id)="scope">
-            <nuxt-link
-              v-slot="{isActive}"
-              :to="`/admin/timesheets/${scope.item.id}/`"
-              custom
-            >
+            <nuxt-link v-slot="{isActive}" :to="`/admin/timesheets/${scope.item.id}/`" custom>
               <p
                 class="table-cell-wrapper table-cell-wrapper__employee"
                 :class="{ 'table-cell-wrapper__employee--active': isActive }"

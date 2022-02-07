@@ -18,26 +18,16 @@
     <template v-else>
       <b-container class="mb-5">
         <div class="mb-5">
-          <nuxt-link
-            :to="localePath('/admin/customers')"
-            class="btn btn-primary"
-          >
+          <nuxt-link :to="localePath('/admin/customers')" class="btn btn-primary">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
             {{$t('customers')}}
           </nuxt-link>
         </div>
-        <b-form
-          @submit.prevent="handleSubmit"
-          @change="hasUnsavedChanges = true"
-        >
+        <b-form @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
           <b-alert :show="form.archived" variant="info">
             {{$t('archivedCustomer', { time: formatDate(form.archivedDate) })}}
           </b-alert>
-          <b-form-group
-            id="input-group-name"
-            :label="$t('name') + ':'"
-            label-for="input-2"
-          >
+          <b-form-group id="input-group-name" :label="$t('name') + ':'" label-for="input-2">
             <b-form-input
               id="input-name"
               v-model="form.name"
@@ -77,11 +67,7 @@
             >
               {{ form.archived ? $t('unarchive') : $t('archive') }}
             </b-button>
-            <b-button
-              type="submit"
-              variant="primary"
-              :disabled="!hasUnsavedChanges"
-            >
+            <b-button type="submit" variant="primary" :disabled="!hasUnsavedChanges">
               {{$t('update')}}
             </b-button>
           </div>

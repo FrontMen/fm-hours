@@ -20,10 +20,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       endDate: payload.endDate.getTime(),
     });
 
-    const [employees, timesheets] = await Promise.all([
-      employeesPromise,
-      timesheetsPromise,
-    ]);
+    const [employees, timesheets] = await Promise.all([employeesPromise, timesheetsPromise]);
 
     const tableData = createTimesheetTableData({
       employees,

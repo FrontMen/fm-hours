@@ -11,11 +11,7 @@ nl:
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <strong
-        v-b-tooltip.hover
-        class="title-with-tooltip"
-        :title="$t('description')"
-      >
+      <strong v-b-tooltip.hover class="title-with-tooltip" :title="$t('description')">
         {{ $t('title') }}
       </strong>
 
@@ -36,11 +32,7 @@ nl:
     >
       {{ value }}
     </b-col>
-    <b-col
-      v-if="leaveDays.length > 0"
-      cols="3"
-      class="weekly-timesheet-row__total-column"
-    >
+    <b-col v-if="leaveDays.length > 0" cols="3" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>

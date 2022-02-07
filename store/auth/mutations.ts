@@ -5,7 +5,7 @@ const mutations: MutationTree<AuthStoreState> = {
     state.user = user;
   },
 
-  resetUser: (state) => {
+  resetUser: state => {
     state.user = undefined;
   },
 

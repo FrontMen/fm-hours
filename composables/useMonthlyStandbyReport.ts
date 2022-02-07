@@ -13,8 +13,7 @@ export default () => {
     return {
       name: employee.name,
       team: employee.team,
-      hours:
-        getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
+      hours: getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
     };
   };
 
@@ -22,8 +21,8 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter((employee) => employee.billable)
-      .forEach((employee) => {
+      .filter(employee => employee.billable)
+      .forEach(employee => {
         items.push(createItem(employee));
       });
 

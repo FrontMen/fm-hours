@@ -63,14 +63,9 @@ export default class ContractsService {
     return await this.axios
       .get(this.contractsEndpoint, axiosConfig)
       .then(({data: result}) => result.data)
-      .then(
-        (contractResult: {
-          numrows: number;
-          results: ContractListItemResult;
-        }) => ({
-          numRows: contractResult.numrows,
-          contractList: Object.values(contractResult.results),
-        })
-      );
+      .then((contractResult: {numrows: number; results: ContractListItemResult}) => ({
+        numRows: contractResult.numrows,
+        contractList: Object.values(contractResult.results),
+      }));
   }
 }

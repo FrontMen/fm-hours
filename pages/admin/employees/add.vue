@@ -1,5 +1,5 @@
 <template>
-  <employee-form mode="add" :employee="employee"/>
+  <employee-form mode="add" :employee="employee" />
 </template>
 
 <script lang="ts">

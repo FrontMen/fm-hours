@@ -27,10 +27,7 @@ nl:
   P: "Dt"
 </i18n>
 <template>
-  <div
-    class="weekly-timesheet"
-    :class="{ 'weekly-timesheet--no-header': !showHeader }"
-  >
+  <div class="weekly-timesheet" :class="{ 'weekly-timesheet--no-header': !showHeader }">
     <b-container fluid>
       <b-row v-if="showHeader" cols="14">
         <b-col class="weekly-timesheet__action-column" cols="4" />

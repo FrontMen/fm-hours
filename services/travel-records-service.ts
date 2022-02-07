@@ -17,24 +17,19 @@ export default class RecordsService {
       .collection(Collections.TRAVELREC)
       .where('employeeId', '==', params.employeeId);
 
-    if (params.startDate)
-      query.where('date', '>=', new Date(params.startDate).getTime());
+    if (params.startDate) query.where('date', '>=', new Date(params.startDate).getTime());
 
-    if (params.endDate)
-      query.where('date', '<=', new Date(params.endDate).getTime());
+    if (params.endDate) query.where('date', '<=', new Date(params.endDate).getTime());
 
     const snapshot = await query.get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as TravelRecord),
     }));
   }
 
-  async getRecords(params: {
-    startDate: Date;
-    endDate: Date;
-  }): Promise<TimeRecord[]> {
+  async getRecords(params: {startDate: Date; endDate: Date}): Promise<TimeRecord[]> {
     const snapshot = await this.fire.firestore
       .collection(Collections.TRAVELREC)
       .where('date', '>=', params.startDate.getTime())
@@ -42,25 +37,22 @@ export default class RecordsService {
       .orderBy('date', 'asc')
       .get();
 
-    return snapshot.docs.map((doc) => ({
+    return snapshot.docs.map(doc => ({
       id: doc.id,
       ...(doc.data() as TimeRecord),
     }));
   }
 
-  async saveEmployeeRecords(params: {
-    employeeId: string;
-    travelRecords: TravelRecord[];
-  }) {
+  async saveEmployeeRecords(params: {employeeId: string; travelRecords: TravelRecord[]}) {
     const ref = this.fire.firestore.collection(Collections.TRAVELREC);
 
     const updatedRecords = await Promise.all(
-      params.travelRecords.map(async (record) => {
+      params.travelRecords.map(async record => {
         return await this.updateRecord(ref, params.employeeId, record);
       })
     );
 
-    return updatedRecords.filter((x) => !!x.id);
+    return updatedRecords.filter(x => !!x.id);
   }
 
   private async updateRecord(

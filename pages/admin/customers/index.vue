@@ -40,24 +40,12 @@ nl:
     <b-container class="mx-0 px-0 mb-3" fluid>
       <b-row no-gutters>
         <b-col cols="6" md="3" class="mb-3">
-          <label class="employee-status__label" for="status-select">
-            {{ $t('searchBy') }}:
-          </label>
-          <b-form-select
-            id="status-select"
-            v-model="filterBy"
-            :options="filterByOptions"
-          />
+          <label class="employee-status__label" for="status-select">{{ $t('searchBy') }}:</label>
+          <b-form-select id="status-select" v-model="filterBy" :options="filterByOptions" />
         </b-col>
         <b-col cols="6" md="4" class="pl-0 mb-3">
           <label class="employee-status__label" for="employee-search">
-            {{
-              filterBy === 'name' ? $t('searchName') : $t('searchDebtor')
-
-
-
-
-            }}:
+            {{ filterBy === 'name' ? $t('searchName') : $t('searchDebtor') }}:
           </label>
           <b-input
             id="employee-search"
@@ -68,11 +56,7 @@ nl:
         </b-col>
         <b-col cols="12" md="5" class="ml-auto mt-4">
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <b-form-checkbox
-              v-model="selectedArchiveOption"
-              switch
-              class="mr-3 ml-auto"
-            >
+            <b-form-checkbox v-model="selectedArchiveOption" switch class="mr-3 ml-auto">
               {{ $t('showArchived') }}
             </b-form-checkbox>
             <b-button v-b-modal.modal-center>
@@ -142,10 +126,7 @@ nl:
       :cancel-title="$t('cancel')"
       @ok="addCustomer()"
     >
-      <b-form-input
-        v-model="newCustomer.name"
-        :placeholder="$t('customerName')"
-      />
+      <b-form-input v-model="newCustomer.name" :placeholder="$t('customerName')" />
       <b-form-input
         v-model="newCustomer.debtor"
         :placeholder="$t('debtorReportOnly')"

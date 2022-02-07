@@ -26,10 +26,7 @@ interface WorkSchemeResponse {
   data: ApiWorkScheme[];
 }
 
-export default async function Workscheme(
-  request: VercelRequest,
-  response: VercelResponse
-) {
+export default async function Workscheme(request: VercelRequest, response: VercelResponse) {
   try {
     validateParams(request, ['bridgeUid', 'date_from', 'date_to']);
   } catch (e) {
@@ -48,7 +45,7 @@ export default async function Workscheme(
       dateTo
     );
 
-    const workScheme: WorkScheme[] = apiWorkScheme.map((ws) => ({
+    const workScheme: WorkScheme[] = apiWorkScheme.map(ws => ({
       date: ws.date,
       theoreticalHours: ws.theoretical_hours,
       absenceHours: ws.absence_hours,

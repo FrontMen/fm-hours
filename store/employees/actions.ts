@@ -8,10 +8,7 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit('setEmployees', {employees});
   },
 
-  async saveProjects(
-    {commit},
-    payload: {employee: Employee; customerIds: string[]}
-  ) {
+  async saveProjects({commit}, payload: {employee: Employee; customerIds: string[]}) {
     const newEmployee = {...payload.employee, projects: payload.customerIds};
     await this.app.$employeesService.updateEmployee(newEmployee);
 
@@ -19,9 +16,7 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   },
 
   async addNewEmployee({commit}, payload: Omit<Employee, 'id' | 'picture'>) {
-    const newEmployee = await this.app.$employeesService.createEmployee(
-      payload
-    );
+    const newEmployee = await this.app.$employeesService.createEmployee(payload);
     commit('addNewEmployeeSuccess', {employee: newEmployee});
   },
 
@@ -45,9 +40,7 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
   },
 
   async updateAdminList({commit}, payload: string[]) {
-    const adminList = await this.app.$employeesService.updateAdminEmails(
-      payload
-    );
+    const adminList = await this.app.$employeesService.updateAdminEmails(payload);
     commit('setAdminList', adminList);
   },
 };

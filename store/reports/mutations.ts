@@ -16,10 +16,9 @@ const mutations: MutationTree<ReportsStoreState> = {
       timesheets: Timesheet[];
     }
   ) {
-    const {employees, timeRecords, travelRecords, standByRecords, timesheets} =
-      payload;
+    const {employees, timeRecords, travelRecords, standByRecords, timesheets} = payload;
     const nonBillableProjects = payload.customers.filter(
-      (customer) => !customer.isBillable && !customer.archived
+      customer => !customer.isBillable && !customer.archived
     );
 
     // Add fake Leave project
@@ -32,25 +31,17 @@ const mutations: MutationTree<ReportsStoreState> = {
     };
     nonBillableProjects.unshift(leaveCustomer);
 
-    const reportEmployees = employees.map((employee) => {
-      const employeeTimeRecords = timeRecords.filter(
-        (x) => x.employeeId === employee.id
-      );
+    const reportEmployees = employees.map(employee => {
+      const employeeTimeRecords = timeRecords.filter(x => x.employeeId === employee.id);
 
-      const employeeTimesheets = timesheets.filter(
-        (x) => x.employeeId === employee.id
-      );
+      const employeeTimesheets = timesheets.filter(x => x.employeeId === employee.id);
 
-      const employeeTravelRecords = travelRecords.filter(
-        (x) => x.employeeId === employee.id
-      );
+      const employeeTravelRecords = travelRecords.filter(x => x.employeeId === employee.id);
 
-      const employeeStandByRecords = standByRecords.filter(
-        (x) => x.employeeId === employee.id
-      );
+      const employeeStandByRecords = standByRecords.filter(x => x.employeeId === employee.id);
 
-      const employeeNonBillableRecords = employeeTimeRecords.filter((x) =>
-        nonBillableProjects.some((y) => y.id === x.customer.id)
+      const employeeNonBillableRecords = employeeTimeRecords.filter(x =>
+        nonBillableProjects.some(y => y.id === x.customer.id)
       );
 
       // Add leave hours as fake TimeRecords
@@ -71,7 +62,7 @@ const mutations: MutationTree<ReportsStoreState> = {
       });
 
       const employeeBillableRecords = employeeTimeRecords.filter(
-        (x) => !nonBillableProjects.some((y) => y.id === x.customer.id)
+        x => !nonBillableProjects.some(y => y.id === x.customer.id)
       );
 
       return {

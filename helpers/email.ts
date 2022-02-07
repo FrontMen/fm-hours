@@ -47,10 +47,7 @@ export const createDenialEmal = ({employee, week}: DenialEmailProps) => {
   return buildEmail({employee, content, subject: 'Timesheet denied'});
 };
 
-export const createReminderEmail = ({
-  employee,
-  startDate,
-}: ReminderEmailProps) => {
+export const createReminderEmail = ({employee, startDate}: ReminderEmailProps) => {
   const dayLabel = format(startDate, 'MMMM');
   const baseUrl = location.origin;
 

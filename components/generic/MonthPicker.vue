@@ -4,11 +4,7 @@
       <b-icon icon="arrow-left" />
     </b-button>
 
-    <b-button
-      class="current-month"
-      :disabled="isCurrentMonth"
-      @click="toCurrMonth"
-    >
+    <b-button class="current-month" :disabled="isCurrentMonth" @click="toCurrMonth">
       {{ selectedMonthLabel }}
     </b-button>
 

@@ -54,19 +54,11 @@
         </b-button>
 
         <b-button-group v-if="isPending" class="mr-3">
-          <b-button
-            variant="danger"
-            :disabled="isSaving"
-            @click="handleDenyClick"
-          >
+          <b-button variant="danger" :disabled="isSaving" @click="handleDenyClick">
             {{$t('deny')}}
           </b-button>
 
-          <b-button
-            variant="success"
-            :disabled="isSaving"
-            @click="handleApproveClick"
-          >
+          <b-button variant="success" :disabled="isSaving" @click="handleApproveClick">
             {{$t('approve')}}
           </b-button>
         </b-button-group>
@@ -91,12 +83,7 @@
         {{$t('save')}}
       </b-button>
 
-      <b-button
-        v-if="isPending"
-        class="mr-3"
-        :disabled="isSaving"
-        @click="handleUnsubmitClick"
-      >
+      <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
         {{$t('unsubmit')}}
       </b-button>
 

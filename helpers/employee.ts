@@ -6,17 +6,13 @@ export function checkEmployeeAvailability(
   startCompareDate: Date,
   endCompareDate?: Date
 ) {
-  const end = endCompareDate
-    ? endOfDay(endCompareDate)
-    : endOfDay(startCompareDate);
+  const end = endCompareDate ? endOfDay(endCompareDate) : endOfDay(startCompareDate);
 
   if (end.getTime() < employee.startDate) {
     return false;
   }
 
-  return (
-    !employee.endDate || isAfter(new Date(employee.endDate), startCompareDate)
-  );
+  return !employee.endDate || isAfter(new Date(employee.endDate), startCompareDate);
 }
 
 export function generateAvatarURL(employeeName: string) {

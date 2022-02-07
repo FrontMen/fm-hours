@@ -27,10 +27,7 @@ nl:
   <div class="content-wrapper mt-5">
     <b-row>
       <b-col cols="12" sm="4" md="4" class="hide-print">
-        <nuxt-link
-          :to="localePath('/')"
-          class="d-flex align-items-center flex-nowrap"
-        >
+        <nuxt-link :to="localePath('/')" class="d-flex align-items-center flex-nowrap">
           <b-button class="mb-3">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
             {{ $t('backToWeek') }}
@@ -49,9 +46,7 @@ nl:
           width="250pt"
         />
         <h4>
-          <strong>
-            {{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}
-          </strong>
+          <strong>{{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}</strong>
         </h4>
       </b-col>
       <b-col cols="12" md="7" class="ml-auto">
@@ -62,17 +57,12 @@ nl:
               {{ employee.name }}
             </p>
             <p>
-              <strong
-                v-if="selectedCustomers && selectedCustomers.length !== 1"
-              >
+              <strong v-if="selectedCustomers && selectedCustomers.length !== 1">
                 {{ $t('projects') }}:
               </strong>
               <strong v-else>{{ $t('project') }}:</strong>
               <span v-if="selectedCustomers && selectedCustomers.length">
-                <span
-                  v-for="(project, i) in selectedCustomers"
-                  :key="project.value"
-                >
+                <span v-for="(project, i) in selectedCustomers" :key="project.value">
                   {{ project.value }}
                   <span v-if="i !== selectedCustomers.length - 1">,&nbsp;</span>
                 </span>
@@ -84,10 +74,7 @@ nl:
                     projectOptions.length
                 "
               >
-                <span
-                  v-for="(project, i) in projectOptions"
-                  :key="project.value"
-                >
+                <span v-for="(project, i) in projectOptions" :key="project.value">
                   {{
                     project.value
                   }}
@@ -174,11 +161,7 @@ nl:
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
-        <b-badge
-          v-if="scope.item.customer.isBillable"
-          variant="success"
-          class="hide-print"
-        >
+        <b-badge v-if="scope.item.customer.isBillable" variant="success" class="hide-print">
           {{ $t('billable') }}
         </b-badge>
       </template>
@@ -222,11 +205,7 @@ nl:
         {{ employee.name }}
         <br />
         <br />
-        <img
-          src="@/assets/images/logo-line.png"
-          alt="frontmen logo"
-          width="250pt"
-        />
+        <img src="@/assets/images/logo-line.png" alt="frontmen logo" width="250pt" />
       </b-col>
     </b-row>
   </div>

@@ -11,9 +11,7 @@
   <div class="controls">
     <b-row align-h="end" class="m-2">
       <b-dropdown offset="-160">
-        <template #button-content>
-          {{ $t("Comments") }} ({{formatedComments.length}})
-        </template>
+        <template #button-content>{{ $t("Comments") }} ({{formatedComments.length}})</template>
         <div>
           <b-dropdown-text
             v-for="comment in formatedComments"

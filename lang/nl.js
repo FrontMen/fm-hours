@@ -25,12 +25,9 @@ export default {
   travelAllowance: 'reiskosten',
   name: 'Naam',
   team: 'Team',
-  weekError:
-    'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
-  weekErrors:
-    'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
-  dayError:
-    'Je hebt op enkele dagen meer uur ingevuld dan verwacht, is dit correct?',
+  weekError: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
+  weekErrors: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
+  dayError: 'Je hebt op enkele dagen meer uur ingevuld dan verwacht, is dit correct?',
   timesheets: 'timesheet',
   chooseProject: 'Selecteer project',
   filterBy: 'Filteren op',
@@ -41,8 +38,7 @@ export default {
   billable: 'Facturabel',
   monthlyReport: 'Maandelijkse rapportage',
   reports: 'Rapportages',
-  customerDeleteConfirmation:
-    'Weet je zeker dat je medewerker {name} wil verwijderen?',
+  customerDeleteConfirmation: 'Weet je zeker dat je medewerker {name} wil verwijderen?',
   customerArchiveConfirmation:
     'Weet je zeker dat je de status van {name} aan wil passen naar {state}?',
   archive: 'Archiveren',

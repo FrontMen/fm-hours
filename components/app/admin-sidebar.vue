@@ -18,11 +18,7 @@
 <template>
   <b-sidebar id="sidebar-1" shadow backdrop>
     <b-list-group>
-      <b-list-group-item
-        v-for="(link, index) in links"
-        :key="index"
-        :to="localePath(link.href)"
-      >
+      <b-list-group-item v-for="(link, index) in links" :key="index" :to="localePath(link.href)">
         <b-icon :icon="link.icon" />
         {{ $t(link.name) }}
       </b-list-group-item>

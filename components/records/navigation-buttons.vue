@@ -13,27 +13,15 @@
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button-group class="navigation-buttons__date-group">
-        <b-button
-          v-b-tooltip.hover
-          :title="$t('previousHint')"
-          :to="localePath(prevWeekURL)"
-        >
+        <b-button v-b-tooltip.hover :title="$t('previousHint')" :to="localePath(prevWeekURL)">
           <b-icon icon="arrow-left" />
         </b-button>
 
-        <b-button
-          :disabled="isCurrentWeek"
-          class="text-capitalize"
-          :to="localePath(currWeekURL)"
-        >
+        <b-button :disabled="isCurrentWeek" class="text-capitalize" :to="localePath(currWeekURL)">
           {{$t('today')}}
         </b-button>
 
-        <b-button
-          v-b-tooltip.hover
-          :title="$t('nextHint')"
-          :to="localePath(nextWeekURL)"
-        >
+        <b-button v-b-tooltip.hover :title="$t('nextHint')" :to="localePath(nextWeekURL)">
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>

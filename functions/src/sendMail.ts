@@ -52,7 +52,7 @@ export const sendMail = functions.https.onRequest((req, res) => {
     const sendEmail = async (emailOptions: SendMailOptions) => {
       const emailTransporter = await createTransporter();
 
-      return emailTransporter.sendMail(emailOptions, (error) => {
+      return emailTransporter.sendMail(emailOptions, error => {
         if (error) {
           functions.logger.log('error', error);
           return res.status(500).send(error.toString());

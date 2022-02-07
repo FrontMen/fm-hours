@@ -15,8 +15,7 @@ export default {
   errorEmail: 'Please set the employee email',
   confirmDelete: 'Are you sure you want to delete {name}?',
   noContractsFound: 'No contracts found by search term',
-  reConfirmDelete:
-    "You won't be able to access the timesheets / reports of {name}!",
+  reConfirmDelete: "You won't be able to access the timesheets / reports of {name}!",
   noOptions: '{num} options selected',
   employee: 'Employee',
   Employee: 'Employee',
@@ -29,8 +28,7 @@ export default {
     'You have filled in {n} more hour than the expected {expected} hours a week. Is this correct?',
   weekErrors:
     'You have filled in {n} more hours than the expected {expected} hours a week. Is this correct?',
-  dayError:
-    'You have filled in more hours than expected on some of the days. Is this correct?',
+  dayError: 'You have filled in more hours than expected on some of the days. Is this correct?',
   timesheets: 'Timesheets',
   chooseProject: 'Choose project',
   filterBy: 'Filter by',

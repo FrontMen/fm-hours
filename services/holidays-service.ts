@@ -10,9 +10,7 @@ export default class HolidaysService {
   }
 
   async getHolidays(): Promise<{docId: string; dates: string[]}> {
-    const snapshot = await this.fire.firestore
-      .collection(Collections.HOLIDAYS)
-      .get();
+    const snapshot = await this.fire.firestore.collection(Collections.HOLIDAYS).get();
     const data = snapshot.docs[0].data();
 
     return {
@@ -37,7 +35,7 @@ export default class HolidaysService {
 
   async deleteHoliday(date: string) {
     const {docId, dates} = await this.getHolidays();
-    const newDates = dates.filter((holidayDate) => date !== holidayDate);
+    const newDates = dates.filter(holidayDate => date !== holidayDate);
 
     const ref = this.fire.firestore.collection(Collections.HOLIDAYS).doc(docId);
     await ref.set({dates: newDates});

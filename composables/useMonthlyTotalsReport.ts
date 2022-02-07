@@ -9,7 +9,7 @@ export default () => {
       {key: 'nonBillable', sortable: true, variant: 'warning'},
     ];
 
-    const middleFields = reportData?.nonBillableProjects.map((project) => ({
+    const middleFields = reportData?.nonBillableProjects.map(project => ({
       key: project.name,
       sortable: true,
     }));
@@ -22,46 +22,25 @@ export default () => {
     return [...leftFields, ...(middleFields || []), ...rightFields];
   };
 
-  const getNonBillableColumns = (
-    employee: ReportEmployee,
-    nonBillableProjects: Customer[]
-  ) => {
+  const getNonBillableColumns = (employee: ReportEmployee, nonBillableProjects: Customer[]) => {
     const {nonBillableRecords} = employee;
 
     return nonBillableProjects.reduce((total: any, currentProject) => {
-      const records = nonBillableRecords.filter(
-        (record) => record.customer.id === currentProject.id
-      );
+      const records = nonBillableRecords.filter(record => record.customer.id === currentProject.id);
 
-      total[currentProject.name] = getTotalsByProp<TimeRecord>(
-        records,
-        'hours'
-      );
+      total[currentProject.name] = getTotalsByProp<TimeRecord>(records, 'hours');
 
       return total;
     }, {});
   };
 
-  const createTotalsProject = (
-    employee: ReportEmployee,
-    report: MonthlyReportData
-  ) => {
-    const billableHours = getTotalsByProp<TimeRecord>(
-      employee.billableRecords,
-      'hours'
-    );
+  const createTotalsProject = (employee: ReportEmployee, report: MonthlyReportData) => {
+    const billableHours = getTotalsByProp<TimeRecord>(employee.billableRecords, 'hours');
 
-    const nonBillableHours = getTotalsByProp<TimeRecord>(
-      employee.nonBillableRecords,
-      'hours'
-    );
-    const nonBillableColumns = getNonBillableColumns(
-      employee,
-      report.nonBillableProjects
-    );
+    const nonBillableHours = getTotalsByProp<TimeRecord>(employee.nonBillableRecords, 'hours');
+    const nonBillableColumns = getNonBillableColumns(employee, report.nonBillableProjects);
 
-    const productivity =
-      (billableHours / (billableHours + nonBillableHours)) * 100;
+    const productivity = (billableHours / (billableHours + nonBillableHours)) * 100;
 
     return {
       name: employee.name,
@@ -74,12 +53,10 @@ export default () => {
     };
   };
 
-  const createTotalsItems = (
-    report: MonthlyReportData | null
-  ): ReportEmployee[] | undefined => {
+  const createTotalsItems = (report: MonthlyReportData | null): ReportEmployee[] | undefined => {
     return report?.employees
-      .filter((employee) => employee.billable)
-      .map((employee) => createTotalsProject(employee, report));
+      .filter(employee => employee.billable)
+      .map(employee => createTotalsProject(employee, report));
   };
 
   return {createTotalsFields, createTotalsItems};

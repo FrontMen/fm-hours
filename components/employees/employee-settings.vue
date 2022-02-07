@@ -86,12 +86,7 @@ nl:
       :label-no-date-selected="$t('noDate')"
       @input="$emit('changed')"
     />
-    <b-form-checkbox
-      v-model="hasEndDate"
-      name="check-button"
-      switch
-      @change="$emit('changed')"
-    >
+    <b-form-checkbox v-model="hasEndDate" name="check-button" switch @change="$emit('changed')">
       {{ $t('endDate') }}:
     </b-form-checkbox>
     <b-form-datepicker

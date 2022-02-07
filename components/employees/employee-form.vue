@@ -35,10 +35,7 @@ nl:
         <employee-header v-if="mode !== 'add'" :employee="employee" />
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <team-selector
-              :selected-team="selectedTeam"
-              @update="updateTeam"
-            ></team-selector>
+            <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
             <project-selector
               :selected-customers="selectedCustomers"
               :customers="customers"
