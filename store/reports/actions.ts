@@ -7,7 +7,7 @@ import {filterApprovedRecords} from '~/helpers/record-status';
 import {getDayOnGMT} from '~/helpers/dates';
 
 const actions: ActionTree<ReportsStoreState, RootStoreState> = {
-  async getMonthlyReportData({commit}, payload: {startDate: Date}) {
+  async getMonthlyReportData({commit}, payload: { startDate: Date }) {
     commit('setIsLoading', {isLoading: true});
 
     const startDate = startOfMonth(payload.startDate);
@@ -47,7 +47,6 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     const approvedTimeRecords = filterApprovedRecords(timeRecords, timesheets);
     const approvedStandByRecords = filterApprovedRecords(standByRecords, timesheets);
-
     const approvedTravelRecords = filterApprovedRecords(travelRecords, timesheets);
 
     const activeEmployees = employees.filter(employee =>
@@ -56,6 +55,8 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     commit('setIsLoading', {isLoading: false});
     commit('createMonthlyReportData', {
+      startDate,
+      endDate,
       employees: activeEmployees,
       customers,
       timeRecords: approvedTimeRecords,

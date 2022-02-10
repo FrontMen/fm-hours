@@ -5,6 +5,7 @@ export default () => {
     const leftFields = [
       {key: 'name', sortable: true},
       {key: 'team', sortable: true},
+      {key: 'totalHours', sortable: true, variant: 'info'},
       {key: 'billable', sortable: true, variant: 'success'},
       {key: 'nonBillable', sortable: true, variant: 'warning'},
     ];
@@ -14,10 +15,7 @@ export default () => {
       sortable: true,
     }));
 
-    const rightFields = [
-      {key: 'totalHours', sortable: true, variant: 'info'},
-      {key: 'productivity', sortable: true, variant: 'info'},
-    ];
+    const rightFields = [{key: 'productivity', sortable: true, variant: 'info'}];
 
     return [...leftFields, ...(middleFields || []), ...rightFields];
   };
