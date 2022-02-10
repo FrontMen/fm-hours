@@ -6,12 +6,7 @@ nl:
 </i18n>
 <template>
   <div class="content-wrapper">
-    <b-alert
-      :show="showEmployeeError"
-      dismissible
-      variant="warning"
-      class="mb-3"
-    >
+    <b-alert :show="showEmployeeError" dismissible variant="warning" class="mb-3">
       {{ $t('employeeError') }}
     </b-alert>
 

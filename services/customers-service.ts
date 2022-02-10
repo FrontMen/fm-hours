@@ -64,11 +64,4 @@ export default class CustomersService {
       .doc(customer.id)
       .update(newCustomer);
   }
-
-  deleteCustomer(id: string) {
-    return this.fire.firestore
-      .collection(Collections.CUSTOMERS)
-      .doc(id)
-      .delete();
-  }
 }

@@ -15,58 +15,42 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     const customersPromise = this.app.$customersService.getCustomers();
     const employeesPromise = this.app.$employeesService.getEmployees();
-    const timesheetsPromise = this.app.$timesheetsService.getApprovedTimesheets(
+    const timesheetsPromise = this.app.$timesheetsService.getApprovedTimesheets({
+      startDate: getDayOnGMT(startOfISOWeek(startDate)).getTime(),
+      endDate: endDate.getTime(),
+    });
+    const timeRecordsPromise = this.app.$timeRecordsService.getRecords<TimeRecord>({
+      startDate,
+      endDate,
+    });
+    const standByRecordsPromise = this.app.$timeRecordsService.getRecords<StandbyRecord>(
       {
-        startDate: getDayOnGMT(startOfISOWeek(startDate)).getTime(),
-        endDate: endDate.getTime(),
-      }
-    );
-    const timeRecordsPromise =
-      this.app.$timeRecordsService.getRecords<TimeRecord>({
         startDate,
         endDate,
-      });
-    const standByRecordsPromise =
-      this.app.$timeRecordsService.getRecords<StandbyRecord>(
-        {
-          startDate,
-          endDate,
-        },
-        Collections.STANDBYREC
-      );
+      },
+      Collections.STANDBYREC
+    );
     const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
       startDate,
       endDate,
     });
 
-    const [
-      customers,
-      employees,
-      timesheets,
-      timeRecords,
-      travelRecords,
-      standByRecords,
-    ] = await Promise.all([
-      customersPromise,
-      employeesPromise,
-      timesheetsPromise,
-      timeRecordsPromise,
-      travelRecordsPromise,
-      standByRecordsPromise,
-    ]);
+    const [customers, employees, timesheets, timeRecords, travelRecords, standByRecords] =
+      await Promise.all([
+        customersPromise,
+        employeesPromise,
+        timesheetsPromise,
+        timeRecordsPromise,
+        travelRecordsPromise,
+        standByRecordsPromise,
+      ]);
 
     const approvedTimeRecords = filterApprovedRecords(timeRecords, timesheets);
-    const approvedStandByRecords = filterApprovedRecords(
-      standByRecords,
-      timesheets
-    );
+    const approvedStandByRecords = filterApprovedRecords(standByRecords, timesheets);
 
-    const approvedTravelRecords = filterApprovedRecords(
-      travelRecords,
-      timesheets
-    );
+    const approvedTravelRecords = filterApprovedRecords(travelRecords, timesheets);
 
-    const activeEmployees = employees.filter((employee) =>
+    const activeEmployees = employees.filter(employee =>
       checkEmployeeAvailability(employee, startDate, endDate)
     );
 

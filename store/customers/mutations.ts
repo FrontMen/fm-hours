@@ -10,14 +10,10 @@ const mutations: MutationTree<CustomersStoreState> = {
   },
 
   updateCustomer(state, payload: {customer: Customer}) {
-    state.customers = state.customers.map((cust) => {
+    state.customers = state.customers.map(cust => {
       if (cust.id === payload.customer.id) return payload.customer;
       return cust;
     });
-  },
-
-  deleteCustomerSuccess(state, payload) {
-    state.customers = state.customers.filter((i) => i.id !== payload);
   },
 };
 

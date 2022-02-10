@@ -58,12 +58,7 @@ nl:
       </template>
     </b-table>
 
-    <b-modal
-      id="add-contract"
-      size="xl"
-      scrollable
-      :title="$t('addContractModalTitle')"
-    >
+    <b-modal id="add-contract" size="xl" scrollable :title="$t('addContractModalTitle')">
       <b-form-input
         v-model="searchQuery"
         autofocus

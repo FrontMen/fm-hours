@@ -12,9 +12,7 @@ export default () => {
   };
 
   const createItem = (employee: ReportEmployee, customer: Customer) => {
-    const records = employee.billableRecords.filter(
-      (record) => record.customer.id === customer.id
-    );
+    const records = employee.billableRecords.filter(record => record.customer.id === customer.id);
 
     return {
       name: employee.name,
@@ -29,12 +27,12 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter((employee) => employee.billable)
-      .forEach((employee) => {
-        const customers = employee.billableRecords.map((x) => x.customer);
+      .filter(employee => employee.billable)
+      .forEach(employee => {
+        const customers = employee.billableRecords.map(x => x.customer);
         const uniqueCustomers = uniqueByKey(customers, 'id');
 
-        uniqueCustomers.forEach((customer) => {
+        uniqueCustomers.forEach(customer => {
           items.push(createItem(employee, customer));
         });
       });

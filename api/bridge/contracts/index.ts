@@ -1,12 +1,8 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import axios from 'axios';
 
-export default function Contracts(
-  request: VercelRequest,
-  response: VercelResponse
-) {
-  const {contractId, jiraId, projectId, projectJiraId, projectKey, search} =
-    request.query;
+export default function Contracts(request: VercelRequest, response: VercelResponse) {
+  const {contractId, jiraId, projectId, projectJiraId, projectKey, search} = request.query;
 
   return axios
     .get(`https://bridge.hosted-tools.com/api/v1/contracts`, {
@@ -22,6 +18,6 @@ export default function Contracts(
         Cookie: request.headers.cookie || '',
       },
     })
-    .then((res) => response.json(res.data))
-    .catch((err) => response.json(err));
+    .then(res => response.json(res.data))
+    .catch(err => response.json(err));
 }

@@ -35,10 +35,7 @@ nl:
         <employee-header v-if="mode !== 'add'" :employee="employee" />
         <b-row class="my-5">
           <b-col cols="12" md="5">
-            <team-selector
-              :selected-team="selectedTeam"
-              @update="updateTeam"
-            ></team-selector>
+            <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
             <project-selector
               :selected-customers="selectedCustomers"
               :customers="customers"
@@ -60,9 +57,6 @@ nl:
         </b-row>
         <b-button :disabled="!hasUnsavedChanges" @click="saveEmployee">
           {{ $t('save') }}
-        </b-button>
-        <b-button v-if="employee" variant="danger" @click="deleteEmployee">
-          {{ $t('delete') }}
         </b-button>
         <b-row>
           <b-col cols="12" md="5">
@@ -128,9 +122,9 @@ export default defineComponent({
     useMeta(() => ({title: pageTitle.value}));
 
     onMounted(() => {
-      store.dispatch("customers/getCustomers");
-      store.dispatch("employees/getAdminList");
-      store.dispatch("employees/getTeamList");
+      store.dispatch('customers/getCustomers');
+      store.dispatch('employees/getAdminList');
+      store.dispatch('employees/getTeamList');
     });
 
     watch(() => props.employee, () => {
@@ -180,7 +174,7 @@ export default defineComponent({
       }
 
       // Only dispatch if value changed. Failsafe for spamming the checkbox.
-      if (valueChanged) store.dispatch("employees/updateAdminList", adminList);
+      if (valueChanged) store.dispatch('employees/updateAdminList', adminList);
     };
 
     const saveEmployee = async () => {
@@ -194,29 +188,12 @@ export default defineComponent({
 
 
       if (props.mode === 'edit') {
-        await store.dispatch("employees/updateEmployee", newEmployee);
+        await store.dispatch('employees/updateEmployee', newEmployee);
         hasUnsavedChanges.value = false;
       } else {
         await store.dispatch('employees/addNewEmployee', newEmployee);
-        router.push(localePath("/admin/employees"));
+        router.push(localePath('/admin/employees'));
       }
-    };
-
-    const deleteEmployee = async () => {
-      const confirmation = confirm(
-        i18n.t('confirmDelete', {name: props.employee?.name}) as string
-      );
-
-      if (!confirmation) return;
-
-      const confirmation2 = confirm(
-        i18n.t('reConfirmDelete', {name: props.employee?.name}) as string
-      );
-
-      if (!confirmation2) return;
-
-      await store.dispatch("employees/deleteEmployee", props.employee?.id);
-      router.push(localePath("/admin/employees"));
     };
 
     const updateTeam = (teamName: string) => {
@@ -248,7 +225,6 @@ export default defineComponent({
       saveEmployee,
       hasUnsavedChanges,
       errorMessage,
-      deleteEmployee,
       changedAdmin,
       handleFormError,
     };

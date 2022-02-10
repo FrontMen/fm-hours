@@ -10,12 +10,13 @@ export const recordStatus = {
   EMPTY: 'empty',
 };
 
-export function filterApprovedRecords<
-  T extends TimeRecord | TravelRecord | StandbyRecord
->(records: T[], timesheets: Timesheet[]) {
+export function filterApprovedRecords<T extends TimeRecord | TravelRecord | StandbyRecord>(
+  records: T[],
+  timesheets: Timesheet[]
+) {
   return records.reduce((approveds, record) => {
     const recordTimesheet = timesheets.find(
-      (timesheet) =>
+      timesheet =>
         record.employeeId === timesheet.employeeId &&
         isSameISOWeek(getDayOnGMT(record.date), getDayOnGMT(timesheet.date))
     );
@@ -55,6 +56,6 @@ export const recordDayStatus: RecordDayStatus[] = [
   },
 ];
 
-export const recordDayStatusProps = recordDayStatus.map(
-  (status) => status.prop
-) as Array<keyof WeekDate>;
+export const recordDayStatusProps = recordDayStatus.map(status => status.prop) as Array<
+  keyof WeekDate
+>;

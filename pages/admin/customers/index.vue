@@ -1,71 +1,67 @@
 <i18n lang="yaml">
-  en:
-    searchBy: "Search by"
-    search: "Search"
-    searchPlaceholder: "Ex.: \"Frontmen\""
-    showArchived: "Show archived"
-    newCustomer: "New Customer"
-    manageCustomer: "Manage Customer"
-    addCustomer: "Add a customer"
-    default: "Default"
-    yes: "Yes"
-    no: "No"
-    debtorReportOnly: "Debtor (only visible in reports)"
-    debtors: "Debtors"
-    archived: "Archived"
-    actions: "Actions"
-  nl:
-    searchBy: "Zoeken op"
-    search: "Zoeken"
-    searchPlaceholder: "Vb. \"Frontmen\""
-    showArchived: "Laat archief ook zien"
-    newCustomer: "Nieuwe klant"
-    manageCustomer: "Klant bewerken"
-    addCustomer: "Klant toevoegen"
-    default: "Standaard"
-    yes: "Ja"
-    no: "Nee"
-    debtorReportOnly: "Debiteur (alleen zichtbaar in rapportage)"
-    debtors: "Debiteuren"
-    archived: "Gearchiveerd"
-    actions: "Acties"
+en:
+  searchBy: "Search by"
+  searchName: "Search for customer name"
+  searchDebtor: "Search for debtor name"
+  searchPlaceholderName: "Ex.: \"Frontmen\""
+  searchPlaceholderDebtor: "Ex.: \"iO\""
+  showArchived: "Show archived"
+  newCustomer: "New Customer"
+  manageCustomer: "Manage Customer"
+  addCustomer: "Add a customer"
+  default: "Default"
+  yes: "Yes"
+  no: "No"
+  debtorReportOnly: "Debtor (only visible in reports)"
+  debtors: "Debtors"
+  archived: "Archived"
+  actions: "Actions"
+nl:
+  searchBy: "Zoeken op"
+  searchName: "Zoeken op klantnaam"
+  searchDebtor: "Zoeken op debiteurennaam"
+  searchPlaceholderName: "Bv. \"Frontmen\""
+  searchPlaceholderDebtor: "Bv.: \"iO\""
+  showArchived: "Laat archief ook zien"
+  newCustomer: "Nieuwe klant"
+  manageCustomer: "Klant bewerken"
+  addCustomer: "Klant toevoegen"
+  default: "Standaard"
+  yes: "Ja"
+  no: "Nee"
+  debtorReportOnly: "Debiteur (alleen zichtbaar in rapportage)"
+  debtors: "Debiteuren"
+  archived: "Gearchiveerd"
+  actions: "Acties"
 </i18n>
 
 <template>
   <div class="content-wrapper mt-5">
     <b-container class="mx-0 px-0 mb-3" fluid>
-      <b-row :no-gutters="true">
+      <b-row no-gutters>
         <b-col cols="6" md="3" class="mb-3">
-          <label class="employee-status__label" for="status-select">
-            {{$t('searchBy')}}:
-          </label>
-          <b-form-select
-            id="status-select"
-            v-model="selectedCriteria"
-            :options="searchCriteria"
-          />
+          <label class="employee-status__label" for="status-select">{{ $t('searchBy') }}:</label>
+          <b-form-select id="status-select" v-model="filterBy" :options="filterByOptions" />
         </b-col>
         <b-col cols="6" md="4" class="pl-0 mb-3">
           <label class="employee-status__label" for="employee-search">
-            {{$t('search')}}:
+            {{ filterBy === 'name' ? $t('searchName') : $t('searchDebtor') }}:
           </label>
           <b-input
             id="employee-search"
             v-model="searchTerm"
             type="search"
-            :placeholder="$t('searchPlaceholder')"
+            :placeholder="filterBy === 'name' ? $t('searchPlaceholderName'): $t('searchPlaceholderDebtor')"
           />
         </b-col>
         <b-col cols="12" md="5" class="ml-auto mt-4">
           <div class="d-flex justify-content-between align-items-center mt-1">
-            <b-form-checkbox
-              v-model="selectedArchiveOption"
-              switch
-              class="mr-3 ml-auto"
-            >
-              {{$t('showArchived')}}
+            <b-form-checkbox v-model="selectedArchiveOption" switch class="mr-3 ml-auto">
+              {{ $t('showArchived') }}
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center>+ {{$t('newCustomer')}}</b-button>
+            <b-button v-b-modal.modal-center>
+              {{ $t('newCustomer') }}
+            </b-button>
           </div>
         </b-col>
       </b-row>
@@ -99,7 +95,7 @@
 
       <template #cell(customers)="scope">
         <strong>{{ scope.item.name }}</strong>
-        <b-badge v-if="scope.item.isDefault">{{$t('default')}}</b-badge>
+        <b-badge v-if="scope.item.isDefault">{{ $t('default') }}</b-badge>
       </template>
       <template #cell(archived)="scope">
         <div class="text-center">
@@ -115,7 +111,7 @@
             class="btn btn-primary align-self-center"
             :title="$t('manageCustomer')"
           >
-            {{$t('manageCustomer')}}
+            {{ $t('manageCustomer') }}
           </nuxt-link>
         </div>
       </template>
@@ -130,133 +126,74 @@
       :cancel-title="$t('cancel')"
       @ok="addCustomer()"
     >
-      <b-form-input
-        v-model="newCustomer.name"
-        :placeholder="$t('customerName')"
-      />
+      <b-form-input v-model="newCustomer.name" :placeholder="$t('customerName')" />
       <b-form-input
         v-model="newCustomer.debtor"
         :placeholder="$t('debtorReportOnly')"
         class="mt-3"
       />
       <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
-        {{$t('billable')}}
+        {{ $t('billable') }}
       </b-form-checkbox>
       <b-form-checkbox v-model="newCustomer.isDefault" class="mt-3">
-        {{$t('availableAll')}}
+        {{ $t('availableAll') }}
       </b-form-checkbox>
     </b-modal>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  computed,
-  defineComponent,
-  ref,
-  useStore,
-  useContext,
-  useMeta,
-} from "@nuxtjs/composition-api";
+import {computed, defineComponent, onMounted, ref, useContext, useMeta, useStore,} from "@nuxtjs/composition-api";
 import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const customers = computed(() => store.state.customers.customers);
 
     useMeta(() => ({
       title: i18n.t('customers') as string,
     }));
 
-    const customers: {value: Customer[] | undefined} = computed(
-      () => store.state.customers.customers
-    );
-    store.dispatch("customers/getCustomers");
+    onMounted(() => {
+      store.dispatch("customers/getCustomers");
+    });
 
-    const searchTerm = ref<string>(
-      store.getters["filters/getCustomerSearchTerm"]
-    );
-    const searchCriteria: {value: keyof Customer; text: string}[] = [
+    const filterBy = ref<keyof Customer>('name');
+    const filterByOptions: { value: keyof Customer; text: string }[] = [
       {value: "name", text: i18n.t('customerName') as string},
       {value: "debtor", text: i18n.t('debtorName') as string},
     ];
-
+    const searchTerm = ref<string>('');
+    const selectedArchiveOption = ref<boolean>(false);
+    const sortDescending = ref<boolean>(false);
+    const sortKey = ref<string>('');
     const fields = [
       {key: "name", label: "customers", sortable: true},
       {key: "debtor", label: "debtors", sortable: true},
       {key: "archived", label: "archived", sortable: false},
       {key: "actions", label: "actions", sortable: false},
     ];
-    const selectedCriteria = ref<"name" | "debtor">(
-      store.getters["filters/getCustomerSearchCriteria"]
-    );
-    const selectedArchiveOption = ref<boolean>(
-      store.getters["filters/getIsCustomerArchived"]
-    );
-    const sortDescending = ref<boolean>(
-      store.getters["filters/getCustomerSortDescending"]
-    );
-    const sortKey = ref<boolean>(store.getters["filters/getCustomerSortBy"]);
 
-    const handleFilterUpdates = () => {
-      if (
-        store.getters["filters/getIsCustomerArchived"] !==
-        selectedArchiveOption.value
-      ) {
-        store.dispatch(
-          "filters/updateCustomerIsArchived",
-          selectedArchiveOption.value
-        );
-      }
-      if (store.getters["filters/getCustomerSortBy"] !== sortKey.value) {
-        store.dispatch("filters/updateCustomerSortBy", sortKey.value);
-      }
-      if (
-        store.getters["filters/getCustomerSortDescending"] !==
-        sortDescending.value
-      ) {
-        store.dispatch(
-          "filters/updateCustomerSortDescending",
-          sortDescending.value
-        );
-      }
-      if (store.getters["filters/getCustomerSearchTerm"] !== searchTerm.value) {
-        store.dispatch("filters/updateCustomerSearchTerm", searchTerm.value);
-      }
-      if (
-        store.getters["filters/getCustomerSearchCriteria"] !==
-        selectedCriteria.value
-      ) {
-        store.dispatch(
-          "filters/updateCustomerSearchCriteria",
-          selectedCriteria.value
-        );
-      }
-    };
+    const checkCustomerNotArchived = (archived: boolean, customer: Customer) => {
+      if (archived) return true;
 
-    const filteredCustomers = computed(() => {
-      const criteria: "name" | "debtor" = selectedCriteria.value;
+      return !customer.archived;
+    }
 
-      handleFilterUpdates();
+    const checkCustomerProp = (query: string, filterByProp: keyof Customer, customer: Customer) => {
+      if (!query || !customer) return true;
+      if (!customer[filterByProp]) return;
 
-      const customerList = customers.value || [];
+      return queryOnString(customer[filterByProp] as string, query);
+    }
 
-      const notArchived = selectedArchiveOption.value
-        ? [...customerList]
-        : customerList.filter((customer: Customer) => {
-            return !customer.archived;
-          });
-
-      const filtered: Customer[] = !searchTerm.value
-        ? [...notArchived]
-        : notArchived?.filter((customer: Customer) => {
-            if (!customer[criteria]) return customer;
-            return queryOnString(customer[criteria], searchTerm.value);
-          });
-
-      return filtered;
-    });
+    const filteredCustomers = computed(() =>
+      customers.value.filter((customer) => (
+        checkCustomerNotArchived(selectedArchiveOption.value, customer) &&
+        checkCustomerProp(searchTerm.value, filterBy.value, customer)
+      )));
 
     const newCustomer = ref({
       name: "",
@@ -279,9 +216,7 @@ export default defineComponent({
       newCustomer.value.isDefault = false;
     };
 
-    const sortCompare = (a: Customer, b: Customer, key: "name" | "debtor") => {
-      return sortByProp<Customer>(a, b, key);
-    };
+    const sortCompare = (a: Customer, b: Customer, key: keyof Customer) => sortByProp<Customer>(a, b, key);
 
     return {
       fields,
@@ -290,15 +225,14 @@ export default defineComponent({
       sortKey,
       filteredCustomers,
       searchTerm,
-      searchCriteria,
       selectedArchiveOption,
-      selectedCriteria,
+      filterBy,
+      filterByOptions,
       newCustomer,
       canAddCustomer,
       addCustomer,
     };
   },
-
   head: {},
 });
 </script>

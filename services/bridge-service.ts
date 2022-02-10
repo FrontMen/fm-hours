@@ -8,8 +8,6 @@ export default class BridgeService {
   }
 
   getMe() {
-    return this.axios
-      .$get<{bridgeUid: string}>('/api/bridge/me')
-      .then(({bridgeUid}) => bridgeUid);
+    return this.axios.$get<{bridgeUid: string}>('/api/bridge/me').then(({bridgeUid}) => bridgeUid);
   }
 }

@@ -18,26 +18,16 @@
     <template v-else>
       <b-container class="mb-5">
         <div class="mb-5">
-          <nuxt-link
-            :to="localePath('/admin/customers')"
-            class="btn btn-primary"
-          >
+          <nuxt-link :to="localePath('/admin/customers')" class="btn btn-primary">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
             {{$t('customers')}}
           </nuxt-link>
         </div>
-        <b-form
-          @submit.prevent="handleSubmit"
-          @change="hasUnsavedChanges = true"
-        >
+        <b-form @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
           <b-alert :show="form.archived" variant="info">
             {{$t('archivedCustomer', { time: formatDate(form.archivedDate) })}}
           </b-alert>
-          <b-form-group
-            id="input-group-name"
-            :label="$t('name') + ':'"
-            label-for="input-2"
-          >
+          <b-form-group id="input-group-name" :label="$t('name') + ':'" label-for="input-2">
             <b-form-input
               id="input-name"
               v-model="form.name"
@@ -71,25 +61,13 @@
           <div class="d-flex justify-content-end mt-5">
             <b-button
               type="button"
-              variant="danger"
-              class="mr-2"
-              @click="deleteCustomer"
-            >
-              {{$t('delete')}}
-            </b-button>
-            <b-button
-              type="button"
               variant="warning"
               class="mr-2 text-capitalize"
               @click="archiveCustomerToggle(!form.archived)"
             >
               {{ form.archived ? $t('unarchive') : $t('archive') }}
             </b-button>
-            <b-button
-              type="submit"
-              variant="primary"
-              :disabled="!hasUnsavedChanges"
-            >
+            <b-button type="submit" variant="primary" :disabled="!hasUnsavedChanges">
               {{$t('update')}}
             </b-button>
           </div>
@@ -157,17 +135,6 @@ export default defineComponent({
     );
     useMeta(() => ({title: pageTitle.value}));
 
-    const deleteCustomer = () => {
-      const confirmation = confirm(
-        i18n.t('customerDeleteConfirmation', {name: customer.value?.name || ''}) as string
-      );
-
-      if (!confirmation) return;
-
-      store.dispatch("customers/deleteCustomer", customerId);
-      router.push("/customers");
-    };
-
     const archiveCustomerToggle = (archive: boolean) => {
       const archiveData = {
         archived: archive,
@@ -221,7 +188,6 @@ export default defineComponent({
       hasUnsavedChanges,
       form,
       archiveCustomerToggle,
-      deleteCustomer,
       handleSubmit,
       formatDate,
     };

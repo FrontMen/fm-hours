@@ -2,10 +2,7 @@ import {VercelRequest, VercelResponse} from '@vercel/node';
 import {validateHeaders} from '../../lib/request';
 import {getAuthCookie, getCiSessionCookie} from '../../lib/intracto';
 
-export default async function Auth(
-  request: VercelRequest,
-  response: VercelResponse
-) {
+export default async function Auth(request: VercelRequest, response: VercelResponse) {
   try {
     validateHeaders(request, ['authorization']);
   } catch (e) {

@@ -17,9 +17,7 @@ export async function extractUserFromAuthUser(authUser: any): Promise<User> {
     return user;
   } catch (error) {
     // eslint-disable-next-line no-console
-    console.error(
-      'Something went wrong while extracting user info from AuthUser'
-    );
+    console.error('Something went wrong while extracting user info from AuthUser');
     throw error;
   }
 }

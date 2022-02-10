@@ -4,9 +4,7 @@ import {extractUserFromAuthUser} from '~/helpers/auth';
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
   async login({commit}) {
     try {
-      const provider = new this.$fireModule.auth.SAMLAuthProvider(
-        'saml.intracto'
-      );
+      const provider = new this.$fireModule.auth.SAMLAuthProvider('saml.intracto');
       const {user} = await this.$fire.auth.signInWithPopup(provider);
 
       if (user) {

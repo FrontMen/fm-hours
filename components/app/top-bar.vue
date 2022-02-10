@@ -24,11 +24,7 @@ nl:
                 @click="handleLogoClick"
               />
 
-              <div
-                v-if="isAdmin"
-                v-b-toggle.sidebar-1
-                class="top-bar__hamburger ml-4"
-              />
+              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
 
               <a
                 href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
@@ -40,9 +36,7 @@ nl:
             </div>
           </b-col>
 
-          <b-col v-if="isDev" class="development">
-            USING DEVELOPMENT SERVER
-          </b-col>
+          <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col>
 
           <b-col class="text-right" cols="4">
             <b-button-group class="navigation-buttons__date-group mr-2">
@@ -54,11 +48,7 @@ nl:
                 rel="noreferrer"
               >
                 {{ $t('requestLeave') }}
-                <b-icon
-                  class="mr-1"
-                  icon="box-arrow-up-right"
-                  aria-hidden="true"
-                />
+                <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
               </b-button>
 
               <nuxt-link :to="localePath('month')">
@@ -70,21 +60,18 @@ nl:
           </b-col>
 
           <b-col class="text-right">
-            <LanguageSwitch class="language"/>
+            <LanguageSwitch class="language" />
           </b-col>
 
           <b-col>
             <div class="employee d-flex align-items-center justify-content-end">
-              <div
-                v-if="employee"
-                class="d-none d-md-block employee__name mr-3"
-              >
+              <div v-if="employee" class="d-none d-md-block employee__name mr-3">
                 {{ employee.name }}
               </div>
 
               <b-dropdown right class="employee__dropdown">
                 <template v-if="employee" #button-content>
-                  <b-avatar :src="employee.picture" class="flex-shrink mr-1"/>
+                  <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
                 </template>
 
                 <b-dropdown-item @click="handleLogoutClick">

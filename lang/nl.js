@@ -13,10 +13,7 @@ export default {
   errorStartDate: 'Selecteer de gewenste startdatum',
   errorName: 'Vul voor de medewerker een naam in',
   errorEmail: 'Vul voor de medewerker een email in',
-  confirmDelete: 'Weet je zeker dat je medewerker {name}, wil verwijderen?',
   noContractsFound: 'Geen contracten gevonden voor de zoek term',
-  reConfirmDelete:
-    'Bij verwijderen van medewerker {name} heb je geen toegang meer tot timesheets en rapportage!',
   noOptions: '{num} geselecteerd',
   employee: 'Medewerker',
   Employee: 'Medewerker',
@@ -25,12 +22,9 @@ export default {
   travelAllowance: 'reiskosten',
   name: 'Naam',
   team: 'Team',
-  weekError:
-    'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
-  weekErrors:
-    'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
-  dayError:
-    'Je hebt op enkele dagen meer uur ingevuld dan verwacht, is dit correct?',
+  weekError: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
+  weekErrors: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
+  dayError: 'Je hebt op enkele dagen meer uur ingevuld dan verwacht, is dit correct?',
   timesheets: 'timesheet',
   chooseProject: 'Selecteer project',
   filterBy: 'Filteren op',
@@ -41,8 +35,7 @@ export default {
   billable: 'Facturabel',
   monthlyReport: 'Maandelijkse rapportage',
   reports: 'Rapportages',
-  customerDeleteConfirmation:
-    'Weet je zeker dat je medewerker {name} wil verwijderen?',
+  customerDeleteConfirmation: 'Weet je zeker dat je medewerker {name} wil verwijderen?',
   customerArchiveConfirmation:
     'Weet je zeker dat je de status van {name} aan wil passen naar {state}?',
   archive: 'Archiveren',

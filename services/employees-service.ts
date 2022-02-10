@@ -53,9 +53,7 @@ export default class EmployeesService {
     return null;
   }
 
-  async createEmployee(
-    params: Omit<Employee, 'id' | 'picture'>
-  ): Promise<Employee> {
+  async createEmployee(params: Omit<Employee, 'id' | 'picture'>): Promise<Employee> {
     const newEmployee = {
       ...params,
       picture: '',
@@ -79,10 +77,7 @@ export default class EmployeesService {
   }
 
   async deleteEmployee(id: string): Promise<void> {
-    return await this.fire.firestore
-      .collection(Collections.EMPLOYEES)
-      .doc(id)
-      .delete();
+    return await this.fire.firestore.collection(Collections.EMPLOYEES).doc(id).delete();
   }
 
   async isAdmin(email: string): Promise<boolean> {
@@ -91,7 +86,7 @@ export default class EmployeesService {
     const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
 
     const adminEmails = await this.getAdminEmails();
-    return adminEmails.some((mail) => [fmMail, ioMail].includes(mail));
+    return adminEmails.some(mail => [fmMail, ioMail].includes(mail));
   }
 
   async getAdminEmails(): Promise<string[]> {
@@ -113,9 +108,7 @@ export default class EmployeesService {
   async updateAdminEmails(adminList: string[]): Promise<string[]> {
     const docs = await this.fire.firestore.collection(Collections.ADMINS).get();
     const docId = docs.docs[0].id;
-    const ref = await this.fire.firestore
-      .collection(Collections.ADMINS)
-      .doc(docId);
+    const ref = await this.fire.firestore.collection(Collections.ADMINS).doc(docId);
 
     await ref.update({admins: adminList});
     return adminList;

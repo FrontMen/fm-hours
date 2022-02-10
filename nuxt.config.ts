@@ -1,7 +1,5 @@
 import i18n from './i18n.config';
 
-require('dotenv').config();
-
 export default {
   target: 'static',
   loading: {
@@ -50,7 +48,6 @@ export default {
 
   // Modules for dev and build (recommended) (https://go.nuxtjs.dev/config-modules)
   buildModules: [
-    '@nuxtjs/dotenv',
     // https://go.nuxtjs.dev/typescript
     '@nuxt/typescript-build',
     // https://composition-api.nuxtjs.org/
@@ -101,17 +98,6 @@ export default {
     },
   },
 
-  pwa: {
-    meta: false,
-    icon: false,
-    workbox: {
-      importScripts: ['/firebase-auth-sw.js'],
-      // by default the workbox module will not install the service worker in dev environment to avoid conflicts with HMR
-      // only set this true for testing and remember to always clear your browser cache in development
-      dev: process.env.NODE_ENV === 'development',
-    },
-  },
-
   i18n,
 
   // Axios module configuration (https://go.nuxtjs.dev/config-axios)
@@ -119,11 +105,5 @@ export default {
     proxy: true,
   },
 
-  proxy: [
-    'https://bridge.hosted-tools.com/api/v1',
-    'https://auth.hosted-tools.com/api/get-token',
-  ],
-
-  // Build Configuration (https://go.nuxtjs.dev/config-build)
-  build: {},
+  proxy: ['https://bridge.hosted-tools.com/api/v1', 'https://auth.hosted-tools.com/api/get-token'],
 };

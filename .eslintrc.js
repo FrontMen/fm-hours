@@ -1,9 +1,5 @@
 module.exports = {
-  extends: [
-    '@nuxtjs/eslint-config',
-    '@nuxtjs/eslint-config-typescript',
-    'eslint-config-prettier',
-  ],
+  extends: ['@nuxtjs/eslint-config', '@nuxtjs/eslint-config-typescript', 'eslint-config-prettier'],
   rules: {
     'no-console': [
       'warn',

@@ -18,13 +18,9 @@ const mutations: MutationTree<EmployeesStoreState> = {
   },
 
   updateEmployee: (state, payload: {employee: Employee}) => {
-    state.employees = state.employees.map((employee) =>
+    state.employees = state.employees.map(employee =>
       employee.id === payload.employee.id ? payload.employee : employee
     );
-  },
-
-  deleteEmployeeSuccess: (state, deletedId: string) => {
-    state.employees = state.employees.filter((i) => i.id !== deletedId);
   },
 };
 

@@ -1,4 +1,7 @@
 module.exports = {
+  arrowParens: 'avoid',
+  printWidth: 100,
+  proseWrap: 'always',
   bracketSpacing: false,
   useTabs: false,
   semi: true,
@@ -6,8 +9,6 @@ module.exports = {
   quoteProps: 'as-needed',
   jsxSingleQuote: true,
   trailingComma: 'es5',
-  arrowParens: 'always',
-  proseWrap: 'preserve',
   htmlWhitespaceSensitivity: 'ignore',
   vueIndentScriptAndStyle: false,
   endOfLine: 'lf',

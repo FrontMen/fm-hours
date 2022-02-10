@@ -1,9 +1,5 @@
 <template>
-  <weekly-timesheet-row
-    :value-formatter="timesheetFormatter"
-    v-bind="$attrs"
-    v-on="$listeners"
-  />
+  <weekly-timesheet-row :value-formatter="timesheetFormatter" v-bind="$attrs" v-on="$listeners" />
 </template>
 
 <script lang="ts">

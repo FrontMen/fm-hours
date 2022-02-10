@@ -13,12 +13,9 @@ export default () => {
     const items: any = [];
 
     report?.employees
-      .filter((employee) => employee.billable)
-      .forEach((employee) => {
-        const kilometers = getTotalsByProp<TravelRecord>(
-          employee.travelRecords,
-          'kilometers'
-        );
+      .filter(employee => employee.billable)
+      .forEach(employee => {
+        const kilometers = getTotalsByProp<TravelRecord>(employee.travelRecords, 'kilometers');
 
         if (kilometers > 0) {
           items.push({
