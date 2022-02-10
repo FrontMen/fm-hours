@@ -1,4 +1,5 @@
 import {MutationTree} from 'vuex';
+import {isAfter, isBefore} from 'date-fns';
 
 const mutations: MutationTree<ReportsStoreState> = {
   setIsLoading(state, payload: {isLoading: boolean}) {
@@ -8,6 +9,8 @@ const mutations: MutationTree<ReportsStoreState> = {
   createMonthlyReportData(
     state,
     payload: {
+      startDate: Date;
+      endDate: Date;
       employees: Employee[];
       customers: Customer[];
       timeRecords: TimeRecord[];
@@ -16,7 +19,8 @@ const mutations: MutationTree<ReportsStoreState> = {
       timesheets: Timesheet[];
     }
   ) {
-    const {employees, timeRecords, travelRecords, standByRecords, timesheets} = payload;
+    const {startDate, endDate, employees, timeRecords, travelRecords, standByRecords, timesheets} =
+      payload;
     const nonBillableProjects = payload.customers.filter(
       customer => !customer.isBillable && !customer.archived
     );
@@ -51,9 +55,13 @@ const mutations: MutationTree<ReportsStoreState> = {
         sheet.workscheme.forEach((scheme: WorkScheme) => {
           if (scheme.absenceHours <= 0) return;
 
+          const date = new Date(scheme.date);
+
+          if (!isAfter(date, startDate) || !isBefore(date, endDate)) return;
+
           employeeNonBillableRecords.push({
             id: null,
-            date: new Date(scheme.date).getTime(),
+            date: date.getTime(),
             customer: leaveCustomer,
             hours: scheme.absenceHours,
             employeeId: employee.id,
