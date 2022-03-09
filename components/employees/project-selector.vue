@@ -84,6 +84,7 @@ nl:
 
 <script lang="ts">
 import {computed, defineComponent, PropType, ref, SetupContext} from "@nuxtjs/composition-api";
+import {BModal} from "bootstrap-vue";
 
 export interface Project {
   customer: Customer,
@@ -145,10 +146,10 @@ export default defineComponent({
       emit('update-selected-projects', newList);
     }
 
-    const viewContractModal = ref(null);
-    const handleOpenContract = (contract: Contract) => {
-      selectedProject.value = contract;
-      viewContractModal.value.show();
+    const viewContractModal = ref<InstanceType<typeof BModal> | null>(null);
+    const handleOpenContract = (project: Project) => {
+      selectedProject.value = project;
+      viewContractModal.value?.show();
     }
 
     const handleContractDelete = (project: Project) => {
@@ -163,7 +164,7 @@ export default defineComponent({
       });
 
       emit('update-selected-projects', newList);
-      viewContractModal.value.hide();
+      viewContractModal.value?.hide();
     }
 
     const fields = [

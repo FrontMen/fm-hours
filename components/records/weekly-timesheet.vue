@@ -149,7 +149,18 @@ export default defineComponent({
     }
 
     const projects = computed(() => {
-      const employeeCustomers = customers.value.filter((customer) => employee.projects.includes(customer.id));
+      function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
+        return (project as EmployeeProject)?.customerId !== undefined;
+      }
+
+      const employeeCustomers = customers.value.filter((customer) => {
+        return employee.projects.some((project: string | EmployeeProject) => {
+          if (isNewStructure(project)) {
+            return project.customerId === customer.id;
+          }
+          return project === customer.id;
+        });
+      });
       return [...employeeCustomers, ...defaultCustomers.value];
     });
 

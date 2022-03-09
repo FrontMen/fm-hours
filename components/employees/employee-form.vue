@@ -107,7 +107,7 @@ export default defineComponent({
 
     const projects = ref(props.employee?.projects);
     const selectedTeam = ref<string | null>(null);
-    const selectedProjects = ref<(Project | undefined)[]>([]);
+    const selectedProjects = ref<(Project[] | undefined)>([]);
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref<string>("");
 
@@ -153,7 +153,7 @@ export default defineComponent({
           return {
             customer,
             contract
-          };
+          } as Project;
         });
       },
       {immediate: true, deep: true}
@@ -197,11 +197,11 @@ export default defineComponent({
       const newEmployee = {
         ...props.employee,
         team: selectedTeam.value,
-        projects: selectedProjects.value.map((project: Project) => {
+        projects: selectedProjects.value?.map((project: Project) => {
           return {
             customerId: project.customer.id,
             contract: project.contract
-          };
+          } as EmployeeProject;
         }),
       };
 
