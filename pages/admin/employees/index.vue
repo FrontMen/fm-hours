@@ -198,14 +198,24 @@ export default defineComponent({
     };
 
     const checkEmployeeProjects = (
-      employeeProjectsIds: string[],
+      employeeProjects: string[] | EmployeeProject[],
       selectedProjects: Customer[]
     ) => {
       if (!selectedProjects?.length) return true;
-      if (!employeeProjectsIds?.length) return false;
+      if (!employeeProjects?.length) return false;
 
-      return employeeProjectsIds.some((id) =>
-        selectedProjects.some((project) => project.id === id)
+      function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
+        return (project as EmployeeProject)?.customerId !== undefined;
+      }
+
+      return employeeProjects.some((employeeProject: string | EmployeeProject) => {
+          return selectedProjects.some((project) => {
+            if (isNewStructure(employeeProject)) {
+              return project.id === employeeProject.customerId;
+            }
+            return project.id === employeeProject;
+          });
+        }
       );
     };
 
