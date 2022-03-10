@@ -95,7 +95,7 @@ export default defineComponent({
       searchQuery.value = '';
     }
 
-    const contractSelected = (items: Array<any>) => {
+    const contractSelected = (items: Array<Contract>) => {
       selectedContract.value = items?.[0];
     }
 
