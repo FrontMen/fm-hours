@@ -70,7 +70,7 @@ async function getWorkscheme(
   date_to: string | string[]
 ): Promise<ApiWorkScheme[]> {
   const {data: response} = await axios.get<WorkSchemeResponse>(
-    `https://bridge.hosted-tools.com/api/v1/users/${bridgeUid}/worktime`,
+    `${process.env.BRIDGE_URL}/api/v1/users/${bridgeUid}/worktime`,
     {
       params: {
         date_from,
