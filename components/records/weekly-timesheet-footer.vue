@@ -1,22 +1,22 @@
 <i18n lang="yaml">
-  en:
-    unsubmit: "Unsubmit"
-    waiting: "Waiting on approval"
-    denied: "Denied"
-    submit: "Submit for approval"
-    save: "Save"
-    deny: "Deny"
-    approve: "Approve"
-    undo: "Undo approval"
-  nl:
-    unsubmit: "Terugtrekken"
-    waiting: "Wacht op akkoord"
-    denied: "Afgekeurd"
-    submit: "Verzenden"
-    save: "Opslaan"
-    deny: "Afkeuren"
-    approve: "Akkordeeren"
-    undo: "Ongedaan maken"
+en:
+  unsubmit: "Unsubmit"
+  waiting: "Waiting on approval"
+  denied: "Denied"
+  submit: "Submit for approval"
+  save: "Save"
+  deny: "Deny"
+  approve: "Approve"
+  undo: "Undo approval"
+nl:
+  unsubmit: "Terugtrekken"
+  waiting: "Wacht op akkoord"
+  denied: "Afgekeurd"
+  submit: "Verzenden"
+  save: "Opslaan"
+  deny: "Afkeuren"
+  approve: "Akkordeeren"
+  undo: "Ongedaan maken"
 </i18n>
 
 <template>
@@ -24,21 +24,21 @@
     <div class="weekly-timesheet-footer__status">
       <template v-if="isPending">
         <b-icon class="mr-1" icon="clock-fill" variant="secondary" />
-        <strong class="text-uppercase">{{$t('waiting')}}</strong>
+        <strong class="text-uppercase">{{ $t('waiting') }}</strong>
       </template>
 
       <template v-if="isApproved">
         <b-icon class="mr-1" icon="check-circle-fill" variant="success" />
-        <strong class="text-uppercase">{{$t('approved')}}</strong>
+        <strong class="text-uppercase">{{ $t('approved') }}</strong>
       </template>
 
       <template v-if="isDenied">
         <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
-        <strong class="text-uppercase">{{$t('denied')}}</strong>
+        <strong class="text-uppercase">{{ $t('denied') }}</strong>
       </template>
     </div>
 
-    <span v-if="lastSaved">{{$t('lastSave', {time: lastSavedLabel})}}</span>
+    <span v-if="lastSaved">{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
     <b-spinner v-if="isSaving" class="ml-1" small />
 
     <div class="weekly-timesheet-footer__actions">
@@ -50,28 +50,47 @@
           :disabled="isSaving"
           @click="handleReminderClick"
         >
-          {{$t('sendReminder')}}
+          {{ $t('sendReminder') }}
         </b-button>
 
         <b-button-group v-if="isPending" class="mr-3">
           <b-button variant="danger" :disabled="isSaving" @click="handleDenyClick">
-            {{$t('deny')}}
+            {{ $t('deny') }}
           </b-button>
 
           <b-button variant="success" :disabled="isSaving" @click="handleApproveClick">
-            {{$t('approve')}}
+            {{ $t('approve') }}
           </b-button>
         </b-button-group>
 
-        <b-button
-          v-if="isApproved"
-          class="mr-3"
-          variant="danger"
-          :disabled="isSaving"
-          @click="handleUndoApproveClick"
-        >
-          {{$t('undo')}}
-        </b-button>
+        <div v-if="isApproved">
+          <b-button-group class="mr-3">
+            <b-button
+              variant="outline-primary"
+              :disabled="isSaving"
+              @click="handleRemoveFromBridgeClick"
+            >
+              Remove from bridge
+            </b-button>
+
+            <b-button
+              variant="outline-primary"
+              :disabled="isSaving"
+              @click="handleAddToBridgeClick"
+            >
+              Add to bridge
+            </b-button>
+          </b-button-group>
+
+          <b-button
+            class="mr-3"
+            variant="danger"
+            :disabled="isSaving"
+            @click="handleUndoApproveClick"
+          >
+            {{ $t('undo') }}
+          </b-button>
+        </div>
       </div>
 
       <b-button
@@ -80,11 +99,11 @@
         :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
-        {{$t('save')}}
+        {{ $t('save') }}
       </b-button>
 
       <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
-        {{$t('unsubmit')}}
+        {{ $t('unsubmit') }}
       </b-button>
 
       <b-button
@@ -93,7 +112,7 @@
         :disabled="isSaving || !canSubmitForApproval"
         @click="handleSubmitClick"
       >
-        {{$t('submit')}}
+        {{ $t('submit') }}
       </b-button>
     </div>
   </div>
@@ -149,6 +168,9 @@ export default defineComponent({
     const handleUndoApproveClick = () => emit('unapprove');
     const handleReminderClick = () => emit('reminder');
 
+    const handleAddToBridgeClick = () => emit('bridgeAdd');
+    const handleRemoveFromBridgeClick = () => emit('bridgeRemove');
+
     const isNew = computed(() => props.status === recordStatus.NEW);
     const isPending = computed(() => props.status === recordStatus.PENDING);
     const isApproved = computed(() => props.status === recordStatus.APPROVED);
@@ -193,6 +215,8 @@ export default defineComponent({
       handleDenyClick,
       handleUndoApproveClick,
       handleReminderClick,
+      handleAddToBridgeClick,
+      handleRemoveFromBridgeClick,
       canSubmitForApproval,
       canUnsubmitForApproval,
       lastSavedLabel,

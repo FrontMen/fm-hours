@@ -1,11 +1,14 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
+import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 import {Collections} from '~/types/enums';
 
 export default class RecordsService {
   fire: NuxtFireInstance;
+  axios: NuxtAxiosInstance;
 
-  constructor(fire: NuxtFireInstance) {
+  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
     this.fire = fire;
+    this.axios = axios;
   }
 
   async getEmployeeRecords<RecordType>(
@@ -56,29 +59,100 @@ export default class RecordsService {
     }));
   }
 
+  async addBridgeWorklogs(params: {
+    employeeId: string;
+    bridgeUid: string;
+    timeRecords: TimeRecord[];
+    contracts: number[];
+  }) {
+    const ref = this.fire.firestore.collection(Collections.TIMREC);
+
+    await Promise.all(
+      params.timeRecords.map(async (record: TimeRecord, index) => {
+        return await this.addBridgeWorklog(record, params.contracts[index], params.bridgeUid, ref);
+      })
+    );
+  }
+
+  async addBridgeWorklog(record: TimeRecord, contractId: number, bridgeUid: string, ref: any) {
+    if (record.hours <= 0) return;
+    if (!record.id) return;
+
+    const {id} = record;
+    const newRecord: any = {...record};
+    delete newRecord.id;
+
+    const {
+      data: {worklogId},
+    } = await this.axios.post('api/bridge/worklogs', {
+      record,
+      contractId,
+      bridgeUid,
+    });
+    newRecord.worklogId = worklogId;
+    await ref.doc(id).update(newRecord);
+  }
+
+  async removeBridgeWorklogs(timeRecords: TimeRecord[]) {
+    const ref = this.fire.firestore.collection(Collections.TIMREC);
+
+    await Promise.all(
+      timeRecords.map(async (record: TimeRecord) => {
+        return await this.removeBridgeWorklog(record, ref);
+      })
+    );
+  }
+
+  async removeBridgeWorklog(record: TimeRecord, ref: any) {
+    if (!record.worklogId) return;
+
+    const {id} = record;
+    if (!id) return;
+
+    await this.axios.delete(`api/bridge/worklogs/${record.worklogId}`);
+
+    const newRecord: any = {...record};
+    delete newRecord.id;
+    newRecord.worklogId = null;
+    return await ref.doc(id).update(newRecord);
+  }
+
   async saveEmployeeRecords<RecordType extends {id: string | null; hours: number}>(
     params: {
       employeeId: string;
+      bridgeUid?: string;
       timeRecords: RecordType[];
+      contracts?: number[];
     },
     collection: string = Collections.TIMREC
   ) {
     const ref = this.fire.firestore.collection(collection);
 
     const updatedRecords = await Promise.all(
-      params.timeRecords.map(async (timeRecord: RecordType) => {
-        return await this.updateRecord<RecordType>(ref, params.employeeId, timeRecord);
+      params.timeRecords.map(async (timeRecord: RecordType, index) => {
+        return await this.updateRecord<RecordType>(
+          ref,
+          params.employeeId,
+          timeRecord,
+          params.contracts?.[index] || -1,
+          params.bridgeUid
+        );
       })
     );
 
     return updatedRecords.filter(x => !!x.id);
   }
 
+  private UPDATE_BRIDGE_ON_SAVE = false;
+
   private async updateRecord<RecordType extends {id: string | null; hours: number}>(
     ref: any,
     employeeId: string,
-    record: RecordType
+    record: RecordType,
+    contractId: number,
+    bridgeUid?: string
   ): Promise<RecordType> {
+    const hasContract = contractId > -1;
     const {id, hours} = record;
 
     const newRecord: any = {...record};
@@ -86,9 +160,24 @@ export default class RecordsService {
 
     if (id) {
       const shouldDelete = hours <= 0;
+      const updateWorklog = !!newRecord.worklogId && !!bridgeUid;
 
-      if (shouldDelete) await ref.doc(id).delete();
-      else await ref.doc(id).update(newRecord);
+      if (shouldDelete) {
+        if (this.UPDATE_BRIDGE_ON_SAVE && hasContract && updateWorklog) {
+          await this.axios.delete(`api/bridge/worklogs/${newRecord.worklogId}`);
+        }
+
+        await ref.doc(id).delete();
+      } else {
+        if (this.UPDATE_BRIDGE_ON_SAVE && hasContract && updateWorklog) {
+          await this.axios.put(`api/bridge/worklogs/${newRecord.worklogId}`, {
+            record: newRecord,
+            bridgeUid,
+          });
+        }
+
+        await ref.doc(id).update(newRecord);
+      }
 
       return {
         ...newRecord,
@@ -97,6 +186,17 @@ export default class RecordsService {
     }
 
     if (hours > 0) {
+      if (this.UPDATE_BRIDGE_ON_SAVE && hasContract) {
+        const {
+          data: {worklogId},
+        } = await this.axios.post('api/bridge/worklogs', {
+          record: newRecord,
+          contractId,
+          bridgeUid,
+        });
+        newRecord.worklogId = worklogId;
+      }
+
       const newDocument = await ref.add({employeeId, ...newRecord});
 
       return {

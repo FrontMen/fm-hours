@@ -86,11 +86,6 @@ nl:
 import {computed, defineComponent, PropType, ref, SetupContext} from "@nuxtjs/composition-api";
 import {BModal} from "bootstrap-vue";
 
-export interface Project {
-  customer: Customer,
-  contract: Contract
-}
-
 interface ProjectSelectorProps {
   selectedProjects: Project[],
   customers: Customer[]

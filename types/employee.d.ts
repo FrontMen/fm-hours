@@ -3,6 +3,11 @@ interface EmployeeProject {
   contract?: Contract;
 }
 
+interface Project {
+  customer: Customer;
+  contract: Contract | null;
+}
+
 interface Employee {
   id: string;
   name: string;

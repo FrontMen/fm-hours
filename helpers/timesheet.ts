@@ -6,7 +6,7 @@ import {getDayOnGMT, formatDate} from './dates';
 export const createWeeklyTimesheet = (params: {
   sheet: Optional<Timesheet, 'id'>;
   week: WeekDate[];
-  projects: Customer[];
+  projects: Project[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];
   standByRecords: StandbyRecord[];
@@ -26,27 +26,31 @@ export const createWeeklyTimesheet = (params: {
 const createCustomerProjects = (
   week: WeekDate[],
   timeRecords: TimeRecord[],
-  availableCustomers: Customer[]
+  employeeProjects: Project[]
 ): TimesheetProject[] => {
-  const customers: Customer[] = [];
+  const projects: Project[] = [];
 
   // Get customers from timeRecords
   timeRecords.forEach(timeRecord => {
-    if (!customers.some(x => x.id === timeRecord.customer.id)) {
-      customers.push(timeRecord.customer);
+    if (!projects.some(x => x.customer.id === timeRecord.customer.id)) {
+      projects.push({
+        customer: timeRecord.customer,
+        contract:
+          employeeProjects.find(p => p.customer.id === timeRecord.customer.id)?.contract || null,
+      });
     }
   });
 
   // Add all availableCustomers as well
-  availableCustomers.forEach(customer => {
-    if (!customers.some(x => x.id === customer.id)) {
-      customers.push(customer);
+  employeeProjects.forEach(project => {
+    if (!projects.some(x => x.customer.id === project.customer.id)) {
+      projects.push(project);
     }
   });
 
   // Add records to the right customers
-  return customers.map(customer => {
-    const projectRecords = timeRecords.filter(x => x.customer.id === customer.id);
+  return projects.map(project => {
+    const projectRecords = timeRecords.filter(x => x.customer.id === project.customer.id);
 
     const hours = week.map(weekDay => {
       const record = findRecordByDate(weekDay, projectRecords) as TimeRecord;
@@ -58,10 +62,16 @@ const createCustomerProjects = (
       return record?.id || null;
     });
 
+    const worklogs = week.map(weekDay => {
+      const record = findRecordByDate(weekDay, projectRecords) as TimeRecord;
+      return record?.worklogId || null;
+    });
+
     return {
-      customer,
+      project,
       ids,
       values: hours,
+      worklogs,
     };
   });
 };
@@ -83,12 +93,15 @@ const createStandByProject = (
   });
 
   return {
-    customer: {
-      id: 'standByRecordId',
-      name: 'Stand-by Hours',
-      debtor: 'Frontmen',
-      isBillable: false,
-      isDefault: false,
+    project: {
+      contract: null,
+      customer: {
+        id: 'standByRecordId',
+        name: 'Stand-by Hours',
+        debtor: 'Frontmen',
+        isBillable: false,
+        isDefault: false,
+      },
     },
     ids,
     values,
@@ -107,12 +120,15 @@ const createTravelProject = (week: WeekDate[], travelRecords: TravelRecord[]): T
   });
 
   return {
-    customer: {
-      id: 'travelProjectId',
-      name: 'Kilometers',
-      debtor: 'Frontmen',
-      isBillable: false,
-      isDefault: false,
+    project: {
+      contract: null,
+      customer: {
+        id: 'travelProjectId',
+        name: 'Kilometers',
+        debtor: 'Frontmen',
+        isBillable: false,
+        isDefault: false,
+      },
     },
     ids,
     values: hours,
@@ -127,12 +143,15 @@ export const createLeaveProject = (
   const noHolidays: boolean = hours.every(value => value === 0);
   return !noHolidays
     ? {
-        customer: {
-          id: 'leaveProjectId',
-          name: 'Days',
-          debtor: 'Frontmen',
-          isBillable: false,
-          isDefault: false,
+        project: {
+          contract: null,
+          customer: {
+            id: 'leaveProjectId',
+            name: 'Days',
+            debtor: 'Frontmen',
+            isBillable: false,
+            isDefault: false,
+          },
         },
         ids: new Array(hours.length).fill(null),
         values: hours,
@@ -242,21 +261,26 @@ export function kilometerFormatter(min: number, max: number) {
   };
 }
 
-export const getTimeRecordsToSave = (timesheet: WeeklyTimesheet): TimeRecord[] => {
+export const getTimeRecordsToSave = (
+  timesheet: WeeklyTimesheet
+): {records: TimeRecord[]; contracts: number[]} => {
   const timeRecordsToSave: TimeRecord[] = [];
+  const timeRecordsContracts: number[] = [];
 
   timesheet.projects.forEach(project => {
     project.values.forEach((value, index) => {
       timeRecordsToSave.push({
         id: project.ids ? project.ids[index] : null,
         date: new Date(timesheet.week[index].date).getTime(),
-        customer: project.customer,
+        customer: project.project.customer,
         hours: value,
+        worklogId: project.worklogs?.[index],
       });
+      timeRecordsContracts.push(project.project.contract?.id || -1);
     });
   });
 
-  return timeRecordsToSave;
+  return {records: timeRecordsToSave, contracts: timeRecordsContracts};
 };
 
 export const getStandByRecordsToSave = (timesheet: WeeklyTimesheet): StandbyRecord[] => {

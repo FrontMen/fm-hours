@@ -25,6 +25,7 @@ interface TimeRecord {
   customer: Customer;
   hours: number;
   employeeId?: string;
+  worklogId?: number | null;
 }
 
 interface TravelRecord {
@@ -35,9 +36,10 @@ interface TravelRecord {
 }
 
 interface TimesheetProject {
-  customer: Customer;
+  project: Project;
   values: number[];
   ids: Array<string | null>;
+  worklogs?: Array<number | null>;
 }
 
 interface WeeklyTimesheet {
