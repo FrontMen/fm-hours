@@ -20,15 +20,13 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
   };
 
   try {
-    const {
-      data: {
-        data: {id: worklogId},
-      },
-    } = await axios.post(`${process.env.BRIDGE_URL}/api/v1/worklogs`, worklog, {
-      headers: {
-        Cookie: request.headers.cookie || '',
-      },
-    });
+    const {id: worklogId} = await axios
+      .post(`${process.env.BRIDGE_URL}/api/v1/worklogs`, worklog, {
+        headers: {
+          Cookie: request.headers.cookie || '',
+        },
+      })
+      .then(({data}) => data.data);
 
     return response.json({
       worklogId,

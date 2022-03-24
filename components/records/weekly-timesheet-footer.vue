@@ -8,6 +8,8 @@ en:
   deny: "Deny"
   approve: "Approve"
   undo: "Undo approval"
+  addBridge: "Add to bridge"
+  removeBridge: "Remove from bridge"
 nl:
   unsubmit: "Terugtrekken"
   waiting: "Wacht op akkoord"
@@ -17,6 +19,8 @@ nl:
   deny: "Afkeuren"
   approve: "Akkordeeren"
   undo: "Ongedaan maken"
+  addBridge: "Toevoegen aan bridge"
+  removeBridge: "Verwijderen van bridge"
 </i18n>
 
 <template>
@@ -70,7 +74,7 @@ nl:
               :disabled="isSaving"
               @click="handleRemoveFromBridgeClick"
             >
-              Remove from bridge
+              {{ $t('removeBridge') }}
             </b-button>
 
             <b-button
@@ -78,7 +82,7 @@ nl:
               :disabled="isSaving"
               @click="handleAddToBridgeClick"
             >
-              Add to bridge
+              {{ $t('addBridge') }}
             </b-button>
           </b-button-group>
 

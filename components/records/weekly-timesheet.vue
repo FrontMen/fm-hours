@@ -276,7 +276,6 @@ export default defineComponent({
         workScheme,
       });
 
-      console.log(timesheet.value.projects);
       isLoading.value = false;
     }
 
