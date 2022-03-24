@@ -12,11 +12,11 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
     const worklog = {
       time_spent: timeSpent,
       time_billable: timeSpent,
-      start_time: format(new Date(body.record.date), 'yyyy-MM-dd HH:mm:ss'),
+      start_time: `${format(new Date(body.record.date), 'yyyy-MM-dd')} 08:00:00`,
       contract_id: body.contractId,
       description: 'synced from on-site hours',
       source: 'on-site',
-      source_id: 1, // random number, we don't need an identifier
+      source_id: new Date().getTime(), // unique number, we don't need an identifier
       source_reference: 'on-site hours',
     };
 

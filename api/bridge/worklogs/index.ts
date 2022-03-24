@@ -9,7 +9,7 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
   const timeSpent = body.record.hours * 60 * 60;
   const worklog = {
     user_id: body.bridgeUid,
-    start_time: format(new Date(body.record.date), 'yyyy-MM-dd HH:mm:ss'),
+    start_time: `${format(new Date(body.record.date), 'yyyy-MM-dd')} 08:00:00`,
     contract_id: body.contractId,
     description: 'synced from on-site hours',
     time_spent: timeSpent,
