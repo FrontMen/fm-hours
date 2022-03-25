@@ -1,3 +1,13 @@
+interface EmployeeProject {
+  customerId: string;
+  contract?: Contract;
+}
+
+interface Project {
+  customer: Customer;
+  contract: Contract | null;
+}
+
 interface Employee {
   id: string;
   name: string;
@@ -5,7 +15,7 @@ interface Employee {
   picture: string;
   travelAllowance: boolean;
   billable: boolean;
-  projects: string[];
+  projects: string[] | EmployeeProject[];
   endDate: number | null;
   startDate: number;
   created: number;

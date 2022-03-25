@@ -37,9 +37,9 @@ nl:
           <b-col cols="12" md="5">
             <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
             <project-selector
-              :selected-customers="selectedCustomers"
+              :selected-projects="selectedProjects"
               :customers="customers"
-              @update-selected-customers="updateSelectedCustomers"
+              @update-selected-projects="updateSelectedProjects"
             ></project-selector>
           </b-col>
 
@@ -106,7 +106,7 @@ export default defineComponent({
 
     const projects = ref(props.employee?.projects);
     const selectedTeam = ref<string | null>(null);
-    const selectedCustomers = ref<(Customer | undefined)[]>([]);
+    const selectedProjects = ref<(Project[] | undefined)>([]);
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref<string>("");
 
@@ -135,12 +135,25 @@ export default defineComponent({
 
     watch([projects, customers],
       () => {
-        selectedCustomers.value =
-          props.employee?.projects && customers.value.length
-            ? props.employee.projects.map((project) =>
-              customers.value.find((customer) => customer.id === project)
-            )
-            : [];
+        if (!props.employee?.projects || !customers.value.length) {
+          selectedProjects.value = [];
+          return;
+        }
+
+        function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
+          return (project as EmployeeProject)?.customerId !== undefined;
+        }
+
+        selectedProjects.value = props.employee.projects.map((project: string | EmployeeProject) => {
+          const customerId = isNewStructure(project) ? project.customerId : project;
+          const customer = customers.value.find((customer) => customer.id === customerId)
+          const contract = isNewStructure(project) ? project.contract : null
+
+          return {
+            customer,
+            contract
+          } as Project;
+        });
       },
       {immediate: true, deep: true}
     );
@@ -183,9 +196,13 @@ export default defineComponent({
       const newEmployee = {
         ...props.employee,
         team: selectedTeam.value,
-        projects: selectedCustomers.value.map((customer) => customer!.id),
+        projects: selectedProjects.value?.map((project: Project) => {
+          return {
+            customerId: project.customer.id,
+            contract: project.contract
+          } as EmployeeProject;
+        }),
       };
-
 
       if (props.mode === 'edit') {
         await store.dispatch('employees/updateEmployee', newEmployee);
@@ -201,8 +218,8 @@ export default defineComponent({
       hasUnsavedChanges.value = true;
     }
 
-    const updateSelectedCustomers = (list: Customer[]) => {
-      selectedCustomers.value = list;
+    const updateSelectedProjects = (list: Project[]) => {
+      selectedProjects.value = list;
       hasUnsavedChanges.value = true;
     }
 
@@ -217,10 +234,10 @@ export default defineComponent({
 
     return {
       updateTeam,
-      updateSelectedCustomers,
+      updateSelectedProjects,
       isAdmin,
       customers,
-      selectedCustomers,
+      selectedProjects,
       selectedTeam,
       saveEmployee,
       hasUnsavedChanges,

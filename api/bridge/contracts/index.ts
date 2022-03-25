@@ -5,7 +5,7 @@ export default function Contracts(request: VercelRequest, response: VercelRespon
   const {contractId, jiraId, projectId, projectJiraId, projectKey, search} = request.query;
 
   return axios
-    .get(`https://bridge.hosted-tools.com/api/v1/contracts`, {
+    .get(`${process.env.BRIDGE_URL}/api/v1/contracts`, {
       params: {
         id: contractId,
         jira_id: jiraId,

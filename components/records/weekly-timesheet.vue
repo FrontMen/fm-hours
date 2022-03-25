@@ -26,12 +26,13 @@ nl:
     <weekly-timesheet-container :selected-week="timesheet.week">
       <template #rows>
         <weekly-timesheet-row-hours
-          v-for="(project) in projectsOrdered"
-          :key="project.customer.id"
-          :project="project"
+          v-for="(timesheetProject) in projectsOrdered"
+          :key="timesheetProject.project.customer.id"
+          :timesheet-project="timesheetProject"
           :readonly="isReadonly"
           :selected-week="timesheet.week"
           :employee="employee"
+          :is-admin="isAdmin"
           @change="hasUnsavedChanges = true"
         />
 
@@ -54,7 +55,7 @@ nl:
       <template #rows>
         <weekly-timesheet-row-hours
           v-if="showStandby"
-          :project="timesheet.standByProject"
+          :timesheet-project="timesheet.standByProject"
           :readonly="isReadonly"
           :selected-week="timesheet.week"
           :employee="employee"
@@ -63,7 +64,7 @@ nl:
 
         <weekly-timesheet-row-kilometer
           v-if="showTravel"
-          :project="timesheet.travelProject"
+          :timesheet-project="timesheet.travelProject"
           :readonly="isReadonly"
           :selected-week="timesheet.week"
           :employee="employee"
@@ -86,6 +87,8 @@ nl:
       @deny="handleDeny"
       @unapprove="handleUnapprove"
       @reminder="handleReminder"
+      @bridgeAdd="handleBridgeAdd"
+      @bridgeRemove="handleBridgeRemove"
     />
   </div>
 </template>
@@ -148,9 +151,28 @@ export default defineComponent({
       store.dispatch("customers/getCustomers");
     }
 
+    function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
+      return (project as EmployeeProject)?.customerId !== undefined;
+    }
+
     const projects = computed(() => {
-      const employeeCustomers = customers.value.filter((customer) => employee.projects.includes(customer.id));
-      return [...employeeCustomers, ...defaultCustomers.value];
+      const employeeCustomers: Project[] = employee.projects.map((project: string | EmployeeProject) => {
+        const customerId = isNewStructure(project) ? project.customerId : project;
+        const customer = customers.value.find((customer) => customer.id === customerId);
+        const contract = isNewStructure(project) ? project.contract : null;
+
+        return {
+          customer,
+          contract
+        } as Project;
+      });
+
+      const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => ({
+        customer,
+        contract: null
+      }));
+
+      return [...employeeCustomers, ...availableToAll];
     });
 
     const timesheetStatus = computed(() => {
@@ -180,10 +202,10 @@ export default defineComponent({
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet.value?.projects.sort(({customer: customerA}: TimesheetProject, {customer: customerB}: TimesheetProject) => {
+      timesheet.value?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
         // Casting because TS doesn't like to subtract booleans
-        const defaultCompare = +customerA.isDefault - +customerB.isDefault;
-        return defaultCompare !== 0 ? defaultCompare : customerA.name.localeCompare(customerB.name);
+        const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
+        return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
       })
     );
 
@@ -317,7 +339,12 @@ export default defineComponent({
       const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
 
       await Promise.all([
-        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({employeeId, timeRecords: timeRecordsToSave}),
+        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
+          employeeId,
+          timeRecords: timeRecordsToSave.records,
+          contracts: timeRecordsToSave.contracts,
+          bridgeUid: employee.bridgeUid
+        }),
         app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>({
             employeeId,
             timeRecords: standByRecordsToSave
@@ -443,6 +470,44 @@ export default defineComponent({
       }));
     };
 
+    const handleBridgeAdd = async () => {
+      if (!employee) return;
+      if (!employee.bridgeUid) return;
+
+      const employeeId = employee.id;
+      isSaving.value = true;
+
+      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+
+      await app.$timeRecordsService.addBridgeWorklogs({
+        employeeId,
+        timeRecords: timeRecordsToSave.records,
+        contracts: timeRecordsToSave.contracts,
+        bridgeUid: employee.bridgeUid
+      });
+
+      // TODO: use the responses from the save above instead of getting the entire timesheet again
+      await getTimesheet();
+
+      lastSaved.value = new Date();
+      isSaving.value = false;
+    }
+
+    const handleBridgeRemove = async () => {
+      if (!employee) return;
+
+      isSaving.value = true;
+
+      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+      await app.$timeRecordsService.removeBridgeWorklogs(timeRecordsToSave.records);
+
+      // TODO: use the responses from the save above instead of getting the entire timesheet again
+      await getTimesheet();
+
+      lastSaved.value = new Date();
+      isSaving.value = false;
+    }
+
     getTimesheet();
 
     return {
@@ -466,6 +531,8 @@ export default defineComponent({
       handleDeny,
       handleUnapprove,
       handleReminder,
+      handleBridgeAdd,
+      handleBridgeRemove,
       addMessage,
       refreshLeave
     };

@@ -15,7 +15,7 @@ export default defineNuxtPlugin(({$fire, $axios}, inject) => {
   inject('contractsService', new ContractsService($axios));
   inject('customersService', new CustomersService($fire));
   inject('holidaysService', new HolidaysService($fire));
-  inject('timeRecordsService', new TimeRecordsService($fire));
+  inject('timeRecordsService', new TimeRecordsService($fire, $axios));
   inject('travelRecordsService', new TravelRecordsService($fire));
   inject('employeesService', new EmployeesService($fire));
   inject('workSchemeService', new WorkSchemeService($axios));
