@@ -3,14 +3,11 @@ import axios from 'axios';
 
 export default async function UserMe(request: VercelRequest, response: VercelResponse) {
   try {
-    const {data: bridgeUid} = await axios.get<Number>(
-      'https://bridge.hosted-tools.com/api/v1/users/me',
-      {
-        headers: {
-          Cookie: request.headers.cookie || '',
-        },
-      }
-    );
+    const {data: bridgeUid} = await axios.get<Number>(`${process.env.BRIDGE_API_URL}/users/me`, {
+      headers: {
+        Cookie: request.headers.cookie || '',
+      },
+    });
 
     return response.json({
       bridgeUid,

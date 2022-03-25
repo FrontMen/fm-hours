@@ -83,7 +83,6 @@ import {
   useStore,
   watch,
 } from "@nuxtjs/composition-api";
-import {Project} from "~/components/employees/project-selector.vue";
 
 export default defineComponent({
   props: {

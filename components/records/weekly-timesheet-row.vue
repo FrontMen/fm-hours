@@ -2,7 +2,7 @@
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
       <span>
-        <strong>{{ project.customer.name }}</strong>
+        <strong>{{ timesheetProject.project.customer.name }}</strong>
       </span>
     </b-col>
 
@@ -27,6 +27,16 @@
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
+      <div
+        v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
+        class="weekly-timesheet-row__value-icon"
+      >
+        <b-icon
+          v-b-tooltip.hover
+          icon="cloud-arrow-up"
+          :title="timesheetProject.worklogs[index].toString()"
+        />
+      </div>
     </b-col>
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
@@ -51,9 +61,18 @@ import {
 } from '~/helpers/timesheet';
 import {recordDayStatusProps} from '~/helpers/record-status';
 
+interface WeeklyTimesheetRowProps {
+  timesheetProject: TimesheetProject,
+  readonly: boolean,
+  selectedWeek: WeekDate[],
+  valueFormatter: Object,
+  employee: Employee
+  isAdmin: boolean
+}
+
 export default defineComponent({
   props: {
-    project: {
+    timesheetProject: {
       type: Object as PropType<TimesheetProject>,
       required: true,
     },
@@ -66,32 +85,36 @@ export default defineComponent({
       required: true,
     },
     valueFormatter: {
-      type: Object as PropType<{min: number; max: number; formatter(): void}>,
+      type: Object as PropType<{ min: number; max: number; formatter(): void }>,
       default: null,
     },
     employee: {
       type: Object as PropType<Employee>,
       required: true,
     },
+    isAdmin: {
+      type: Boolean,
+      default: false
+    },
   },
-  setup(props) {
+  setup(props: WeeklyTimesheetRowProps) {
     const tooltip = ref();
 
     // Act as middleware to intercept project values to format it for the view
-    const isTravelAllowance = props.project.customer.name === 'Kilometers';
+    const isTravelAllowance = props.timesheetProject.project.customer.name === 'Kilometers';
     const getInitialState = (project: TimesheetProject) => {
       return isTravelAllowance
         ? project.values.map((val) => val.toString())
         : project.values.map((num) => {
-            if (num === 0) {
-              return '0';
-            } else {
-              return floatTo24TimeString(num);
-            }
-          });
+          if (num === 0) {
+            return '0';
+          } else {
+            return floatTo24TimeString(num);
+          }
+        });
     };
 
-    const formattedProjectValues = ref(getInitialState(props.project));
+    const formattedProjectValues = ref(getInitialState(props.timesheetProject));
     watch(
       () => formattedProjectValues.value,
       () => {
@@ -102,13 +125,13 @@ export default defineComponent({
 
         // TODO: fix me
         // eslint-disable-next-line vue/no-mutating-props
-        props.project.values = floatIntegers;
+        props.timesheetProject.values = floatIntegers;
       }
     );
 
     const totalValue = computed(() => {
-      const total = props.project.values.reduce(
-        (total, current) => +total + +current
+      const total = props.timesheetProject.values.reduce(
+        (total: number, current: number) => +total + +current
       );
       return isTravelAllowance ? total : floatToTotalTimeString(total);
     });
@@ -155,6 +178,7 @@ export default defineComponent({
   background: #fff;
   color: var(--body-color);
   align-items: center;
+  position: relative;
 
   + .weekly-timesheet-row {
     padding-top: 12px;
@@ -198,6 +222,12 @@ export default defineComponent({
     &::-webkit-inner-spin-button {
       display: none;
     }
+  }
+
+  &__value-icon {
+    position: absolute;
+    right: 18px;
+    top: calc(50% - 12px)
   }
 
   &__total-column {

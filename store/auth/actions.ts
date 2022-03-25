@@ -44,6 +44,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     } catch {
       const authState = await dispatch('logout');
       if (authState) {
+        // @ts-ignore
         this.$router.push(this.localePath('/login'));
       }
     }

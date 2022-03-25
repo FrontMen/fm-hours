@@ -40,7 +40,10 @@ export async function getAuthCookie(token: string | undefined): Promise<string> 
   const ppid = getPpid(token);
 
   const {data: connectionInfo} = await axios.post<IBridgeIntractoConnectionInfo>(
-    `https://auth.hosted-tools.com/api/get-token/hours.frontmen.nl/bridge.hosted-tools.com/${ppid}`
+    `${process.env.AUTH_URL}/api/get-token/hours.frontmen.nl/${process.env.BRIDGE_URL?.replace(
+      'https://',
+      ''
+    )}/${ppid}`
   );
 
   return `hosted-tools-api-auth-2=${connectionInfo.cookie_value}; Path=/; Secure; Max-Age=${secondsInADay}; Same-Site=Lax`;
@@ -49,7 +52,7 @@ export async function getAuthCookie(token: string | undefined): Promise<string> 
 export async function getCiSessionCookie(authCookie: string): Promise<string> {
   try {
     // Is going to throw a 307 Temporary Redirect
-    await axios.get('https://bridge.hosted-tools.com/apps/', {
+    await axios.get(`${process.env.BRIDGE_URL}/apps/`, {
       maxRedirects: 0,
       headers: {
         Cookie: authCookie,
