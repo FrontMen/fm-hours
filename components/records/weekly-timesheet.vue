@@ -14,7 +14,7 @@ nl:
       {{ $t('workschemeError') }}
     </b-alert>
 
-    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix" />
+    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix"/>
 
     <weekly-timesheet-messages
       v-if="timesheet.info"
@@ -448,7 +448,10 @@ export default defineComponent({
 
     const handleUnsubmit = () => changeStatus(recordStatus.NEW as TimesheetStatus);
 
-    const handleApprove = () => changeStatus(recordStatus.APPROVED as TimesheetStatus);
+    const handleApprove = () => {
+      changeStatus(recordStatus.APPROVED as TimesheetStatus);
+      handleBridgeAdd();
+    };
 
     const handleDeny = async () => {
       await app.$mailService.sendMail(createDenialEmal({
@@ -459,7 +462,10 @@ export default defineComponent({
       await changeStatus(recordStatus.DENIED as TimesheetStatus);
     };
 
-    const handleUnapprove = () => changeStatus(recordStatus.NEW as TimesheetStatus);
+    const handleUnapprove = () => {
+      changeStatus(recordStatus.NEW as TimesheetStatus);
+      handleBridgeRemove();
+    };
 
     const handleReminder = async () => {
       const startDate = new Date(timesheet.value?.week[0].date).getTime();
@@ -470,6 +476,21 @@ export default defineComponent({
       }));
     };
 
+    const removeWithoutContract = (timeRecordsToSave: { records: TimeRecord[]; contracts: number[] }) => {
+      const startingState = {
+        contracts: [],
+        records: []
+      } as { records: TimeRecord[]; contracts: number[] }
+
+      return timeRecordsToSave.records.reduce((acc, item, index) => {
+        if (timeRecordsToSave.contracts[index] !== -1) {
+          acc.records.push(item);
+          acc.contracts.push(timeRecordsToSave.contracts[index]);
+        }
+        return acc;
+      }, startingState);
+    }
+
     const handleBridgeAdd = async () => {
       if (!employee) return;
       if (!employee.bridgeUid) return;
@@ -477,12 +498,12 @@ export default defineComponent({
       const employeeId = employee.id;
       isSaving.value = true;
 
-      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+      const toSync = removeWithoutContract(getTimeRecordsToSave(timesheet.value));
 
       await app.$timeRecordsService.addBridgeWorklogs({
         employeeId,
-        timeRecords: timeRecordsToSave.records,
-        contracts: timeRecordsToSave.contracts,
+        timeRecords: toSync.records,
+        contracts: toSync.contracts,
         bridgeUid: employee.bridgeUid
       });
 
