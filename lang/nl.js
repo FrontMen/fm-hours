@@ -57,4 +57,5 @@ export default {
   availableAll: 'Beschikbaar voor alle medewerkers',
   weekNo: 'week: {num}',
   addEmployee: 'Medewerker toevoegen',
+  selectCustomer: 'Selecteer een klant',
 };
