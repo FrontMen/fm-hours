@@ -104,9 +104,10 @@ export default defineComponent({
     const customersSelectList = computed(() => {
       const customerList = props.customers
         .filter((customer) => !customer.isDefault && !customer.archived)
+        .sort((a, b) => a.name.localeCompare(b.name))
         .map((customer) => ({
           value: customer,
-          text: customer.name,
+          text: `${customer.name} - ${customer.debtor}`,
           disabled: props.selectedProjects.some((project) => project.customer.id === customer.id)
         }))
 
