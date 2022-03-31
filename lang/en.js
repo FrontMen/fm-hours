@@ -58,4 +58,5 @@ export default {
   availableAll: 'Available to all employeees',
   weekNo: 'week: {num}',
   addEmployee: 'Add Employee',
+  selectCustomer: 'Select a customer',
 };
