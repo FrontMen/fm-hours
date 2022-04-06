@@ -2,6 +2,7 @@ import type {ActionTree} from 'vuex';
 
 import EmployeesService from '~/services/employees-service';
 import {generateAvatarURL} from '~/helpers/employee';
+import BridgeService from '~/services/bridge-service';
 
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   async getEmployee({commit, rootState}) {
@@ -18,7 +19,8 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       // Retrieve BridgeUid if we haven't done this before
       if (!employee.bridgeUid) {
-        employee.bridgeUid = await this.app.$bridgeService.getMe();
+        const bridgeService = new BridgeService(this.$axios);
+        employee.bridgeUid = await bridgeService.getMe();
 
         await employeesService.updateEmployee({
           ...employee!,
