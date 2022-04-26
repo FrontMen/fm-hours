@@ -3,10 +3,12 @@ en:
   title: "Leave"
   description: "Please request your leave via Bridge. After approval they will show up here."
   refresh: "Refresh the leave hours (when timesheet is not submitted)"
+  publicHoliday: "Public holiday"
 nl:
   title: "Verlof"
   description: "Vraag je verlof aan via Bridge. Na goedkeuring zullen ze hier verschijnen."
   refresh: "Ververs de verlofuren (als de timesheet niet ingediend is)"
+  publicHoliday: "Wettelijke feestdag"
 </i18n>
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
@@ -25,14 +27,17 @@ nl:
     </b-col>
 
     <b-col
-      v-for="(value, index) in leaveDays"
-      :key="index"
+      v-for="(day) in workscheme"
+      :key="day.date"
       cols="1"
       class="weekly-timesheet-row__date-column"
     >
-      {{ value }}
+      <span>{{ day.absenceHours }}</span>
+      <span v-if="day.holiday" v-b-tooltip.hover :title="$t('publicHoliday')">
+        <b-icon icon="info-circle"></b-icon>
+      </span>
     </b-col>
-    <b-col v-if="leaveDays.length > 0" cols="3" class="weekly-timesheet-row__total-column">
+    <b-col cols="3" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>
@@ -59,12 +64,6 @@ export default defineComponent({
   },
   emits: ['refresh'],
   setup(props: { workscheme: WorkScheme[], status: TimesheetStatus }) {
-    const leaveDays = computed(() => {
-      return props.workscheme.map((day) => {
-        return day.absenceHours
-      })
-    });
-
     const totalValue = computed(() => {
       return props.workscheme.reduce((prev: number, curr: WorkScheme) => prev + curr.absenceHours, 0);
     })
@@ -75,7 +74,6 @@ export default defineComponent({
 
     return {
       totalValue,
-      leaveDays,
       allowRefresh,
     };
   },
