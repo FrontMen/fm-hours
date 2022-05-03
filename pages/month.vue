@@ -39,12 +39,7 @@ nl:
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
-        <img
-          src="@/assets/images/logo-line.png"
-          alt="frontmen logo"
-          class="mt-0 mb-3 ml-0"
-          width="250pt"
-        />
+        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt" />
         <h4>
           <strong>{{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}</strong>
         </h4>
@@ -205,7 +200,7 @@ nl:
         {{ employee.name }}
         <br />
         <br />
-        <img src="@/assets/images/logo-line.png" alt="frontmen logo" width="250pt" />
+        <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
       </b-col>
     </b-row>
   </div>

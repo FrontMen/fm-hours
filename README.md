@@ -1,6 +1,6 @@
 # fm-hours
 
-> FrontMen - Hours registration
+> iO on-site - Hours registration
 
 ## Pre-requisites
 
@@ -16,13 +16,15 @@ Clone this repo and install the dependencies:
 yarn install
 ```
 
-Create a `.env` based on `.env.defaults`. You can reach one of the team members for the credentials, or, if you have access to Vercel, get it from there with the following command: `vercel env pull`.
+Create a `.env` based on `.env.defaults`. You can reach one of the team members for the credentials,
+or, if you have access to Vercel, get it from there with the following command: `vercel env pull`.
 
 > 💡 Be sure you're using development keys.
 
 ### Development
 
-Since this project uses Vercel's serverless (lambda) functions (via `/api`), instead of using the traditional `yarn dev`, you'll need to use `Vercel CLI`.
+Since this project uses Vercel's serverless (lambda) functions (via `/api`), instead of using the
+traditional `yarn dev` , you'll need to use `Vercel CLI`.
 
 After doing login, run:
 
@@ -30,9 +32,11 @@ After doing login, run:
 yarn vercel
 ```
 
-It might ask you some questions about the project like Organization and if you want to link an existing project.
+It might ask you some questions about the project like Organization and if you want to link an
+existing project.
 
-After that, a `.vercel` folder will be created with some sensitive files and a server will be boot and up running at `http://localhost:3000`
+After that, a `.vercel` folder will be created with some sensitive files and a server will be boot
+and up running at `http://localhost:3000`
 
 > 💡 .vercel folder should never be commit.
 
@@ -48,7 +52,8 @@ This command will run a build and generate the static assets in `dist` folder.
 
 ## Adding a new API endpoint
 
-For every single request which needs to be made server-side, we use [`Serverless Functions`](https://vercel.com/docs/concepts/functions/introduction) from Vercel.
+For every single request which needs to be made server-side, we use
+[`Serverless Functions`](https://vercel.com/docs/concepts/functions/introduction) from Vercel.
 
 To add a new one, create a new file under `/api/` folder with the route name:
 

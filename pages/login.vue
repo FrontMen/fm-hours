@@ -12,7 +12,7 @@ nl:
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
     <b-card align="center" class="main-card">
-      <img src="@/assets/images/logo.png" alt="Frontmen logo" />
+      <img src="@/assets/images/logo.png" class="logo" alt="Logo" />
       <h1>{{ $t('login') }}</h1>
       <b-card-text>{{ $t('loginHint') }}</b-card-text>
 
@@ -78,5 +78,10 @@ export default defineComponent({
 
 .main-card {
   width: 25rem;
+}
+
+.logo {
+  width: 200px;
+  margin-bottom: 20px;
 }
 </style>
