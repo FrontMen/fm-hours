@@ -20,7 +20,7 @@ const buildEmail = ({employee, content, subject}: BuildEmailProps) => {
   const html = `
   <p>Dear ${employee.name},</p><br />
   ${content}
-  <p>For any questions contact uren@frontmen.nl or Matthias in Slack.</p>
+  <p>For any questions contact matthias.deboer@frontmen.nl or Matthias in Slack.</p>
   <br />
   <p>Thanks,</p>
   <p>Matthias</p>
