@@ -34,6 +34,7 @@ import {computed, defineComponent, useContext, useRouter, useStore,} from '@nuxt
 
 export default defineComponent({
   layout: 'login',
+  middleware: ['isNotAuthenticated'],
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();

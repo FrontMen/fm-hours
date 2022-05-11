@@ -5,6 +5,9 @@ const mutations: MutationTree<EmployeeStoreState> = {
     state.employee = payload.employee;
     state.isAdmin = payload.isAdmin;
   },
+  setError: (state, payload) => {
+    state.error = payload;
+  },
 };
 
 export default mutations;

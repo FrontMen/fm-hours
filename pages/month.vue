@@ -212,7 +212,7 @@ import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
-
+  middleware: ['isEmployeeError'],
   setup() {
 
     const {i18n} = useContext();

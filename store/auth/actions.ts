@@ -48,7 +48,6 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         this.$router.push(this.localePath('/login'));
       }
     }
-
     await dispatch('employee/getEmployee', {}, {root: true});
   },
 };

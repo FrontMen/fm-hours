@@ -17,3 +17,7 @@ export enum Collections {
   TIMESHEETS = 'timesheets',
   TRAVELREC = 'travel_records',
 }
+
+export enum Errors {
+  EMPLOYEE_NOT_FOUND = 'employee_not_found',
+}

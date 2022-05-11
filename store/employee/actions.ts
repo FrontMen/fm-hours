@@ -4,6 +4,8 @@ import EmployeesService from '~/services/employees-service';
 import {generateAvatarURL} from '~/helpers/employee';
 import BridgeService from '~/services/bridge-service';
 
+import {Errors} from '~/types/enums';
+
 const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
   async getEmployee({commit, rootState}) {
     if (!rootState.auth.user) return;
@@ -15,7 +17,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       const employee = await employeesService.getEmployeeByMail(user.email);
       const isAdmin = await employeesService.isAdmin(user.email);
 
-      if (!employee) throw new Error('Employee not found!');
+      if (!employee) throw new Error(Errors.EMPLOYEE_NOT_FOUND);
 
       // Retrieve BridgeUid if we haven't done this before
       if (!employee.bridgeUid) {
@@ -32,10 +34,11 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       }
 
       commit('setEmployee', {employee, isAdmin});
+      commit('setError', null);
 
       return employee;
-    } catch (error) {
-      throw new Error(error);
+    } catch (error: any) {
+      commit('setError', error);
     }
   },
 };
