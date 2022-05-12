@@ -14,7 +14,7 @@ nl:
       {{ $t('workschemeError') }}
     </b-alert>
 
-    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix"/>
+    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix" />
 
     <weekly-timesheet-messages
       v-if="timesheet.info"
@@ -378,13 +378,14 @@ export default defineComponent({
       await saveTimesheet();
     }
 
-    const addMessage = async (message: string) => {
+    const addMessage = async ({text, employeeName}: { text: string, employeeName: string}) => {
       if (timesheet.value.info === null) return;
 
       const newMessage = {
         id: uuidv4(),
         createdAt: new Date().getTime(),
-        text: message,
+        text,
+        employeeName,
       };
 
       timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];

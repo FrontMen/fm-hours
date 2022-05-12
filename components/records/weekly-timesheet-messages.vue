@@ -19,8 +19,11 @@
             style="width: 280px;"
           >
             <p>{{ comment.text }}</p>
-            <p class="dateFormat" style="text-align: end;">
+            <p class="dateFormat" style="text-align: end; margin: 0;">
               {{ comment.createdAt }}
+            </p>
+            <p style="text-align: end; font-size: 14px; margin: 0;">
+              {{ comment.employeeName }}
             </p>
             <b-dropdown-divider></b-dropdown-divider>
           </b-dropdown-text>
@@ -49,6 +52,7 @@ import {
   computed,
   defineComponent, PropType,
   ref, watch,
+  useStore
 } from '@nuxtjs/composition-api';
 import {format} from "date-fns";
 
@@ -67,6 +71,9 @@ export default defineComponent({
 
   setup(props, {emit}) {
     const messageInput = ref('');
+    // get creatorName from store
+    const store = useStore<RootStoreState>();
+    const employeeName = computed(() => store.state.employee.employee?.name);
 
     const formatedComments = computed(() => props.comments
         .map((comment) => ({
@@ -84,7 +91,7 @@ export default defineComponent({
     );
 
     const onAddCommentClick = () => {
-      emit('add', messageInput.value);
+      emit('add', {text: messageInput.value, employeeName: employeeName.value});
     };
 
     return {
