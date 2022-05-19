@@ -2,15 +2,10 @@ import {ActionTree} from 'vuex';
 import {extractUserFromAuthUser} from '~/helpers/auth';
 
 const actions: ActionTree<AuthStoreState, RootStoreState> = {
-  async login({commit}) {
+  async login() {
     try {
       const provider = new this.$fireModule.auth.SAMLAuthProvider('saml.intracto');
-      const {user} = await this.$fire.auth.signInWithPopup(provider);
-
-      if (user) {
-        commit('setUser', await extractUserFromAuthUser(user));
-        return true;
-      }
+      await this.$fire.auth.signInWithPopup(provider);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Something went wrong while Login');
@@ -48,7 +43,10 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         this.$router.push(this.localePath('/login'));
       }
     }
+
     await dispatch('employee/getEmployee', {}, {root: true});
+    // @ts-ignore
+    this.$router.push(this.localePath('/'));
   },
 };
 

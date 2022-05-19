@@ -7,7 +7,9 @@ export default defineNuxtMiddleware(({store, redirect, route}) => {
 
   if (!isCurrentPathEmployeeError && employeeError) {
     return redirect(employeeErrorRoutePath);
-  } else if (isCurrentPathEmployeeError && !employeeError) {
+  }
+
+  if (isCurrentPathEmployeeError && !employeeError) {
     return redirect('/');
   }
 });

@@ -14,8 +14,6 @@ import {computed, defineComponent, useContext, useMeta, useRouter, useStore, wat
 import {format} from "date-fns";
 
 export default defineComponent({
-  middleware: ["isEmployeeError"],
-
   setup() {
     const {i18n} = useContext();
     const router = useRouter();

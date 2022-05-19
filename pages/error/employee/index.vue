@@ -34,7 +34,6 @@ import {Errors} from '~/types/enums';
 
 
 export default defineComponent({
-  middleware: ["isEmployeeError"],
   setup() {
     const getters = useStore().getters;
     const employeeError = getters["employee/error"];
