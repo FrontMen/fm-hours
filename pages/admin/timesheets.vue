@@ -16,7 +16,12 @@ nl:
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <div class="actions-toolbar flex mb-3">
-          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
+          <b-form-select
+            v-model="selectedTeam"
+            :options="teamList"
+            class="mb-3"
+            placeholder="Select Team"
+          />
 
           <MonthPicker v-model="startDate" />
 
@@ -121,7 +126,7 @@ export default defineComponent({
 
     const selectedTeam = ref<string>('');
 
-    const filteredItemsBySearch = (arrayToFilter: TimesheetTableItem[], arrayToCompare: TimesheetTableItem[]) => {
+    const filterItemsBySearch = (arrayToFilter: TimesheetTableItem[], arrayToCompare: TimesheetTableItem[]) => {
         return arrayToFilter.filter((item) => {
           if (!selectedTeam.value && !arrayToCompare.length) {
             return true;
@@ -133,7 +138,8 @@ export default defineComponent({
                 selectedTeam.value === 'No team'
                   ? !item.team
                   : employee.team === selectedTeam.value;
-              return selectedTeam.value ? employee.id === item.id && valueToCompare : true;
+              const isEmployeeIdEqual = item.id === employee.id;
+              return selectedTeam.value ? isEmployeeIdEqual && valueToCompare : true;
             });
           }
 
@@ -156,8 +162,8 @@ export default defineComponent({
         return tableData.value;
       }
 
-      const itemsWhenHideDone = filteredItemsBySearch(items, employeesWithMissingTimesheets.value);
-      const itemsWhenDeafult = filteredItemsBySearch(items, []);
+      const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value);
+      const itemsWhenDeafult = filterItemsBySearch(items, []);
 
       const itemsFiltered = hideDone.value
         ? itemsWhenHideDone
