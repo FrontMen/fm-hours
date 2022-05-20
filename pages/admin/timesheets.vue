@@ -121,14 +121,14 @@ export default defineComponent({
 
     const selectedTeam = ref<string>('');
 
-    const filteredItemsBySearch = (arrayToFilter: any, arrayToCompare: any) => {
-        return arrayToFilter.filter((item: any) => {
+    const filteredItemsBySearch = (arrayToFilter: TimesheetTableItem[], arrayToCompare: TimesheetTableItem[]) => {
+        return arrayToFilter.filter((item) => {
           if (!selectedTeam.value && !arrayToCompare.length) {
             return true;
           }
 
           if (arrayToCompare.length) {
-            return arrayToCompare.some((employee: any) => {
+            return arrayToCompare.some((employee) => {
               const valueToCompare =
                 selectedTeam.value === 'No team'
                   ? !item.team
