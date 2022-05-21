@@ -128,21 +128,22 @@ export default defineComponent({
 
     const filterItemsBySearch = (
       arrayToFilter: TimesheetTableItem[],
-      arrayToCompare: TimesheetTableItem[]
+      arrayToCompare: TimesheetTableItem[],
+      selectedTeamValue: string
     ) => {
-      const isSelectedTeamEqualNoTeam = selectedTeam.value === 'No team';
+      const isSelectedTeamEqualNoTeam = selectedTeamValue === 'No team';
       return arrayToFilter.filter(item => {
-        if (!selectedTeam.value && !arrayToCompare.length) {
+        if (!selectedTeamValue && !arrayToCompare.length) {
           return true;
         }
 
         if (arrayToCompare.length) {
           return arrayToCompare.some(employee => {
-            if (!selectedTeam.value) return true;
+            if (!selectedTeamValue) return true;
 
             const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
               ? !item.team
-              : employee.team === selectedTeam.value;
+              : employee.team === selectedTeamValue;
 
             const isEmployeeIdEqual = item.id === employee.id;
 
@@ -150,8 +151,8 @@ export default defineComponent({
           });
         }
 
-        if (item.team && selectedTeam.value) {
-          return item.team === selectedTeam.value;
+        if (item.team && selectedTeamValue) {
+          return item.team === selectedTeamValue;
         }
 
         if (isSelectedTeamEqualNoTeam) {
@@ -169,8 +170,8 @@ export default defineComponent({
         return tableData.value;
       }
 
-      const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value);
-      const itemsWhenDefault = filterItemsBySearch(items, []);
+      const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value, selectedTeam.value);
+      const itemsWhenDefault = filterItemsBySearch(items, [], selectedTeam.value);
 
       const itemsFiltered = hideDone.value ? itemsWhenHideDone : itemsWhenDefault;
 
