@@ -130,6 +130,7 @@ export default defineComponent({
       arrayToFilter: TimesheetTableItem[],
       arrayToCompare: TimesheetTableItem[]
     ) => {
+      const isSelectedTeamEqualNoTeam = selectedTeam.value === 'No team';
       return arrayToFilter.filter(item => {
         if (!selectedTeam.value && !arrayToCompare.length) {
           return true;
@@ -137,10 +138,15 @@ export default defineComponent({
 
         if (arrayToCompare.length) {
           return arrayToCompare.some(employee => {
-            const valueToCompare =
-              selectedTeam.value === 'No team' ? !item.team : employee.team === selectedTeam.value;
+            if (!selectedTeam.value) return true;
+
+            const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
+              ? !item.team
+              : employee.team === selectedTeam.value;
+
             const isEmployeeIdEqual = item.id === employee.id;
-            return selectedTeam.value ? isEmployeeIdEqual && valueToCompare : true;
+
+            return isEmployeeIdEqual && shouldCompareToExactTeam;
           });
         }
 
@@ -148,7 +154,7 @@ export default defineComponent({
           return item.team === selectedTeam.value;
         }
 
-        if (selectedTeam.value === 'No team') {
+        if (isSelectedTeamEqualNoTeam) {
           return !item.team;
         }
 
@@ -179,9 +185,10 @@ export default defineComponent({
       const teams = tableData.value.items.map(employee => employee.team);
       const parsedTeam = teams
         .map(team => {
+          const valueAndText = team || 'No team';
           return {
-            text: team || 'No team',
-            value: team || 'No team',
+            text: valueAndText,
+            value: valueAndText,
           };
         })
         .filter((item, index, self) => self.findIndex(t => t.value === item.value) === index);
