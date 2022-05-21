@@ -126,34 +126,35 @@ export default defineComponent({
 
     const selectedTeam = ref<string>('');
 
-    const filterItemsBySearch = (arrayToFilter: TimesheetTableItem[], arrayToCompare: TimesheetTableItem[]) => {
-        return arrayToFilter.filter((item) => {
-          if (!selectedTeam.value && !arrayToCompare.length) {
-            return true;
-          }
+    const filterItemsBySearch = (
+      arrayToFilter: TimesheetTableItem[],
+      arrayToCompare: TimesheetTableItem[]
+    ) => {
+      return arrayToFilter.filter(item => {
+        if (!selectedTeam.value && !arrayToCompare.length) {
+          return true;
+        }
 
-          if (arrayToCompare.length) {
-            return arrayToCompare.some((employee) => {
-              const valueToCompare =
-                selectedTeam.value === 'No team'
-                  ? !item.team
-                  : employee.team === selectedTeam.value;
-              const isEmployeeIdEqual = item.id === employee.id;
-              return selectedTeam.value ? isEmployeeIdEqual && valueToCompare : true;
-            });
-          }
+        if (arrayToCompare.length) {
+          return arrayToCompare.some(employee => {
+            const valueToCompare =
+              selectedTeam.value === 'No team' ? !item.team : employee.team === selectedTeam.value;
+            const isEmployeeIdEqual = item.id === employee.id;
+            return selectedTeam.value ? isEmployeeIdEqual && valueToCompare : true;
+          });
+        }
 
-          if (item.team && selectedTeam.value) {
-            return item.team === selectedTeam.value;
-          }
+        if (item.team && selectedTeam.value) {
+          return item.team === selectedTeam.value;
+        }
 
-          if (selectedTeam.value === 'No team') {
-            return !item.team;
-          }
+        if (selectedTeam.value === 'No team') {
+          return !item.team;
+        }
 
-          return false;
-        });
-      };
+        return false;
+      });
+    };
 
     const tableDataFiltered = computed(() => {
       const {items, fields} = tableData.value;
@@ -165,9 +166,7 @@ export default defineComponent({
       const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value);
       const itemsWhenDefault = filterItemsBySearch(items, []);
 
-      const itemsFiltered = hideDone.value
-        ? itemsWhenHideDone
-        : itemsWhenDefault;
+      const itemsFiltered = hideDone.value ? itemsWhenHideDone : itemsWhenDefault;
 
       return {
         fields,
