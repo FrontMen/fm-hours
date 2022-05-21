@@ -163,11 +163,11 @@ export default defineComponent({
       }
 
       const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value);
-      const itemsWhenDeafult = filterItemsBySearch(items, []);
+      const itemsWhenDefault = filterItemsBySearch(items, []);
 
       const itemsFiltered = hideDone.value
         ? itemsWhenHideDone
-        : itemsWhenDeafult;
+        : itemsWhenDefault;
 
       return {
         fields,
