@@ -16,12 +16,7 @@ nl:
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <div class="actions-toolbar flex mb-3">
-          <b-form-select
-            v-model="selectedTeam"
-            :options="teamList"
-            class="mb-3"
-            placeholder="Select Team"
-          />
+          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
 
           <MonthPicker v-model="startDate" />
 
