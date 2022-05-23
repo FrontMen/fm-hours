@@ -2,9 +2,11 @@
   en:
     AddComment: "Add comment"
     Comments: "Comments"
+    ShowWeekends: "Show weekends"
   nl:
     AddComment: "Notitie toevoegen"
     Comments: "Comments"
+    ShowWeekends: "Show weekenden"
 </i18n>
 
 <template>
@@ -43,6 +45,14 @@
           </b-button>
         </b-dropdown-form>
       </b-dropdown>
+      <b-form-checkbox
+        :checked="showWeekends"
+        switch
+        class="ml-3 d-flex align-items-center cursor-pointer"
+        @change="$emit('toggle-weekends', !showWeekends)"
+      >
+        {{ $t('ShowWeekends') }}
+      </b-form-checkbox>
     </b-row>
   </div>
 </template>
@@ -52,7 +62,7 @@ import {
   computed,
   defineComponent, PropType,
   ref, watch,
-  useStore
+  useStore,
 } from '@nuxtjs/composition-api';
 import {format} from "date-fns";
 
@@ -65,9 +75,13 @@ export default defineComponent({
     readonly: {
       type: Boolean,
       default: false
+    },
+    showWeekends: {
+      type: Boolean,
+      required: true,
     }
   },
-  emits: ['add'],
+  emits: ['add', 'toggle-weekends'],
 
   setup(props, {emit}) {
     const messageInput = ref('');
@@ -97,7 +111,7 @@ export default defineComponent({
     return {
       onAddCommentClick,
       formatedComments,
-      messageInput
+      messageInput,
     }
   },
 })

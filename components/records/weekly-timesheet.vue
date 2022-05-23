@@ -20,17 +20,19 @@ nl:
       v-if="timesheet.info"
       :comments="timesheet.info.messages"
       :readonly="isReadonly"
+      :show-weekends="showWeekends"
       @add="addMessage"
+      @toggle-weekends="toggleWeekends"
     ></weekly-timesheet-messages>
 
-    <weekly-timesheet-container :selected-week="timesheet.week">
+    <weekly-timesheet-container :selected-week="selectedWeek">
       <template #rows>
         <weekly-timesheet-row-hours
           v-for="(timesheetProject) in projectsOrdered"
           :key="timesheetProject.project.customer.id"
           :timesheet-project="timesheetProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :selected-week="selectedWeek"
           :employee="employee"
           :is-admin="isAdmin"
           @change="hasUnsavedChanges = true"
@@ -44,7 +46,7 @@ nl:
 
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
-          :selected-week="timesheet.week"
+          :selected-week="selectedWeek"
           :work-scheme="timesheet.workScheme"
           @totals="setTotals"
         />
@@ -57,7 +59,7 @@ nl:
           v-if="showStandby"
           :timesheet-project="timesheet.standByProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :selected-week="selectedWeek"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -66,7 +68,7 @@ nl:
           v-if="showTravel"
           :timesheet-project="timesheet.travelProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :selected-week="selectedWeek"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -94,7 +96,16 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  useContext,
+  useRouter,
+  useStore,
+  onMounted,
+} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -136,6 +147,8 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
+    const showWeekends = ref<boolean>(true);
+
     const isLoading = ref<boolean>(true);
 
     const hasUnsavedChanges = ref<boolean>(false);
@@ -145,6 +158,10 @@ export default defineComponent({
 
     const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
+
+    onMounted(() => {
+      showWeekends.value = JSON.parse(localStorage.getItem('showWeekends')!) || true;
+    });
 
     // Fetch all customers if we haven't fetched them before
     if (customers.value.length === 0) {
@@ -208,6 +225,10 @@ export default defineComponent({
         return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
       })
     );
+
+    const selectedWeek = computed(() => {
+      return timesheet.value.week;
+    });
 
     // TODO: figure out how to get Monday (1) instead of Wednesday (3) without screwing up the timezone
     // const startDate = computed(() => getDateOfISOWeek(parseInt(year.value, 10), parseInt(week.value, 10), 3));
@@ -393,6 +414,14 @@ export default defineComponent({
       await saveTimesheet();
     }
 
+    const toggleWeekends = (isShown: boolean) => {
+      showWeekends.value = isShown;
+
+      // Store in the database or localStorage
+
+      localStorage.setItem('showWeekends', String(isShown));
+    };
+
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals.value = calculatedTotals;
     };
@@ -537,6 +566,7 @@ export default defineComponent({
       startDate,
       timesheet,
       projectsOrdered,
+      selectedWeek,
       showBridgeError,
       timesheetStatus,
       isReadonly,
@@ -545,6 +575,7 @@ export default defineComponent({
       hasUnsavedChanges,
       isSaving,
       lastSaved,
+      showWeekends,
       setTotals,
       handleSave,
       handleSubmit,
@@ -556,6 +587,7 @@ export default defineComponent({
       handleBridgeAdd,
       handleBridgeRemove,
       addMessage,
+      toggleWeekends,
       refreshLeave
     };
   }
