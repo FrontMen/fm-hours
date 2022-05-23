@@ -51,6 +51,7 @@ nl:
               <strong>{{ $t('employee') }}:</strong>
               {{ employee.name }}
             </p>
+
             <p>
               <strong v-if="selectedCustomers && selectedCustomers.length !== 1">
                 {{ $t('projects') }}:
@@ -207,42 +208,58 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
+import {
+  computed,
+  defineComponent,
+  ref,
+  useContext,
+  useMeta,
+  useRoute,
+  useStore,
+  watch,
+  onMounted,
+} from '@nuxtjs/composition-api';
 import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
-
   setup() {
-
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const route = useRoute();
+
+    onMounted(async () => {
+      await store.dispatch('employees/getEmployees');
+    });
 
     useMeta(() => ({
       title: i18n.t('monthlyReport') as string,
     }));
 
-    const selectedCustomers = ref<{ value: string; label: string }[]>([]);
+    const selectedCustomers = ref<{value: string; label: string}[]>([]);
     const onlyBillable = ref<boolean>(false);
     const monthStartDate = ref<Date>(startOfMonth(new Date()));
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
     const employee = computed(() => {
-      return store.state.employee.employee;
+      const id = route.value.path.split('/')[2];
+      const employee = store.getters['employees/getEmployeeById'](id);
+      if (!employee) return store.state.employee.employee;
+      return employee;
     });
 
     const getRecords = () => {
       store.dispatch('records/getMonthlyTimeRecords', {
-        employeeId: store.state.employee.employee!.id,
+        employeeId: employee.value!.id,
         startDate: monthStartDate.value,
-        endDate: monthEndDate.value
+        endDate: monthEndDate.value,
       });
     };
 
     watch(
       [monthStartDate, employee],
       () => {
-        monthEndDate.value = endOfMonth(monthStartDate.value as Date)
+        monthEndDate.value = endOfMonth(monthStartDate.value as Date);
         getRecords();
       },
       {
@@ -277,36 +294,30 @@ export default defineComponent({
       records = handleFilterBillable(records);
       const projects: string[] = [];
 
-      records.forEach((record) => {
-        if (!projects.includes(record.customer.name))
-          projects.push(record.customer.name);
+      records.forEach(record => {
+        if (!projects.includes(record.customer.name)) projects.push(record.customer.name);
       });
 
-      return projects.map((project) => ({value: project, label: project}));
+      return projects.map(project => ({value: project, label: project}));
     });
 
     store.dispatch('reports/getMonthlyReportData', {
       startDate: monthStartDate.value,
     });
 
-    const handleFilterBillable = (
-      records: TimeRecord[],
-      force: boolean = false
-    ): TimeRecord[] => {
+    const handleFilterBillable = (records: TimeRecord[], force: boolean = false): TimeRecord[] => {
       const filtered = [...records];
       return onlyBillable.value || force
-        ? filtered.filter((record) => record && record.customer.isBillable)
+        ? filtered.filter(record => record && record.customer.isBillable)
         : filtered;
     };
 
     const handleSelectedProjects = (records: TimeRecord[]): TimeRecord[] => {
       let filtered = [...records];
       if (selectedCustomers.value.length) {
-        const mappedSelected = selectedCustomers.value.map(
-          (item) => item.value
-        );
+        const mappedSelected = selectedCustomers.value.map(item => item.value);
         filtered = records.filter(
-          (record) => record && mappedSelected.includes(record.customer.name)
+          record => record && mappedSelected.includes(record.customer.name)
         );
       }
       return filtered;

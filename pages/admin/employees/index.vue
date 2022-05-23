@@ -12,6 +12,7 @@ en:
   noEmployeeFound: "No employee found"
   inactive: "Inactive"
   manageEmployee: "Manage employee"
+  manageEmployeeMonthOverview: "Manage month overview"
   addEmployee: "Add an employee"
 nl:
   searchEmployeeByName: "Zoek medewerker op naam"
@@ -26,6 +27,7 @@ nl:
   noEmployeeFound: "Geen medewerker(s) gevonden"
   inactive: "Inactief"
   manageEmployee: "Medewerker bewerken"
+  manageEmployeeMonthOverview: "Medewerker maandoverzicht bewerken"
   addEmployee: "Medewerker toevoegen"
 </i18n>
 
@@ -134,6 +136,10 @@ nl:
         <div class="ml-auto d-flex">
           <nuxt-link class="btn btn-info" :to="localePath(`/admin/employees/${employee.id}`)">
             {{ $t('manageEmployee') }}
+          </nuxt-link>
+
+          <nuxt-link class="btn btn-info ml-3" :to="localePath(`/month/${employee.id}`)">
+            {{ $t('manageEmployeeMonthOverview') }}
           </nuxt-link>
         </div>
       </b-row>

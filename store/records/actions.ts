@@ -8,7 +8,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   ) {
     if (!payload.employeeId || !payload.startDate?.getTime() || !payload.endDate?.getTime()) return;
 
-    commit('setLoading', {isLoading: true});
+    commit('setLoading', {isLoading: true}, {root: true});
 
     const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
       employeeId: payload.employeeId,
@@ -16,7 +16,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
       endDate: payload.endDate.getTime().toString(),
     });
 
-    commit('setLoading', {isLoading: false});
+    commit('setLoading', {isLoading: false}, {root: true});
     commit('setRecords', {
       timeRecords,
     });

@@ -47,7 +47,7 @@ nl:
                 <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
               </b-button>
 
-              <nuxt-link :to="localePath('month')">
+              <nuxt-link :to="localePath('/month/deafult')">
                 <b-button v-b-tooltip.hover :title="$t('goMonthly')">
                   {{ $t("monthly") }}
                 </b-button>
