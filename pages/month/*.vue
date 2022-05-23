@@ -218,6 +218,7 @@ import {
   useStore,
   watch,
   onMounted,
+  useRouter,
 } from '@nuxtjs/composition-api';
 import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
@@ -227,6 +228,7 @@ export default defineComponent({
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
     const route = useRoute();
+    const router = useRouter();
 
     onMounted(async () => {
       await store.dispatch('employees/getEmployees');
@@ -244,7 +246,12 @@ export default defineComponent({
     const employee = computed(() => {
       const id = route.value.path.split('/')[2];
       const employee = store.getters['employees/getEmployeeById'](id);
-      if (!employee) return store.state.employee.employee;
+      const adminlist =  store.getters["employees/adminList"];
+      const isAuthenticatedUserAdmin = adminlist.includes(store.getters["auth/user"].email);
+      if (!employee || !isAuthenticatedUserAdmin) {
+        router.push("/month/default");
+        return store.state.employee.employee;
+      };
       return employee;
     });
 
