@@ -166,23 +166,25 @@ export default defineComponent({
 
     const tableDataFiltered = computed(() => {
       const {items, fields} = tableData.value;
+      let filteredItems = null;
 
       if (!items || !fields) {
         return tableData.value;
       }
 
-      const itemsWhenHideDone = filterItemsBySearch(
-        items,
-        employeesWithMissingTimesheets.value,
-        selectedTeam.value
-      );
-      const itemsWhenDefault = filterItemsBySearch(items, [], selectedTeam.value);
-
-      const itemsFiltered = hideDone.value ? itemsWhenHideDone : itemsWhenDefault;
+      if (hideDone.value) {
+        filteredItems = filterItemsBySearch(
+          items,
+          employeesWithMissingTimesheets.value,
+          selectedTeam.value
+        );
+      } else {
+        filteredItems = filterItemsBySearch(items, [], selectedTeam.value);
+      }
 
       return {
         fields,
-        items: itemsFiltered,
+        items: filteredItems || items,
       };
     });
 
