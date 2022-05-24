@@ -25,20 +25,22 @@ nl:
       @toggle-weekends="toggleWeekends"
     ></weekly-timesheet-messages>
 
-    <weekly-timesheet-container :selected-week="selectedWeek">
+    <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
       <template #rows>
         <weekly-timesheet-row-hours
           v-for="(timesheetProject) in projectsOrdered"
           :key="timesheetProject.project.customer.id"
           :timesheet-project="timesheetProject"
           :readonly="isReadonly"
-          :selected-week="selectedWeek"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           :is-admin="isAdmin"
           @change="hasUnsavedChanges = true"
         />
 
         <weekly-timesheet-row-leave
+          :show-weekends="showWeekends"
           :workscheme="timesheet.workScheme"
           :status="timesheet.info.status"
           @refresh="refreshLeave"
@@ -46,7 +48,8 @@ nl:
 
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
-          :selected-week="selectedWeek"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :work-scheme="timesheet.workScheme"
           @totals="setTotals"
         />
@@ -59,7 +62,8 @@ nl:
           v-if="showStandby"
           :timesheet-project="timesheet.standByProject"
           :readonly="isReadonly"
-          :selected-week="selectedWeek"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -68,7 +72,8 @@ nl:
           v-if="showTravel"
           :timesheet-project="timesheet.travelProject"
           :readonly="isReadonly"
-          :selected-week="selectedWeek"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -147,7 +152,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const showWeekends = ref<boolean>(true);
+    const showWeekends = ref<boolean>(false);
 
     const isLoading = ref<boolean>(true);
 
@@ -160,7 +165,7 @@ export default defineComponent({
     const customers = computed(() => store.state.customers.customers);
 
     onMounted(() => {
-      showWeekends.value = JSON.parse(localStorage.getItem('showWeekends')!) || true;
+      showWeekends.value = JSON.parse(localStorage.getItem('showWeekends')!) || false;
     });
 
     // Fetch all customers if we haven't fetched them before
@@ -228,6 +233,18 @@ export default defineComponent({
 
     const selectedWeek = computed(() => {
       return timesheet.value.week;
+    });
+
+    const selectedWeekWithoutWeekends = computed(() => {
+      return timesheet.value.week.filter(({ isWeekend }) => !isWeekend);
+    });
+
+    const relevantWeeksView = computed(() => {
+      if (showWeekends.value === true) {
+        return selectedWeek.value;
+      }
+
+      return selectedWeekWithoutWeekends.value;
     });
 
     // TODO: figure out how to get Monday (1) instead of Wednesday (3) without screwing up the timezone
@@ -567,6 +584,8 @@ export default defineComponent({
       timesheet,
       projectsOrdered,
       selectedWeek,
+      selectedWeekWithoutWeekends,
+      relevantWeeksView,
       showBridgeError,
       timesheetStatus,
       isReadonly,

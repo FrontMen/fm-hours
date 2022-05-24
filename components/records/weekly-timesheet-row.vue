@@ -7,7 +7,7 @@
     </b-col>
 
     <b-col
-      v-for="(value, index) in formattedProjectValues"
+      v-for="(value, index) in showWeekends ? formattedProjectValues : 5"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -68,6 +68,7 @@ interface WeeklyTimesheetRowProps {
   valueFormatter: Object,
   employee: Employee
   isAdmin: boolean
+  showWeekends: boolean
 }
 
 export default defineComponent({
@@ -96,6 +97,10 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    showWeekends: {
+      type: Boolean,
+      default: true,
+    }
   },
   setup(props: WeeklyTimesheetRowProps) {
     const tooltip = ref();

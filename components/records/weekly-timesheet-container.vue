@@ -37,6 +37,9 @@ nl:
           :key="date.weekDay"
           cols="1"
           class="weekly-timesheet__date-column"
+          :class="{
+            'weekly-timesheet__date-column--full': !showWeekends,
+          }"
         >
           <span v-if="shouldShowCaption(date)" class="caption text-uppercase">
             {{ $t(getCaptionText(date)) }}
@@ -81,7 +84,11 @@ export default defineComponent({
     showHeader: {
       type: Boolean,
       default: true,
-    }
+    },
+    showWeekends: {
+      type: Boolean,
+      default: true,
+    },
   },
   setup() {
     const captionSizes = ['LONG', 'MID', 'SHORT']
@@ -145,7 +152,7 @@ export default defineComponent({
     padding: 8px;
     line-height: 1.2;
 
-    @media (max-width: 560px) {
+    &--full {
       flex: 1;
       max-width: 100%;
     }
