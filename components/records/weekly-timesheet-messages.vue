@@ -6,7 +6,7 @@
   nl:
     AddComment: "Notitie toevoegen"
     Comments: "Comments"
-    ShowWeekends: "Show weekenden"
+    ShowWeekends: "Toon weekends"
 </i18n>
 
 <template>

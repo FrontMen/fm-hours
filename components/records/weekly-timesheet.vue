@@ -109,7 +109,6 @@ import {
   useContext,
   useRouter,
   useStore,
-  onMounted,
 } from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
@@ -152,7 +151,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const router = useRouter();
 
-    const showWeekends = ref<boolean>(false);
+    const showWeekends = ref<boolean>(JSON.parse(localStorage.getItem('showWeekends')!) || false);
 
     const isLoading = ref<boolean>(true);
 
@@ -163,10 +162,6 @@ export default defineComponent({
 
     const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
-
-    onMounted(() => {
-      showWeekends.value = JSON.parse(localStorage.getItem('showWeekends')!) || false;
-    });
 
     // Fetch all customers if we haven't fetched them before
     if (customers.value.length === 0) {
