@@ -157,9 +157,7 @@ export default defineComponent({
       })
     );
 
-    const weekDaysAmount = computed(() => {
-      return props.showWeekends ? 7 : 5;
-    });
+    const weekDaysAmount = computed(() => props.showWeekends ? 7 : 5);
 
     const handleInputFocus = ($input: HTMLInputElement, dayIndex: number) => {
       if (!isReadonlyList.value[dayIndex]) {

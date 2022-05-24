@@ -48,7 +48,7 @@
       <b-form-checkbox
         :checked="showWeekends"
         switch
-        class="ml-3 d-flex align-items-center cursor-pointer"
+        class="ml-3 d-flex align-items-center"
         @change="$emit('toggle-weekends', !showWeekends)"
       >
         {{ $t('ShowWeekends') }}
@@ -78,7 +78,7 @@ export default defineComponent({
     },
     showWeekends: {
       type: Boolean,
-      required: true,
+      default: true,
     }
   },
   emits: ['add', 'toggle-weekends'],

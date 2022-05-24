@@ -434,8 +434,6 @@ export default defineComponent({
     const toggleWeekends = (isShown: boolean) => {
       showWeekends.value = isShown;
 
-      // Store in the database or localStorage
-
       localStorage.setItem('showWeekends', String(isShown));
     };
 
