@@ -7,7 +7,7 @@
     </b-col>
 
     <b-col
-      v-for="(value, index) in showWeekends ? formattedProjectValues : 5"
+      v-for="(value, index) in weekDaysAmount"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -157,6 +157,10 @@ export default defineComponent({
       })
     );
 
+    const weekDaysAmount = computed(() => {
+      return props.showWeekends ? 7 : 5;
+    });
+
     const handleInputFocus = ($input: HTMLInputElement, dayIndex: number) => {
       if (!isReadonlyList.value[dayIndex]) {
         $input.select();
@@ -171,6 +175,7 @@ export default defineComponent({
       totalValue,
       formattedProjectValues,
       isReadonlyList,
+      weekDaysAmount,
       handleInputFocus,
       shouldShowDarkBG,
     };
