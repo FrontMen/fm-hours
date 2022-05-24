@@ -79,6 +79,7 @@ nl:
 import {
   computed,
   defineComponent,
+  onMounted,
   ref,
   useContext,
   useMeta,
@@ -93,10 +94,15 @@ export default defineComponent({
   setup() {
     const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
+    const NO_TEAM = i18n.t('noTeam');
 
     useMeta(() => ({
       title: i18n.t('timesheets') as string,
     }));
+
+    onMounted(() => {
+      store.dispatch('employees/getTeamList');
+    });
 
     const startDate = ref<Date>(startOfMonth(new Date()));
     const firstMonday = computed(() =>
@@ -126,7 +132,7 @@ export default defineComponent({
       arrayToCompare: TimesheetTableItem[],
       selectedTeamValue: string
     ) => {
-      const isSelectedTeamEqualNoTeam = selectedTeamValue === 'No team';
+      const isSelectedTeamEqualNoTeam = selectedTeamValue === NO_TEAM;
       return arrayToFilter.filter(item => {
         if (!selectedTeamValue && !arrayToCompare.length) {
           return true;
@@ -165,7 +171,11 @@ export default defineComponent({
         return tableData.value;
       }
 
-      const itemsWhenHideDone = filterItemsBySearch(items, employeesWithMissingTimesheets.value, selectedTeam.value);
+      const itemsWhenHideDone = filterItemsBySearch(
+        items,
+        employeesWithMissingTimesheets.value,
+        selectedTeam.value
+      );
       const itemsWhenDefault = filterItemsBySearch(items, [], selectedTeam.value);
 
       const itemsFiltered = hideDone.value ? itemsWhenHideDone : itemsWhenDefault;
@@ -178,18 +188,14 @@ export default defineComponent({
 
     const teamList = computed(() => {
       if (!tableData.value.items) return null;
-      const teams = tableData.value.items.map(employee => employee.team);
-      const parsedTeam = teams
-        .map(team => {
-          const valueAndText = team || 'No team';
-          return {
-            text: valueAndText,
-            value: valueAndText,
-          };
-        })
-        .filter((item, index, self) => self.findIndex(t => t.value === item.value) === index);
-
-      return [{value: null, text: i18n.t('selectTeam')}, ...parsedTeam];
+      const parsedTeam = store.getters['employees/teamList'].map((team: string) => {
+        return {value: team, text: team};
+      });
+      return [
+        {value: null, text: i18n.t('selectTeam')},
+        {value: NO_TEAM, text: NO_TEAM},
+        ...parsedTeam,
+      ];
     });
 
     const sendReminders = () => {
