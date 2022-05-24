@@ -243,7 +243,7 @@ export default defineComponent({
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
     const employee = computed(() => {
-      const id = router.currentRoute.params.pathMatch;
+      const id = router.currentRoute.params.id;
       const employee = store.getters['employees/getEmployeeById'](id);
       const adminlist =  store.getters["employees/adminList"];
       const isAuthenticatedUserAdmin = adminlist.includes(store.getters["auth/user"].email);
