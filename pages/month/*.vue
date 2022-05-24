@@ -217,8 +217,7 @@ import {
   useRoute,
   useStore,
   watch,
-  onMounted,
-  useRouter,
+  onBeforeMount
 } from '@nuxtjs/composition-api';
 import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
@@ -228,15 +227,15 @@ export default defineComponent({
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
     const route = useRoute();
-    const router = useRouter();
-
-    onMounted(async () => {
-      await store.dispatch('employees/getEmployees');
-    });
 
     useMeta(() => ({
       title: i18n.t('monthlyReport') as string,
     }));
+
+    onBeforeMount(() => {
+      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/getAdminList');
+    });
 
     const selectedCustomers = ref<{value: string; label: string}[]>([]);
     const onlyBillable = ref<boolean>(false);
@@ -248,11 +247,8 @@ export default defineComponent({
       const employee = store.getters['employees/getEmployeeById'](id);
       const adminlist =  store.getters["employees/adminList"];
       const isAuthenticatedUserAdmin = adminlist.includes(store.getters["auth/user"].email);
-      if (!employee || !isAuthenticatedUserAdmin) {
-        router.push("/month/default");
-        return store.state.employee.employee;
-      };
-      return employee;
+      if (employee && isAuthenticatedUserAdmin) return employee;
+      return store.state.employee.employee;
     });
 
     const getRecords = () => {
