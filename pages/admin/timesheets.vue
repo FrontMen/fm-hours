@@ -22,9 +22,40 @@ nl:
             <b-icon icon="envelope" />
           </b-button>
 
-          <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
-            {{ $t('hideDone') }}
-          </b-form-checkbox>
+          <div class="d-flex align-items-center mt-2">
+            <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
+              {{ $t('hideDone') }}
+            </b-form-checkbox>
+
+            <!-- TODO: Translation -->
+            <b-button id="legend" variant="link" class="legend-button">
+              <b-icon icon="question-circle" />
+            </b-button>
+            <b-popover target="legend" triggers="hover" placement="right" class="d-block">
+              <div class="d-flex flex-column">
+                <div class="d-flex flex-row align-items-start justify-content-start">
+                  <div class="m-1 legend--cell"></div>
+                  <p class="mb-0">Empty</p>
+                </div>
+                <div class="d-flex flex-row align-items-start justify-content-start">
+                  <div class="m-1 legend--cell new"></div>
+                  <p class="mb-0">New</p>
+                </div>
+                <div class="d-flex align-items-center justify-content-start">
+                  <div class="m-1 legend--cell pending"></div>
+                  <p class="mb-0">Pending</p>
+                </div>
+                <div class="d-flex align-items-center justify-content-start">
+                  <div class="m-1 legend--cell approved"></div>
+                  <p class="mb-0">Approved</p>
+                </div>
+                <div class="d-flex align-items-center justify-content-start">
+                  <div class="m-1 legend--cell denied"></div>
+                  <p class="mb-0">Denied</p>
+                </div>
+              </div>
+            </b-popover>
+          </div>
         </div>
 
         <b-table
@@ -156,7 +187,15 @@ export default defineComponent({
   }
 }
 
-.container--cell {
+.legend-button {
+  box-shadow: none !important;
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.container--cell, .legend--cell {
   display: block;
   margin: auto;
   height: 16px;
