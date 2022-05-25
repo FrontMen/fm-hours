@@ -45,15 +45,9 @@ nl:
               <b-icon icon="question-circle" />
             </b-button>
             <b-popover target="legend" triggers="hover" placement="right" class="d-block">
-              <div class="d-flex flex-column">
-                <div
-                  v-for="status in statuses"
-                  :key="status"
-                  class="d-flex flex-row align-items-start justify-content-start"
-                >
-                  <div class="m-1 legend--cell" :class="[status]"></div>
-                  <p class="mb-0">{{ $t(`legend.${status}`) }}</p>
-                </div>
+              <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
+                <div class="m-1 legend--cell" :class="[status]"></div>
+                <p class="mb-0">{{ $t(`legend.${status}`) }}</p>
               </div>
             </b-popover>
           </div>
