@@ -140,13 +140,13 @@ export default defineComponent({
 
         if (arrayToCompare.length) {
           return arrayToCompare.some(employee => {
-            if (!selectedTeamValue) return true;
+            const isEmployeeIdEqual = item.id === employee.id;
+
+            if (!selectedTeamValue) return isEmployeeIdEqual;
 
             const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
               ? !item.team
               : employee.team === selectedTeamValue;
-
-            const isEmployeeIdEqual = item.id === employee.id;
 
             return isEmployeeIdEqual && shouldCompareToExactTeam;
           });
