@@ -20,23 +20,27 @@ nl:
       v-if="timesheet.info"
       :comments="timesheet.info.messages"
       :readonly="isReadonly"
+      :show-weekends="showWeekends"
       @add="addMessage"
+      @toggle-weekends="toggleWeekends"
     ></weekly-timesheet-messages>
 
-    <weekly-timesheet-container :selected-week="timesheet.week">
+    <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
       <template #rows>
         <weekly-timesheet-row-hours
           v-for="(timesheetProject) in projectsOrdered"
           :key="timesheetProject.project.customer.id"
           :timesheet-project="timesheetProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           :is-admin="isAdmin"
           @change="hasUnsavedChanges = true"
         />
 
         <weekly-timesheet-row-leave
+          :show-weekends="showWeekends"
           :workscheme="timesheet.workScheme"
           :status="timesheet.info.status"
           @refresh="refreshLeave"
@@ -44,7 +48,8 @@ nl:
 
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :work-scheme="timesheet.workScheme"
           @totals="setTotals"
         />
@@ -57,7 +62,8 @@ nl:
           v-if="showStandby"
           :timesheet-project="timesheet.standByProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -66,7 +72,8 @@ nl:
           v-if="showTravel"
           :timesheet-project="timesheet.travelProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -94,7 +101,15 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  useContext,
+  useRouter,
+  useStore,
+} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -135,6 +150,8 @@ export default defineComponent({
     const {i18n, app, localePath} = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
+
+    const showWeekends = ref<boolean>(JSON.parse(localStorage.getItem('showWeekends')!) || false);
 
     const isLoading = ref<boolean>(true);
 
@@ -208,6 +225,22 @@ export default defineComponent({
         return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
       })
     );
+
+    const selectedWeek = computed(() => {
+      return timesheet.value.week;
+    });
+
+    const selectedWeekWithoutWeekends = computed(() => {
+      return timesheet.value.week.filter(({ isWeekend }) => !isWeekend);
+    });
+
+    const relevantWeeksView = computed(() => {
+      if (showWeekends.value === true) {
+        return selectedWeek.value;
+      }
+
+      return selectedWeekWithoutWeekends.value;
+    });
 
     // TODO: figure out how to get Monday (1) instead of Wednesday (3) without screwing up the timezone
     // const startDate = computed(() => getDateOfISOWeek(parseInt(year.value, 10), parseInt(week.value, 10), 3));
@@ -393,6 +426,12 @@ export default defineComponent({
       await saveTimesheet();
     }
 
+    const toggleWeekends = (isShown: boolean) => {
+      showWeekends.value = isShown;
+
+      localStorage.setItem('showWeekends', String(isShown));
+    };
+
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals.value = calculatedTotals;
     };
@@ -537,6 +576,9 @@ export default defineComponent({
       startDate,
       timesheet,
       projectsOrdered,
+      selectedWeek,
+      selectedWeekWithoutWeekends,
+      relevantWeeksView,
       showBridgeError,
       timesheetStatus,
       isReadonly,
@@ -545,6 +587,7 @@ export default defineComponent({
       hasUnsavedChanges,
       isSaving,
       lastSaved,
+      showWeekends,
       setTotals,
       handleSave,
       handleSubmit,
@@ -556,6 +599,7 @@ export default defineComponent({
       handleBridgeAdd,
       handleBridgeRemove,
       addMessage,
+      toggleWeekends,
       refreshLeave
     };
   }
