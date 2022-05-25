@@ -4,11 +4,23 @@ en:
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Hide done"
   emptyTable: "No employees to show"
+  statuses: 
+    empty: Empty
+    new: New
+    pending: Pending
+    approved: Approved
+    denied: Denied
 nl:
   emailReminder: "Verstuur een e-mail herinnering naar iedereen met missende timesheets deze maand"
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
+  statuses: 
+    empty: Leeg
+    new: Nieuwe
+    pending: In afwachting
+    approved: Akkoordeer
+    denied: Niet toegestaan
 </i18n>
 
 <template>
@@ -24,9 +36,21 @@ nl:
             <b-icon icon="envelope" />
           </b-button>
 
-          <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
-            {{ $t('hideDone') }}
-          </b-form-checkbox>
+          <div class="d-flex align-items-center mt-2">
+            <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
+              {{ $t('hideDone') }}
+            </b-form-checkbox>
+
+            <b-button id="statuses" variant="link" class="statuses-button">
+              <b-icon icon="question-circle" />
+            </b-button>
+            <b-popover target="statuses" triggers="hover" placement="right" class="d-block">
+              <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
+                <div class="m-1 statuses--cell" :class="[status]" />
+                <p class="mb-0">{{ $t(`statuses.${status}`) }}</p>
+              </div>
+            </b-popover>
+          </div>
         </div>
 
         <b-table
@@ -62,7 +86,7 @@ nl:
           <template #cell()="scope">
             <nuxt-link
               :class="['container--cell', scope.item[scope.field.key]]"
-              :title="$t(scope.item[scope.field.key])"
+              :title="$t(`legend.${scope.item[scope.field.key]}`)"
               :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
             />
           </template>
@@ -103,6 +127,8 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('employees/getTeamList');
     });
+
+    const statuses = ref<string[]>(['empty', 'new', 'pending', 'approved', 'denied']);
 
     const startDate = ref<Date>(startOfMonth(new Date()));
     const firstMonday = computed(() =>
@@ -231,6 +257,7 @@ export default defineComponent({
       hideDone,
       tableDataFiltered,
       startDate,
+      statuses,
       sendReminders,
       selectedTeam,
       teamList,
@@ -248,7 +275,15 @@ export default defineComponent({
   }
 }
 
-.container--cell {
+.statuses-button {
+  box-shadow: none !important;
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.container--cell, .statuses--cell {
   display: block;
   margin: auto;
   height: 16px;
