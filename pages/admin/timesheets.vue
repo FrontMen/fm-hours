@@ -4,7 +4,7 @@ en:
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Hide done"
   emptyTable: "No employees to show"
-  legend: 
+  statuses: 
     empty: Empty
     new: New
     pending: Pending
@@ -15,7 +15,7 @@ nl:
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
-  legend: 
+  statuses: 
     empty: Leeg
     new: Nieuwe
     pending: In afwachting
@@ -41,13 +41,13 @@ nl:
               {{ $t('hideDone') }}
             </b-form-checkbox>
 
-            <b-button id="legend" variant="link" class="legend-button">
+            <b-button id="statuses" variant="link" class="statuses-button">
               <b-icon icon="question-circle" />
             </b-button>
-            <b-popover target="legend" triggers="hover" placement="right" class="d-block">
+            <b-popover target="statuses" triggers="hover" placement="right" class="d-block">
               <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
-                <div class="m-1 legend--cell" :class="[status]"></div>
-                <p class="mb-0">{{ $t(`legend.${status}`) }}</p>
+                <div class="m-1 statuses--cell" :class="[status]" />
+                <p class="mb-0">{{ $t(`statuses.${status}`) }}</p>
               </div>
             </b-popover>
           </div>
@@ -275,7 +275,7 @@ export default defineComponent({
   }
 }
 
-.legend-button {
+.statuses-button {
   box-shadow: none !important;
   &:focus {
     outline: none;
@@ -283,7 +283,7 @@ export default defineComponent({
   }
 }
 
-.container--cell, .legend--cell {
+.container--cell, .statuses--cell {
   display: block;
   margin: auto;
   height: 16px;
