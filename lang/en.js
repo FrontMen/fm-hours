@@ -8,6 +8,7 @@ export default {
   customerName: 'Customer name',
   debtorName: 'Debtor name',
   selectTeam: 'Select team',
+  noTeam: 'No team',
   employees: 'Employees',
   errorEndDate: 'Please select an end date',
   errorStartDate: 'Please select start date',

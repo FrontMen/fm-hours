@@ -2,9 +2,11 @@
   en:
     AddComment: "Add comment"
     Comments: "Comments"
+    ShowWeekends: "Show weekends"
   nl:
     AddComment: "Notitie toevoegen"
     Comments: "Comments"
+    ShowWeekends: "Toon weekends"
 </i18n>
 
 <template>
@@ -19,8 +21,11 @@
             style="width: 280px;"
           >
             <p>{{ comment.text }}</p>
-            <p class="dateFormat" style="text-align: end;">
+            <p class="dateFormat" style="text-align: end; margin: 0;">
               {{ comment.createdAt }}
+            </p>
+            <p style="text-align: end; font-size: 14px; margin: 0;">
+              {{ comment.employeeName }}
             </p>
             <b-dropdown-divider></b-dropdown-divider>
           </b-dropdown-text>
@@ -40,6 +45,14 @@
           </b-button>
         </b-dropdown-form>
       </b-dropdown>
+      <b-form-checkbox
+        :checked="showWeekends"
+        switch
+        class="ml-3 d-flex align-items-center"
+        @change="$emit('toggle-weekends', !showWeekends)"
+      >
+        {{ $t('ShowWeekends') }}
+      </b-form-checkbox>
     </b-row>
   </div>
 </template>
@@ -49,6 +62,7 @@ import {
   computed,
   defineComponent, PropType,
   ref, watch,
+  useStore,
 } from '@nuxtjs/composition-api';
 import {format} from "date-fns";
 
@@ -61,12 +75,19 @@ export default defineComponent({
     readonly: {
       type: Boolean,
       default: false
+    },
+    showWeekends: {
+      type: Boolean,
+      default: true,
     }
   },
-  emits: ['add'],
+  emits: ['add', 'toggle-weekends'],
 
   setup(props, {emit}) {
     const messageInput = ref('');
+    // get creatorName from store
+    const store = useStore<RootStoreState>();
+    const employeeName = computed(() => store.state.employee.employee?.name);
 
     const formatedComments = computed(() => props.comments
         .map((comment) => ({
@@ -84,13 +105,13 @@ export default defineComponent({
     );
 
     const onAddCommentClick = () => {
-      emit('add', messageInput.value);
+      emit('add', {text: messageInput.value, employeeName: employeeName.value});
     };
 
     return {
       onAddCommentClick,
       formatedComments,
-      messageInput
+      messageInput,
     }
   },
 })

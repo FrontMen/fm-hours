@@ -37,7 +37,7 @@ nl:
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
-    <b-col cols="3" class="weekly-timesheet-row__total-column">
+    <b-col :cols="showWeekends ? 3 : 1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>
@@ -61,6 +61,10 @@ export default defineComponent({
       type: String as PropType<TimesheetStatus>,
       required: true,
     },
+    showWeekends: {
+      type: Boolean,
+      default: true,
+    }
   },
   emits: ['refresh'],
   setup(props: { workscheme: WorkScheme[], status: TimesheetStatus }) {

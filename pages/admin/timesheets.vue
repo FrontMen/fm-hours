@@ -16,6 +16,8 @@ nl:
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <div class="actions-toolbar flex mb-3">
+          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
+
           <MonthPicker v-model="startDate" />
 
           <b-button v-b-tooltip.hover :title="$t('emailReminder')" @click="sendReminders">
@@ -74,44 +76,128 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from "@nuxtjs/composition-api";
-import {endOfMonth, getDay, setDay, startOfMonth} from "date-fns";
-import {TimesheetStatus} from "~/types/enums";
-import {createReminderEmail} from "~/helpers/email";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  useContext,
+  useMeta,
+  useStore,
+  watch,
+} from '@nuxtjs/composition-api';
+import {endOfMonth, getDay, setDay, startOfMonth} from 'date-fns';
+import {TimesheetStatus} from '~/types/enums';
+import {createReminderEmail} from '~/helpers/email';
 
 export default defineComponent({
   setup() {
     const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
+    const NO_TEAM = i18n.t('noTeam');
 
     useMeta(() => ({
       title: i18n.t('timesheets') as string,
     }));
 
+    onMounted(() => {
+      store.dispatch('employees/getTeamList');
+    });
+
     const startDate = ref<Date>(startOfMonth(new Date()));
-    const firstMonday = computed(() => setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)}));
+    const firstMonday = computed(() =>
+      setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)})
+    );
     const endDate = computed(() => endOfMonth(startDate.value as Date));
 
     const hideDone = ref<boolean>(false);
     const tableData = computed(() => ({
       fields: store.state.timesheets.timesheetTableData.fields,
-      items: store.state.timesheets.timesheetTableData.items?.filter(item => (item.billable || item.billable === undefined))
+      items: store.state.timesheets.timesheetTableData.items?.filter(
+        item => item.billable || item.billable === undefined
+      ),
     }));
     const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
     const employeesWithMissingTimesheets = computed(() => {
-      return tableData.value?.items?.filter((employee) => weekDateProperties.value.some((d) => employee[d] !== TimesheetStatus.APPROVED));
+      return tableData.value?.items?.filter(employee =>
+        weekDateProperties.value.some(d => employee[d] !== TimesheetStatus.APPROVED)
+      );
     });
 
+    const selectedTeam = ref<string>('');
+
+    const filterItemsBySearch = (
+      arrayToFilter: TimesheetTableItem[],
+      arrayToCompare: TimesheetTableItem[],
+      selectedTeamValue: string
+    ) => {
+      const isSelectedTeamEqualNoTeam = selectedTeamValue === NO_TEAM;
+      return arrayToFilter.filter(item => {
+        if (!selectedTeamValue && !arrayToCompare.length) {
+          return true;
+        }
+
+        if (arrayToCompare.length) {
+          return arrayToCompare.some(employee => {
+            const isEmployeeIdEqual = item.id === employee.id;
+
+            if (!selectedTeamValue) return isEmployeeIdEqual;
+
+            const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
+              ? !item.team
+              : employee.team === selectedTeamValue;
+
+            return isEmployeeIdEqual && shouldCompareToExactTeam;
+          });
+        }
+
+        if (item.team && selectedTeamValue) {
+          return item.team === selectedTeamValue;
+        }
+
+        if (isSelectedTeamEqualNoTeam) {
+          return !item.team;
+        }
+
+        return false;
+      });
+    };
+
     const tableDataFiltered = computed(() => {
-      if (!hideDone.value) return tableData.value;
+      const {items, fields} = tableData.value;
+      let filteredItems = null;
+
+      if (!items || !fields) {
+        return tableData.value;
+      }
+
+      if (hideDone.value) {
+        filteredItems = filterItemsBySearch(
+          items,
+          employeesWithMissingTimesheets.value,
+          selectedTeam.value
+        );
+      } else {
+        filteredItems = filterItemsBySearch(items, [], selectedTeam.value);
+      }
 
       return {
-        fields: tableData.value.fields,
-        items: tableData.value.items.filter((item) => {
-          return employeesWithMissingTimesheets.value.some((employee) => employee.id === item.id);
-        })
-      }
+        fields,
+        items: filteredItems || items,
+      };
+    });
+
+    const teamList = computed(() => {
+      if (!tableData.value.items) return null;
+      const parsedTeam = store.getters['employees/teamList'].map((team: string) => {
+        return {value: team, text: team};
+      });
+      return [
+        {value: null, text: i18n.t('selectTeam')},
+        {value: NO_TEAM, text: NO_TEAM},
+        ...parsedTeam,
+      ];
     });
 
     const sendReminders = () => {
@@ -119,29 +205,35 @@ export default defineComponent({
       const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
 
       if (confirmed) {
-        employeesWithMissingTimesheets.value.forEach((employee) => {
+        employeesWithMissingTimesheets.value.forEach(employee => {
           const emailData = createReminderEmail({
             employee,
             startDate: startDate.value.getTime(),
           });
 
           app.$mailService.sendMail(emailData);
-        })
+        });
       }
     };
 
-    watch(startDate, () => {
-      store.dispatch('timesheets/getTableData', {
-        startDate: firstMonday.value,
-        endDate: endDate.value,
-      });
-    }, {immediate: true});
+    watch(
+      startDate,
+      () => {
+        store.dispatch('timesheets/getTableData', {
+          startDate: firstMonday.value,
+          endDate: endDate.value,
+        });
+      },
+      {immediate: true}
+    );
 
     return {
       hideDone,
       tableDataFiltered,
       startDate,
-      sendReminders
+      sendReminders,
+      selectedTeam,
+      teamList,
     };
   },
 
@@ -231,7 +323,8 @@ export default defineComponent({
   background: var(--color-primary-text);
   border-radius: 10px;
 
-  th, td {
+  th,
+  td {
     padding: 0.3rem;
   }
 }
