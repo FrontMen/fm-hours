@@ -46,25 +46,13 @@ nl:
             </b-button>
             <b-popover target="legend" triggers="hover" placement="right" class="d-block">
               <div class="d-flex flex-column">
-                <div class="d-flex flex-row align-items-start justify-content-start">
-                  <div class="m-1 legend--cell"></div>
-                  <p class="mb-0">{{ $t('legend.empty') }}</p>
-                </div>
-                <div class="d-flex flex-row align-items-start justify-content-start">
-                  <div class="m-1 legend--cell new"></div>
-                  <p class="mb-0">{{ $t('legend.new') }}</p>
-                </div>
-                <div class="d-flex align-items-center justify-content-start">
-                  <div class="m-1 legend--cell pending"></div>
-                  <p class="mb-0">{{ $t('legend.pending') }}</p>
-                </div>
-                <div class="d-flex align-items-center justify-content-start">
-                  <div class="m-1 legend--cell approved"></div>
-                  <p class="mb-0">{{ $t('legend.approved') }}</p>
-                </div>
-                <div class="d-flex align-items-center justify-content-start">
-                  <div class="m-1 legend--cell denied"></div>
-                  <p class="mb-0">{{ $t('legend.denied') }}</p>
+                <div
+                  v-for="status in statuses"
+                  :key="status"
+                  class="d-flex flex-row align-items-start justify-content-start"
+                >
+                  <div class="m-1 legend--cell" :class="[status]"></div>
+                  <p class="mb-0">{{ $t(`legend.${status}`) }}</p>
                 </div>
               </div>
             </b-popover>
@@ -145,6 +133,8 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('employees/getTeamList');
     });
+
+    const statuses = ref<string[]>(['empty', 'new', 'pending', 'approved', 'denied']);
 
     const startDate = ref<Date>(startOfMonth(new Date()));
     const firstMonday = computed(() =>
@@ -273,6 +263,7 @@ export default defineComponent({
       hideDone,
       tableDataFiltered,
       startDate,
+      statuses,
       sendReminders,
       selectedTeam,
       teamList,
