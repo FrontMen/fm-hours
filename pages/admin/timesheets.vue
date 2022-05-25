@@ -4,11 +4,23 @@ en:
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Hide done"
   emptyTable: "No employees to show"
+  legend: 
+    empty: Empty
+    new: New
+    pending: Pending
+    approved: Approved
+    denied: Denied
 nl:
   emailReminder: "Verstuur een e-mail herinnering naar iedereen met missende timesheets deze maand"
   confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
+  legend: 
+    empty: Leeg
+    new: Nieuwe
+    pending: In afwachting
+    approved: Akkoordeer
+    denied: Niet toegestaan
 </i18n>
 
 <template>
@@ -27,7 +39,6 @@ nl:
               {{ $t('hideDone') }}
             </b-form-checkbox>
 
-            <!-- TODO: Translation -->
             <b-button id="legend" variant="link" class="legend-button">
               <b-icon icon="question-circle" />
             </b-button>
@@ -35,23 +46,23 @@ nl:
               <div class="d-flex flex-column">
                 <div class="d-flex flex-row align-items-start justify-content-start">
                   <div class="m-1 legend--cell"></div>
-                  <p class="mb-0">Empty</p>
+                  <p class="mb-0">{{ $t('legend.empty') }}</p>
                 </div>
                 <div class="d-flex flex-row align-items-start justify-content-start">
                   <div class="m-1 legend--cell new"></div>
-                  <p class="mb-0">New</p>
+                  <p class="mb-0">{{ $t('legend.new') }}</p>
                 </div>
                 <div class="d-flex align-items-center justify-content-start">
                   <div class="m-1 legend--cell pending"></div>
-                  <p class="mb-0">Pending</p>
+                  <p class="mb-0">{{ $t('legend.pending') }}</p>
                 </div>
                 <div class="d-flex align-items-center justify-content-start">
                   <div class="m-1 legend--cell approved"></div>
-                  <p class="mb-0">Approved</p>
+                  <p class="mb-0">{{ $t('legend.approved') }}</p>
                 </div>
                 <div class="d-flex align-items-center justify-content-start">
                   <div class="m-1 legend--cell denied"></div>
-                  <p class="mb-0">Denied</p>
+                  <p class="mb-0">{{ $t('legend.denied') }}</p>
                 </div>
               </div>
             </b-popover>
@@ -91,7 +102,7 @@ nl:
           <template #cell()="scope">
             <nuxt-link
               :class="['container--cell', scope.item[scope.field.key]]"
-              :title="$t(scope.item[scope.field.key])"
+              :title="$t(`legend.${scope.item[scope.field.key]}`)"
               :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
             />
           </template>
