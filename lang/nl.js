@@ -8,6 +8,7 @@ export default {
   customerName: 'klant',
   debtorName: 'debiteur',
   selectTeam: 'selecteer team',
+  noTeam: 'geen team',
   employees: 'medewerkers',
   errorEndDate: 'Selecteer een einddatum',
   errorStartDate: 'Selecteer de gewenste startdatum',
