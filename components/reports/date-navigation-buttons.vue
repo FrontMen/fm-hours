@@ -1,12 +1,13 @@
 <i18n lang="yaml">
   en:
-    previousHint: "Or use keyboard left to go to previous month"
-    nextHint: "Or use keyboard right to go to next month"
-    currentHint: "To current month"
+    previousHint: "Or use keyboard left to go to previous {DATE_MSG}"
+    nextHint: "Or use keyboard right to go to next {DATE_MSG}"
+    currentHint: "To current {DATE_MSG}"
+    
   nl:
-    previousHint: "Or use keyboard left to go to previous week"
-    nextHint: "Or use keyboard right to go to next week"
-    currentHint: "Huidige maand"
+    previousHint: "Or use keyboard left to go to previous {DATE_MSG}"
+    nextHint: "Or use keyboard right to go to next {DATE_MSG}"
+    currentHint: "Huidige {DATE_MSG}"
 </i18n>
 
 <template>
@@ -15,7 +16,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        :title="$t('previousHint')"
+        :title="$t('previousHint', {DATE_MSG})"
         @click="handlePreviousClick()"
       >
         <b-icon icon="arrow-left" />
@@ -24,7 +25,7 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        :title="$t('currentHint')"
+        :title="$t('currentHint', {DATE_MSG})"
         @click="handleCurrentClick"
       >
         <b-icon icon="calendar2-date" />
@@ -33,22 +34,22 @@
       <b-button
         v-b-tooltip.hover
         class="navigation-buttons__button"
-        :title="$t('nextHint')"
+        :title="$t('nextHint', {DATE_MSG})"
         @click="handleNextClick()"
       >
         <b-icon icon="arrow-right" />
       </b-button>
 
       <h2 class="navigation-buttons__week-label--reports text-capitalize">
-        {{$d(selectedDate, 'monthYear')}}
+        {{isYearly ? selectedDate.getFullYear() : $d(selectedDate, 'monthYear')}}
       </h2>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount} from "@nuxtjs/composition-api";
-import {differenceInCalendarMonths} from "date-fns";
+import {computed, defineComponent, onBeforeMount, useContext} from '@nuxtjs/composition-api';
+import {differenceInCalendarMonths} from 'date-fns';
 import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
@@ -57,14 +58,23 @@ export default defineComponent({
       type: Date,
       required: true,
     },
+    isYearly: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ["previous", "next", "current"],
+  emits: ['previous', 'next', 'current'],
   setup(props, {emit}) {
-    const handlePreviousClick = () => emit("previous");
-    const handleNextClick = () => emit("next");
+    const {i18n} = useContext();
+    const DATE_MSG = computed(() => {
+      const MSG = props.isYearly ? i18n.t("year") : i18n.t("month");
+      return `${MSG}`.toLowerCase();
+    });
+    const handlePreviousClick = () => emit('previous');
+    const handleNextClick = () => emit('next');
     const handleCurrentClick = () => {
-      if (monthDifference.value !== 0) emit("current");
-    }
+      if (monthDifference.value !== 0) emit('current');
+    };
     const monthDifference = computed(() => {
       const today = new Date();
       return differenceInCalendarMonths(props.selectedDate, today);
@@ -80,6 +90,7 @@ export default defineComponent({
       handleNextClick,
       handleCurrentClick,
       monthDifference,
+      DATE_MSG
     };
   },
   beforeDestroy() {
