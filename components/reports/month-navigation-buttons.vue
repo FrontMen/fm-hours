@@ -47,8 +47,8 @@
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onBeforeMount} from "@nuxtjs/composition-api";
-import {differenceInCalendarMonths} from "date-fns";
+import {computed, defineComponent, onBeforeMount, ref} from "@nuxtjs/composition-api";
+import {differenceInCalendarMonths, getYear} from "date-fns";
 import hotkeys from 'hotkeys-js';
 
 export default defineComponent({
@@ -57,9 +57,15 @@ export default defineComponent({
       type: Date,
       required: true,
     },
+    selectYear: {
+      type: Boolean,
+      default: false,
+    }
   },
   emits: ["previous", "next", "current"],
   setup(props, {emit}) {
+    const year = ref(getYear(props.selectedDate));
+
     const handlePreviousClick = () => emit("previous");
     const handleNextClick = () => emit("next");
     const handleCurrentClick = () => {
@@ -76,6 +82,7 @@ export default defineComponent({
     });
 
     return {
+      year,
       handlePreviousClick,
       handleNextClick,
       handleCurrentClick,

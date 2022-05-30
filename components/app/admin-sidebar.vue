@@ -6,6 +6,7 @@
     holidays: "Holidays"
     timesheets: "Timesheets"
     reports: "Reports"
+    insights: "Insights"
   nl:
     home: "Overzicht"
     customers: "Klanten"
@@ -13,6 +14,7 @@
     holidays: "Feestdagen"
     timesheets: "Timesheets"
     reports: "Rapportages"
+    insights: "Inzichten"
 </i18n>
 
 <template>
@@ -55,6 +57,11 @@ export default defineComponent({
       {
         href: "/admin/reports",
         name: "reports",
+        icon: "file-bar-graph",
+      },
+      {
+        href: "/admin/insights",
+        name: "insights",
         icon: "file-bar-graph",
       },
     ];
