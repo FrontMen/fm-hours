@@ -229,14 +229,10 @@ export default defineComponent({
 
     const sendReminders = () => {
       const names = employeesWithMissingTimesheets.value.map(e => e.name).sort();
-      const mock = employeesWithMissingTimesheets.value.filter(({ name }) => name === 'Vlad Kostiuk');
-      console.log(mock);
-      // const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
-      const confirmed = confirm(`Sending reminder to:`);
-
+      const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
 
       if (confirmed) {
-        mock.forEach(async (employee) => {
+        employeesWithMissingTimesheets.value.forEach(async () => {
           // const emailData = createReminderEmail({
           //   employee,
           //   startDate: startDate.value.getTime(),
