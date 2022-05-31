@@ -41,7 +41,7 @@
       </b-button>
 
       <h2 class="navigation-buttons__week-label--reports text-capitalize">
-        {{isYearly ? selectedDate.getFullYear() : $d(selectedDate, 'monthYear')}}
+        {{YEAR_OR_MONTH_MSG}}
       </h2>
     </div>
   </div>
@@ -66,9 +66,13 @@ export default defineComponent({
   emits: ['previous', 'next', 'current'],
   setup(props, {emit}) {
     const {i18n} = useContext();
+    const {selectedDate, isYearly} = props;
     const DATE_MSG = computed(() => {
-      const MSG = props.isYearly ? i18n.t("year") : i18n.t("month");
+      const MSG = isYearly ? i18n.t('year') : i18n.t('month');
       return `${MSG}`.toLowerCase();
+    });
+    const YEAR_OR_MONTH_MSG = computed(() => {
+      return isYearly ? selectedDate.getFullYear() : i18n.d(selectedDate, 'monthYear');
     });
     const handlePreviousClick = () => emit('previous');
     const handleNextClick = () => emit('next');
@@ -90,7 +94,8 @@ export default defineComponent({
       handleNextClick,
       handleCurrentClick,
       monthDifference,
-      DATE_MSG
+      DATE_MSG,
+      YEAR_OR_MONTH_MSG,
     };
   },
   beforeDestroy() {
