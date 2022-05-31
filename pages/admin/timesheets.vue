@@ -110,6 +110,7 @@ import {
   useStore,
   watch,
 } from '@nuxtjs/composition-api';
+import axios from "axios";
 import {endOfMonth, getDay, setDay, startOfMonth} from 'date-fns';
 import {TimesheetStatus} from '~/types/enums';
 import {createReminderEmail} from '~/helpers/email';
@@ -228,18 +229,27 @@ export default defineComponent({
 
     const sendReminders = () => {
       const names = employeesWithMissingTimesheets.value.map(e => e.name).sort();
-      const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
+      const mock = employeesWithMissingTimesheets.value.filter(({ name }) => name === 'Vlad Kostiuk');
+      console.log(mock);
+      // const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
+      const confirmed = confirm(`Sending reminder to:`);
+
 
       if (confirmed) {
-        employeesWithMissingTimesheets.value.forEach(employee => {
-          const emailData = createReminderEmail({
-            employee,
-            startDate: startDate.value.getTime(),
-          });
+        mock.forEach(async (employee) => {
+          // const emailData = createReminderEmail({
+          //   employee,
+          //   startDate: startDate.value.getTime(),
+          // });
 
-          app.$mailService.sendMail(emailData);
-        });
-      }
+          //  app.$mailService.sendMail(emailData);
+
+          const path = `/api/mail/send/`;
+          const {data} = await axios.get(path);
+
+          console.log(data);
+         });
+       }
     };
 
     watch(
