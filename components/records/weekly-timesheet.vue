@@ -231,7 +231,7 @@ export default defineComponent({
     });
 
     const selectedWeekWithoutWeekends = computed(() => {
-      return timesheet.value.week.filter(({ isWeekend }) => !isWeekend);
+      return timesheet.value.week.filter(({isWeekend}) => !isWeekend);
     });
 
     const relevantWeeksView = computed(() => {
@@ -411,7 +411,7 @@ export default defineComponent({
       await saveTimesheet();
     }
 
-    const addMessage = async ({text, employeeName}: { text: string, employeeName: string}) => {
+    const addMessage = async ({text, employeeName}: { text: string, employeeName: string }) => {
       if (timesheet.value.info === null) return;
 
       const newMessage = {
@@ -534,6 +534,10 @@ export default defineComponent({
     const handleBridgeAdd = async () => {
       if (!employee) return;
       if (!employee.bridgeUid) return;
+
+      // Remove existing bridge items
+      // These shouldn't exist but you never know...
+      await handleBridgeRemove();
 
       const employeeId = employee.id;
       isSaving.value = true;
