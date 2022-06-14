@@ -93,7 +93,6 @@ nl:
       @approve="handleApprove"
       @deny="handleDeny"
       @unapprove="handleUnapprove"
-      @reminder="handleReminder"
       @bridgeAdd="handleBridgeAdd"
       @bridgeRemove="handleBridgeRemove"
     />
@@ -121,7 +120,6 @@ import {
 } from "~/helpers/timesheet";
 import {Collections} from "~/types/enums";
 import {uuidv4} from "~/helpers/helpers";
-import {createDenialEmal, createReminderEmail} from "~/helpers/email";
 
 export default defineComponent({
   props: {
@@ -494,26 +492,12 @@ export default defineComponent({
     };
 
     const handleDeny = async () => {
-      await app.$mailService.sendMail(createDenialEmal({
-        employee,
-        week: timesheet.value.week
-      }));
-
       await changeStatus(recordStatus.DENIED as TimesheetStatus);
     };
 
     const handleUnapprove = () => {
       changeStatus(recordStatus.NEW as TimesheetStatus);
       handleBridgeRemove();
-    };
-
-    const handleReminder = async () => {
-      const startDate = new Date(timesheet.value?.week[0].date).getTime();
-
-      await app.$mailService.sendMail(createReminderEmail({
-        employee,
-        startDate,
-      }));
     };
 
     const removeWithoutContract = (timeRecordsToSave: { records: TimeRecord[]; contracts: number[] }) => {
@@ -599,7 +583,6 @@ export default defineComponent({
       handleApprove,
       handleDeny,
       handleUnapprove,
-      handleReminder,
       handleBridgeAdd,
       handleBridgeRemove,
       addMessage,

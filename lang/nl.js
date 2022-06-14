@@ -48,7 +48,6 @@ export default {
   approved: 'akkoordeer',
   debtor: 'debiteur',
   delete: 'verwijderen',
-  sendReminder: 'verstuur herinnering',
   denied: 'niet toegestaan',
   totalHours: 'Totaal uren',
   productivity: 'Productiviteit',

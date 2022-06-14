@@ -1,6 +1,3 @@
-# ignore the firebase functions
-functions
-
 # ignore node modules
 node_modules
 
