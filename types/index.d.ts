@@ -5,7 +5,6 @@ import TravelRecordsService from '~/services/travel-records-service';
 import EmployeesService from '~/services/employees-service';
 import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
-import MailService from '~/services/mail-service';
 import BridgeService from '~/services/bridge-service';
 
 declare module '@nuxt/types' {
@@ -17,7 +16,6 @@ declare module '@nuxt/types' {
     $employeesService: EmployeesService;
     $workSchemeService: WorkSchemeService;
     $timesheetsService: TimesheetsService;
-    $mailService: MailService;
     $bridgeService: BridgeService;
   }
 
