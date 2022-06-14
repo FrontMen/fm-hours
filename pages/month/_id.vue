@@ -237,15 +237,15 @@ export default defineComponent({
       store.dispatch('employees/getAdminList');
     });
 
-    const selectedCustomers = ref<{value: string; label: string}[]>([]);
+    const selectedCustomers = ref<{ value: string; label: string }[]>([]);
     const onlyBillable = ref<boolean>(false);
     const monthStartDate = ref<Date>(startOfMonth(new Date()));
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
     const employee = computed(() => {
       const id = router.currentRoute.params.id;
-      const employee = store.getters['employees/getEmployeeById'](id);
-      const adminlist =  store.getters["employees/adminList"];
+      const employee = store.state.employees.employees.find(e => e.id === id);
+      const adminlist = store.getters["employees/adminList"];
       const isAuthenticatedUserAdmin = adminlist.includes(store.getters["auth/user"].email);
       if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
