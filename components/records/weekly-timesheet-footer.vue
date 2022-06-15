@@ -47,16 +47,6 @@ nl:
 
     <div class="weekly-timesheet-footer__actions">
       <div v-if="isAdmin">
-        <b-button
-          v-if="!isApproved && !isPending"
-          class="mr-3"
-          variant="warning"
-          :disabled="isSaving"
-          @click="handleReminderClick"
-        >
-          {{ $t('sendReminder') }}
-        </b-button>
-
         <b-button-group v-if="isPending" class="mr-3">
           <b-button variant="danger" :disabled="isSaving" @click="handleDenyClick">
             {{ $t('deny') }}
@@ -158,7 +148,7 @@ export default defineComponent({
       default: false
     },
   },
-  emits: ["submit", "save", "unsubmit", "reminder"],
+  emits: ["submit", "save", "unsubmit", 'approve', 'deny', 'unapprove', 'bridgeAdd', 'bridgeRemove'],
   setup(props, {emit}) {
     const lastSavedLabel = ref("");
     let intervalHandle: NodeJS.Timeout;
@@ -170,7 +160,6 @@ export default defineComponent({
     const handleApproveClick = () => emit('approve');
     const handleDenyClick = () => emit('deny');
     const handleUndoApproveClick = () => emit('unapprove');
-    const handleReminderClick = () => emit('reminder');
 
     const handleAddToBridgeClick = () => emit('bridgeAdd');
     const handleRemoveFromBridgeClick = () => emit('bridgeRemove');
@@ -218,7 +207,6 @@ export default defineComponent({
       handleApproveClick,
       handleDenyClick,
       handleUndoApproveClick,
-      handleReminderClick,
       handleAddToBridgeClick,
       handleRemoveFromBridgeClick,
       canSubmitForApproval,

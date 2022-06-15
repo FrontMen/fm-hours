@@ -52,7 +52,6 @@ export default {
   approved: 'Approved',
   debtor: 'Debtor',
   delete: 'Delete',
-  sendReminder: 'Send reminder',
   denied: 'denied',
   totalHours: 'Total hours',
   productivity: 'Productivity',
