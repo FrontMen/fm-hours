@@ -29,17 +29,17 @@ nl:
       <b-col cols="12" sm="4" md="4" class="hide-print">
         <nuxt-link :to="localePath('/')" class="d-flex align-items-center flex-nowrap">
           <b-button class="mb-3">
-            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
+            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true"/>
             {{ $t('backToWeek') }}
           </b-button>
         </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
-          <b-icon-printer />
+          <b-icon-printer/>
           &nbsp;{{ $t('print') }}
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
-        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt" />
+        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt"/>
         <h4>
           <strong>{{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}</strong>
         </h4>
@@ -183,25 +183,25 @@ nl:
     <b-row class="no-break only-print">
       <b-col cols="6">
         {{ $t('approvedBy') }}
-        <br />
+        <br/>
         {{ $t('date') }}:
-        <br />
-        <br />
-        <br />
+        <br/>
+        <br/>
+        <br/>
         __________________________________________
-        <br />
+        <br/>
       </b-col>
       <b-col cols="6" class="mt-auto">
-        <br />
-        <br />
-        <br />
-        <br />
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         __________________________________________
-        <br />
+        <br/>
         {{ employee.name }}
-        <br />
-        <br />
-        <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
+        <br/>
+        <br/>
+        <img src="@/assets/images/logo.png" alt="logo" width="100pt"/>
       </b-col>
     </b-row>
   </div>
@@ -242,11 +242,14 @@ export default defineComponent({
     const monthStartDate = ref<Date>(startOfMonth(new Date()));
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
+    const user = computed(() => store.state.auth.user);
+    const employees = computed(() => store.state.employees.employees);
+
     const employee = computed(() => {
       const id = router.currentRoute.params.id;
-      const employee = store.state.employees.employees.find(e => e.id === id);
+      const employee = employees.value.find(e => e.id === id);
       const adminlist = store.getters["employees/adminList"];
-      const isAuthenticatedUserAdmin = adminlist.includes(store.getters["auth/user"].email);
+      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
       if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
     });
