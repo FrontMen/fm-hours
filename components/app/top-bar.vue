@@ -2,11 +2,13 @@
 en:
   requestLeave: "Request leave"
   monthly: "Monthly overview"
+  yearly: "Yearly overview"
   feedback: "Feedback"
   logout: "Logout"
 nl:
   requestLeave: "Verlof aanvragen"
   monthly: "Maand overzicht"
+  yearly: "Jaar overzicht"
   feedback: "Feedback"
   logout: "Uitloggen"
 </i18n>
@@ -50,6 +52,11 @@ nl:
               <nuxt-link :to="localePath('month')">
                 <b-button v-b-tooltip.hover :title="$t('goMonthly')">
                   {{ $t("monthly") }}
+                </b-button>
+              </nuxt-link>
+              <nuxt-link :to="localePath('year')" class="ml-1">
+                <b-button v-b-tooltip.hover :title="$t('goYearly')">
+                  {{ $t("yearly") }}
                 </b-button>
               </nuxt-link>
             </b-button-group>

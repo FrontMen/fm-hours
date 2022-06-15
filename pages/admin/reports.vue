@@ -11,7 +11,7 @@ nl:
 
 <template>
   <div class="mt-5 content-wrapper">
-    <month-navigation-buttons
+    <date-navigation-buttons
       class="mb-4"
       :selected-date="monthDate"
       @previous="goToPreviousMonth"
