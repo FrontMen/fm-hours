@@ -29,17 +29,17 @@ nl:
       <b-col cols="12" sm="4" md="4" class="hide-print">
         <nuxt-link :to="localePath('/')" class="d-flex align-items-center flex-nowrap">
           <b-button class="mb-3">
-            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
+            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true"/>
             {{ $t('backToWeek') }}
           </b-button>
         </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
-          <b-icon-printer />
+          <b-icon-printer/>
           &nbsp;{{ $t('print') }}
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
-        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt" />
+        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt"/>
         <h4>
           <strong>{{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}</strong>
         </h4>
@@ -51,6 +51,7 @@ nl:
               <strong>{{ $t('employee') }}:</strong>
               {{ employee.name }}
             </p>
+
             <p>
               <strong v-if="selectedCustomers && selectedCustomers.length !== 1">
                 {{ $t('projects') }}:
@@ -182,67 +183,89 @@ nl:
     <b-row class="no-break only-print">
       <b-col cols="6">
         {{ $t('approvedBy') }}
-        <br />
+        <br/>
         {{ $t('date') }}:
-        <br />
-        <br />
-        <br />
+        <br/>
+        <br/>
+        <br/>
         __________________________________________
-        <br />
+        <br/>
       </b-col>
       <b-col cols="6" class="mt-auto">
-        <br />
-        <br />
-        <br />
-        <br />
+        <br/>
+        <br/>
+        <br/>
+        <br/>
         __________________________________________
-        <br />
+        <br/>
         {{ employee.name }}
-        <br />
-        <br />
-        <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
+        <br/>
+        <br/>
+        <img src="@/assets/images/logo.png" alt="logo" width="100pt"/>
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
+import {
+  computed,
+  defineComponent,
+  ref,
+  useContext,
+  useMeta,
+  useRouter,
+  useStore,
+  watch,
+  onBeforeMount
+} from '@nuxtjs/composition-api';
 import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
-
   setup() {
-
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const router = useRouter();
 
     useMeta(() => ({
       title: i18n.t('monthlyReport') as string,
     }));
+
+    onBeforeMount(() => {
+      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/getAdminList');
+    });
 
     const selectedCustomers = ref<{ value: string; label: string }[]>([]);
     const onlyBillable = ref<boolean>(false);
     const monthStartDate = ref<Date>(startOfMonth(new Date()));
     const monthEndDate = ref<Date>(endOfMonth(new Date()));
 
+    const user = computed(() => store.state.auth.user);
+    const employees = computed(() => store.state.employees.employees);
+
     const employee = computed(() => {
+      const id = router.currentRoute.params.id;
+      const employee = employees.value.find(e => e.id === id);
+      const adminlist = store.getters["employees/adminList"];
+      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
+      if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
     });
 
     const getRecords = () => {
       store.dispatch('records/getMonthlyTimeRecords', {
-        employeeId: store.state.employee.employee!.id,
+        employeeId: employee.value!.id,
         startDate: monthStartDate.value,
-        endDate: monthEndDate.value
+        endDate: monthEndDate.value,
       });
     };
 
     watch(
       [monthStartDate, employee],
       () => {
-        monthEndDate.value = endOfMonth(monthStartDate.value as Date)
+        monthEndDate.value = endOfMonth(monthStartDate.value as Date);
         getRecords();
       },
       {
@@ -277,36 +300,30 @@ export default defineComponent({
       records = handleFilterBillable(records);
       const projects: string[] = [];
 
-      records.forEach((record) => {
-        if (!projects.includes(record.customer.name))
-          projects.push(record.customer.name);
+      records.forEach(record => {
+        if (!projects.includes(record.customer.name)) projects.push(record.customer.name);
       });
 
-      return projects.map((project) => ({value: project, label: project}));
+      return projects.map(project => ({value: project, label: project}));
     });
 
     store.dispatch('reports/getMonthlyReportData', {
       startDate: monthStartDate.value,
     });
 
-    const handleFilterBillable = (
-      records: TimeRecord[],
-      force: boolean = false
-    ): TimeRecord[] => {
+    const handleFilterBillable = (records: TimeRecord[], force: boolean = false): TimeRecord[] => {
       const filtered = [...records];
       return onlyBillable.value || force
-        ? filtered.filter((record) => record && record.customer.isBillable)
+        ? filtered.filter(record => record && record.customer.isBillable)
         : filtered;
     };
 
     const handleSelectedProjects = (records: TimeRecord[]): TimeRecord[] => {
       let filtered = [...records];
       if (selectedCustomers.value.length) {
-        const mappedSelected = selectedCustomers.value.map(
-          (item) => item.value
-        );
+        const mappedSelected = selectedCustomers.value.map(item => item.value);
         filtered = records.filter(
-          (record) => record && mappedSelected.includes(record.customer.name)
+          record => record && mappedSelected.includes(record.customer.name)
         );
       }
       return filtered;
