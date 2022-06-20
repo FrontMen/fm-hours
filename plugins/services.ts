@@ -7,7 +7,6 @@ import TravelRecordsService from '~/services/travel-records-service';
 import EmployeesService from '~/services/employees-service';
 import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
-import Insights from '~/services/insights-service';
 import ContractsService from '~/services/contracts-service';
 import BridgeService from '~/services/bridge-service';
 
@@ -21,5 +20,4 @@ export default defineNuxtPlugin(({$fire, $axios}, inject) => {
   inject('workSchemeService', new WorkSchemeService($axios));
   inject('timesheetsService', new TimesheetsService($fire));
   inject('bridgeService', new BridgeService($axios));
-  inject('insightsService', new Insights($fire, $axios));
 });

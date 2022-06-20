@@ -1,20 +1,18 @@
 <i18n lang="yaml">
-  en:
-    home: "Home"
-    customers: "Customers"
-    employees: "Employees"
-    holidays: "Holidays"
-    timesheets: "Timesheets"
-    reports: "Reports"
-    insights: "Insights"
-  nl:
-    home: "Overzicht"
-    customers: "Klanten"
-    employees: "Medewerkers"
-    holidays: "Feestdagen"
-    timesheets: "Timesheets"
-    reports: "Rapportages"
-    insights: "Inzichten"
+en:
+  home: "Home"
+  customers: "Customers"
+  employees: "Employees"
+  holidays: "Holidays"
+  timesheets: "Timesheets"
+  reports: "Reports"
+nl:
+  home: "Overzicht"
+  customers: "Klanten"
+  employees: "Medewerkers"
+  holidays: "Feestdagen"
+  timesheets: "Timesheets"
+  reports: "Rapportages"
 </i18n>
 
 <template>
@@ -57,11 +55,6 @@ export default defineComponent({
       {
         href: "/admin/reports",
         name: "reports",
-        icon: "file-bar-graph",
-      },
-      {
-        href: "/admin/insights",
-        name: "insights",
         icon: "file-bar-graph",
       },
     ];
