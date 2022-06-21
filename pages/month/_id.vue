@@ -22,7 +22,7 @@ export default defineComponent({
     const monthEndDate = ref<Date>(endOfMonth(date));
 
     useMeta(() => ({
-      title: `${i18n.t('monthlyReport')} - ${i18n.d(monthStartDate.value, 'month')}` as string,
+      title: `${i18n.t('monthlyReport')} - ${i18n.d(monthStartDate.value as Date, 'month')}` as string,
     }));
 
     watch(
