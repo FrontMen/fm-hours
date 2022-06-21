@@ -31,21 +31,3 @@ export function uuidv4() {
     (((Math.random() + ~~s) * 0x10000) >> s).toString(16).padStart(4, '0')
   );
 }
-
-export const getMonthName = (monthNumber: number) => {
-  const monthNames = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ];
-  return monthNames[monthNumber];
-};

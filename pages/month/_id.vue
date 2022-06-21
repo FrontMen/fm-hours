@@ -11,7 +11,6 @@
 <script lang="ts">
 import {defineComponent, ref, useContext, useMeta, watch} from '@nuxtjs/composition-api';
 import {addMonths, endOfMonth, startOfMonth, subMonths} from 'date-fns';
-import {getMonthName} from '~/helpers/helpers';
 
 export default defineComponent({
   setup() {
@@ -23,9 +22,7 @@ export default defineComponent({
     const monthEndDate = ref<Date>(endOfMonth(date));
 
     useMeta(() => ({
-      title: `${i18n.t('monthlyReport')} - ${getMonthName(
-        monthStartDate.value.getMonth()
-      )}` as string,
+      title: `${i18n.t('monthlyReport')} - ${i18n.d(monthStartDate.value, 'month')}` as string,
     }));
 
     watch(
