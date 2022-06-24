@@ -1,14 +1,10 @@
 <i18n lang="yaml">
 en:
   requestLeave: "Request leave"
-  monthly: "Monthly overview"
-  yearly: "Yearly overview"
   feedback: "Feedback"
   logout: "Logout"
 nl:
   requestLeave: "Verlof aanvragen"
-  monthly: "Maand overzicht"
-  yearly: "Jaar overzicht"
   feedback: "Feedback"
   logout: "Uitloggen"
 </i18n>
