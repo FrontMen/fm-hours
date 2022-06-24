@@ -1,32 +1,34 @@
 <i18n lang="yaml">
-  en:
-    AddComment: "Add comment"
-    Comments: "Comments"
-    ShowWeekends: "Show weekends"
-  nl:
-    AddComment: "Notitie toevoegen"
-    Comments: "Comments"
-    ShowWeekends: "Toon weekends"
+en:
+  AddComment: "Add comment"
+  Comments: "Comments"
+  ShowWeekends: "Show weekends"
+nl:
+  AddComment: "Notitie toevoegen"
+  Comments: "Comments"
+  ShowWeekends: "Toon weekends"
 </i18n>
 
 <template>
-  <div class="controls">
+  <div class="controls pb-4">
     <b-row align-h="end" class="m-2">
-      <b-dropdown offset="-160">
-        <template #button-content>{{ $t("Comments") }} ({{formatedComments.length}})</template>
+      <b-dropdown offset="-140" class="messages-dropdown">
+        <template #button-content>{{ $t("Comments") }} ({{ formatedComments.length }})</template>
         <div>
           <b-dropdown-text
             v-for="comment in formatedComments"
             :key="comment.id"
-            style="width: 280px;"
+            class="dropdown-text"
           >
             <p>{{ comment.text }}</p>
-            <p class="dateFormat" style="text-align: end; margin: 0;">
-              {{ comment.createdAt }}
-            </p>
-            <p style="text-align: end; font-size: 14px; margin: 0;">
-              {{ comment.employeeName }}
-            </p>
+            <div class="text-right">
+              <p class="date-format">
+                {{ comment.createdAt }}
+              </p>
+              <p class="name-format">
+                {{ comment.employeeName }}
+              </p>
+            </div>
             <b-dropdown-divider></b-dropdown-divider>
           </b-dropdown-text>
         </div>
@@ -90,10 +92,10 @@ export default defineComponent({
     const employeeName = computed(() => store.state.employee.employee?.name);
 
     const formatedComments = computed(() => props.comments
-        .map((comment) => ({
-          ...comment,
-          createdAt: format(comment.createdAt, "dd/MM/yyyy HH:mm"),
-        }))
+      .map((comment) => ({
+        ...comment,
+        createdAt: format(comment.createdAt, "dd/MM/yyyy HH:mm"),
+      }))
     );
 
     // Clear the input when we get new comments
@@ -118,24 +120,22 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
-.b-dropdown-text {
-  font-weight: 200;
-  text-align: end;
-}
-.dropdown-item {
-  border: 1px solid lightgray;
-  margin: auto;
-  width: 80%;
-  text-align: center;
-  border-radius: 5px;
-  font-size: small;
+.messages-dropdown {
+  .dropdown-text {
+    width: 280px;
+  }
+
+  .b-dropdown-text {
+    font-weight: 200;
+  }
+
+  .dropdown-menu {
+    min-width: 280px;
+  }
 }
 
-.dropdown-menu {
-  min-width: 280px;
-}
-
-.dateFormat {
+.date-format, .name-format {
+  margin: 0;
   font-size: smaller;
 }
 

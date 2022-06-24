@@ -34,7 +34,9 @@ export default {
   project: 'projects',
   filterByCustomer: 'Filteren op gebruikers',
   billable: 'Facturabel',
-  monthlyReport: 'Maandelijkse rapportage',
+  insights: 'Uren inzichten',
+  month: 'Maand',
+  year: 'Jaar',
   reports: 'Rapportages',
   customerDeleteConfirmation: 'Weet je zeker dat je medewerker {name} wil verwijderen?',
   customerArchiveConfirmation:

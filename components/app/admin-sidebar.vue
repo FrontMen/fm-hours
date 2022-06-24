@@ -1,18 +1,18 @@
 <i18n lang="yaml">
-  en:
-    home: "Home"
-    customers: "Customers"
-    employees: "Employees"
-    holidays: "Holidays"
-    timesheets: "Timesheets"
-    reports: "Reports"
-  nl:
-    home: "Overzicht"
-    customers: "Klanten"
-    employees: "Medewerkers"
-    holidays: "Feestdagen"
-    timesheets: "Timesheets"
-    reports: "Rapportages"
+en:
+  home: "Home"
+  customers: "Customers"
+  employees: "Employees"
+  holidays: "Holidays"
+  timesheets: "Timesheets"
+  reports: "Reports"
+nl:
+  home: "Overzicht"
+  customers: "Klanten"
+  employees: "Medewerkers"
+  holidays: "Feestdagen"
+  timesheets: "Timesheets"
+  reports: "Rapportages"
 </i18n>
 
 <template>

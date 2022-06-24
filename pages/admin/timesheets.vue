@@ -24,9 +24,9 @@ nl:
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <div class="actions-toolbar flex mb-3">
-          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3"/>
+          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
 
-          <MonthPicker v-model="startDate"/>
+          <MonthPicker v-model="startDate" />
 
           <div class="d-flex align-items-center mt-2">
             <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
@@ -34,11 +34,11 @@ nl:
             </b-form-checkbox>
 
             <b-button id="statuses" variant="link" class="statuses-button">
-              <b-icon icon="question-circle"/>
+              <b-icon icon="question-circle" />
             </b-button>
             <b-popover target="statuses" triggers="hover" placement="right" class="d-block">
               <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
-                <div class="m-1 statuses--cell" :class="[status]"/>
+                <div class="m-1 statuses--cell" :class="[status]" />
                 <p class="mb-0">{{ $t(`statuses.${status}`) }}</p>
               </div>
             </b-popover>
@@ -85,7 +85,7 @@ nl:
         </b-table>
       </b-col>
       <b-col cols="9">
-        <NuxtChild/>
+        <NuxtChild />
       </b-col>
     </b-row>
   </div>

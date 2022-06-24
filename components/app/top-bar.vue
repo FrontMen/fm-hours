@@ -1,12 +1,10 @@
 <i18n lang="yaml">
 en:
   requestLeave: "Request leave"
-  monthly: "Monthly overview"
   feedback: "Feedback"
   logout: "Logout"
 nl:
   requestLeave: "Verlof aanvragen"
-  monthly: "Maand overzicht"
   feedback: "Feedback"
   logout: "Uitloggen"
 </i18n>
@@ -47,11 +45,14 @@ nl:
                 <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
               </b-button>
 
-              <nuxt-link :to="localePath('month')">
-                <b-button v-b-tooltip.hover :title="$t('goMonthly')">
-                  {{ $t("monthly") }}
-                </b-button>
-              </nuxt-link>
+              <b-dropdown :text="$t('insights')">
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
+                  {{ $t("year") }}
+                </b-dropdown-item>
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/${month}`)">
+                  {{ $t("month") }}
+                </b-dropdown-item>
+              </b-dropdown>
             </b-button-group>
           </b-col>
 
@@ -83,7 +84,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, SetupContext, useContext, useRouter,} from '@nuxtjs/composition-api';
+import {computed, defineComponent, PropType, SetupContext, useContext, useRouter} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   emit: ['logout'],
@@ -101,16 +102,24 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(_: unknown, {emit}: SetupContext) {
+  setup(props, {emit}: SetupContext) {
     const router = useRouter();
     const {localePath} = useContext();
 
     const handleLogoClick = () => router.push(localePath('/'));
     const handleLogoutClick = () => emit('logout');
 
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
+
+    const employeeId = computed(() => props.employee?.id)
+
     return {
       handleLogoClick,
       handleLogoutClick,
+      employeeId,
+      year,
+      month
     };
   },
 });
