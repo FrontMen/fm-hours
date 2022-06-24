@@ -12,7 +12,6 @@ en:
   noEmployeeFound: "No employee found"
   inactive: "Inactive"
   manageEmployee: "Manage employee"
-  manageEmployeeMonthOverview: "Manage month overview"
   addEmployee: "Add an employee"
 nl:
   searchEmployeeByName: "Zoek medewerker op naam"
@@ -27,7 +26,6 @@ nl:
   noEmployeeFound: "Geen medewerker(s) gevonden"
   inactive: "Inactief"
   manageEmployee: "Medewerker bewerken"
-  manageEmployeeMonthOverview: "Medewerker maandoverzicht bewerken"
   addEmployee: "Medewerker toevoegen"
 </i18n>
 
@@ -138,9 +136,14 @@ nl:
             {{ $t('manageEmployee') }}
           </nuxt-link>
 
-          <nuxt-link class="btn btn-info ml-3" :to="localePath(`/month/${employee.id}`)">
-            {{ $t('manageEmployeeMonthOverview') }}
-          </nuxt-link>
+          <b-dropdown :text="$t('insights')" variant="info" class="ml-3">
+            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/`)">
+              {{ $t("year") }}
+            </b-dropdown-item>
+            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/${month}`)">
+              {{ $t("month") }}
+            </b-dropdown-item>
+          </b-dropdown>
         </div>
       </b-row>
     </b-container>
@@ -160,6 +163,9 @@ export default defineComponent({
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
     const showMoreFilters = ref<boolean>(false);
+
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
 
     onMounted(() => {
       store.dispatch('employees/getEmployees');
@@ -248,6 +254,8 @@ export default defineComponent({
       showNotBillable,
       checkEmployeeBillable,
       checkEmployeeAvailability,
+      year,
+      month
     };
   },
   head: {

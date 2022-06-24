@@ -1,7 +1,6 @@
 <i18n lang="yaml">
 en:
   customer: "Customer"
-  backToWeek: "Back to week view"
   print: "Print"
   totalBillableHours: "Total billable hours"
   totalSelectedHours: "Total for selected projects"
@@ -12,7 +11,6 @@ en:
   selectProjects: "Select projects"
 nl:
   customer: "Klant"
-  backToWeek: "Terug naar weekoverzicht"
   print: "Afdrukken"
   totalBillableHours: "Totaal facturabele uren"
   totalSelectedHours: "Totaal voor geselecteerde periode"
@@ -27,12 +25,6 @@ nl:
   <div class="content-wrapper mt-5">
     <b-row>
       <b-col cols="12" sm="4" md="4" class="hide-print">
-        <nuxt-link :to="localePath('/')" class="d-flex align-items-center flex-nowrap">
-          <b-button class="mb-3">
-            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            {{ $t('backToWeek') }}
-          </b-button>
-        </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
           <b-icon-printer />
           &nbsp;{{ $t('print') }}
@@ -70,9 +62,7 @@ nl:
                 "
               >
                 <span v-for="(project, i) in projectOptions" :key="project.value">
-                  {{
-                    project.value
-                  }}
+                  {{ project.value }}
                   <span v-if="i !== projectOptions.length - 1">,&nbsp;</span>
                 </span>
               </span>
@@ -208,7 +198,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useStore, watch, useContext} from '@nuxtjs/composition-api';
+import {computed, defineComponent, ref, useStore, watch, useContext, onBeforeMount} from '@nuxtjs/composition-api';
 import {format} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
@@ -238,6 +228,11 @@ export default defineComponent({
       type: Function,
       required: true,
     },
+    employeeId: {
+      type: String,
+      required: false,
+      default: ''
+    }
   },
   setup(props) {
     const store = useStore<RootStoreState>();
@@ -246,16 +241,28 @@ export default defineComponent({
       const MSG = props.isYearly ? i18n.t("year") : i18n.t("month");
       return `${MSG}`.toLowerCase();
     });
-    const startDate = computed(() => {
-      return props.startDate;
+
+    onBeforeMount(() => {
+      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/getAdminList');
     });
-    const endDate = computed(() => {
-      return props.endDate;
-    });
-    const selectedCustomers = ref<{value: string; label: string}[]>([]);
+
+    const startDate = computed(() => props.startDate);
+    const endDate = computed(() => props.endDate);
+    const selectedCustomers = ref<{ value: string; label: string }[]>([]);
+
     const onlyBillable = ref<boolean>(false);
 
+    const user = computed(() => store.state.auth.user);
+    const employees = computed(() => store.state.employees.employees);
+
     const employee = computed(() => {
+      const id = props.employeeId || store.state.employee?.employee?.id;
+
+      const employee = employees.value.find(e => e.id === id);
+      const adminlist = store.getters["employees/adminList"];
+      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
+      if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
     });
 

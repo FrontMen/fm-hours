@@ -9,7 +9,9 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const employee = useStore<RootStoreState>().state.employee.employee;
-    router.replace(`/month/${employee?.id}`);
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
+    router.replace(`/insights/${employee?.id}/${year}/${month}`);
   }
 });
 </script>
