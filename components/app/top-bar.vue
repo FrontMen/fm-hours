@@ -16,36 +16,28 @@ nl:
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick" />
+              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick"/>
 
-              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
-
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
-                target="_blank"
-                class="text-white ml-3"
-              >
-                {{ $t("feedback") }}
-              </a>
+              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4"/>
             </div>
           </b-col>
 
           <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col>
 
-          <b-col class="text-right" cols="4">
-            <b-button-group class="navigation-buttons__date-group mr-2">
+          <b-col>
+            <div class="d-flex align-items-center justify-content-end">
               <b-button
-                class="mr-1"
+                class="mr-2"
                 variant="info"
                 href="https://bridge.hosted-tools.com/myprofile/absences"
                 target="_blank"
                 rel="noreferrer"
               >
                 {{ $t('requestLeave') }}
-                <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
+                <b-icon icon="box-arrow-up-right" aria-hidden="true"/>
               </b-button>
 
-              <b-dropdown :text="$t('insights')">
+              <b-dropdown :text="$t('insights')" class="mr-2">
                 <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
                   {{ $t("year") }}
                 </b-dropdown-item>
@@ -53,24 +45,20 @@ nl:
                   {{ $t("month") }}
                 </b-dropdown-item>
               </b-dropdown>
-            </b-button-group>
-          </b-col>
 
-          <b-col class="text-right">
-            <LanguageSwitch class="language" />
-          </b-col>
-
-          <b-col>
-            <div class="employee d-flex align-items-center justify-content-end">
-              <div v-if="employee" class="d-none d-md-block employee__name mr-3">
-                {{ employee.name }}
-              </div>
+              <LanguageSwitch class="mr-2"/>
 
               <b-dropdown right class="employee__dropdown">
                 <template v-if="employee" #button-content>
-                  <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
+                  {{ employee.name }}
                 </template>
 
+                <b-dropdown-item
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
+                  target="_blank">
+                  {{ $t("feedback") }}
+                  <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true"/>
+                </b-dropdown-item>
                 <b-dropdown-item @click="handleLogoutClick">
                   {{ $t("logout") }}
                 </b-dropdown-item>
@@ -139,20 +127,6 @@ export default defineComponent({
     width: 50px;
     max-height: 100%;
     cursor: pointer;
-  }
-
-  .employee__dropdown {
-    button {
-      padding: 0;
-      background-color: transparent !important;
-      border: none;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  .employee {
-    color: white;
   }
 
   &__hamburger {
