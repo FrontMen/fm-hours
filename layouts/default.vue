@@ -21,7 +21,7 @@ import {
 } from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  middleware: ['isAuthenticated'],
+  middleware: ['isAuthenticated', 'checkEmployee'],
   setup() {
     const store = useStore<RootStoreState>();
     const router = useRouter();

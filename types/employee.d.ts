@@ -27,4 +27,5 @@ interface Employee {
 interface EmployeeStoreState {
   employee: Employee | null;
   isAdmin: boolean;
+  isFound: boolean;
 }
