@@ -5,6 +5,9 @@ const mutations: MutationTree<EmployeeStoreState> = {
     state.employee = payload.employee;
     state.isAdmin = payload.isAdmin;
   },
+  setNotFound: (state, payload: boolean) => {
+    state.isFound = payload;
+  },
 };
 
 export default mutations;
