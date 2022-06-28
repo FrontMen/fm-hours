@@ -34,12 +34,12 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       }
 
       commit('setEmployee', {employee, isAdmin});
-      commit('setNotFound', true);
+      commit('setIsFound', true);
 
       return employee;
     } catch (error) {
       if (error.message === EMPLOYEE_NOT_FOUND) {
-        commit('setNotFound', false);
+        commit('setIsFound', false);
       } else {
         throw new Error(error);
       }
