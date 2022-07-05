@@ -1,7 +1,6 @@
 import {defineNuxtPlugin} from '@nuxtjs/composition-api';
 
 import CustomersService from '~/services/customers-service';
-import HolidaysService from '~/services/holidays-service';
 import TimeRecordsService from '~/services/time-records-service';
 import TravelRecordsService from '~/services/travel-records-service';
 import EmployeesService from '~/services/employees-service';
@@ -13,7 +12,6 @@ import BridgeService from '~/services/bridge-service';
 export default defineNuxtPlugin(({$fire, $axios}, inject) => {
   inject('contractsService', new ContractsService($axios));
   inject('customersService', new CustomersService($fire));
-  inject('holidaysService', new HolidaysService($fire));
   inject('timeRecordsService', new TimeRecordsService($fire, $axios));
   inject('travelRecordsService', new TravelRecordsService($fire));
   inject('employeesService', new EmployeesService($fire));

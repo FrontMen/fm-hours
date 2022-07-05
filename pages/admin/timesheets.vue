@@ -103,7 +103,6 @@ import {
   watch,
 } from '@nuxtjs/composition-api';
 import {endOfMonth, getDay, setDay, startOfMonth} from 'date-fns';
-import {TimesheetStatus} from '~/types/enums';
 
 export default defineComponent({
   setup() {
