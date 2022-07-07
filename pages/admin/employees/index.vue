@@ -281,7 +281,7 @@ export default defineComponent({
   }
 
   .multiselect__placeholder {
-    padding-top: 0px;
+    padding-top: 0;
   }
 }
 </style>

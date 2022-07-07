@@ -100,6 +100,4 @@ export default {
   axios: {
     proxy: true,
   },
-
-  proxy: ['https://bridge.hosted-tools.com/api/v1', 'https://auth.hosted-tools.com/api/get-token'],
 };

@@ -53,7 +53,7 @@ import {
   watch,
 } from '@nuxtjs/composition-api';
 
-import {checkEmployeeAvailability} from '../../helpers/employee';
+import {checkEmployeeAvailability} from '~/helpers/employee';
 import {
   floatTo24TimeString,
   floatToTotalTimeString,
@@ -123,14 +123,13 @@ export default defineComponent({
     watch(
       () => formattedProjectValues.value,
       () => {
-        const floatIntegers = formattedProjectValues.value.map((val) => {
+        // TODO: fix me
+        // eslint-disable-next-line vue/no-mutating-props
+        props.timesheetProject.values = formattedProjectValues.value.map((val) => {
           if (val === '') return 0;
           return !isTravelAllowance ? timeStringToFloat(val) : +val;
         });
-
-        // TODO: fix me
-        // eslint-disable-next-line vue/no-mutating-props
-        props.timesheetProject.values = floatIntegers;
+        ;
       }
     );
 
