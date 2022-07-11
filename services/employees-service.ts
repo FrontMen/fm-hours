@@ -2,13 +2,14 @@ import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {DocumentSnapshot} from '@firebase/firestore-types';
 import firebase from 'firebase/compat';
 import {Collections} from '~/types/enums';
-import FieldPath = firebase.firestore.FieldPath;
 
 export default class EmployeesService {
   fire: NuxtFireInstance;
+  fireModule: typeof firebase;
 
-  constructor(fire: NuxtFireInstance) {
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
     this.fire = fire;
+    this.fireModule = fireModule;
   }
 
   async getEmployees(): Promise<Employee[]> {
@@ -24,7 +25,7 @@ export default class EmployeesService {
   async getEmployee(employeeId: string): Promise<Employee | null> {
     const ref = this.fire.firestore
       .collection(Collections.EMPLOYEES)
-      .where(FieldPath.documentId(), '==', employeeId);
+      .where(this.fireModule.firestore.FieldPath.documentId(), '==', employeeId);
 
     const snapshot = await ref.get();
 

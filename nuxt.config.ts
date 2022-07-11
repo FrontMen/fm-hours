@@ -92,6 +92,7 @@ export default {
         },
       },
     },
+    injectModule: true,
   },
 
   i18n,

@@ -11,7 +11,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (!rootState.auth.user) return;
 
     try {
-      const employeesService = new EmployeesService(this.$fire);
+      const employeesService = new EmployeesService(this.$fire, this.$fireModule);
       const {user} = rootState.auth;
 
       const employee = await employeesService.getEmployeeByMail(user.email);

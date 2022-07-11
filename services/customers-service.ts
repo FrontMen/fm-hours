@@ -1,13 +1,14 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import firebase from 'firebase/compat';
 import {Collections} from '~/types/enums';
-import FieldPath = firebase.firestore.FieldPath;
 
 export default class CustomersService {
   fire: NuxtFireInstance;
+  fireModule: typeof firebase;
 
-  constructor(fire: NuxtFireInstance) {
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
     this.fire = fire;
+    this.fireModule = fireModule;
   }
 
   async getCustomers() {
@@ -23,7 +24,7 @@ export default class CustomersService {
   async getCustomersByIds(ids: Array<String>) {
     const ref = this.fire.firestore
       .collection(Collections.CUSTOMERS)
-      .where(FieldPath.documentId(), 'in', ids);
+      .where(this.fireModule.firestore.FieldPath.documentId(), 'in', ids);
 
     const snapshot = await ref.get();
 
