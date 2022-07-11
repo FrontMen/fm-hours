@@ -6,15 +6,13 @@ export async function extractUserFromAuthUser(authUser: any): Promise<User> {
      */
     const samlToken = (await authUser.getIdToken()) || null;
 
-    const user: User = {
+    return {
       displayName: authUser.displayName,
       email: authUser.email,
       emailVerified: authUser.emailVerified,
       uid: authUser.uid,
       samlToken,
     };
-
-    return user;
   } catch (error) {
     // eslint-disable-next-line no-console
     console.error('Something went wrong while extracting user info from AuthUser');
