@@ -129,7 +129,7 @@ export default defineComponent({
           if (val === '') return 0;
           return !isTravelAllowance ? timeStringToFloat(val) : +val;
         });
-        ;
+
       }
     );
 
