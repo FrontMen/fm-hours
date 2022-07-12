@@ -112,7 +112,6 @@ import {
   useContext,
   watch
 } from "@nuxtjs/composition-api";
-import {emailRegex} from "~/helpers/email";
 import {formatDate, getDayOnGMT} from "~/helpers/dates";
 
 interface EmployeeSettingsProps {
@@ -141,6 +140,8 @@ export default defineComponent({
     const endDate = ref<string | null>(localEmployee.value.endDate ? formatDate(getDayOnGMT(localEmployee.value.endDate)) : null);
     const emailTouched = ref<boolean | null>(null);
     const nameTouched = ref<boolean | null>(null);
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const isoLocale = computed(() => i18n.localeProperties.iso);
     const emailValidationState = computed(() => !!localEmployee.value.email?.match(emailRegex));

@@ -1,23 +1,21 @@
 <i18n lang="yaml">
 en:
   customer: "Customer"
-  backToWeek: "Back to week view"
   print: "Print"
   totalBillableHours: "Total billable hours"
   totalSelectedHours: "Total for selected projects"
   onlyBillable: "Only billable"
-  noResultsMonth: "No records available for selected month"
+  noResults: "No records available for selected {DATE_MSG}"
   approvedBy: "Approved by"
   date: "Date"
   selectProjects: "Select projects"
 nl:
   customer: "Klant"
-  backToWeek: "Terug naar weekoverzicht"
   print: "Afdrukken"
   totalBillableHours: "Totaal facturabele uren"
   totalSelectedHours: "Totaal voor geselecteerde periode"
   onlyBillable: "Alleen facturabele uren"
-  noResultsMonth: "Geen resultaten gevonden voor de geselecteerde maand"
+  noResults: "Geen resultaten gevonden voor de geselecteerde {DATE_MSG}"
   approvedBy: "Geakkoordeerd door"
   date: "Datum"
   selectProjects: "Selecteer projecten"
@@ -27,26 +25,15 @@ nl:
   <div class="content-wrapper mt-5">
     <b-row>
       <b-col cols="12" sm="4" md="4" class="hide-print">
-        <nuxt-link :to="localePath('/')" class="d-flex align-items-center flex-nowrap">
-          <b-button class="mb-3">
-            <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            {{ $t('backToWeek') }}
-          </b-button>
-        </nuxt-link>
         <b-button class="mb-3" @click="triggerPrint">
           <b-icon-printer />
           &nbsp;{{ $t('print') }}
         </b-button>
       </b-col>
       <b-col cols="5" class="only-print mb-3">
-        <img
-          src="@/assets/images/logo-line.png"
-          alt="frontmen logo"
-          class="mt-0 mb-3 ml-0"
-          width="250pt"
-        />
+        <img src="@/assets/images/logo.png" alt="logo" class="mt-0 mb-3 ml-0" width="100pt" />
         <h4>
-          <strong>{{ formatDate(monthStartDate) }} - {{ formatDate(monthEndDate) }}</strong>
+          <strong>{{ formatDate(startDate) }} - {{ formatDate(endDate) }}</strong>
         </h4>
       </b-col>
       <b-col cols="12" md="7" class="ml-auto">
@@ -75,9 +62,7 @@ nl:
                 "
               >
                 <span v-for="(project, i) in projectOptions" :key="project.value">
-                  {{
-                    project.value
-                  }}
+                  {{ project.value }}
                   <span v-if="i !== projectOptions.length - 1">,&nbsp;</span>
                 </span>
               </span>
@@ -100,11 +85,12 @@ nl:
         </b-row>
       </b-col>
       <b-col cols="12" sm="12" md="5" class="mb-3 mt-auto hide-print">
-        <month-navigation-buttons
-          :selected-date="monthStartDate"
-          @previous="goToPreviousMonth"
-          @next="goToNextMonth"
-          @current="goToCurrentMonth"
+        <date-navigation-buttons
+          :selected-date="startDate"
+          :is-yearly="isYearly"
+          @previous="goToPrevious"
+          @next="goToNext"
+          @current="goToCurrent"
         />
       </b-col>
       <b-col cols="4" md="3" class="mb-3 mt-auto hide-print">
@@ -144,7 +130,7 @@ nl:
       foot-variant="light"
       sort-by="date"
       :sort-desc="true"
-      :items="monthReport"
+      :items="reportItems"
       :fields="['customer', 'debtor', 'date', 'hours']"
       foot-clone
       show-empty
@@ -157,7 +143,7 @@ nl:
       </template>
 
       <template #empty>
-        <p>{{ $t('noResultsMonth') }}</p>
+        <p>{{ $t('noResults', {DATE_MSG}) }}</p>
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
@@ -205,49 +191,92 @@ nl:
         {{ employee.name }}
         <br />
         <br />
-        <img src="@/assets/images/logo-line.png" alt="frontmen logo" width="250pt" />
+        <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
       </b-col>
     </b-row>
   </div>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
-import {addMonths, endOfMonth, format, startOfMonth, subMonths} from 'date-fns';
+import {computed, defineComponent, ref, useStore, watch, useContext, onBeforeMount} from '@nuxtjs/composition-api';
+import {format} from 'date-fns';
 import {getTotalsByProp} from '~/helpers/helpers';
 
 export default defineComponent({
-
-  setup() {
-
-    const {i18n} = useContext();
+  props: {
+    startDate: {
+      type: Date,
+      required: true,
+    },
+    endDate: {
+      type: Date,
+      required: true,
+    },
+    isYearly: {
+      type: Boolean,
+      default: false,
+    },
+    goToPrevious: {
+      type: Function,
+      required: true,
+    },
+    goToNext: {
+      type: Function,
+      required: true,
+    },
+    goToCurrent: {
+      type: Function,
+      required: true,
+    },
+    employeeId: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  },
+  setup(props) {
     const store = useStore<RootStoreState>();
+    const {i18n} = useContext();
+    const DATE_MSG = computed(() => {
+      const MSG = props.isYearly ? i18n.t("year") : i18n.t("month");
+      return `${MSG}`.toLowerCase();
+    });
 
-    useMeta(() => ({
-      title: i18n.t('monthlyReport') as string,
-    }));
+    onBeforeMount(() => {
+      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/getAdminList');
+    });
 
+    const startDate = computed(() => props.startDate);
+    const endDate = computed(() => props.endDate);
     const selectedCustomers = ref<{ value: string; label: string }[]>([]);
+
     const onlyBillable = ref<boolean>(false);
-    const monthStartDate = ref<Date>(startOfMonth(new Date()));
-    const monthEndDate = ref<Date>(endOfMonth(new Date()));
+
+    const user = computed(() => store.state.auth.user);
+    const employees = computed(() => store.state.employees.employees);
 
     const employee = computed(() => {
+      const id = props.employeeId || store.state.employee?.employee?.id;
+
+      const employee = employees.value.find(e => e.id === id);
+      const adminlist = store.getters["employees/adminList"];
+      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
+      if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
     });
 
     const getRecords = () => {
       store.dispatch('records/getMonthlyTimeRecords', {
-        employeeId: store.state.employee.employee!.id,
-        startDate: monthStartDate.value,
-        endDate: monthEndDate.value
+        employeeId: employee.value!.id,
+        startDate: startDate.value,
+        endDate: endDate.value,
       });
     };
 
     watch(
-      [monthStartDate, employee],
+      [startDate, employee],
       () => {
-        monthEndDate.value = endOfMonth(monthStartDate.value as Date)
         getRecords();
       },
       {
@@ -255,7 +284,7 @@ export default defineComponent({
       }
     );
 
-    const monthReport = computed(() => {
+    const reportItems = computed(() => {
       let filteredRecords = store.state.records.timeRecords;
 
       filteredRecords = handleFilterBillable(filteredRecords);
@@ -282,36 +311,30 @@ export default defineComponent({
       records = handleFilterBillable(records);
       const projects: string[] = [];
 
-      records.forEach((record) => {
-        if (!projects.includes(record.customer.name))
-          projects.push(record.customer.name);
+      records.forEach(record => {
+        if (!projects.includes(record.customer.name)) projects.push(record.customer.name);
       });
 
-      return projects.map((project) => ({value: project, label: project}));
+      return projects.map(project => ({value: project, label: project}));
     });
 
     store.dispatch('reports/getMonthlyReportData', {
-      startDate: monthStartDate.value,
+      startDate
     });
 
-    const handleFilterBillable = (
-      records: TimeRecord[],
-      force: boolean = false
-    ): TimeRecord[] => {
+    const handleFilterBillable = (records: TimeRecord[], force: boolean = false): TimeRecord[] => {
       const filtered = [...records];
       return onlyBillable.value || force
-        ? filtered.filter((record) => record && record.customer.isBillable)
+        ? filtered.filter(record => record && record.customer.isBillable)
         : filtered;
     };
 
     const handleSelectedProjects = (records: TimeRecord[]): TimeRecord[] => {
       let filtered = [...records];
       if (selectedCustomers.value.length) {
-        const mappedSelected = selectedCustomers.value.map(
-          (item) => item.value
-        );
+        const mappedSelected = selectedCustomers.value.map(item => item.value);
         filtered = records.filter(
-          (record) => record && mappedSelected.includes(record.customer.name)
+          record => record && mappedSelected.includes(record.customer.name)
         );
       }
       return filtered;
@@ -321,18 +344,6 @@ export default defineComponent({
       return format(dateTime, 'dd-MMMM-yyyy');
     };
 
-    const goToPreviousMonth = () => {
-      monthStartDate.value = subMonths(monthStartDate.value as Date, 1);
-    };
-
-    const goToNextMonth = () => {
-      monthStartDate.value = addMonths(monthStartDate.value as Date, 1);
-    };
-
-    const goToCurrentMonth = () => {
-      monthStartDate.value = startOfMonth(new Date());
-    };
-
     const triggerPrint = () => {
       window.print();
     };
@@ -340,17 +351,13 @@ export default defineComponent({
     return {
       employee,
       formatDate,
-      goToPreviousMonth,
-      goToNextMonth,
-      goToCurrentMonth,
-      monthReport,
-      monthStartDate,
-      monthEndDate,
+      reportItems,
       onlyBillable,
       projectOptions,
       selectedCustomers,
       totalHours,
       triggerPrint,
+      DATE_MSG,
     };
   },
   head: {},

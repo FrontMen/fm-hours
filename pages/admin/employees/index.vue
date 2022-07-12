@@ -135,6 +135,15 @@ nl:
           <nuxt-link class="btn btn-info" :to="localePath(`/admin/employees/${employee.id}`)">
             {{ $t('manageEmployee') }}
           </nuxt-link>
+
+          <b-dropdown :text="$t('insights')" variant="info" class="ml-3">
+            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/`)">
+              {{ $t("year") }}
+            </b-dropdown-item>
+            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/${month}`)">
+              {{ $t("month") }}
+            </b-dropdown-item>
+          </b-dropdown>
         </div>
       </b-row>
     </b-container>
@@ -154,6 +163,9 @@ export default defineComponent({
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
     const showMoreFilters = ref<boolean>(false);
+
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
 
     onMounted(() => {
       store.dispatch('employees/getEmployees');
@@ -242,6 +254,8 @@ export default defineComponent({
       showNotBillable,
       checkEmployeeBillable,
       checkEmployeeAvailability,
+      year,
+      month
     };
   },
   head: {
@@ -267,7 +281,7 @@ export default defineComponent({
   }
 
   .multiselect__placeholder {
-    padding-top: 0px;
+    padding-top: 0;
   }
 }
 </style>

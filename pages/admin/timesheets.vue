@@ -1,14 +1,22 @@
 <i18n lang="yaml">
 en:
-  emailReminder: "Send an email reminder to everyone missing timesheets in this month"
-  confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Hide done"
   emptyTable: "No employees to show"
+  statuses:
+    empty: Empty
+    new: New
+    pending: Pending
+    approved: Approved
+    denied: Denied
 nl:
-  emailReminder: "Verstuur een e-mail herinnering naar iedereen met missende timesheets deze maand"
-  confirmReminder: 'Are you sure you want to remind {people}?'
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
+  statuses:
+    empty: Leeg
+    new: Nieuwe
+    pending: In afwachting
+    approved: Akkoordeer
+    denied: Niet toegestaan
 </i18n>
 
 <template>
@@ -16,15 +24,25 @@ nl:
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <div class="actions-toolbar flex mb-3">
+          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
+
           <MonthPicker v-model="startDate" />
 
-          <b-button v-b-tooltip.hover :title="$t('emailReminder')" @click="sendReminders">
-            <b-icon icon="envelope" />
-          </b-button>
+          <div class="d-flex align-items-center mt-2">
+            <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
+              {{ $t('hideDone') }}
+            </b-form-checkbox>
 
-          <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
-            {{ $t('hideDone') }}
-          </b-form-checkbox>
+            <b-button id="statuses" variant="link" class="statuses-button">
+              <b-icon icon="question-circle" />
+            </b-button>
+            <b-popover target="statuses" triggers="hover" placement="right" class="d-block">
+              <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
+                <div class="m-1 statuses--cell" :class="[status]" />
+                <p class="mb-0">{{ $t(`statuses.${status}`) }}</p>
+              </div>
+            </b-popover>
+          </div>
         </div>
 
         <b-table
@@ -60,7 +78,7 @@ nl:
           <template #cell()="scope">
             <nuxt-link
               :class="['container--cell', scope.item[scope.field.key]]"
-              :title="$t(scope.item[scope.field.key])"
+              :title="$t(`legend.${scope.item[scope.field.key]}`)"
               :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
             />
           </template>
@@ -74,74 +92,148 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from "@nuxtjs/composition-api";
-import {endOfMonth, getDay, setDay, startOfMonth} from "date-fns";
-import {TimesheetStatus} from "~/types/enums";
-import {createReminderEmail} from "~/helpers/email";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  useContext,
+  useMeta,
+  useStore,
+  watch,
+} from '@nuxtjs/composition-api';
+import {endOfMonth, getDay, setDay, startOfMonth} from 'date-fns';
 
 export default defineComponent({
   setup() {
-    const {i18n, app} = useContext();
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const NO_TEAM = i18n.t('noTeam');
 
     useMeta(() => ({
       title: i18n.t('timesheets') as string,
     }));
 
+    onMounted(() => {
+      store.dispatch('employees/getTeamList');
+    });
+
+    const statuses = ref<string[]>(['empty', 'new', 'pending', 'approved', 'denied']);
+
     const startDate = ref<Date>(startOfMonth(new Date()));
-    const firstMonday = computed(() => setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)}));
+    const firstMonday = computed(() =>
+      setDay(startDate.value as Date, 1, {weekStartsOn: getDay(startDate.value as Date)})
+    );
     const endDate = computed(() => endOfMonth(startDate.value as Date));
 
     const hideDone = ref<boolean>(false);
     const tableData = computed(() => ({
       fields: store.state.timesheets.timesheetTableData.fields,
-      items: store.state.timesheets.timesheetTableData.items?.filter(item => (item.billable || item.billable === undefined))
+      items: store.state.timesheets.timesheetTableData.items?.filter(
+        item => item.billable || item.billable === undefined
+      ),
     }));
     const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
     const employeesWithMissingTimesheets = computed(() => {
-      return tableData.value?.items?.filter((employee) => weekDateProperties.value.some((d) => employee[d] !== TimesheetStatus.APPROVED));
+      return tableData.value?.items?.filter(employee =>
+        weekDateProperties.value.some(d => employee[d] !== TimesheetStatus.APPROVED)
+      );
     });
 
-    const tableDataFiltered = computed(() => {
-      if (!hideDone.value) return tableData.value;
+    const selectedTeam = ref<string>('');
 
-      return {
-        fields: tableData.value.fields,
-        items: tableData.value.items.filter((item) => {
-          return employeesWithMissingTimesheets.value.some((employee) => employee.id === item.id);
-        })
-      }
-    });
+    const filterItemsBySearch = (
+      arrayToFilter: TimesheetTableItem[],
+      arrayToCompare: TimesheetTableItem[],
+      selectedTeamValue: string
+    ) => {
+      const isSelectedTeamEqualNoTeam = selectedTeamValue === NO_TEAM;
+      return arrayToFilter.filter(item => {
+        if (!selectedTeamValue && !arrayToCompare.length) {
+          return true;
+        }
 
-    const sendReminders = () => {
-      const names = employeesWithMissingTimesheets.value.map(e => e.name).sort();
-      const confirmed = confirm(`Sending reminder to:\n${names.join(', \n')}`);
+        if (arrayToCompare.length) {
+          return arrayToCompare.some(employee => {
+            const isEmployeeIdEqual = item.id === employee.id;
 
-      if (confirmed) {
-        employeesWithMissingTimesheets.value.forEach((employee) => {
-          const emailData = createReminderEmail({
-            employee,
-            startDate: startDate.value.getTime(),
+            if (!selectedTeamValue) return isEmployeeIdEqual;
+
+            const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
+              ? !item.team
+              : employee.team === selectedTeamValue;
+
+            return isEmployeeIdEqual && shouldCompareToExactTeam;
           });
+        }
 
-          app.$mailService.sendMail(emailData);
-        })
-      }
+        if (item.team && selectedTeamValue) {
+          return item.team === selectedTeamValue;
+        }
+
+        if (isSelectedTeamEqualNoTeam) {
+          return !item.team;
+        }
+
+        return false;
+      });
     };
 
-    watch(startDate, () => {
-      store.dispatch('timesheets/getTableData', {
-        startDate: firstMonday.value,
-        endDate: endDate.value,
+    const tableDataFiltered = computed(() => {
+      const {items, fields} = tableData.value;
+      let filteredItems = null;
+
+      if (!items || !fields) {
+        return tableData.value;
+      }
+
+      if (hideDone.value) {
+        filteredItems = filterItemsBySearch(
+          items,
+          employeesWithMissingTimesheets.value,
+          selectedTeam.value
+        );
+      } else {
+        filteredItems = filterItemsBySearch(items, [], selectedTeam.value);
+      }
+
+      return {
+        fields,
+        items: filteredItems || items,
+      };
+    });
+
+    const teamList = computed(() => {
+      if (!tableData.value.items) return null;
+      const parsedTeam = store.getters['employees/teamList'].map((team: string) => {
+        return {value: team, text: team};
       });
-    }, {immediate: true});
+      return [
+        {value: null, text: i18n.t('selectTeam')},
+        {value: NO_TEAM, text: NO_TEAM},
+        ...parsedTeam,
+      ];
+    });
+
+    watch(
+      startDate,
+      () => {
+        store.dispatch('timesheets/getTableData', {
+          startDate: firstMonday.value,
+          endDate: endDate.value,
+        });
+      },
+      {immediate: true}
+    );
 
     return {
       hideDone,
       tableDataFiltered,
       startDate,
-      sendReminders
+      statuses,
+      selectedTeam,
+      teamList,
     };
   },
 
@@ -156,7 +248,16 @@ export default defineComponent({
   }
 }
 
-.container--cell {
+.statuses-button {
+  box-shadow: none !important;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+}
+
+.container--cell, .statuses--cell {
   display: block;
   margin: auto;
   height: 16px;
@@ -231,7 +332,8 @@ export default defineComponent({
   background: var(--color-primary-text);
   border-radius: 10px;
 
-  th, td {
+  th,
+  td {
     padding: 0.3rem;
   }
 }

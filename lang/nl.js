@@ -8,6 +8,7 @@ export default {
   customerName: 'klant',
   debtorName: 'debiteur',
   selectTeam: 'selecteer team',
+  noTeam: 'geen team',
   employees: 'medewerkers',
   errorEndDate: 'Selecteer een einddatum',
   errorStartDate: 'Selecteer de gewenste startdatum',
@@ -33,7 +34,9 @@ export default {
   project: 'projects',
   filterByCustomer: 'Filteren op gebruikers',
   billable: 'Facturabel',
-  monthlyReport: 'Maandelijkse rapportage',
+  insights: 'Uren inzichten',
+  month: 'Maand',
+  year: 'Jaar',
   reports: 'Rapportages',
   customerDeleteConfirmation: 'Weet je zeker dat je medewerker {name} wil verwijderen?',
   customerArchiveConfirmation:
@@ -47,7 +50,6 @@ export default {
   approved: 'akkoordeer',
   debtor: 'debiteur',
   delete: 'verwijderen',
-  sendReminder: 'verstuur herinnering',
   denied: 'niet toegestaan',
   totalHours: 'Totaal uren',
   productivity: 'Productiviteit',
@@ -57,4 +59,5 @@ export default {
   availableAll: 'Beschikbaar voor alle medewerkers',
   weekNo: 'week: {num}',
   addEmployee: 'Medewerker toevoegen',
+  selectCustomer: 'Selecteer een klant',
 };

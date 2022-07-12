@@ -20,23 +20,27 @@ nl:
       v-if="timesheet.info"
       :comments="timesheet.info.messages"
       :readonly="isReadonly"
+      :show-weekends="showWeekends"
       @add="addMessage"
+      @toggle-weekends="toggleWeekends"
     ></weekly-timesheet-messages>
 
-    <weekly-timesheet-container :selected-week="timesheet.week">
+    <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
       <template #rows>
         <weekly-timesheet-row-hours
           v-for="(timesheetProject) in projectsOrdered"
           :key="timesheetProject.project.customer.id"
           :timesheet-project="timesheetProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           :is-admin="isAdmin"
           @change="hasUnsavedChanges = true"
         />
 
         <weekly-timesheet-row-leave
+          :show-weekends="showWeekends"
           :workscheme="timesheet.workScheme"
           :status="timesheet.info.status"
           @refresh="refreshLeave"
@@ -44,7 +48,8 @@ nl:
 
         <weekly-timesheet-totals-row
           :projects="timesheet.projects"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :work-scheme="timesheet.workScheme"
           @totals="setTotals"
         />
@@ -57,7 +62,8 @@ nl:
           v-if="showStandby"
           :timesheet-project="timesheet.standByProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -66,7 +72,8 @@ nl:
           v-if="showTravel"
           :timesheet-project="timesheet.travelProject"
           :readonly="isReadonly"
-          :selected-week="timesheet.week"
+          :show-weekends="showWeekends"
+          :selected-week="relevantWeeksView"
           :employee="employee"
           @change="hasUnsavedChanges = true"
         />
@@ -86,7 +93,6 @@ nl:
       @approve="handleApprove"
       @deny="handleDeny"
       @unapprove="handleUnapprove"
-      @reminder="handleReminder"
       @bridgeAdd="handleBridgeAdd"
       @bridgeRemove="handleBridgeRemove"
     />
@@ -94,7 +100,15 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, useContext, useRouter, useStore} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  PropType,
+  ref,
+  useContext,
+  useRouter,
+  useStore,
+} from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
@@ -106,7 +120,6 @@ import {
 } from "~/helpers/timesheet";
 import {Collections} from "~/types/enums";
 import {uuidv4} from "~/helpers/helpers";
-import {createDenialEmal, createReminderEmail} from "~/helpers/email";
 
 export default defineComponent({
   props: {
@@ -135,6 +148,8 @@ export default defineComponent({
     const {i18n, app, localePath} = useContext();
     const store = useStore<RootStoreState>();
     const router = useRouter();
+
+    const showWeekends = ref<boolean>(JSON.parse(localStorage.getItem('showWeekends')!) || false);
 
     const isLoading = ref<boolean>(true);
 
@@ -208,6 +223,22 @@ export default defineComponent({
         return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
       })
     );
+
+    const selectedWeek = computed(() => {
+      return timesheet.value.week;
+    });
+
+    const selectedWeekWithoutWeekends = computed(() => {
+      return timesheet.value.week.filter(({isWeekend}) => !isWeekend);
+    });
+
+    const relevantWeeksView = computed(() => {
+      if (showWeekends.value === true) {
+        return selectedWeek.value;
+      }
+
+      return selectedWeekWithoutWeekends.value;
+    });
 
     // TODO: figure out how to get Monday (1) instead of Wednesday (3) without screwing up the timezone
     // const startDate = computed(() => getDateOfISOWeek(parseInt(year.value, 10), parseInt(week.value, 10), 3));
@@ -378,19 +409,26 @@ export default defineComponent({
       await saveTimesheet();
     }
 
-    const addMessage = async (message: string) => {
+    const addMessage = async ({text, employeeName}: { text: string, employeeName: string }) => {
       if (timesheet.value.info === null) return;
 
       const newMessage = {
         id: uuidv4(),
         createdAt: new Date().getTime(),
-        text: message,
+        text,
+        employeeName,
       };
 
       timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];
 
       await saveTimesheet();
     }
+
+    const toggleWeekends = (isShown: boolean) => {
+      showWeekends.value = isShown;
+
+      localStorage.setItem('showWeekends', String(isShown));
+    };
 
     const setTotals = (calculatedTotals: TimesheetTotals) => {
       totals.value = calculatedTotals;
@@ -448,41 +486,52 @@ export default defineComponent({
 
     const handleUnsubmit = () => changeStatus(recordStatus.NEW as TimesheetStatus);
 
-    const handleApprove = () => changeStatus(recordStatus.APPROVED as TimesheetStatus);
+    const handleApprove = () => {
+      changeStatus(recordStatus.APPROVED as TimesheetStatus);
+      handleBridgeAdd();
+    };
 
     const handleDeny = async () => {
-      await app.$mailService.sendMail(createDenialEmal({
-        employee,
-        week: timesheet.value.week
-      }));
-
       await changeStatus(recordStatus.DENIED as TimesheetStatus);
     };
 
-    const handleUnapprove = () => changeStatus(recordStatus.NEW as TimesheetStatus);
-
-    const handleReminder = async () => {
-      const startDate = new Date(timesheet.value?.week[0].date).getTime();
-
-      await app.$mailService.sendMail(createReminderEmail({
-        employee,
-        startDate,
-      }));
+    const handleUnapprove = () => {
+      changeStatus(recordStatus.NEW as TimesheetStatus);
+      handleBridgeRemove();
     };
+
+    const removeWithoutContract = (timeRecordsToSave: { records: TimeRecord[]; contracts: number[] }) => {
+      const startingState = {
+        contracts: [],
+        records: []
+      } as { records: TimeRecord[]; contracts: number[] }
+
+      return timeRecordsToSave.records.reduce((acc, item, index) => {
+        if (timeRecordsToSave.contracts[index] !== -1) {
+          acc.records.push(item);
+          acc.contracts.push(timeRecordsToSave.contracts[index]);
+        }
+        return acc;
+      }, startingState);
+    }
 
     const handleBridgeAdd = async () => {
       if (!employee) return;
       if (!employee.bridgeUid) return;
 
+      // Remove existing bridge items
+      // These shouldn't exist but you never know...
+      await handleBridgeRemove();
+
       const employeeId = employee.id;
       isSaving.value = true;
 
-      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+      const toSync = removeWithoutContract(getTimeRecordsToSave(timesheet.value));
 
       await app.$timeRecordsService.addBridgeWorklogs({
         employeeId,
-        timeRecords: timeRecordsToSave.records,
-        contracts: timeRecordsToSave.contracts,
+        timeRecords: toSync.records,
+        contracts: toSync.contracts,
         bridgeUid: employee.bridgeUid
       });
 
@@ -515,6 +564,9 @@ export default defineComponent({
       startDate,
       timesheet,
       projectsOrdered,
+      selectedWeek,
+      selectedWeekWithoutWeekends,
+      relevantWeeksView,
       showBridgeError,
       timesheetStatus,
       isReadonly,
@@ -523,6 +575,7 @@ export default defineComponent({
       hasUnsavedChanges,
       isSaving,
       lastSaved,
+      showWeekends,
       setTotals,
       handleSave,
       handleSubmit,
@@ -530,10 +583,10 @@ export default defineComponent({
       handleApprove,
       handleDeny,
       handleUnapprove,
-      handleReminder,
       handleBridgeAdd,
       handleBridgeRemove,
       addMessage,
+      toggleWeekends,
       refreshLeave
     };
   }

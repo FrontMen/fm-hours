@@ -1,13 +1,13 @@
 import {addMonths, startOfISOWeek, startOfMonth} from 'date-fns';
 import {ActionTree} from 'vuex';
 
-import {checkEmployeeAvailability} from '../../helpers/employee';
+import {checkEmployeeAvailability} from '~/helpers/employee';
 import {Collections} from '~/types/enums';
 import {filterApprovedRecords} from '~/helpers/record-status';
 import {getDayOnGMT} from '~/helpers/dates';
 
 const actions: ActionTree<ReportsStoreState, RootStoreState> = {
-  async getMonthlyReportData({commit}, payload: { startDate: Date }) {
+  async getMonthlyReportData({commit}, payload: {startDate: Date}) {
     commit('setIsLoading', {isLoading: true});
 
     const startDate = startOfMonth(payload.startDate);

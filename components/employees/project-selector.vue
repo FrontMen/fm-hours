@@ -1,35 +1,21 @@
 <i18n lang="yaml">
 en:
   manageProjects: "Manage Projects"
-  customerSearchPlaceholder: "Click or search for a customer here"
   removeContract: "Remove contract"
 nl:
   manageProjects: "Projecten bewerken"
-  customerSearchPlaceholder: "Klik of zoek naar een klant"
   removeContract: "Verwijder contract"
 </i18n>
 
 <template>
   <section>
     <h6 class="mb-3">{{ $t('manageProjects') }}</h6>
-    <multiselect
-      :value="selectedProjects"
-      track-by="id"
-      label="label"
-      class="mb-3"
-      :options="customerOptions"
-      :close-on-select="false"
-      :multiple="true"
-      :taggable="false"
-      :placeholder="$t('customerSearchPlaceholder')"
-      @input="$emit('update-selected-projects', $event)"
-    >
-      <template slot="selection" slot-scope="{values}">
-        <span v-if="values.length" class="multiselect__single">
-          {{ $t('noOptions', {num: values.length}) }}
-        </span>
-      </template>
-    </multiselect>
+    <b-input-group class="mb-2">
+      <b-form-select v-model="customerToAdd" :options="customersSelectList"></b-form-select>
+      <b-input-group-append>
+        <b-button :disabled="!customerToAdd" @click="customerAddClick">Add</b-button>
+      </b-input-group-append>
+    </b-input-group>
 
     <b-table
       :items="selectedProjects"
@@ -61,7 +47,7 @@ nl:
           size="sm"
           variant="danger"
           :disabled="row.item.isDefault"
-          @click="handleProjectDelete(row.item.id)"
+          @click="handleProjectDelete(row.item.customer.id)"
         >
           <b-icon-trash-fill />
         </b-button>
@@ -83,7 +69,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, ref, SetupContext} from "@nuxtjs/composition-api";
+import {computed, defineComponent, PropType, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
 import {BModal} from "bootstrap-vue";
 
 interface ProjectSelectorProps {
@@ -106,21 +92,43 @@ export default defineComponent({
   },
   emits: ['update-selected-projects'],
   setup(props: ProjectSelectorProps, {emit}: SetupContext) {
+    const {i18n} = useContext();
+
     const handleProjectDelete = (projectId: string) => {
       const newList = props.selectedProjects.filter(({customer}) => customer.id !== projectId);
 
       emit('update-selected-projects', newList);
     }
 
-    const customerOptions = computed(() =>
-      props.customers
+    const customerToAdd = ref<Customer | null>(null);
+    const customersSelectList = computed(() => {
+      const customerList = props.customers
         .filter((customer) => !customer.isDefault && !customer.archived)
+        .sort((a, b) => a.name.localeCompare(b.name))
         .map((customer) => ({
-          ...customer,
-          label: `${customer.name} (${customer.debtor})`,
+          value: customer,
+          text: `${customer.name} - ${customer.debtor}`,
+          disabled: props.selectedProjects.some((project) => project.customer.id === customer.id)
         }))
-    );
 
+      return [
+        {value: undefined, text: i18n.t('selectCustomer')},
+        ...customerList
+      ]
+    });
+    const customerAddClick = () => {
+      if (!customerToAdd.value) return;
+
+      emit('update-selected-projects', [
+        ...props.selectedProjects,
+        {
+          customer: customerToAdd.value,
+          contract: null
+        } as Project
+      ])
+
+      customerToAdd.value = null;
+    }
 
     const selectedProject = ref<Project>();
     const selectedCustomer = ref();
@@ -170,11 +178,13 @@ export default defineComponent({
     ];
 
     return {
+      customerToAdd,
+      customersSelectList,
+      customerAddClick,
       selectedProject,
       selectedCustomer,
       handleProjectDelete,
       handleContractSelected,
-      customerOptions,
       fields,
       handleOpenContract,
       viewContractModal,

@@ -1,12 +1,10 @@
 <i18n lang="yaml">
 en:
   requestLeave: "Request leave"
-  monthly: "Monthly overview"
   feedback: "Feedback"
   logout: "Logout"
 nl:
   requestLeave: "Verlof aanvragen"
-  monthly: "Maand overzicht"
   feedback: "Feedback"
   logout: "Uitloggen"
 </i18n>
@@ -18,62 +16,49 @@ nl:
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img
-                src="@/assets/images/logo-dark.png"
-                alt="frontmen logo"
-                @click="handleLogoClick"
-              />
+              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick"/>
 
-              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
-
-              <a
-                href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
-                target="_blank"
-                class="text-white ml-3"
-              >
-                {{ $t("feedback") }}
-              </a>
+              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4"/>
             </div>
           </b-col>
 
           <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col>
 
-          <b-col class="text-right" cols="4">
-            <b-button-group class="navigation-buttons__date-group mr-2">
+          <b-col>
+            <div class="d-flex align-items-center justify-content-end">
               <b-button
-                class="mr-1"
+                class="mr-2"
                 variant="info"
                 href="https://bridge.hosted-tools.com/myprofile/absences"
                 target="_blank"
                 rel="noreferrer"
               >
                 {{ $t('requestLeave') }}
-                <b-icon class="mr-1" icon="box-arrow-up-right" aria-hidden="true" />
+                <b-icon icon="box-arrow-up-right" aria-hidden="true"/>
               </b-button>
 
-              <nuxt-link :to="localePath('month')">
-                <b-button v-b-tooltip.hover :title="$t('goMonthly')">
-                  {{ $t("monthly") }}
-                </b-button>
-              </nuxt-link>
-            </b-button-group>
-          </b-col>
+              <b-dropdown :text="$t('insights')" class="mr-2">
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
+                  {{ $t("year") }}
+                </b-dropdown-item>
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/${month}`)">
+                  {{ $t("month") }}
+                </b-dropdown-item>
+              </b-dropdown>
 
-          <b-col class="text-right">
-            <LanguageSwitch class="language" />
-          </b-col>
-
-          <b-col>
-            <div class="employee d-flex align-items-center justify-content-end">
-              <div v-if="employee" class="d-none d-md-block employee__name mr-3">
-                {{ employee.name }}
-              </div>
+              <LanguageSwitch class="mr-2"/>
 
               <b-dropdown right class="employee__dropdown">
                 <template v-if="employee" #button-content>
-                  <b-avatar :src="employee.picture" class="flex-shrink mr-1" />
+                  {{ employee.name }}
                 </template>
 
+                <b-dropdown-item
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
+                  target="_blank">
+                  {{ $t("feedback") }}
+                  <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true"/>
+                </b-dropdown-item>
                 <b-dropdown-item @click="handleLogoutClick">
                   {{ $t("logout") }}
                 </b-dropdown-item>
@@ -87,7 +72,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {defineComponent, PropType, SetupContext, useContext, useRouter,} from '@nuxtjs/composition-api';
+import {computed, defineComponent, PropType, SetupContext, useContext, useRouter} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   emit: ['logout'],
@@ -105,16 +90,24 @@ export default defineComponent({
       default: false,
     },
   },
-  setup(_: unknown, {emit}: SetupContext) {
+  setup(props, {emit}: SetupContext) {
     const router = useRouter();
     const {localePath} = useContext();
 
     const handleLogoClick = () => router.push(localePath('/'));
     const handleLogoutClick = () => emit('logout');
 
+    const year = new Date().getFullYear();
+    const month = new Date().getMonth();
+
+    const employeeId = computed(() => props.employee?.id)
+
     return {
       handleLogoClick,
       handleLogoutClick,
+      employeeId,
+      year,
+      month
     };
   },
 });
@@ -128,30 +121,12 @@ export default defineComponent({
 }
 
 .top-bar {
-  background: var(--color-primary);
-
-  &__development {
-    background-color: var(--dark);
-  }
+  background: var(--dark);
 
   img {
     width: 50px;
     max-height: 100%;
     cursor: pointer;
-  }
-
-  .employee__dropdown {
-    button {
-      padding: 0;
-      background-color: transparent !important;
-      border: none;
-      display: flex;
-      align-items: center;
-    }
-  }
-
-  .employee {
-    color: white;
   }
 
   &__hamburger {

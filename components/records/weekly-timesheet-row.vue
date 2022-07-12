@@ -7,7 +7,7 @@
     </b-col>
 
     <b-col
-      v-for="(value, index) in formattedProjectValues"
+      v-for="(value, index) in weekDaysAmount"
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -53,7 +53,7 @@ import {
   watch,
 } from '@nuxtjs/composition-api';
 
-import {checkEmployeeAvailability} from '../../helpers/employee';
+import {checkEmployeeAvailability} from '~/helpers/employee';
 import {
   floatTo24TimeString,
   floatToTotalTimeString,
@@ -68,6 +68,7 @@ interface WeeklyTimesheetRowProps {
   valueFormatter: Object,
   employee: Employee
   isAdmin: boolean
+  showWeekends: boolean
 }
 
 export default defineComponent({
@@ -96,6 +97,10 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
+    showWeekends: {
+      type: Boolean,
+      default: true,
+    }
   },
   setup(props: WeeklyTimesheetRowProps) {
     const tooltip = ref();
@@ -118,14 +123,13 @@ export default defineComponent({
     watch(
       () => formattedProjectValues.value,
       () => {
-        const floatIntegers = formattedProjectValues.value.map((val) => {
+        // TODO: fix me
+        // eslint-disable-next-line vue/no-mutating-props
+        props.timesheetProject.values = formattedProjectValues.value.map((val) => {
           if (val === '') return 0;
           return !isTravelAllowance ? timeStringToFloat(val) : +val;
         });
 
-        // TODO: fix me
-        // eslint-disable-next-line vue/no-mutating-props
-        props.timesheetProject.values = floatIntegers;
       }
     );
 
@@ -152,6 +156,8 @@ export default defineComponent({
       })
     );
 
+    const weekDaysAmount = computed(() => props.showWeekends ? 7 : 5);
+
     const handleInputFocus = ($input: HTMLInputElement, dayIndex: number) => {
       if (!isReadonlyList.value[dayIndex]) {
         $input.select();
@@ -166,6 +172,7 @@ export default defineComponent({
       totalValue,
       formattedProjectValues,
       isReadonlyList,
+      weekDaysAmount,
       handleInputFocus,
       shouldShowDarkBG,
     };

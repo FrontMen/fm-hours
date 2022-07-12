@@ -12,6 +12,9 @@ export const dateTimeFormats = {
     date: {
       day: '2-digit',
     },
+    month: {
+      month: 'long',
+    },
     monthYear: {
       month: 'long',
       year: 'numeric',
@@ -56,6 +59,9 @@ export const dateTimeFormats = {
     },
     date: {
       day: '2-digit',
+    },
+    month: {
+      month: 'long',
     },
     monthYear: {
       month: 'long',

@@ -12,7 +12,7 @@ export default {
   standalone: true,
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: 'Frontmen - Hours',
+    title: 'iO on-site - Hours',
     meta: [
       {charset: 'utf-8'},
       {
@@ -28,11 +28,7 @@ export default {
   css: ['@/assets/scss/index.scss'],
 
   // Plugins to run before rendering page (https://go.nuxtjs.dev/config-plugins)
-  plugins: [
-    '~plugins/filters',
-    '~/plugins/services',
-    {src: '~/plugins/thirdPartyComponents', mode: 'client'},
-  ],
+  plugins: ['~/plugins/services', {src: '~/plugins/thirdPartyComponents', mode: 'client'}],
 
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: {
@@ -96,6 +92,7 @@ export default {
         },
       },
     },
+    injectModule: true,
   },
 
   i18n,
@@ -104,6 +101,4 @@ export default {
   axios: {
     proxy: true,
   },
-
-  proxy: ['https://bridge.hosted-tools.com/api/v1', 'https://auth.hosted-tools.com/api/get-token'],
 };
