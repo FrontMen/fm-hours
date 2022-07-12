@@ -1,5 +1,6 @@
-import {DocumentData} from '@google-cloud/firestore';
+import firebase from 'firebase/compat';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
+import {DocumentData} from '@firebase/firestore-types';
 import {Collections} from '~/types/enums';
 
 import {recordStatus} from '~/helpers/record-status';
@@ -18,8 +19,8 @@ export default class TimesheetsService {
     if (this.isServer) return [];
 
     let query:
-      | firebase.default.firestore.CollectionReference<DocumentData>
-      | firebase.default.firestore.Query<DocumentData> = this.fire.firestore.collection(
+      | firebase.firestore.CollectionReference<DocumentData>
+      | firebase.firestore.Query<DocumentData> = this.fire.firestore.collection(
       Collections.TIMESHEETS
     );
 
