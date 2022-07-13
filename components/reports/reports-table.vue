@@ -31,7 +31,7 @@ nl:
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@vue/composition-api";
+import {defineComponent} from "@nuxtjs/composition-api";
 
 function isNumeric(str: string) {
   return !isNaN(Number(str)) && !isNaN(parseFloat(str));

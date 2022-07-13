@@ -23,6 +23,7 @@ nl:
 import {defineComponent} from "@nuxtjs/composition-api";
 
 export default defineComponent({
+  // @ts-ignore
   checkEmployee: false,
   middleware: ({store, redirect}) => {
     if (store.state.employee.isFound) {

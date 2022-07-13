@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "core-js": "3.21.0",
-    "nuxt": "2.15.8"
+    "nuxt": "^2.15.8"
   },
   "devDependencies": {
     "@babel/preset-env": "7.16.11",
@@ -39,7 +39,7 @@
     "@nuxt/types": "2.15.8",
     "@nuxt/typescript-build": "2.1.0",
     "@nuxtjs/axios": "5.13.6",
-    "@nuxtjs/composition-api": "0.31.0",
+    "@nuxtjs/composition-api": "^0.33.0",
     "@nuxtjs/eslint-config": "8.0.0",
     "@nuxtjs/eslint-config-typescript": "8.0.0",
     "@nuxtjs/eslint-module": "3.0.2",
