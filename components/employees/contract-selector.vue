@@ -44,19 +44,19 @@ nl:
 <script lang="ts">
 import {computed, defineComponent, ref, useContext} from "@nuxtjs/composition-api";
 
-interface ContractSelectorProps {
-  value: boolean
-}
-
 export default defineComponent({
   props: {
     id: {
       type: String,
       required: true
+    },
+    value: {
+      type: Boolean,
+      default: false
     }
   },
-  emits: ['selected'],
-  setup(props: ContractSelectorProps, {emit}) {
+  emits: ['selected', 'input'],
+  setup(props, {emit}) {
     const {i18n, app} = useContext();
 
     const showDialog = computed({

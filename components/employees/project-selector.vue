@@ -72,11 +72,6 @@ nl:
 import {computed, defineComponent, PropType, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
 import {BModal} from "bootstrap-vue";
 
-interface ProjectSelectorProps {
-  selectedProjects: Project[],
-  customers: Customer[]
-}
-
 export default defineComponent({
   props: {
     selectedProjects: {
@@ -85,13 +80,13 @@ export default defineComponent({
       default: () => []
     },
     customers: {
-      type: Array,
+      type: Array as PropType<Customer[]>,
       required: true,
       default: () => []
     },
   },
   emits: ['update-selected-projects'],
-  setup(props: ProjectSelectorProps, {emit}: SetupContext) {
+  setup(props, {emit}: SetupContext) {
     const {i18n} = useContext();
 
     const handleProjectDelete = (projectId: string) => {

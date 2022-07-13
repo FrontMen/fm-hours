@@ -23,7 +23,7 @@
 import {computed, defineComponent, PropType, watch} from "@nuxtjs/composition-api";
 
 export default defineComponent({
-  emit: ["totals"],
+  emits: ["totals"],
   props: {
     projects: {
       type: Array as PropType<TimesheetProject[]>,
@@ -52,9 +52,9 @@ export default defineComponent({
     });
 
     const weekWorkSchemeHoursTotal = computed(() => props.workScheme.reduce(
-        (prevValue, scheme) => prevValue + scheme.workHours,
-        0
-      ));
+      (prevValue, scheme) => prevValue + scheme.workHours,
+      0
+    ));
 
     const dayTotals = computed(() => {
       return props.selectedWeek.map((_, index) => {

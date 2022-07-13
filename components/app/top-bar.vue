@@ -16,9 +16,9 @@ nl:
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick"/>
+              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick" />
 
-              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4"/>
+              <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
             </div>
           </b-col>
 
@@ -34,7 +34,7 @@ nl:
                 rel="noreferrer"
               >
                 {{ $t('requestLeave') }}
-                <b-icon icon="box-arrow-up-right" aria-hidden="true"/>
+                <b-icon icon="box-arrow-up-right" aria-hidden="true" />
               </b-button>
 
               <b-dropdown :text="$t('insights')" class="mr-2">
@@ -46,7 +46,7 @@ nl:
                 </b-dropdown-item>
               </b-dropdown>
 
-              <LanguageSwitch class="mr-2"/>
+              <LanguageSwitch class="mr-2" />
 
               <b-dropdown right class="employee__dropdown">
                 <template v-if="employee" #button-content>
@@ -55,9 +55,10 @@ nl:
 
                 <b-dropdown-item
                   href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
-                  target="_blank">
+                  target="_blank"
+                >
                   {{ $t("feedback") }}
-                  <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true"/>
+                  <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true" />
                 </b-dropdown-item>
                 <b-dropdown-item @click="handleLogoutClick">
                   {{ $t("logout") }}
@@ -75,7 +76,7 @@ nl:
 import {computed, defineComponent, PropType, SetupContext, useContext, useRouter} from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  emit: ['logout'],
+  emits: ['logout'],
   props: {
     isAdmin: {
       type: Boolean,
