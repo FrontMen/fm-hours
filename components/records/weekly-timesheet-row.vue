@@ -121,7 +121,7 @@ export default defineComponent({
 
     const formattedProjectValues = ref(getInitialState(props.timesheetProject));
     watch(
-      () => formattedProjectValues.value,
+      formattedProjectValues,
       () => {
         // TODO: fix me
         // eslint-disable-next-line vue/no-mutating-props
@@ -129,8 +129,8 @@ export default defineComponent({
           if (val === '') return 0;
           return !isTravelAllowance ? timeStringToFloat(val) : +val;
         });
-
-      }
+      },
+      {deep: true}
     );
 
     const totalValue = computed(() => {
