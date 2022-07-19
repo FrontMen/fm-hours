@@ -1,31 +1,31 @@
 <i18n lang="yaml">
-  en:
-    notFound: "Customer not found"
-    enterName: "Enter name"
-    onlyReports: "Only visible in reports"
-    enterDebtor: "Enter debtor"
-  nl:
-    notFound: "Klant niet gevonden"
-    enterName: "Typ naam"
-    onlyReports: "Alleen zichtbaar in rapportage"
-    enterDebtor: "typ debiteurnaam"
+en:
+  notFound: "Customer not found"
+  enterName: "Enter name"
+  onlyReports: "Only visible in reports"
+  enterDebtor: "Enter debtor"
+nl:
+  notFound: "Klant niet gevonden"
+  enterName: "Typ naam"
+  onlyReports: "Alleen zichtbaar in rapportage"
+  enterDebtor: "typ debiteurnaam"
 </i18n>
 
 <template>
   <div class="content-wrapper my-5">
-    <div v-if="!customer">{{$t('notFound')}}</div>
+    <div v-if="!customer">{{ $t('notFound') }}</div>
 
     <template v-else>
       <b-container class="mb-5">
         <div class="mb-5">
           <nuxt-link :to="localePath('/admin/customers')" class="btn btn-primary">
             <b-icon class="mr-1" icon="chevron-left" aria-hidden="true" />
-            {{$t('customers')}}
+            {{ $t('customers') }}
           </nuxt-link>
         </div>
         <b-form @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
           <b-alert :show="form.archived" variant="info">
-            {{$t('archivedCustomer', { time: formatDate(form.archivedDate) })}}
+            {{ $t('archivedCustomer', {time: formatDate(form.archivedDate)}) }}
           </b-alert>
           <b-form-group id="input-group-name" :label="$t('name') + ':'" label-for="input-2">
             <b-form-input
@@ -51,11 +51,11 @@
           </b-form-group>
 
           <b-form-checkbox v-model="form.isBillable">
-            {{$t('billable')}}
+            {{ $t('billable') }}
           </b-form-checkbox>
 
           <b-form-checkbox v-model="form.isDefault">
-            {{$t('availableAll')}}
+            {{ $t('availableAll') }}
           </b-form-checkbox>
 
           <div class="d-flex justify-content-end mt-5">
@@ -68,7 +68,7 @@
               {{ form.archived ? $t('unarchive') : $t('archive') }}
             </b-button>
             <b-button type="submit" variant="primary" :disabled="!hasUnsavedChanges">
-              {{$t('update')}}
+              {{ $t('update') }}
             </b-button>
           </div>
         </b-form>
@@ -89,11 +89,11 @@ import {
   ref,
   useContext,
 } from "@nuxtjs/composition-api";
-import { format } from "date-fns";
+import {format} from "date-fns";
 
 export default defineComponent({
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -107,7 +107,7 @@ export default defineComponent({
 
     const customerId = router.currentRoute.params.customer_id;
     const customers = computed(() => store.state.customers.customers);
-    const customer: {value: Customer | undefined} = computed(() => customers.value.find((x) => x.id === customerId));
+    const customer: { value: Customer | undefined } = computed(() => customers.value.find((x) => x.id === customerId));
 
     onMounted(() => {
       if (customers.value.length === 0) {
@@ -121,11 +121,11 @@ export default defineComponent({
         form.value = customer.value
           ? {...customer.value}
           : {
-              name: "",
-              debtor: "",
-              isBillable: false,
-              isDefault: false,
-            };
+            name: "",
+            debtor: "",
+            isBillable: false,
+            isDefault: false,
+          };
       },
       {immediate: true}
     );
