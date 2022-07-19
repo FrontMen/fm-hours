@@ -23,7 +23,6 @@
 import {computed, defineComponent, PropType, watch} from "@nuxtjs/composition-api";
 
 export default defineComponent({
-  emits: ["totals"],
   props: {
     projects: {
       type: Array as PropType<TimesheetProject[]>,
@@ -38,6 +37,7 @@ export default defineComponent({
       required: true,
     }
   },
+  emits: ["totals"],
   setup(props, {emit}) {
     const weekTotal = computed(() => {
       let total = 0;

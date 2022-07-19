@@ -76,7 +76,6 @@ nl:
 import {computed, defineComponent, PropType, SetupContext, useContext, useRouter} from '@nuxtjs/composition-api';
 
 export default defineComponent({
-  emits: ['logout'],
   props: {
     isAdmin: {
       type: Boolean,
@@ -91,6 +90,7 @@ export default defineComponent({
       default: false,
     },
   },
+  emits: ['logout'],
   setup(props, {emit}: SetupContext) {
     const router = useRouter();
     const {localePath} = useContext();
