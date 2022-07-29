@@ -17,7 +17,7 @@ nl:
           <b-col>
             <div class="d-flex align-items-center">
               <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
-
+              <h1 class="h3 text-muted ml-2 mb-0">Interim hours</h1>
               <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
             </div>
           </b-col>

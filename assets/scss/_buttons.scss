@@ -14,12 +14,23 @@
 
   &.btn-primary {
     color: --color-light;
-    background-color: --color-primary;
+    background-color: var(--color-blue);
+    border: 1px solid var(--color-blue);
+    &:hover {
+      background-color: var(--color-blue-hover);
+      border: 1px solid var(--color-blue-hover);
+    }
   }
 
   &.btn-secondary {
-    &:hover {
-      background-color: --color-tertiary-light;
+    background-color: var(----color-light);
+    border: 1px solid var(--color-medium-gray);
+    color: var(--body-color);
+    &:not([disabled]) {
+      &:hover {
+        background-color: var(--color-blue);
+        color: var(--color-light);
+      }
     }
   }
 }

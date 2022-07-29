@@ -14,88 +14,102 @@ nl:
       {{ $t('workschemeError') }}
     </b-alert>
 
-    <navigation-buttons class="mb-3" :start-date="startDate" :route-prefix="routePrefix" />
+    <div class="container">
+      <div class="row">
+        <navigation-buttons
+          class="col-6 mb-3"
+          :start-date="startDate"
+          :route-prefix="routePrefix"
+        />
 
-    <weekly-timesheet-messages
-      v-if="timesheet.info"
-      :comments="timesheet.info.messages"
-      :readonly="isReadonly"
-      :show-weekends="showWeekends"
-      @add="addMessage"
-      @toggle-weekends="toggleWeekends"
-    ></weekly-timesheet-messages>
-
-    <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
-      <template #rows>
-        <weekly-timesheet-row-hours
-          v-for="(timesheetProject) in projectsOrdered"
-          :key="timesheetProject.project.customer.id"
-          :timesheet-project="timesheetProject"
+        <weekly-timesheet-messages
+          v-if="timesheet.info"
+          :comments="timesheet.info.messages"
           :readonly="isReadonly"
           :show-weekends="showWeekends"
-          :selected-week="relevantWeeksView"
-          :employee="employee"
-          :is-admin="isAdmin"
-          @change="hasUnsavedChanges = true"
-        />
+          @add="addMessage"
+          @toggle-weekends="toggleWeekends"
+        ></weekly-timesheet-messages>
+      </div>
+    </div>
 
-        <weekly-timesheet-row-leave
-          :show-weekends="showWeekends"
-          :workscheme="timesheet.workScheme"
-          :status="timesheet.info.status"
-          @refresh="refreshLeave"
-        ></weekly-timesheet-row-leave>
+    <div class="container">
+      <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
+        <template #rows>
+          <weekly-timesheet-row-hours
+            v-for="(timesheetProject) in projectsOrdered"
+            :key="timesheetProject.project.customer.id"
+            :timesheet-project="timesheetProject"
+            :readonly="isReadonly"
+            :show-weekends="showWeekends"
+            :selected-week="relevantWeeksView"
+            :employee="employee"
+            :is-admin="isAdmin"
+            @change="hasUnsavedChanges = true"
+          />
 
-        <weekly-timesheet-totals-row
-          :projects="timesheet.projects"
-          :show-weekends="showWeekends"
-          :selected-week="relevantWeeksView"
-          :work-scheme="timesheet.workScheme"
-          @totals="setTotals"
-        />
-      </template>
-    </weekly-timesheet-container>
+          <weekly-timesheet-row-leave
+            :show-weekends="showWeekends"
+            :workscheme="timesheet.workScheme"
+            :status="timesheet.info.status"
+            @refresh="refreshLeave"
+          ></weekly-timesheet-row-leave>
 
-    <weekly-timesheet-container v-if="showStandby || showTravel" :show-header="false" class="mt-4">
-      <template #rows>
-        <weekly-timesheet-row-hours
-          v-if="showStandby"
-          :timesheet-project="timesheet.standByProject"
-          :readonly="isReadonly"
-          :show-weekends="showWeekends"
-          :selected-week="relevantWeeksView"
-          :employee="employee"
-          @change="hasUnsavedChanges = true"
-        />
+          <weekly-timesheet-totals-row
+            :projects="timesheet.projects"
+            :show-weekends="showWeekends"
+            :selected-week="relevantWeeksView"
+            :work-scheme="timesheet.workScheme"
+            @totals="setTotals"
+          />
+        </template>
+      </weekly-timesheet-container>
 
-        <weekly-timesheet-row-kilometer
-          v-if="showTravel"
-          :timesheet-project="timesheet.travelProject"
-          :readonly="isReadonly"
-          :show-weekends="showWeekends"
-          :selected-week="relevantWeeksView"
-          :employee="employee"
-          @change="hasUnsavedChanges = true"
-        />
-      </template>
-    </weekly-timesheet-container>
+      <weekly-timesheet-container
+        v-if="showStandby || showTravel"
+        :show-header="false"
+        class="mt-4"
+      >
+        <template #rows>
+          <weekly-timesheet-row-hours
+            v-if="showStandby"
+            :timesheet-project="timesheet.standByProject"
+            :readonly="isReadonly"
+            :show-weekends="showWeekends"
+            :selected-week="relevantWeeksView"
+            :employee="employee"
+            @change="hasUnsavedChanges = true"
+          />
 
-    <weekly-timesheet-footer
-      class="mt-5"
-      :has-unsaved-changes="hasUnsavedChanges"
-      :is-saving="isSaving"
-      :last-saved="lastSaved"
-      :status="timesheetStatus"
-      :is-admin="isAdmin"
-      @save="handleSave"
-      @submit="handleSubmit"
-      @unsubmit="handleUnsubmit"
-      @approve="handleApprove"
-      @deny="handleDeny"
-      @unapprove="handleUnapprove"
-      @bridgeAdd="handleBridgeAdd"
-      @bridgeRemove="handleBridgeRemove"
-    />
+          <weekly-timesheet-row-kilometer
+            v-if="showTravel"
+            :timesheet-project="timesheet.travelProject"
+            :readonly="isReadonly"
+            :show-weekends="showWeekends"
+            :selected-week="relevantWeeksView"
+            :employee="employee"
+            @change="hasUnsavedChanges = true"
+          />
+        </template>
+      </weekly-timesheet-container>
+
+      <weekly-timesheet-footer
+        class="mt-5"
+        :has-unsaved-changes="hasUnsavedChanges"
+        :is-saving="isSaving"
+        :last-saved="lastSaved"
+        :status="timesheetStatus"
+        :is-admin="isAdmin"
+        @save="handleSave"
+        @submit="handleSubmit"
+        @unsubmit="handleUnsubmit"
+        @approve="handleApprove"
+        @deny="handleDeny"
+        @unapprove="handleUnapprove"
+        @bridgeAdd="handleBridgeAdd"
+        @bridgeRemove="handleBridgeRemove"
+      />
+    </div>
   </div>
 </template>
 

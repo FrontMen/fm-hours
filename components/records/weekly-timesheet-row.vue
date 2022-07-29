@@ -182,10 +182,18 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet-row {
-  background: #fff;
+  background-color: var(--color-light);
   color: var(--body-color);
   align-items: center;
   position: relative;
+
+  &:nth-of-type(even) {
+    background-color: var(--color-light-gray);
+  }
+
+  &:hover {
+    background-color: var(--color-medium-gray);
+  }
 
   + .weekly-timesheet-row {
     padding-top: 12px;
@@ -207,7 +215,6 @@ export default defineComponent({
     flex: 1;
     padding: 2px;
     text-align: center;
-    background-color: #fff;
     max-width: 100%;
 
     @media (min-width: 768px) {
@@ -223,7 +230,7 @@ export default defineComponent({
     padding-left: 0;
     padding-right: 0;
     text-align: center;
-    border: 1px solid var(--color-primary);
+    border: 1px solid var(--color-medium-gray-darker);
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {

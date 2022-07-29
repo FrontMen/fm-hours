@@ -10,7 +10,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="controls pb-4">
+  <div class="controls col-6 pb-4">
     <b-row align-h="end" class="m-2">
       <b-dropdown offset="-140" class="messages-dropdown">
         <template #button-content>{{ $t("Comments") }} ({{ formatedComments.length }})</template>
@@ -50,6 +50,7 @@ nl:
       <b-form-checkbox
         :checked="showWeekends"
         switch
+        size="lg"
         class="ml-3 d-flex align-items-center"
         @change="$emit('toggle-weekends', !showWeekends)"
       >

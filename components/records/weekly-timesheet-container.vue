@@ -28,7 +28,7 @@ nl:
 </i18n>
 <template>
   <div class="weekly-timesheet" :class="{ 'weekly-timesheet--no-header': !showHeader }">
-    <b-container fluid>
+    <b-container>
       <b-row v-if="showHeader" cols="14">
         <b-col class="weekly-timesheet__action-column" cols="4" />
 
@@ -49,13 +49,13 @@ nl:
             <span class="d-md-none">
               {{ $d(new Date(date.date), 'dayNarrow') }}
             </span>
-            <span class="d-none d-md-block">
+            <span class="text-uppercase d-none d-md-block">
               {{ $d(new Date(date.date), 'dayShort') }}
             </span>
           </small>
 
           <strong>
-            <span class="d-none d-md-inline">
+            <span class="h4 d-none d-md-inline">
               {{ $d(new Date(date.date), 'date') }}
             </span>
             <span class="d-md-none">{{ $d(new Date(date.date), 'date') }}</span>
@@ -128,12 +128,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet {
-  background-color: var(--color-light-gray);
-  color: var(--color-primary-text);
-  border-right: 1px solid var(--color-primary);
-  border-bottom: 8px solid var(--color-primary);
-  border-left: 1px solid var(--color-primary);
-  border-radius: 8px;
+  background-color: var(--color-light);
+  color: var(--body-color);
+  border: 1px solid var(--color-light-gray);
+  border-radius: 4px;
 
   &--no-header {
     border-top: 8px solid var(--color-primary);

@@ -11,11 +11,20 @@
       <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
     </b-col>
 
-    <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
+    <!-- <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
       <span>
         <strong>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</strong>
       </span>
-    </b-col>
+    </b-col> -->
+    <div class="progress blue mr-3">
+      <span class="progress-left">
+        <span class="progress-bar"></span>
+      </span>
+      <span class="progress-right">
+        <span class="progress-bar"></span>
+      </span>
+      <div class="progress-value">36/40</div>
+    </div>
   </b-row>
 </template>
 

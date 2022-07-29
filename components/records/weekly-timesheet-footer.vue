@@ -10,6 +10,7 @@ en:
   undo: "Undo approval"
   addBridge: "Add to bridge"
   removeBridge: "Remove from bridge"
+  validate: "Are the hours complete?"
 nl:
   unsubmit: "Terugtrekken"
   waiting: "Wacht op akkoord"
@@ -21,6 +22,7 @@ nl:
   undo: "Ongedaan maken"
   addBridge: "Toevoegen aan bridge"
   removeBridge: "Verwijderen van bridge"
+  validate: "Kloppen de totalen?"
 </i18n>
 
 <template>
@@ -90,10 +92,12 @@ nl:
       <b-button
         v-if="isNew || isDenied"
         class="mr-3"
+        variant="secondary"
         :disabled="isSaving || !hasUnsavedChanges"
         @click="handleSaveClick"
       >
         {{ $t('save') }}
+        <b-icon icon="file-earmark-arrow-down" />
       </b-button>
 
       <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
@@ -102,11 +106,15 @@ nl:
 
       <b-button
         v-if="isNew"
+        v-b-tooltip.hover="{ variant: 'secondary' }"
+        :title="$t('validate')"
         class="mr-3"
+        variant="primary"
         :disabled="isSaving || !canSubmitForApproval"
         @click="handleSubmitClick"
       >
         {{ $t('submit') }}
+        <b-icon icon="file-earmark-arrow-up" />
       </b-button>
     </div>
   </div>

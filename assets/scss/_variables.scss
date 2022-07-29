@@ -1,6 +1,6 @@
 :root {
-  // --color-primary: #201e33;
-  --color-primary: #ed7f53;
+  --color-primary: #201e33;
+  // --color-primary: #ed7f53;
   --color-primary-text: #ffffff;
   --color-secondary: #e6e6e6;
   --color-tertiary: #365fd9;
@@ -17,6 +17,11 @@
   --color-light-gray: #ebebeb;
   --color-medium-gray: #eaeaea;
   --color-medium-gray-darker: #aaaaaa;
+
+  --color-blue: #365fd9;
+  --color-blue-hover: #5079f3;
+  --color-orange: #ed7f53;
+  --color-orange-hover: #ff996d;
 }
 
 $theme-colors: (
