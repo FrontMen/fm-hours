@@ -45,21 +45,21 @@ nl:
             {{ $t(getCaptionText(date)) }}
           </span>
 
-          <strong class="d-block text-capitalize">
+          <small class="d-block text-capitalize">
             <span class="d-md-none">
               {{ $d(new Date(date.date), 'dayNarrow') }}
             </span>
             <span class="d-none d-md-block">
               {{ $d(new Date(date.date), 'dayShort') }}
             </span>
-          </strong>
+          </small>
 
-          <small>
+          <strong>
             <span class="d-none d-md-inline">
-              {{ $d(new Date(date.date), 'dateMonth') }}
+              {{ $d(new Date(date.date), 'date') }}
             </span>
             <span class="d-md-none">{{ $d(new Date(date.date), 'date') }}</span>
-          </small>
+          </strong>
         </b-col>
 
         <b-col cols="1" />
@@ -128,7 +128,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet {
-  background-color: var(--color-primary);
+  background-color: var(--color-light-gray);
   color: var(--color-primary-text);
   border-right: 1px solid var(--color-primary);
   border-bottom: 8px solid var(--color-primary);

@@ -16,7 +16,7 @@ nl:
         <b-row class="py-2" align-v="center">
           <b-col>
             <div class="d-flex align-items-center">
-              <img src="@/assets/images/logo-white.png" alt="logo" @click="handleLogoClick" />
+              <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
 
               <div v-if="isAdmin" v-b-toggle.sidebar-1 class="top-bar__hamburger ml-4" />
             </div>
@@ -122,7 +122,7 @@ export default defineComponent({
 }
 
 .top-bar {
-  background: var(--dark);
+  background: var(--color-light-gray);
 
   img {
     width: 50px;
