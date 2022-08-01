@@ -28,13 +28,13 @@ nl:
             <div class="d-flex align-items-center justify-content-end">
               <b-button
                 class="mr-2"
-                variant="info"
+                variant="tertiary"
                 href="https://bridge.hosted-tools.com/myprofile/absences"
                 target="_blank"
                 rel="noreferrer"
               >
                 {{ $t('requestLeave') }}
-                <b-icon icon="box-arrow-up-right" aria-hidden="true" />
+                <b-icon icon="box-arrow-up-right" class="ml-1" aria-hidden="true" />
               </b-button>
 
               <b-dropdown :text="$t('insights')" class="mr-2">

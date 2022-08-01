@@ -20,13 +20,23 @@
       <b-form-input
         v-model="formattedProjectValues[index]"
         class="weekly-timesheet-row__value-input"
-        type="text"
+        type="time"
         inputmode="decimal"
+        value="0:00"
+        step="900"
+        list="hours"
         :formatter="valueFormatter && valueFormatter.formatter"
         :readonly="isReadonlyList[index]"
         @focus.native="handleInputFocus($event.target, index)"
         @input="$emit('change')"
       />
+      <datalist id="hours">
+        <option>01:15</option>
+        <option>01:30</option>
+        <option>01:45</option>
+        <option>02:00</option>
+        <option label="Volledige dag">08:00</option>
+      </datalist>
       <div
         v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
         class="weekly-timesheet-row__value-icon"

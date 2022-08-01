@@ -5,15 +5,18 @@ en:
   ShowWeekends: "Show weekends"
 nl:
   AddComment: "Notitie toevoegen"
-  Comments: "Comments"
-  ShowWeekends: "Toon weekends"
+  Comments: "Notities"
+  ShowWeekends: "Toon weekenden"
 </i18n>
 
 <template>
   <div class="controls col-6 pb-4">
     <b-row align-h="end" class="m-2">
       <b-dropdown offset="-140" class="messages-dropdown">
-        <template #button-content>{{ $t("Comments") }} ({{ formatedComments.length }})</template>
+        <template #button-content>
+          {{ $t("Comments") }}
+          <b-badge pill variant="success">{{ formatedComments.length }}</b-badge>
+        </template>
         <div>
           <b-dropdown-text
             v-for="comment in formatedComments"
