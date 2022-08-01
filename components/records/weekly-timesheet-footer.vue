@@ -44,8 +44,9 @@ nl:
       </template>
     </div>
 
-    <span v-if="lastSaved">{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
-    <b-spinner v-if="isSaving" class="ml-1" small />
+    <div v-if="lastSaved" class="mr-2">
+      <span>{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
+    </div>
 
     <div class="weekly-timesheet-footer__actions">
       <div v-if="isAdmin">
@@ -89,16 +90,26 @@ nl:
         </div>
       </div>
 
-      <b-button
-        v-if="isNew || isDenied"
-        class="mr-3"
-        variant="secondary"
-        :disabled="isSaving || !hasUnsavedChanges"
-        @click="handleSaveClick"
+      <b-overlay
+        :show="isSaving"
+        rounded
+        opacity="0.6"
+        spinner-small
+        spinner-variant="primary"
+        class="d-inline-block"
+        @hidden="onHidden"
       >
-        {{ $t('save') }}
-        <b-icon icon="file-earmark-arrow-down" />
-      </b-button>
+        <b-button
+          v-if="isNew || isDenied"
+          class="mr-3"
+          variant="secondary"
+          :disabled="isSaving || !hasUnsavedChanges"
+          @click="handleSaveClick"
+        >
+          {{ $t('save') }}
+          <b-icon icon="file-earmark-arrow-down" />
+        </b-button>
+      </b-overlay>
 
       <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
         {{ $t('unsubmit') }}
@@ -227,6 +238,11 @@ export default defineComponent({
       isClosed,
     };
   },
+  data() {
+    return {
+      show: false
+    }
+  }
 });
 </script>
 
@@ -238,7 +254,7 @@ export default defineComponent({
   @media (min-width: 560px) {
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: right;
   }
 
   &__status {
