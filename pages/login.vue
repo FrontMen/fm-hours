@@ -1,9 +1,11 @@
 <i18n lang="yaml">
 en:
+  title: "Interim hours"
   login: "Login"
   loginHint: "Login to use the hours registration tool"
   loading: "Loading..."
 nl:
+  title: "Interim uren"
   login: "Inloggen"
   loginHint: "Log in voor uren registratie en rapportage"
   loading: "Laden.."
@@ -11,21 +13,55 @@ nl:
 
 <template>
   <b-container fluid class="d-flex justify-content-center login-wrapper">
-    <b-card align="center" class="main-card">
-      <img src="@/assets/images/logo.png" class="logo" alt="Logo" />
-      <h1>{{ $t('login') }}</h1>
-      <b-card-text>{{ $t('loginHint') }}</b-card-text>
+    <section class="vh-100">
+      <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+          <div class="col col-xl-10">
+            <div class="card">
+              <div class="row g-0">
+                <div class="col-md-6 col-lg-5 d-none d-md-block">
+                  <img
+                    src="@/assets/images/bg-portrait-black.jpg"
+                    alt="login form"
+                    class="img-fluid"
+                  />
+                </div>
+                <div class="col-md-6 col-lg-7 d-flex align-items-center">
+                  <div class="card-body p-4 p-lg-5 text-black">
+                    <language-switch class="d-flex justify-content-end mb-2"></language-switch>
+                    <form>
+                      <div class="d-flex align-items-center mb-3 pb-1">
+                        <img src="@/assets/images/logo-black.svg" alt="Logo" />
+                        <span class="h1 fw-bold mb-0">{{ $t('title') }}</span>
+                      </div>
 
-      <language-switch class="mb-2"></language-switch>
+                      <h5 class="fw-normal mb-3 pb-3">
+                        {{ $t('loginHint') }}
+                      </h5>
 
-      <b-button :disabled="isLoading" class="login-button" @click="login()">
-        <b-spinner v-if="isLoading" class="mr-2" small />
-        {{ $t(buttonText) }}
-      </b-button>
-    </b-card>
-    <b-alert :show="!!errorMessage" variant="danger" class="mt-3">
-      {{ errorMessage }}
-    </b-alert>
+                      <div class="pt-1 mb-4">
+                        <b-button
+                          :disabled="isLoading"
+                          class="login-button"
+                          variant="primary"
+                          @click="login()"
+                        >
+                          <b-spinner v-if="isLoading" class="mr-2" small />
+                          {{ $t(buttonText) }}
+                        </b-button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <b-alert :show="!!errorMessage" variant="danger" class="mt-3">
+              {{ errorMessage }}
+            </b-alert>
+          </div>
+        </div>
+      </div>
+    </section>
   </b-container>
 </template>
 
@@ -65,6 +101,8 @@ export default defineComponent({
   align-items: center;
   flex-flow: column;
   justify-content: center;
+  background: url(@/assets/images/io-blend.jpg) no-repeat left top;
+  background-size: cover;
 }
 
 .login-button {
@@ -81,7 +119,8 @@ export default defineComponent({
 }
 
 .logo {
-  width: 200px;
+  width: 80;
+  height: 80px;
   margin-bottom: 20px;
 }
 </style>
