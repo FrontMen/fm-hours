@@ -31,7 +31,7 @@ nl:
                     <language-switch class="d-flex justify-content-end mb-2"></language-switch>
                     <form>
                       <div class="d-flex align-items-center mb-3 pb-1">
-                        <img src="@/assets/images/logo-black.svg" alt="Logo" />
+                        <img src="@/assets/images/logo-black.svg" alt="Logo" class="logo" />
                         <span class="h1 fw-bold mb-0">{{ $t('title') }}</span>
                       </div>
 
