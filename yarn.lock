@@ -3211,7 +3211,7 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*":
+"@types/node@*", "@types/node@>=12", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
   version "18.0.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-18.0.6.tgz#0ba49ac517ad69abe7a1508bc9b3a5483df9d5d7"
   integrity sha512-/xUq6H2aQm261exT6iZTMifUySEt4GR5KX8eYyY+C4MSNPqSh9oNIP7tz2GLKTlFaiBbgZNxffoR3CVRG+cljw==
@@ -3220,11 +3220,6 @@
   version "12.20.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.12.tgz#fd9c1c2cfab536a2383ed1ef70f94adea743a226"
   integrity sha512-KQZ1al2hKOONAs2MFv+yTQP1LkDWMrRJ9YCVRalXltOfXsBmH5IownLxQaiq0lnAHwAViLnh2aTYqrPcRGEbgg==
-
-"@types/node@>=12", "@types/node@>=12.12.47", "@types/node@>=13.7.0":
-  version "18.0.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-18.0.3.tgz#463fc47f13ec0688a33aec75d078a0541a447199"
-  integrity sha512-HzNRZtp4eepNitP+BD6k2L6DROIDG4Q0fm4x+dwfsr6LGmROENnok75VGw40628xf+iR24WeMFcHuuBDUAzzsQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.1"
@@ -3498,6 +3493,11 @@
   resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-5.0.3.tgz#0dccd9eb2a554afbee890927a40717a60b378051"
   integrity sha512-xLzu3Zdm/2vubAHffstrr/cVv/Aogcr77+axr6lhAMHjm1wzLGtwoDdJw7xgKHpwFyxtPSJRI4aPoF4Peiu0/g==
 
+"@vercel/build-utils@5.0.7":
+  version "5.0.7"
+  resolved "https://registry.yarnpkg.com/@vercel/build-utils/-/build-utils-5.0.7.tgz#a1362319118b2506b511202385c51ffbef0502be"
+  integrity sha512-rVo8gOygGt+2j3V29JicfIJUkxet+FscjbJZrEF2tXdSVUuR1MvY0I20z+MA9OpUe/oB/VzeRhjgxUN0rQl/3A==
+
 "@vercel/go@2.0.7":
   version "2.0.7"
   resolved "https://registry.yarnpkg.com/@vercel/go/-/go-2.0.7.tgz#669833f51b91f422f284ef3a4d7d2a35d31e7ef7"
@@ -3547,6 +3547,22 @@
     esbuild "0.14.47"
     exit-hook "2.2.1"
     node-fetch "2.6.1"
+    ts-node "8.9.1"
+    typescript "4.3.4"
+
+"@vercel/node@2.5.2":
+  version "2.5.2"
+  resolved "https://registry.yarnpkg.com/@vercel/node/-/node-2.5.2.tgz#af37c51a036a0d1e8a378f3e6d1f2c945b0ffee5"
+  integrity sha512-RzZRoJVeudiozFVI+DtvCJJbe/ePXSWJY8NY1qssEsNgTkH/ihnbQSwxAULi/SOsoAIx9tEsdmaHpkgendc4yQ==
+  dependencies:
+    "@types/node" "*"
+    "@vercel/build-utils" "5.0.7"
+    "@vercel/node-bridge" "3.0.0"
+    "@vercel/static-config" "2.0.1"
+    edge-runtime "1.0.1"
+    esbuild "0.14.47"
+    exit-hook "2.2.1"
+    node-fetch "2.6.7"
     ts-node "8.9.1"
     typescript "4.3.4"
 
@@ -14066,7 +14082,7 @@ ts-morph@12.0.0:
     "@ts-morph/common" "~0.11.0"
     code-block-writer "^10.1.1"
 
-ts-node@10.9.1:
+ts-node@10.9.1, ts-node@^10.8.1:
   version "10.9.1"
   resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.9.1.tgz#e73de9102958af9e1f0b168a6ff320e25adcff4b"
   integrity sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==
@@ -14094,25 +14110,6 @@ ts-node@8.9.1:
     diff "^4.0.1"
     make-error "^1.1.1"
     source-map-support "^0.5.17"
-    yn "3.1.1"
-
-ts-node@^10.8.1:
-  version "10.8.2"
-  resolved "https://registry.yarnpkg.com/ts-node/-/ts-node-10.8.2.tgz#3185b75228cef116bf82ffe8762594f54b2a23f2"
-  integrity sha512-LYdGnoGddf1D6v8REPtIH+5iq/gTDuZqv2/UJUU7tKjuEU8xVZorBM+buCGNjj+pGEud+sOoM4CX3/YzINpENA==
-  dependencies:
-    "@cspotcode/source-map-support" "^0.8.0"
-    "@tsconfig/node10" "^1.0.7"
-    "@tsconfig/node12" "^1.0.7"
-    "@tsconfig/node14" "^1.0.0"
-    "@tsconfig/node16" "^1.0.2"
-    acorn "^8.4.1"
-    acorn-walk "^8.1.1"
-    arg "^4.1.0"
-    create-require "^1.1.0"
-    diff "^4.0.1"
-    make-error "^1.1.1"
-    v8-compile-cache-lib "^3.0.1"
     yn "3.1.1"
 
 ts-pnp@^1.1.6:
