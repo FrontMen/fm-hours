@@ -23,7 +23,7 @@ nl:
                   <img
                     src="@/assets/images/bg-portrait-black.jpg"
                     alt="login form"
-                    class="img-fluid"
+                    class="login-background img-fluid"
                   />
                 </div>
                 <div class="col-md-6 col-lg-7 d-flex align-items-center">
@@ -103,6 +103,10 @@ export default defineComponent({
   justify-content: center;
   background: url(@/assets/images/io-blend.jpg) no-repeat left top;
   background-size: cover;
+}
+
+.login-background {
+  border-radius: 0.25rem 0 0 0.25rem;
 }
 
 .login-button {
