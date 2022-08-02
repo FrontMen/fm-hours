@@ -1,9 +1,7 @@
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <span>
-        <strong>{{ timesheetProject.project.customer.name }}</strong>
-      </span>
+      <span>{{ timesheetProject.project.customer.name }}</span>
     </b-col>
 
     <b-col
@@ -11,32 +9,41 @@
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
-      :class="{
-        'weekly-timesheet-row__date-column--dark': shouldShowDarkBG(
-          selectedWeek[index],
-        ),
-      }"
     >
-      <b-form-input
-        v-model="formattedProjectValues[index]"
-        class="weekly-timesheet-row__value-input"
-        type="time"
-        inputmode="decimal"
-        value="0:00"
-        step="900"
-        list="hours"
-        :formatter="valueFormatter && valueFormatter.formatter"
-        :readonly="isReadonlyList[index]"
-        @focus.native="handleInputFocus($event.target, index)"
-        @input="$emit('change')"
-      />
-      <datalist id="hours">
-        <option>01:15</option>
-        <option>01:30</option>
-        <option>01:45</option>
-        <option>02:00</option>
-        <option label="Volledige dag">08:00</option>
-      </datalist>
+      <b-form autpcomplete="off">
+        <b-form-input
+          v-model="formattedProjectValues[index]"
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          value="0"
+          autocomplete="false"
+          :formatter="valueFormatter && valueFormatter.formatter"
+          :readonly="isReadonlyList[index]"
+          @focus.native="handleInputFocus($event.target, index)"
+          @input="$emit('change')"
+        />
+        <!-- <b-form-input
+          v-model="formattedProjectValues[index]"
+          class="weekly-timesheet-row__value-input"
+          type="time"
+          value="0:00"
+          step="1800"
+          min="00:00"
+          max="24:00"
+          list="hours"
+          :formatter="valueFormatter && valueFormatter.formatter"
+          :readonly="isReadonlyList[index]"
+          @focus.native="handleInputFocus($event.target, index)"
+          @input="$emit('change')"
+        />
+        <datalist id="hours">
+          <option>01:15</option>
+          <option>01:30</option>
+          <option>01:45</option>
+          <option>02:00</option>
+          <option label="Volledige dag">08:00</option>
+        </datalist> -->
+      </b-form>
       <div
         v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
         class="weekly-timesheet-row__value-icon"
@@ -198,11 +205,11 @@ export default defineComponent({
   position: relative;
 
   &:nth-of-type(even) {
-    background-color: var(--color-light-gray);
+    background-color: var(--color-medium-gray);
   }
 
   &:hover {
-    background-color: var(--color-medium-gray);
+    background-color: var(--color-light-blue);
   }
 
   + .weekly-timesheet-row {
@@ -219,6 +226,16 @@ export default defineComponent({
       width: 100%;
       max-width: 100%;
     }
+
+    span {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 500;
+
+      &::first-letter {
+        text-transform: capitalize;
+      }
+    }
   }
 
   &__date-column {
@@ -230,17 +247,16 @@ export default defineComponent({
     @media (min-width: 768px) {
       padding: 8px;
     }
-
-    &--dark {
-      background-color: #999;
-    }
   }
 
   &__value-input {
     padding-left: 0;
     padding-right: 0;
+    font-size: 17px;
+    font-weight: 500;
     text-align: center;
-    border: 1px solid var(--color-medium-gray-darker);
+    color: var(--color-dark);
+    border: 1px solid var(--color-medium-gray);
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -255,6 +271,8 @@ export default defineComponent({
   }
 
   &__total-column {
+    font-size: 18px;
+    font-weight: 500;
     text-align: right;
     padding: 0 4px;
 
