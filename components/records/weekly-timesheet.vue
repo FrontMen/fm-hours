@@ -17,7 +17,7 @@ nl:
     <div class="container">
       <div class="row">
         <navigation-buttons
-          class="col-6 mb-3"
+          class="col-8 mb-3"
           :start-date="startDate"
           :route-prefix="routePrefix"
         />
@@ -45,6 +45,7 @@ nl:
             :selected-week="relevantWeeksView"
             :employee="employee"
             :is-admin="isAdmin"
+            :is-saving="isSaving"
             @change="hasUnsavedChanges = true"
           />
 

@@ -4,7 +4,7 @@ en:
   waiting: "Waiting on approval"
   denied: "Denied"
   submit: "Submit for approval"
-  save: "Save"
+  save: "Save concept"
   deny: "Deny"
   approve: "Approve"
   undo: "Undo approval"
@@ -13,10 +13,10 @@ en:
   validate: "Are the hours complete?"
 nl:
   unsubmit: "Terugtrekken"
-  waiting: "Wacht op akkoord"
+  waiting: "Indienen gelukt. Wacht op akkoord"
   denied: "Afgekeurd"
-  submit: "Verzenden"
-  save: "Opslaan"
+  submit: "Indienen"
+  save: "Concept opslaan"
   deny: "Afkeuren"
   approve: "Akkordeeren"
   undo: "Ongedaan maken"
@@ -27,10 +27,16 @@ nl:
 
 <template>
   <div class="weekly-timesheet-footer mb-5">
+    <div v-if="lastSaved" class="d-flex  mr-2">
+      <span>{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
+    </div>
+
     <div class="weekly-timesheet-footer__status">
       <template v-if="isPending">
-        <b-icon class="mr-1" icon="clock-fill" variant="secondary" />
-        <strong class="text-uppercase">{{ $t('waiting') }}</strong>
+        <b-alert show variant="primary">
+          <b-icon class="mr-1" icon="clock" variant="secondary" />
+          {{ $t('waiting') }}
+        </b-alert>
       </template>
 
       <template v-if="isApproved">
@@ -42,10 +48,6 @@ nl:
         <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
         <strong class="text-uppercase">{{ $t('denied') }}</strong>
       </template>
-    </div>
-
-    <div v-if="lastSaved" class="mr-2">
-      <span>{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
     </div>
 
     <div class="weekly-timesheet-footer__actions">
@@ -102,6 +104,7 @@ nl:
         <b-button
           v-if="isNew || isDenied"
           class="mr-3"
+          size="lg"
           variant="secondary"
           :disabled="isSaving || !hasUnsavedChanges"
           @click="handleSaveClick"
@@ -111,15 +114,22 @@ nl:
         </b-button>
       </b-overlay>
 
-      <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
+      <b-button
+        v-if="isPending"
+        size="lg"
+        variant="warning"
+        :disabled="isSaving"
+        @click="handleUnsubmitClick"
+      >
         {{ $t('unsubmit') }}
+        <b-icon icon="file-earmark-x" />
       </b-button>
 
       <b-button
         v-if="isNew"
         v-b-tooltip.hover="{ variant: 'secondary' }"
         :title="$t('validate')"
-        class="mr-3"
+        size="lg"
         variant="primary"
         :disabled="isSaving || !canSubmitForApproval"
         @click="handleSubmitClick"
@@ -254,7 +264,7 @@ export default defineComponent({
   @media (min-width: 560px) {
     flex-direction: row;
     align-items: center;
-    justify-content: right;
+    justify-content: space-between;
   }
 
   &__status {

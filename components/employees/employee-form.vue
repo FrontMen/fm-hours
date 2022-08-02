@@ -10,7 +10,7 @@ en:
   endDate: "End date"
   startDate: "Start date"
   noDate: "No date selected"
-  save: "Save"
+  save: "Save concept"
 nl:
   notFoundEmployee: "Medewerker niet gevonden"
   manageProjects: "Projecten bewerkern"
@@ -22,7 +22,7 @@ nl:
   endDate: "Eind datum"
   startDate: "Start datum"
   noDate: "Geen datum geselcteerd"
-  save: "Opslaan"
+  save: "Concept opslaan"
 </i18n>
 
 <template>
