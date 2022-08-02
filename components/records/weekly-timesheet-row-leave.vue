@@ -13,11 +13,15 @@ nl:
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <strong v-b-tooltip.hover class="title-with-tooltip" :title="$t('description')">
+      <strong
+        v-b-tooltip.hover="{ variant: 'light' }"
+        class="title-with-tooltip"
+        :title="$t('description')"
+      >
         {{ $t('title') }}
       </strong>
 
-      <span v-b-tooltip.hover class="ml-4" :title="$t('refresh')">
+      <span v-b-tooltip.hover="{ variant: 'light' }" class="ml-4" :title="$t('refresh')">
         <b-icon
           icon="arrow-counterclockwise"
           :disabled="allowRefresh"
@@ -32,7 +36,12 @@ nl:
       cols="1"
       class="weekly-timesheet-row__date-column"
     >
-      <span>{{ day.absenceHours }}</span>
+      <b-form-input
+        class="weekly-timesheet-row__value-input"
+        type="text"
+        disabled
+        :placeholder="day.absenceHours"
+      />
       <span v-if="day.holiday" v-b-tooltip.hover :title="$t('publicHoliday')">
         <b-icon icon="info-circle"></b-icon>
       </span>
@@ -122,7 +131,24 @@ export default defineComponent({
     }
   }
 
+  &__value-input {
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--color-dark);
+    border: 1px solid var(--color-medium-gray);
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      display: none;
+    }
+  }
+
   &__total-column {
+    font-size: 18px;
+    font-weight: 500;
     text-align: right;
     padding: 0 4px;
 
