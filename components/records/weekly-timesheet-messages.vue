@@ -10,7 +10,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="controls col-4 pb-4">
+  <div class="controls col-5 pb-4">
     <b-row align-h="end" class="m-2">
       <b-dropdown offset="-140" class="messages-dropdown">
         <template #button-content>
