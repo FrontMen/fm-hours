@@ -47,7 +47,7 @@ nl:
       </span>
     </b-col>
     <b-col :cols="showWeekends ? 3 : 1" class="weekly-timesheet-row__total-column">
-      {{ totalValue }}
+      {{ "0" + totalValue + ":00" }}
     </b-col>
   </b-row>
 </template>

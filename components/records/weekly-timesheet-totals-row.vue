@@ -23,7 +23,7 @@
       <span class="progress-right">
         <span class="progress-bar"></span>
       </span>
-      <div class="progress-value">36/40</div>
+      <div class="progress-value">{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</div>
     </div>
   </b-row>
 </template>

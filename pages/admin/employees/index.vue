@@ -72,7 +72,7 @@ nl:
           </multiselect>
         </b-col>
         <b-col cols="6" lg="2" class="align-self-center">
-          <b-button variant="link" @click="showMoreFilters = !showMoreFilters">
+          <b-button variant="secondary" @click="showMoreFilters = !showMoreFilters">
             <span>
               {{ $t('expandSearchMenu') }}
               <b-icon-chevron-up v-if="showMoreFilters" />
@@ -81,8 +81,9 @@ nl:
           </b-button>
         </b-col>
         <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end mb-3">
-          <nuxt-link class="btn btn-success" :to="localePath(`/admin/employees/add`)">
+          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/employees/add`)">
             {{ $t('newEmployee') }}
+            <b-icon icon="person" />
           </nuxt-link>
         </b-col>
       </b-row>
@@ -100,7 +101,7 @@ nl:
     <b-container fluid class="app-table">
       <b-row class="app-table__top-row py-3">
         <b-col>
-          <span class="font-weight-bold">{{ $t('employees') }}</span>
+          <span class="font-weight-bold text-dark">{{ $t('employees') }}</span>
         </b-col>
       </b-row>
 
