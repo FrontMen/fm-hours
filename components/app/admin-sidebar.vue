@@ -16,14 +16,20 @@ nl:
 </i18n>
 
 <template>
-  <b-sidebar id="sidebar-1" shadow backdrop>
-    <b-list-group>
-      <b-list-group-item v-for="(link, index) in links" :key="index" :to="localePath(link.href)">
-        <b-icon :icon="link.icon" />
-        {{ $t(link.name) }}
-      </b-list-group-item>
-    </b-list-group>
-  </b-sidebar>
+  <div class="d-flex flex-column flex-shrink-0 bg-dark vh-100" style="width: 4.5rem;">
+    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center">
+      <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)" class="nav-item">
+        <a
+          v-b-tooltip.hover.right="{ variant: 'secondary' }"
+          href="#"
+          class="nav-link active py-3"
+          :title="$t(link.name)"
+        >
+          <b-icon :icon="link.icon" />
+        </a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
