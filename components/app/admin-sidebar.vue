@@ -21,7 +21,7 @@ nl:
       <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)" class="nav-item">
         <a
           v-b-tooltip.hover.right="{ variant: 'secondary' }"
-          href="#"
+          :href="link.href"
           class="nav-link active py-3"
           :title="$t(link.name)"
         >
