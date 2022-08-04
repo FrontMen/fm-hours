@@ -2,15 +2,18 @@
 en:
   hideDone: "Hide done"
   emptyTable: "No employees to show"
+  status: Statuses
   statuses:
     empty: Empty
     new: New
     pending: Pending
     approved: Approved
     denied: Denied
+    
 nl:
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
+  status: Statussen
   statuses:
     empty: Leeg
     new: Nieuwe
@@ -23,66 +26,77 @@ nl:
   <div class="my-5 content-wrapper">
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
-        <div class="actions-toolbar flex mb-3">
+        <b-card class="actions-toolbar flex mb-3">
+          <div class="mb-2">
+            <strong>Selected team:</strong>
+            {{ selectedTeam }}
+          </div>
           <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
 
-          <MonthPicker v-model="startDate" />
+          <MonthPicker v-model="startDate" class="col-12 px-0" />
 
-          <div class="d-flex align-items-center mt-2">
-            <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline>
+          <div class="d-flex align-items-center justify-content-between mt-2">
+            <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline switch>
               {{ $t('hideDone') }}
             </b-form-checkbox>
 
             <b-button id="statuses" variant="link" class="statuses-button">
-              <b-icon icon="question-circle" />
+              <b-icon icon="info-circle" />
             </b-button>
             <b-popover target="statuses" triggers="hover" placement="right" class="d-block">
+              <template #title>{{ $t('status') }}</template>
               <div v-for="status in statuses" :key="status" class="d-flex align-items-center">
                 <div class="m-1 statuses--cell" :class="[status]" />
                 <p class="mb-0">{{ $t(`statuses.${status}`) }}</p>
               </div>
             </b-popover>
           </div>
-        </div>
+        </b-card>
 
-        <b-table
-          class="timesheet-table"
-          responsive
-          :items="tableDataFiltered.items"
-          :fields="tableDataFiltered.fields"
-          sort-by="name"
-        >
-          <template #empty>
-            <p>{{ $t('emptyTable') }}</p>
-          </template>
-          <template #head(id)>&nbsp;</template>
-          <template #head()="scope">
-            <p
-              class="table-cell-wrapper table-cell-wrapper__heading text-center"
-              :class="{ 'table-cell-wrapper__heading--current': scope.field.isThisWeek }"
-              :title="`${$d(new Date(scope.field.timestamp), 'dateMonth')} - ${$d(new Date(scope.field.timestampEnd), 'dateMonth')}`"
-            >
-              {{ scope.field.weekNumber }}
-            </p>
-          </template>
-          <template #cell(id)="scope">
-            <nuxt-link v-slot="{isActive}" :to="`/admin/timesheets/${scope.item.id}/`" custom>
+        <b-card no-body>
+          <b-table
+            class="timesheet-table mb-0"
+            responsive
+            striped
+            borderless
+            :items="tableDataFiltered.items"
+            :fields="tableDataFiltered.fields"
+            :sticky-header="true"
+            :no-border-collapse="true"
+            sort-by="name"
+          >
+            <template #empty>
+              <p>{{ $t('emptyTable') }}</p>
+            </template>
+            <template #head(id)>&nbsp;</template>
+            <template #head()="scope">
               <p
-                class="table-cell-wrapper table-cell-wrapper__employee"
-                :class="{ 'table-cell-wrapper__employee--active': isActive }"
+                class="table-cell-wrapper table-cell-wrapper__heading text-center"
+                :class="{ 'table-cell-wrapper__heading--current': scope.field.isThisWeek }"
+                :title="`${$d(new Date(scope.field.timestamp), 'dateMonth')} - ${$d(new Date(scope.field.timestampEnd), 'dateMonth')}`"
               >
-                {{ scope.item.name }}
+                {{ scope.field.weekNumber }}
               </p>
-            </nuxt-link>
-          </template>
-          <template #cell()="scope">
-            <nuxt-link
-              :class="['container--cell', scope.item[scope.field.key]]"
-              :title="$t(`legend.${scope.item[scope.field.key]}`)"
-              :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
-            />
-          </template>
-        </b-table>
+            </template>
+            <template #cell(id)="scope">
+              <nuxt-link v-slot="{isActive}" :to="`/admin/timesheets/${scope.item.id}/`" custom>
+                <p
+                  class="table-cell-wrapper table-cell-wrapper__employee"
+                  :class="{ 'table-cell-wrapper__employee--active': isActive }"
+                >
+                  {{ scope.item.name }}
+                </p>
+              </nuxt-link>
+            </template>
+            <template #cell()="scope">
+              <nuxt-link
+                :class="['container--cell', scope.item[scope.field.key]]"
+                :title="$t(`legend.${scope.item[scope.field.key]}`)"
+                :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
+              />
+            </template>
+          </b-table>
+        </b-card>
       </b-col>
       <b-col cols="9">
         <NuxtChild />
@@ -310,15 +324,16 @@ export default defineComponent({
     font-weight: normal;
 
     &--current {
-      font-weight: bold;
+      color: var(--color-light);
 
       &::before {
         content: '';
         position: absolute;
         width: 25px;
         height: 25px;
-        border: solid 1px var(--color-primary);
+        background: var(--color-primary);
         border-radius: 100%;
+        z-index: -1;
       }
     }
   }
