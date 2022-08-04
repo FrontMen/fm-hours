@@ -16,7 +16,7 @@
         <strong>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</strong>
       </span>
     </b-col> -->
-    <div class="progress blue mr-3">
+    <!-- <div class="progress blue mr-3">
       <span class="progress-left">
         <span class="progress-bar"></span>
       </span>
@@ -24,7 +24,14 @@
         <span class="progress-bar"></span>
       </span>
       <div class="progress-value">{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</div>
-    </div>
+    </div> -->
+    <b-col cols="auto" class="weekly-timesheet-row__total-column col-1 pr-2 pl-0">
+      <b-progress :max="weekWorkSchemeHoursTotal" height="2.4rem">
+        <b-progress-bar :value="weekTotal" :variant="'success'">
+          <span>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</span>
+        </b-progress-bar>
+      </b-progress>
+    </b-col>
   </b-row>
 </template>
 
@@ -144,6 +151,10 @@ export default defineComponent({
     &.exceeded {
       color: red;
     }
+  }
+  .progress-bar span {
+    font-size: 18px;
+    font-weight: 500;
   }
 }
 </style>

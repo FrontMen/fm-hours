@@ -1,9 +1,11 @@
 <i18n lang="yaml">
 en:
+  title: "Consultancy hours"
   requestLeave: "Request leave"
   feedback: "Feedback"
   logout: "Logout"
 nl:
+  title: "Consultancy uren"
   requestLeave: "Verlof aanvragen"
   feedback: "Feedback"
   logout: "Uitloggen"
@@ -17,7 +19,7 @@ nl:
           <b-col>
             <div class="d-flex align-items-center">
               <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
-              <h1 class="h3 text-muted ml-2 mb-0">Interim hours</h1>
+              <h1 class="h3 text-muted ml-2 mb-0">{{ $t('title') }}</h1>
             </div>
           </b-col>
 
