@@ -117,11 +117,9 @@ nl:
         v-for="employee in filteredEmployees"
         v-else
         :key="employee.id"
-        class="app-table__row employee-row p-3 mr-0"
+        class="app-table__row employee-row p-3"
       >
-        <b-avatar :src="employee.picture" />
-
-        <div class="font-weight-bold employee-row__name my-2 mx-3">
+        <div class="font-weight-bold employee-row__name">
           {{ employee.name }}
           <small v-if="employee.team">- {{ employee.team }}</small>
           <b-badge v-if="!checkEmployeeAvailability(employee, new Date())" variant="danger">
@@ -132,12 +130,16 @@ nl:
           </b-badge>
         </div>
 
-        <div class="ml-auto d-flex">
-          <nuxt-link class="btn btn-info" :to="localePath(`/admin/employees/${employee.id}`)">
-            {{ $t('manageEmployee') }}
+        <div class="ml-auto d-flex align-items-center">
+          <nuxt-link
+            class="btn btn-sm btn-primary"
+            :to="localePath(`/admin/employees/${employee.id}`)"
+            :title="$t('manageEmployee')"
+          >
+            <b-icon icon="pencil-fill" />
           </nuxt-link>
 
-          <b-dropdown :text="$t('insights')" variant="info" class="ml-3">
+          <b-dropdown size="sm" :text="$t('insights')" variant="primary" class="ml-2">
             <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/`)">
               {{ $t("year") }}
             </b-dropdown-item>

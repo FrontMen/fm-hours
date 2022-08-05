@@ -31,7 +31,6 @@ nl:
       :items="foundContracts"
       :fields="['name', 'project_name', 'project_billingentity_name']"
       class="rounded"
-      small
       striped
       table-variant="light"
       selectable
