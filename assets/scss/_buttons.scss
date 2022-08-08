@@ -1,17 +1,4 @@
 .btn {
-  img {
-    margin-right: 8px;
-  }
-
-  &.btn-icon {
-    padding: 4px 12px 4px 2px;
-  }
-
-  &.btn-small {
-    font-size: 15px;
-    min-height: auto;
-  }
-
   &.btn-primary {
     color: --color-light;
     background-color: var(--color-blue);

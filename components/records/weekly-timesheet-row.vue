@@ -22,27 +22,6 @@
           @focus.native="handleInputFocus($event.target, index)"
           @input="$emit('change')"
         />
-        <!-- <b-form-input
-          v-model="formattedProjectValues[index]"
-          class="weekly-timesheet-row__value-input"
-          type="time"
-          value="0:00"
-          step="1800"
-          min="00:00"
-          max="24:00"
-          list="hours"
-          :formatter="valueFormatter && valueFormatter.formatter"
-          :readonly="isReadonlyList[index]"
-          @focus.native="handleInputFocus($event.target, index)"
-          @input="$emit('change')"
-        />
-        <datalist id="hours">
-          <option>01:15</option>
-          <option>01:30</option>
-          <option>01:45</option>
-          <option>02:00</option>
-          <option label="Volledige dag">08:00</option>
-        </datalist> -->
       </b-form>
       <div
         v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
