@@ -4,9 +4,7 @@
       <span class="h3">
         {{ employee.name }}
       </span>
-      <span class="h5">
-        <b-badge variant="info" class="inline">BridgeUid: {{ employee.bridgeUid }}</b-badge>
-      </span>
+      <span class="text-muted">BridgeUid: {{ employee.bridgeUid }}</span>
     </div>
   </header>
 </template>

@@ -187,10 +187,6 @@ export default defineComponent({
     background-color: var(--color-medium-gray);
   }
 
-  &:hover {
-    background-color: var(--color-light-blue);
-  }
-
   + .weekly-timesheet-row {
     padding-top: 12px;
 

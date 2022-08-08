@@ -1,11 +1,11 @@
 <i18n lang="yaml">
   en:
-    previousHint: "Keyboard shortcut 🡄"
-    nextHint: "Keyboard shortcut 🡆"
+    previousHint: "Keyboard shortcut arrow left"
+    nextHint: "Keyboard shortcut arrow right"
     today: "today"
   nl:
-    previousHint: "Keyboard shortcut 🡄"
-    nextHint: "Keyboard shortcut 🡆"
+    previousHint: "Keyboard shortcut pijltje naar links"
+    nextHint: "Keyboard shortcut  pijltje naar rechts"
     today: "vandaag"
 </i18n>
 

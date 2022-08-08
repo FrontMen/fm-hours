@@ -35,8 +35,8 @@ nl:
 
 <template>
   <div class="content-wrapper mt-5">
-    <b-container class="mb-3">
-      <b-row>
+    <b-container fluid class="mb-3">
+      <b-row class="justify-content-between">
         <b-col cols="6" md="auto" class="pl-0 mb-3">
           <label class="col-form-label employee-status__label text-bold" for="employee-search">
             {{ $t('searchName') }}:
@@ -65,13 +65,14 @@ nl:
             </b-form-checkbox>
             <b-button v-b-modal.modal-center variant="primary">
               {{ $t('newCustomer') }}
+              <b-icon icon="person" />
             </b-button>
           </div>
         </b-col>
       </b-row>
     </b-container>
 
-    <b-container class="mb-3">
+    <b-container fluid class="mb-3">
       <b-table
         class="row mt-3 app-table timesheet-table"
         responsive

@@ -42,7 +42,12 @@ nl:
         disabled
         :placeholder="day.absenceHours"
       />
-      <span v-if="day.holiday" v-b-tooltip.hover :title="$t('publicHoliday')">
+      <span
+        v-if="day.holiday"
+        v-b-tooltip.hover
+        :title="$t('publicHoliday')"
+        class="holiday-tooltip"
+      >
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
@@ -143,6 +148,12 @@ export default defineComponent({
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
       display: none;
+    }
+
+    .holiday-tooltip {
+      position: absolute;
+      top: 15px;
+      right: 20px;
     }
   }
 

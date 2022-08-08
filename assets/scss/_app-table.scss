@@ -1,21 +1,18 @@
 .app-table {
   background: rgba(255, 255, 255, 0.8);
   height: 100%;
-  border-radius: 10px;
   margin-bottom: 40px;
 
   &__top-row {
-    background: var(--color-medium-gray);
-    color: var(--color-primary-text);
-    border-radius: 10px 10px 0 0;
+    background: var(--color-light);
+    color: var(--body-color);
+    border-top: 1px solid #dee2e6;
+    border-bottom: 2px solid #dee2e6;
   }
 
   &__row {
-    &:nth-of-type(odd) {
+    &:nth-of-type(even) {
       background-color: var(--color-medium-gray);
-    }
-    &:hover {
-      background-color: var(--color-light-blue);
     }
     + .app-table__row {
       border-top: 1px solid #e4e4e4;
