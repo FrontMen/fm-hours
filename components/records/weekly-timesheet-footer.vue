@@ -121,7 +121,7 @@ nl:
 
         <b-button
           v-if="isNew || isDenied"
-          class="mr-3"
+          class="mr-3 d-md-none"
           size="md"
           variant="secondary"
           :disabled="isSaving || !hasUnsavedChanges"
@@ -146,7 +146,7 @@ nl:
       <b-button
         v-if="isNew"
         v-b-tooltip.hover="{ variant: 'secondary' }"
-        class="d-none d-md-flex"
+        class="d-none d-md-block"
         :title="$t('validate')"
         size="lg"
         variant="primary"
@@ -160,6 +160,7 @@ nl:
       <b-button
         v-if="isNew"
         v-b-tooltip.hover="{ variant: 'secondary' }"
+        class="d-md-none"
         :title="$t('validate')"
         size="md"
         variant="primary"
