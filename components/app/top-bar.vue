@@ -13,7 +13,60 @@ nl:
 
 <template>
   <div class="top-bar hide-print" :class="{ 'top-bar__development': isDev }">
-    <div class="top-bar__inner content-wrapper">
+    <div class="d-md-none">
+      <b-navbar toggleable="lg" type="light" variant="light">
+        <b-navbar-brand href="#">
+          <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
+          {{ $t('title') }}
+        </b-navbar-brand>
+
+        <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col>
+
+        <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
+        <b-collapse id="nav-collapse" is-nav>
+          <b-navbar-nav class="ml-auto">
+            <LanguageSwitch class="mr-2" />
+
+            <b-nav-item
+              href="https://bridge.hosted-tools.com/myprofile/absences"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {{ $t('requestLeave') }}
+              <b-icon icon="box-arrow-up-right" class="ml-1" aria-hidden="true" />
+            </b-nav-item>
+
+            <b-nav-item-dropdown right :text="$t('insights')" class="mr-2">
+              <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
+                {{ $t("year") }}
+              </b-dropdown-item>
+              <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/${month}`)">
+                {{ $t("month") }}
+              </b-dropdown-item>
+            </b-nav-item-dropdown>
+
+            <b-nav-item-dropdown right class="employee__dropdown">
+              <template v-if="employee" #button-content>
+                {{ employee.name }}
+              </template>
+
+              <b-dropdown-item
+                href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
+                target="_blank"
+              >
+                {{ $t("feedback") }}
+                <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true" />
+              </b-dropdown-item>
+              <b-dropdown-item @click="handleLogoutClick">
+                {{ $t("logout") }}
+              </b-dropdown-item>
+            </b-nav-item-dropdown>
+          </b-navbar-nav>
+        </b-collapse>
+      </b-navbar>
+    </div>
+    <div class="top-bar__inner content-wrapper d-none d-md-flex">
       <b-container class="mx-0 px-0" fluid>
         <b-row class="py-2" align-v="center">
           <b-col>
@@ -27,48 +80,44 @@ nl:
 
           <b-col>
             <div class="d-flex align-items-center justify-content-end">
-              <div class="col-md-6">
-                <b-button
-                  class="mr-2"
-                  variant="tertiary"
-                  href="https://bridge.hosted-tools.com/myprofile/absences"
+              <b-button
+                class="mr-2"
+                variant="tertiary"
+                href="https://bridge.hosted-tools.com/myprofile/absences"
+                target="_blank"
+                rel="noreferrer"
+              >
+                {{ $t('requestLeave') }}
+                <b-icon icon="box-arrow-up-right" class="ml-1" aria-hidden="true" />
+              </b-button>
+
+              <b-dropdown :text="$t('insights')" class="mr-2">
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
+                  {{ $t("year") }}
+                </b-dropdown-item>
+                <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/${month}`)">
+                  {{ $t("month") }}
+                </b-dropdown-item>
+              </b-dropdown>
+
+              <LanguageSwitch class="mr-2" />
+
+              <b-dropdown right class="employee__dropdown">
+                <template v-if="employee" #button-content>
+                  {{ employee.name }}
+                </template>
+
+                <b-dropdown-item
+                  href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
                   target="_blank"
-                  rel="noreferrer"
                 >
-                  {{ $t('requestLeave') }}
-                  <b-icon icon="box-arrow-up-right" class="ml-1" aria-hidden="true" />
-                </b-button>
-
-                <b-dropdown :text="$t('insights')" class="mr-2">
-                  <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/`)">
-                    {{ $t("year") }}
-                  </b-dropdown-item>
-                  <b-dropdown-item :to="localePath(`/insights/${employeeId}/${year}/${month}`)">
-                    {{ $t("month") }}
-                  </b-dropdown-item>
-                </b-dropdown>
-              </div>
-
-              <div class="col-md-6">
-                <LanguageSwitch class="mr-2" />
-
-                <b-dropdown right class="employee__dropdown">
-                  <template v-if="employee" #button-content>
-                    {{ employee.name }}
-                  </template>
-
-                  <b-dropdown-item
-                    href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
-                    target="_blank"
-                  >
-                    {{ $t("feedback") }}
-                    <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true" />
-                  </b-dropdown-item>
-                  <b-dropdown-item @click="handleLogoutClick">
-                    {{ $t("logout") }}
-                  </b-dropdown-item>
-                </b-dropdown>
-              </div>
+                  {{ $t("feedback") }}
+                  <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true" />
+                </b-dropdown-item>
+                <b-dropdown-item @click="handleLogoutClick">
+                  {{ $t("logout") }}
+                </b-dropdown-item>
+              </b-dropdown>
             </div>
           </b-col>
         </b-row>

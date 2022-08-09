@@ -17,7 +17,7 @@ nl:
     <div class="container">
       <div class="row">
         <navigation-buttons
-          class="col-7 mb-3"
+          class="col-6 col-md-7 mb-3"
           :start-date="startDate"
           :route-prefix="routePrefix"
         />

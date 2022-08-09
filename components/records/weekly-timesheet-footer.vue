@@ -54,7 +54,7 @@ nl:
       </template>
     </div>
 
-    <div class="weekly-timesheet-footer__actions">
+    <div class="weekly-timesheet-footer__actions justify-content-end justify-content-md-start">
       <div v-if="isAdmin">
         <b-button-group v-if="isPending" class="mr-3">
           <b-button variant="danger" size="lg" :disabled="isSaving" @click="handleDenyClick">
@@ -109,8 +109,20 @@ nl:
       >
         <b-button
           v-if="isNew || isDenied"
-          class="mr-3"
+          class="mr-3 d-none d-md-flex"
           size="lg"
+          variant="secondary"
+          :disabled="isSaving || !hasUnsavedChanges"
+          @click="handleSaveClick"
+        >
+          {{ $t('save') }}
+          <b-icon icon="file-earmark-arrow-down" />
+        </b-button>
+
+        <b-button
+          v-if="isNew || isDenied"
+          class="mr-3"
+          size="md"
           variant="secondary"
           :disabled="isSaving || !hasUnsavedChanges"
           @click="handleSaveClick"
@@ -134,8 +146,22 @@ nl:
       <b-button
         v-if="isNew"
         v-b-tooltip.hover="{ variant: 'secondary' }"
+        class="d-none d-md-flex"
         :title="$t('validate')"
         size="lg"
+        variant="primary"
+        :disabled="isSaving || !canSubmitForApproval"
+        @click="handleSubmitClick"
+      >
+        {{ $t('submit') }}
+        <b-icon icon="file-earmark-arrow-up" />
+      </b-button>
+
+      <b-button
+        v-if="isNew"
+        v-b-tooltip.hover="{ variant: 'secondary' }"
+        :title="$t('validate')"
+        size="md"
         variant="primary"
         :disabled="isSaving || !canSubmitForApproval"
         @click="handleSubmitClick"

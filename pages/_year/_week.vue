@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-5 content-wrapper">
+  <div class="mt-2 mt-md-5 content-wrapper">
     <weekly-timesheet
       v-if="employee && year && week"
       :employee="employee"
