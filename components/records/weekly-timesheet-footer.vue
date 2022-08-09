@@ -40,29 +40,35 @@ nl:
       </template>
 
       <template v-if="isApproved">
-        <b-icon class="mr-1" icon="check-circle-fill" variant="success" />
-        <strong class="text-uppercase">{{ $t('approved') }}</strong>
+        <b-alert show variant="success">
+          <b-icon class="mr-1" icon="check-circle-fill" variant="success" />
+          <strong class="text-uppercase">{{ $t('approved') }}</strong>
+        </b-alert>
       </template>
 
       <template v-if="isDenied">
-        <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
-        <strong class="text-uppercase">{{ $t('denied') }}</strong>
+        <b-alert show variant="danger">
+          <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
+          <strong class="text-uppercase">{{ $t('denied') }}</strong>
+        </b-alert>
       </template>
     </div>
 
     <div class="weekly-timesheet-footer__actions">
       <div v-if="isAdmin">
         <b-button-group v-if="isPending" class="mr-3">
-          <b-button variant="danger" :disabled="isSaving" @click="handleDenyClick">
+          <b-button variant="danger" size="lg" :disabled="isSaving" @click="handleDenyClick">
             {{ $t('deny') }}
+            <b-icon icon="file-earmark-x"></b-icon>
           </b-button>
 
-          <b-button variant="success" :disabled="isSaving" @click="handleApproveClick">
+          <b-button variant="success" size="lg" :disabled="isSaving" @click="handleApproveClick">
             {{ $t('approve') }}
+            <b-icon icon="file-earmark-check"></b-icon>
           </b-button>
         </b-button-group>
 
-        <div v-if="isApproved">
+        <div>
           <b-button-group class="mr-3">
             <b-button
               variant="outline-primary"

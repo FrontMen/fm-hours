@@ -51,7 +51,7 @@ nl:
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
-    <b-col :cols="showWeekends ? 3 : 1" class="weekly-timesheet-row__total-column">
+    <b-col :cols="showWeekends ? 3 : 2" md="1" class="weekly-timesheet-row__total-column">
       {{ "0" + totalValue + ":00" }}
     </b-col>
   </b-row>

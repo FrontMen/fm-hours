@@ -34,7 +34,7 @@
         />
       </div>
     </b-col>
-    <b-col cols="1" class="weekly-timesheet-row__total-column">
+    <b-col cols="2" md="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>

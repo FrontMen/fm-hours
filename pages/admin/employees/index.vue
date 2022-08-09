@@ -99,10 +99,8 @@ nl:
       </b-row>
     </b-container>
     <b-container fluid class="app-table">
-      <b-row class="app-table__top-row py-3">
-        <b-col>
-          <span class="font-weight-bold text-dark">{{ $t('employees') }}</span>
-        </b-col>
+      <b-row class="app-table__top-row px-2 py-2">
+        <span class="font-weight-bold text-dark">{{ $t('employees') }}</span>
       </b-row>
 
       <b-row
@@ -117,7 +115,7 @@ nl:
         v-for="employee in filteredEmployees"
         v-else
         :key="employee.id"
-        class="app-table__row employee-row p-3"
+        class="app-table__row employee-row px-2 py-1"
       >
         <div class="font-weight-bold employee-row__name">
           {{ employee.name }}

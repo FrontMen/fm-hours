@@ -62,7 +62,7 @@ nl:
           </strong>
         </b-col>
 
-        <b-col cols="1" />
+        <b-col cols="2" md="1" />
       </b-row>
 
       <slot name="rows" />
@@ -146,9 +146,10 @@ export default defineComponent({
   }
 
   &__date-column {
+    flex: 1;
+    padding: 2px;
     text-align: center;
-    padding: 8px;
-    line-height: 1.2;
+    max-width: 100%;
 
     &--full {
       flex: 1;

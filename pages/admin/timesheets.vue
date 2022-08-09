@@ -281,7 +281,7 @@ export default defineComponent({
   cursor: pointer;
 
   &.pending {
-    background-color: var(--color-tertiary);
+    background-color: var(--color-tertiary-lighter);
     border: solid 2px var(--color-tertiary-darker);
   }
 

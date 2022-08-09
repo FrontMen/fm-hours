@@ -25,6 +25,8 @@ img {
 }
 
 .content-wrapper {
-  margin: 0 auto;
-  padding: 0 var(--viewport-spacing-horizontal);
+  @media (min-width: 768px) {
+    margin: 0 auto;
+    padding: 0 var(--viewport-spacing-horizontal);
+  }
 }
