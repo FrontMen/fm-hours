@@ -16,11 +16,7 @@ nl:
 </i18n>
 
 <template>
-  <div
-    v-if="isAdmin"
-    class="d-flex flex-column flex-shrink-0"
-    style="width: 4.5rem; min-height: 100vh;"
-  >
+  <div class="d-flex flex-column flex-shrink-0" style="width: 4.5rem; min-height: 100vh;">
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center bg-dark h-100">
       <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)" class="nav-item">
         <a

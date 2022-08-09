@@ -49,12 +49,7 @@ export default defineComponent({
   <div class="d-inline-block" :class="$style.languageSwitcher">
     <b-dropdown>
       <template #button-content>
-        <img
-          class="mr-2"
-          :class="$style.icon"
-          :src="svgUrl"
-          :alt="$t(`lang.${activeLocaleCode}`)"
-        />
+        <b-icon icon="translate"></b-icon>
       </template>
       <b-dropdown-item
         v-for="locale in availableLocalesToSelect"
@@ -62,11 +57,6 @@ export default defineComponent({
         :class="$style.link"
         :to="switchLocalePath(locale.code)"
       >
-        <img
-          :src="getLanguageSvgUrl(locale.code)"
-          :alt="$t(`lang.${locale.code}`)"
-          :class="$style.icon"
-        />
         {{ $t(`lang.${locale.code}`) }}
       </b-dropdown-item>
     </b-dropdown>
