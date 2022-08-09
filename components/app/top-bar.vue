@@ -23,7 +23,7 @@ nl:
             </div>
           </b-col>
 
-          <!-- <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col> -->
+          <b-col v-if="isDev" class="development">USING DEVELOPMENT SERVER</b-col>
 
           <b-col>
             <div class="d-flex align-items-center justify-content-end">
