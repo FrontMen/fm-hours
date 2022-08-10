@@ -16,7 +16,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="d-flex flex-column flex-shrink-0" style="width: 4.5rem; min-height: 100vh;">
+  <div class="admin-sidebar d-flex flex-column flex-shrink-0">
     <ul class="nav nav-pills nav-flush flex-column mb-auto text-center bg-dark h-100">
       <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)" class="nav-item">
         <a
@@ -68,3 +68,10 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.admin-sidebar {
+   width: 4.5rem;
+   min-height: 100vh;
+}
+</style>
