@@ -9,7 +9,7 @@ en:
     pending: Pending
     approved: Approved
     denied: Denied
-    
+
 nl:
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
@@ -281,7 +281,7 @@ export default defineComponent({
   cursor: pointer;
 
   &.pending {
-    background-color: var(--color-tertiary-lighter);
+    background-color: var(--color-tertiary-light);
     border: solid 2px var(--color-tertiary-darker);
   }
 
