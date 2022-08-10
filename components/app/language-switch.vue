@@ -1,9 +1,16 @@
 <script lang="ts">
-import { computed, defineComponent, useContext } from '@nuxtjs/composition-api';
-import type { LocaleObject } from 'nuxt-i18n';
+import {computed, defineComponent, useContext} from '@nuxtjs/composition-api';
+import type {LocaleObject} from 'nuxt-i18n';
+
 export default defineComponent({
+  props: {
+    isNav: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
-    const { i18n } = useContext();
+    const {i18n} = useContext();
 
     const availableLocales = computed(() =>
       (i18n.locales as LocaleObject[]).map((loc) => {
@@ -47,9 +54,10 @@ export default defineComponent({
 
 <template>
   <div class="d-inline-block" :class="$style.languageSwitcher">
-    <b-dropdown>
+    <component :is="isNav ? 'b-nav-item-dropdown' : 'b-dropdown'">
       <template #button-content>
-        <b-icon icon="translate"></b-icon>
+        <b-icon icon="translate" class="d-none d-lg-inline-block"></b-icon>
+        <span class="d-lg-none">{{ $t('switch') }}</span>
       </template>
       <b-dropdown-item
         v-for="locale in availableLocalesToSelect"
@@ -59,7 +67,7 @@ export default defineComponent({
       >
         {{ $t(`lang.${locale.code}`) }}
       </b-dropdown-item>
-    </b-dropdown>
+    </component>
   </div>
 </template>
 
@@ -67,6 +75,7 @@ export default defineComponent({
 .link {
   text-decoration: none;
 }
+
 .icon {
   width: 24px;
   cursor: default;
@@ -74,10 +83,12 @@ export default defineComponent({
 </style>
 
 <i18n lang="yaml">
-  en:
-    en: "English"
-    nl: "Nederlands"
-  nl:
-    en: "English"
-    nl: "Nederlands"
+en:
+  switch: "Change language"
+  en: "English"
+  nl: "Nederlands"
+nl:
+  switch: "Verander de taal"
+  en: "English"
+  nl: "Nederlands"
 </i18n>
