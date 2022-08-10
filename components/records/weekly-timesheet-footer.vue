@@ -108,7 +108,6 @@ nl:
         spinner-small
         spinner-variant="primary"
         class="d-inline-block"
-        @hidden="onHidden"
       >
         <b-button
           v-if="isNew || isDenied"

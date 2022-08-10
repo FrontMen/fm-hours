@@ -40,7 +40,7 @@ nl:
         class="weekly-timesheet-row__value-input"
         type="text"
         disabled
-        :placeholder="day.absenceHours"
+        :placeholder="day.absenceHours.toString()"
       />
       <span
         v-if="day.holiday"
