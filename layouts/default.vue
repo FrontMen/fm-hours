@@ -2,12 +2,7 @@
   <div class="d-flex">
     <admin-sidebar v-if="isAdmin" />
     <div class="layout-wrapper col p-0">
-      <top-bar
-        :employee="employee"
-        :is-admin="isAdmin"
-        :is-dev="$config.isDevelopment"
-        @logout="logout()"
-      />
+      <top-bar :employee="employee" :is-dev="$config.isDevelopment" @logout="logout()" />
 
       <Nuxt />
     </div>
