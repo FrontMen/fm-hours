@@ -17,7 +17,7 @@ nl:
     <div class="container">
       <div class="row">
         <navigation-buttons
-          class="col-6 col-md-7 mb-3"
+          class="col-12 col-md-7 mb-3"
           :start-date="startDate"
           :route-prefix="routePrefix"
         />
@@ -95,7 +95,7 @@ nl:
       </weekly-timesheet-container>
 
       <weekly-timesheet-footer
-        class="mt-5"
+        class="mt-3 mt-md-5"
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="isSaving"
         :last-saved="lastSaved"

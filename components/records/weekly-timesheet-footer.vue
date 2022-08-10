@@ -26,8 +26,11 @@ nl:
 </i18n>
 
 <template>
-  <div class="weekly-timesheet-footer mb-5">
-    <div v-if="lastSaved" class="d-flex  mr-2">
+  <div class="weekly-timesheet-footer mb-5 mt-2 mt-md-0">
+    <div
+      v-if="lastSaved"
+      class="d-flex justify-content-end justify-content-md-start mb-2 mb-md-0 mr-2"
+    >
       <span>{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
     </div>
 

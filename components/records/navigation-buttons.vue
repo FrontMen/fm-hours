@@ -11,7 +11,7 @@
 
 <template>
   <div class="navigation-buttons">
-    <div class="navigation-buttons__container">
+    <div class="navigation-buttons__container justify-content-center justify-content-md-start">
       <b-button-group class="navigation-buttons__date-group">
         <b-button
           v-b-tooltip.hover="{ variant: 'light' }"
@@ -139,9 +139,11 @@ export default defineComponent({
     font-size: 18px;
     font-weight: bold;
     flex-grow: 1;
+    text-align: center;
 
     @media (min-width: 560px) {
       font-size: 24px;
+      text-align: left;
     }
   }
 }

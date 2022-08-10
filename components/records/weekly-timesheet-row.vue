@@ -190,6 +190,11 @@ export default defineComponent({
   + .weekly-timesheet-row {
     padding-top: 12px;
 
+    @media (max-width: 559px) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
     @media (min-width: 560px) {
       padding-top: 0;
     }
@@ -200,6 +205,7 @@ export default defineComponent({
       flex: unset;
       width: 100%;
       max-width: 100%;
+      padding-left: 4px;
     }
 
     span {
