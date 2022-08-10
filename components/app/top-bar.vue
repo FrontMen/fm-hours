@@ -17,7 +17,7 @@ nl:
       <b-navbar-brand href="/">
         <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
         {{ $t('title') }}
-        <b-badge variant="danger">DEVELOPMENT</b-badge>
+        <b-badge v-if="isDev" variant="danger">DEVELOPMENT</b-badge>
       </b-navbar-brand>
 
       <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>

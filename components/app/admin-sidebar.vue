@@ -16,13 +16,15 @@ nl:
 </i18n>
 
 <template>
-  <div class="admin-sidebar d-flex flex-column flex-shrink-0">
-    <ul class="nav nav-pills nav-flush flex-column mb-auto text-center bg-dark h-100">
-      <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)" class="nav-item">
+  <div class="admin-sidebar min-vh-100">
+    <ul
+      class="nav nav-pills nav-flush flex-column mb-auto text-center bg-dark h-100 position-fixed"
+    >
+      <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)">
         <a
           v-b-tooltip.hover.right="{ variant: 'secondary' }"
           :href="link.href"
-          class="nav-link active py-3"
+          class="nav-link active py-3 px-4"
           :title="$t(link.name)"
         >
           <b-icon :icon="link.icon" />
@@ -71,7 +73,6 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .admin-sidebar {
-   width: 4.5rem;
-   min-height: 100vh;
+  width: 68px; // width of menu items
 }
 </style>
