@@ -51,7 +51,27 @@ nl:
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
-    <b-col :cols="showWeekends ? 3 : 2" md="1" class="weekly-timesheet-row__total-column">
+
+    <template v-if="showWeekends">
+      <b-col cols="1" class="weekly-timesheet-row__date-column">
+        <b-form-input
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          disabled
+          placeholder="0"
+        />
+      </b-col>
+      <b-col cols="1" class="weekly-timesheet-row__date-column">
+        <b-form-input
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          disabled
+          placeholder="0"
+        />
+      </b-col>
+    </template>
+
+    <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>
