@@ -52,7 +52,7 @@ nl:
       </span>
     </b-col>
     <b-col :cols="showWeekends ? 3 : 2" md="1" class="weekly-timesheet-row__total-column">
-      {{ "0" + totalValue + ":00" }}
+      {{ totalValue }}
     </b-col>
   </b-row>
 </template>
@@ -107,6 +107,11 @@ export default defineComponent({
   + .weekly-timesheet-row {
     padding-top: 12px;
 
+    @media (max-width: 559px) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
     @media (min-width: 560px) {
       padding-top: 0;
     }
@@ -121,6 +126,7 @@ export default defineComponent({
       flex: unset;
       width: 100%;
       max-width: 100%;
+      padding-left: 4px;
     }
   }
 
