@@ -151,6 +151,11 @@ export default defineComponent({
     color: var(--color-dark);
     border: 1px solid var(--color-medium-gray);
 
+    &[readonly] {
+      background-color: transparent;
+      border: 1px solid transparent;
+    }
+
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
       display: none;
