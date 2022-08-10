@@ -71,7 +71,7 @@ nl:
           </b-button>
         </b-button-group>
 
-        <div>
+        <div v-if="isApproved">
           <b-button-group class="mr-3">
             <b-button
               variant="outline-primary"
