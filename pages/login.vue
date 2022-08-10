@@ -122,7 +122,7 @@ export default defineComponent({
 }
 
 .logo {
-  width: 80;
+  width: 80px;
   height: 80px;
   margin-bottom: 20px;
 }
