@@ -1,20 +1,21 @@
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
-    <b-col class="weekly-timesheet__action-column" cols="4" />
+    <b-col class="weekly-timesheet__action-column" cols="0" md="4" />
 
     <b-col
       v-for="(value, index) in dayTotals"
       :key="index"
-      cols="1"
+      cols="auto"
+      md="1"
       class="weekly-timesheet-totals-row__column"
     >
       <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
     </b-col>
 
-    <b-col cols="auto" class="weekly-timesheet-row__total-column col-1 pr-2 pl-0">
-      <b-progress :max="weekWorkSchemeHoursTotal" height="2.4rem">
+    <b-col cols="auto" class="weekly-timesheet-row__total-column col-2 col-md-1 pr-2 pl-0">
+      <b-progress :max="40" height="2.4rem">
         <b-progress-bar :value="weekTotal" :variant="'success'"></b-progress-bar>
-        <span class="progressbar-title">{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</span>
+        <span class="progressbar-title">{{ weekTotal }} / {{ 40 }}</span>
       </b-progress>
     </b-col>
   </b-row>
