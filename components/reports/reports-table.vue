@@ -99,10 +99,5 @@ export default defineComponent({
   &__btn {
     text-align: right;
   }
-
-  td,
-  th {
-    white-space: nowrap;
-  }
 }
 </style>

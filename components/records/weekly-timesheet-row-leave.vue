@@ -181,12 +181,12 @@ export default defineComponent({
     &::-webkit-inner-spin-button {
       display: none;
     }
+  }
 
-    .holiday-tooltip {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-    }
+  .holiday-tooltip {
+    position: absolute;
+    top: 15px;
+    right: 20px;
   }
 
   &__total-column {
