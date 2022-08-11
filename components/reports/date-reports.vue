@@ -125,9 +125,8 @@ nl:
     <b-table
       responsive
       striped
-      head-variant="dark"
-      table-variant="light"
-      foot-variant="light"
+      hover
+      small
       sort-by="date"
       :sort-desc="true"
       :items="reportItems"

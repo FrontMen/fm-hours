@@ -1,13 +1,11 @@
 <template>
-  <div class="layout-wrapper">
-    <top-bar
-      :employee="employee"
-      :is-admin="isAdmin"
-      :is-dev="$config.isDevelopment"
-      @logout="logout()"
-    />
+  <div class="d-flex">
     <admin-sidebar v-if="isAdmin" />
-    <Nuxt />
+    <div class="layout-wrapper col p-0">
+      <top-bar :employee="employee" :is-dev="$config.isDevelopment" @logout="logout()" />
+
+      <Nuxt />
+    </div>
   </div>
 </template>
 

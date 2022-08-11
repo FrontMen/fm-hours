@@ -72,7 +72,7 @@ nl:
           </multiselect>
         </b-col>
         <b-col cols="6" lg="2" class="align-self-center">
-          <b-button variant="link" @click="showMoreFilters = !showMoreFilters">
+          <b-button variant="secondary" @click="showMoreFilters = !showMoreFilters">
             <span>
               {{ $t('expandSearchMenu') }}
               <b-icon-chevron-up v-if="showMoreFilters" />
@@ -81,8 +81,9 @@ nl:
           </b-button>
         </b-col>
         <b-col cols="6" lg="2" class="d-flex align-items-end justify-content-end mb-3">
-          <nuxt-link class="btn btn-success" :to="localePath(`/admin/employees/add`)">
+          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/employees/add`)">
             {{ $t('newEmployee') }}
+            <b-icon icon="person" />
           </nuxt-link>
         </b-col>
       </b-row>
@@ -98,10 +99,8 @@ nl:
       </b-row>
     </b-container>
     <b-container fluid class="app-table">
-      <b-row class="app-table__top-row py-3">
-        <b-col>
-          <span class="font-weight-bold">{{ $t('employees') }}</span>
-        </b-col>
+      <b-row class="app-table__top-row px-2 py-2">
+        <span class="font-weight-bold text-dark">{{ $t('employees') }}</span>
       </b-row>
 
       <b-row
@@ -116,11 +115,9 @@ nl:
         v-for="employee in filteredEmployees"
         v-else
         :key="employee.id"
-        class="app-table__row employee-row p-3 mr-0"
+        class="app-table__row employee-row px-2 py-1"
       >
-        <b-avatar :src="employee.picture" />
-
-        <div class="font-weight-bold employee-row__name my-2 mx-3">
+        <div class="font-weight-bold employee-row__name">
           {{ employee.name }}
           <small v-if="employee.team">- {{ employee.team }}</small>
           <b-badge v-if="!checkEmployeeAvailability(employee, new Date())" variant="danger">
@@ -131,12 +128,16 @@ nl:
           </b-badge>
         </div>
 
-        <div class="ml-auto d-flex">
-          <nuxt-link class="btn btn-info" :to="localePath(`/admin/employees/${employee.id}`)">
-            {{ $t('manageEmployee') }}
+        <div class="ml-auto d-flex align-items-center">
+          <nuxt-link
+            class="btn btn-sm btn-primary"
+            :to="localePath(`/admin/employees/${employee.id}`)"
+            :title="$t('manageEmployee')"
+          >
+            <b-icon icon="pencil-fill" />
           </nuxt-link>
 
-          <b-dropdown :text="$t('insights')" variant="info" class="ml-3">
+          <b-dropdown size="sm" :text="$t('insights')" variant="primary" class="ml-2">
             <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/`)">
               {{ $t("year") }}
             </b-dropdown-item>

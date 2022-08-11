@@ -34,30 +34,35 @@ nl:
       <template v-else>
         <employee-header v-if="mode !== 'add'" :employee="employee" />
         <b-row class="my-5">
-          <b-col cols="12" md="5">
-            <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
-            <project-selector
-              :selected-projects="selectedProjects"
-              :customers="customers"
-              @update-selected-projects="updateSelectedProjects"
-            ></project-selector>
+          <b-col cols="12" md="6">
+            <b-card>
+              <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
+              <project-selector
+                :selected-projects="selectedProjects"
+                :customers="customers"
+                @update-selected-projects="updateSelectedProjects"
+              ></project-selector>
+            </b-card>
           </b-col>
-
-          <b-col md="1" />
 
           <b-col cols="12" md="6">
-            <employee-settings
-              :employee="employee"
-              :is-admin="isAdmin"
-              @changed="hasUnsavedChanges = true, errorMessage = null"
-              @changed-admin="changedAdmin"
-              @error-state="handleFormError"
-            ></employee-settings>
+            <b-card>
+              <employee-settings
+                :employee="employee"
+                :is-admin="isAdmin"
+                @changed="hasUnsavedChanges = true, errorMessage = null"
+                @changed-admin="changedAdmin"
+                @error-state="handleFormError"
+              ></employee-settings>
+            </b-card>
           </b-col>
         </b-row>
-        <b-button :disabled="!hasUnsavedChanges" @click="saveEmployee">
-          {{ $t('save') }}
-        </b-button>
+        <div class="d-flex justify-content-end">
+          <b-button variant="primary" :disabled="!hasUnsavedChanges" @click="saveEmployee">
+            {{ $t('save') }}
+            <b-icon icon="file-earmark-arrow-down" class="ml-1" />
+          </b-button>
+        </div>
         <b-row>
           <b-col cols="12" md="5">
             <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">

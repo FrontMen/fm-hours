@@ -4,56 +4,70 @@ en:
   waiting: "Waiting on approval"
   denied: "Denied"
   submit: "Submit for approval"
-  save: "Save"
+  save: "Save concept"
   deny: "Deny"
   approve: "Approve"
   undo: "Undo approval"
   addBridge: "Add to bridge"
   removeBridge: "Remove from bridge"
+  validate: "Are the hours complete?"
 nl:
   unsubmit: "Terugtrekken"
-  waiting: "Wacht op akkoord"
+  waiting: "Indienen gelukt. Wacht op akkoord"
   denied: "Afgekeurd"
-  submit: "Verzenden"
-  save: "Opslaan"
+  submit: "Indienen"
+  save: "Concept opslaan"
   deny: "Afkeuren"
   approve: "Akkordeeren"
   undo: "Ongedaan maken"
   addBridge: "Toevoegen aan bridge"
   removeBridge: "Verwijderen van bridge"
+  validate: "Kloppen de totalen?"
 </i18n>
 
 <template>
-  <div class="weekly-timesheet-footer mb-5">
+  <div class="weekly-timesheet-footer mb-5 mt-2 mt-md-0">
+    <div
+      v-if="lastSaved"
+      class="d-flex justify-content-end justify-content-md-start mb-2 mb-md-0 mr-2"
+    >
+      <span>{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
+    </div>
+
     <div class="weekly-timesheet-footer__status">
       <template v-if="isPending">
-        <b-icon class="mr-1" icon="clock-fill" variant="secondary" />
-        <strong class="text-uppercase">{{ $t('waiting') }}</strong>
+        <b-alert show variant="primary">
+          <b-icon class="mr-1" icon="clock" variant="secondary" />
+          {{ $t('waiting') }}
+        </b-alert>
       </template>
 
       <template v-if="isApproved">
-        <b-icon class="mr-1" icon="check-circle-fill" variant="success" />
-        <strong class="text-uppercase">{{ $t('approved') }}</strong>
+        <b-alert show variant="success">
+          <b-icon class="mr-1" icon="check-circle-fill" variant="success" />
+          <strong class="text-uppercase">{{ $t('approved') }}</strong>
+        </b-alert>
       </template>
 
       <template v-if="isDenied">
-        <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
-        <strong class="text-uppercase">{{ $t('denied') }}</strong>
+        <b-alert show variant="danger">
+          <b-icon class="mr-1" icon="x-circle-fill" variant="danger" />
+          <strong class="text-uppercase">{{ $t('denied') }}</strong>
+        </b-alert>
       </template>
     </div>
 
-    <span v-if="lastSaved">{{ $t('lastSave', {time: lastSavedLabel}) }}</span>
-    <b-spinner v-if="isSaving" class="ml-1" small />
-
-    <div class="weekly-timesheet-footer__actions">
+    <div class="weekly-timesheet-footer__actions justify-content-end justify-content-md-start">
       <div v-if="isAdmin">
         <b-button-group v-if="isPending" class="mr-3">
-          <b-button variant="danger" :disabled="isSaving" @click="handleDenyClick">
+          <b-button variant="danger" size="lg" :disabled="isSaving" @click="handleDenyClick">
             {{ $t('deny') }}
+            <b-icon icon="file-earmark-x"></b-icon>
           </b-button>
 
-          <b-button variant="success" :disabled="isSaving" @click="handleApproveClick">
+          <b-button variant="success" size="lg" :disabled="isSaving" @click="handleApproveClick">
             {{ $t('approve') }}
+            <b-icon icon="file-earmark-check"></b-icon>
           </b-button>
         </b-button-group>
 
@@ -87,26 +101,76 @@ nl:
         </div>
       </div>
 
-      <b-button
-        v-if="isNew || isDenied"
-        class="mr-3"
-        :disabled="isSaving || !hasUnsavedChanges"
-        @click="handleSaveClick"
+      <b-overlay
+        :show="isSaving"
+        rounded
+        opacity="0.6"
+        spinner-small
+        spinner-variant="primary"
+        class="d-inline-block"
       >
-        {{ $t('save') }}
-      </b-button>
+        <b-button
+          v-if="isNew || isDenied"
+          class="mr-3 d-none d-md-flex"
+          size="lg"
+          variant="secondary"
+          :disabled="isSaving || !hasUnsavedChanges"
+          @click="handleSaveClick"
+        >
+          {{ $t('save') }}
+          <b-icon icon="file-earmark-arrow-down" />
+        </b-button>
 
-      <b-button v-if="isPending" class="mr-3" :disabled="isSaving" @click="handleUnsubmitClick">
+        <b-button
+          v-if="isNew || isDenied"
+          class="mr-3 d-md-none"
+          size="md"
+          variant="secondary"
+          :disabled="isSaving || !hasUnsavedChanges"
+          @click="handleSaveClick"
+        >
+          {{ $t('save') }}
+          <b-icon icon="file-earmark-arrow-down" />
+        </b-button>
+      </b-overlay>
+
+      <b-button
+        v-if="isPending"
+        size="lg"
+        variant="warning"
+        :disabled="isSaving"
+        @click="handleUnsubmitClick"
+      >
         {{ $t('unsubmit') }}
+        <b-icon icon="file-earmark-x" />
       </b-button>
 
       <b-button
         v-if="isNew"
-        class="mr-3"
+        v-b-tooltip.hover="{ variant: 'secondary' }"
+        class="d-none d-md-block"
+        :title="$t('validate')"
+        size="lg"
+        variant="primary"
         :disabled="isSaving || !canSubmitForApproval"
         @click="handleSubmitClick"
       >
         {{ $t('submit') }}
+        <b-icon icon="file-earmark-arrow-up" />
+      </b-button>
+
+      <b-button
+        v-if="isNew"
+        v-b-tooltip.hover="{ variant: 'secondary' }"
+        class="d-md-none"
+        :title="$t('validate')"
+        size="md"
+        variant="primary"
+        :disabled="isSaving || !canSubmitForApproval"
+        @click="handleSubmitClick"
+      >
+        {{ $t('submit') }}
+        <b-icon icon="file-earmark-arrow-up" />
       </b-button>
     </div>
   </div>
@@ -218,7 +282,7 @@ export default defineComponent({
       isDenied,
       isClosed,
     };
-  },
+  }
 });
 </script>
 

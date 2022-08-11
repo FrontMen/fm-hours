@@ -1,20 +1,22 @@
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
-    <b-col class="weekly-timesheet__action-column" cols="4" />
+    <b-col class="weekly-timesheet__action-column" cols="0" md="4" />
 
     <b-col
       v-for="(value, index) in dayTotals"
       :key="index"
-      cols="1"
+      cols="auto"
+      md="1"
       class="weekly-timesheet-totals-row__column"
     >
       <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
     </b-col>
 
-    <b-col cols="1" class="weekly-timesheet-totals-row__week-column d-sm-block">
-      <span>
-        <strong>{{ weekTotal }} / {{ weekWorkSchemeHoursTotal }}</strong>
-      </span>
+    <b-col cols="auto" class="weekly-timesheet-row__total-column col-2 col-md-1 pr-2 pl-0">
+      <b-progress :max="40" height="2.4rem">
+        <b-progress-bar :value="weekTotal" :variant="'success'"></b-progress-bar>
+        <span class="progressbar-title">{{ weekTotal }} / {{ 40 }}</span>
+      </b-progress>
     </b-col>
   </b-row>
 </template>
@@ -135,6 +137,23 @@ export default defineComponent({
     &.exceeded {
       color: red;
     }
+  }
+
+  .progressbar {
+    position: relative;
+  }
+
+  .progressbar-title {
+    position: absolute;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: center;
+    line-height: 40px;
+    overflow: hidden;
+    color: var(--body-color);
+    right: 0;
+    left: 0;
+    top: 0;
   }
 }
 </style>

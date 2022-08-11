@@ -16,14 +16,22 @@ nl:
 </i18n>
 
 <template>
-  <b-sidebar id="sidebar-1" shadow backdrop>
-    <b-list-group>
-      <b-list-group-item v-for="(link, index) in links" :key="index" :to="localePath(link.href)">
-        <b-icon :icon="link.icon" />
-        {{ $t(link.name) }}
-      </b-list-group-item>
-    </b-list-group>
-  </b-sidebar>
+  <div class="admin-sidebar min-vh-100">
+    <ul
+      class="nav nav-pills nav-flush flex-column mb-auto text-center bg-dark h-100 position-fixed"
+    >
+      <li v-for="(link, index) in links" :key="index" :to="localePath(link.href)">
+        <a
+          v-b-tooltip.hover.right="{ variant: 'secondary' }"
+          :href="link.href"
+          class="nav-link active py-3 px-4"
+          :title="$t(link.name)"
+        >
+          <b-icon :icon="link.icon" />
+        </a>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script lang="ts">
@@ -62,3 +70,9 @@ export default defineComponent({
   },
 });
 </script>
+
+<style lang="scss" scoped>
+.admin-sidebar {
+  width: 68px; // width of menu items
+}
+</style>

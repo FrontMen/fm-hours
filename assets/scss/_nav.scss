@@ -1,0 +1,11 @@
+.nav-pills {
+  .nav-link {
+    border-radius: 0;
+  }
+
+  .nav-link.active,
+  .show > .nav-link {
+    color: var(--color-light);
+    background-color: var(--bg-dark);
+  }
+}

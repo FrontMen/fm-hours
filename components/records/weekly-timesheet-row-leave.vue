@@ -13,11 +13,15 @@ nl:
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <strong v-b-tooltip.hover class="title-with-tooltip" :title="$t('description')">
+      <strong
+        v-b-tooltip.hover="{ variant: 'light' }"
+        class="title-with-tooltip"
+        :title="$t('description')"
+      >
         {{ $t('title') }}
       </strong>
 
-      <span v-b-tooltip.hover class="ml-4" :title="$t('refresh')">
+      <span v-b-tooltip.hover="{ variant: 'light' }" class="ml-4" :title="$t('refresh')">
         <b-icon
           icon="arrow-counterclockwise"
           :disabled="allowRefresh"
@@ -32,12 +36,42 @@ nl:
       cols="1"
       class="weekly-timesheet-row__date-column"
     >
-      <span>{{ day.absenceHours }}</span>
-      <span v-if="day.holiday" v-b-tooltip.hover :title="$t('publicHoliday')">
+      <b-form-input
+        class="weekly-timesheet-row__value-input"
+        type="text"
+        disabled
+        :placeholder="day.absenceHours.toString()"
+      />
+      <span
+        v-if="day.holiday"
+        v-b-tooltip.hover
+        :title="$t('publicHoliday')"
+        class="holiday-tooltip"
+      >
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
-    <b-col :cols="showWeekends ? 3 : 1" class="weekly-timesheet-row__total-column">
+
+    <template v-if="showWeekends">
+      <b-col cols="1" class="weekly-timesheet-row__date-column">
+        <b-form-input
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          disabled
+          placeholder="0"
+        />
+      </b-col>
+      <b-col cols="1" class="weekly-timesheet-row__date-column">
+        <b-form-input
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          disabled
+          placeholder="0"
+        />
+      </b-col>
+    </template>
+
+    <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>
@@ -93,6 +127,11 @@ export default defineComponent({
   + .weekly-timesheet-row {
     padding-top: 12px;
 
+    @media (max-width: 559px) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
+
     @media (min-width: 560px) {
       padding-top: 0;
     }
@@ -107,6 +146,7 @@ export default defineComponent({
       flex: unset;
       width: 100%;
       max-width: 100%;
+      padding-left: 4px;
     }
   }
 
@@ -122,7 +162,35 @@ export default defineComponent({
     }
   }
 
+  &__value-input {
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 17px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--color-dark);
+    border: 1px solid var(--color-medium-gray);
+
+    &[readonly] {
+      background-color: transparent;
+      border: 1px solid transparent;
+    }
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      display: none;
+    }
+
+    .holiday-tooltip {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+  }
+
   &__total-column {
+    font-size: 18px;
+    font-weight: 500;
     text-align: right;
     padding: 0 4px;
 

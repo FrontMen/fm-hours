@@ -1,23 +1,35 @@
 :root {
-  --color-primary: #201e33;
+  --color-primary: #365fd9;
   --color-primary-text: #ffffff;
   --color-secondary: #e6e6e6;
-  --color-tertiary: #62c3de;
+  --color-tertiary: #365fd9;
+  --color-tertiary-light: #62c3de;
   --color-tertiary-darker: #21849f;
   --body-color: #212529;
+  --bg-dark: #343a40;
   --color-success: #a6d9a6;
   --color-success-darker: #4db34d;
   --color-alert: #ffb37e;
   --color-alert-darker: #fe6800;
   --color-danger: #e8758c;
   --color-danger-darker: #be203f;
+  --color-light: #fff;
+  --color-dark: #000;
+  --color-light-gray: #ebebeb;
   --color-medium-gray: #eaeaea;
   --color-medium-gray-darker: #aaaaaa;
+
+  --color-blue: #365fd9;
+  --color-blue-hover: #5079f3;
+  --color-light-blue: #ebf4ff;
+  --color-orange: #ed7f53;
+  --color-orange-hover: #ff996d;
 }
 
 $theme-colors: (
-  'primary': #201e33,
+  'primary': #365fd9,
   'secondary': #201e33,
+  'tertiary': #ed7f53,
 );
 
 // Bootstrap and its default variables

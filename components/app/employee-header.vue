@@ -1,12 +1,10 @@
 <template>
   <header class="employee-header">
-    <img :src="employee.picture" alt="avatar" class="avatar" />
-
     <div class="employee-details">
-      <span class="bold">
+      <span class="h3">
         {{ employee.name }}
       </span>
-      <span class="light">BridgeUid: {{ employee.bridgeUid }}</span>
+      <span class="text-muted">BridgeUid: {{ employee.bridgeUid }}</span>
     </div>
   </header>
 </template>
@@ -41,7 +39,6 @@ export default defineComponent({
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  margin-left: 15px;
 
   .bold {
     font-weight: 700;

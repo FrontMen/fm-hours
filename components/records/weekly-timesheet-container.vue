@@ -28,7 +28,7 @@ nl:
 </i18n>
 <template>
   <div class="weekly-timesheet" :class="{ 'weekly-timesheet--no-header': !showHeader }">
-    <b-container fluid>
+    <b-container>
       <b-row v-if="showHeader" cols="14">
         <b-col class="weekly-timesheet__action-column" cols="4" />
 
@@ -45,24 +45,24 @@ nl:
             {{ $t(getCaptionText(date)) }}
           </span>
 
-          <strong class="d-block text-capitalize">
+          <small class="d-block text-capitalize">
             <span class="d-md-none">
               {{ $d(new Date(date.date), 'dayNarrow') }}
             </span>
-            <span class="d-none d-md-block">
+            <span class="text-uppercase d-none d-md-block">
               {{ $d(new Date(date.date), 'dayShort') }}
             </span>
-          </strong>
+          </small>
 
-          <small>
-            <span class="d-none d-md-inline">
-              {{ $d(new Date(date.date), 'dateMonth') }}
+          <strong>
+            <span class="h4 d-none d-md-inline">
+              {{ $d(new Date(date.date), 'date') }}
             </span>
             <span class="d-md-none">{{ $d(new Date(date.date), 'date') }}</span>
-          </small>
+          </strong>
         </b-col>
 
-        <b-col cols="1" />
+        <b-col cols="2" md="1" />
       </b-row>
 
       <slot name="rows" />
@@ -128,12 +128,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  border-right: 1px solid var(--color-primary);
-  border-bottom: 8px solid var(--color-primary);
-  border-left: 1px solid var(--color-primary);
-  border-radius: 8px;
+  background-color: var(--color-light);
+  color: var(--body-color);
+  border: 1px solid var(--color-light-gray);
+  border-radius: 4px;
 
   &--no-header {
     border-top: 8px solid var(--color-primary);
@@ -148,9 +146,10 @@ export default defineComponent({
   }
 
   &__date-column {
+    flex: 1;
+    padding: 2px;
     text-align: center;
-    padding: 8px;
-    line-height: 1.2;
+    max-width: 100%;
 
     &--full {
       flex: 1;

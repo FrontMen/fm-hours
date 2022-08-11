@@ -1,12 +1,12 @@
 <i18n lang="yaml">
 en:
-  previousHint: "Or use keyboard left to go to previous {DATE_MSG}"
-  nextHint: "Or use keyboard right to go to next {DATE_MSG}"
+  previousHint: "Keyboard shortcut arrow left"
+  nextHint: "Keyboard shortcut arrow right"
   currentHint: "To current {DATE_MSG}"
 
 nl:
-  previousHint: "Or use keyboard left to go to previous {DATE_MSG}"
-  nextHint: "Or use keyboard right to go to next {DATE_MSG}"
+  previousHint: "Keyboard shortcut pijltje naar links"
+  nextHint: "Keyboard shortcut  pijltje naar rechts"
   currentHint: "Huidige {DATE_MSG}"
 </i18n>
 
@@ -14,7 +14,7 @@ nl:
   <div class="navigation-buttons">
     <div class="navigation-buttons__container">
       <b-button
-        v-b-tooltip.hover
+        v-b-tooltip.hover="{ variant: 'light' }"
         class="navigation-buttons__button"
         :title="$t('previousHint', {DATE_MSG})"
         @click="handlePreviousClick()"
@@ -23,7 +23,7 @@ nl:
       </b-button>
 
       <b-button
-        v-b-tooltip.hover
+        v-b-tooltip.hover="{ variant: 'light' }"
         class="navigation-buttons__button"
         :title="$t('currentHint', {DATE_MSG})"
         @click="handleCurrentClick"
@@ -32,7 +32,7 @@ nl:
       </b-button>
 
       <b-button
-        v-b-tooltip.hover
+        v-b-tooltip.hover="{ variant: 'light' }"
         class="navigation-buttons__button"
         :title="$t('nextHint', {DATE_MSG})"
         @click="handleNextClick()"

@@ -1,27 +1,42 @@
 <i18n lang="yaml">
   en:
-    previousHint: "Or use keyboard left to go to previous week"
-    nextHint: "Or use keyboard right to go to next week"
+    previousHint: "Keyboard shortcut arrow left"
+    nextHint: "Keyboard shortcut arrow right"
     today: "today"
   nl:
-    previousHint: "Of gebruikt de pijltjestoets links om naar vorige week te navigeren"
-    nextHint: "Of gebruikt de pijltjestoets rechts om naar volgende week te navigeren"
+    previousHint: "Keyboard shortcut pijltje naar links"
+    nextHint: "Keyboard shortcut  pijltje naar rechts"
     today: "vandaag"
 </i18n>
 
 <template>
   <div class="navigation-buttons">
-    <div class="navigation-buttons__container">
+    <div class="navigation-buttons__container justify-content-center justify-content-md-start">
       <b-button-group class="navigation-buttons__date-group">
-        <b-button v-b-tooltip.hover :title="$t('previousHint')" :to="localePath(prevWeekURL)">
+        <b-button
+          v-b-tooltip.hover="{ variant: 'light' }"
+          :title="$t('previousHint')"
+          :to="localePath(prevWeekURL)"
+          variant="secondary"
+        >
           <b-icon icon="arrow-left" />
         </b-button>
 
-        <b-button :disabled="isCurrentWeek" class="text-capitalize" :to="localePath(currWeekURL)">
-          {{$t('today')}}
+        <b-button
+          :disabled="isCurrentWeek"
+          class="text-capitalize"
+          :to="localePath(currWeekURL)"
+          variant="secondary"
+        >
+          <strong>{{$t('today')}}</strong>
         </b-button>
 
-        <b-button v-b-tooltip.hover :title="$t('nextHint')" :to="localePath(nextWeekURL)">
+        <b-button
+          v-b-tooltip.hover="{ variant: 'light' }"
+          :title="$t('nextHint')"
+          :to="localePath(nextWeekURL)"
+          variant="secondary"
+        >
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
@@ -124,9 +139,11 @@ export default defineComponent({
     font-size: 18px;
     font-weight: bold;
     flex-grow: 1;
+    text-align: center;
 
     @media (min-width: 560px) {
       font-size: 24px;
+      text-align: left;
     }
   }
 }

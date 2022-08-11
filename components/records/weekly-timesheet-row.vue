@@ -1,9 +1,7 @@
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <span>
-        <strong>{{ timesheetProject.project.customer.name }}</strong>
-      </span>
+      <span>{{ timesheetProject.project.customer.name }}</span>
     </b-col>
 
     <b-col
@@ -11,22 +9,20 @@
       :key="index"
       cols="1"
       class="weekly-timesheet-row__date-column"
-      :class="{
-        'weekly-timesheet-row__date-column--dark': shouldShowDarkBG(
-          selectedWeek[index],
-        ),
-      }"
     >
-      <b-form-input
-        v-model="formattedProjectValues[index]"
-        class="weekly-timesheet-row__value-input"
-        type="text"
-        inputmode="decimal"
-        :formatter="valueFormatter && valueFormatter.formatter"
-        :readonly="isReadonlyList[index]"
-        @focus.native="handleInputFocus($event.target, index)"
-        @input="$emit('change')"
-      />
+      <b-form autpcomplete="off">
+        <b-form-input
+          v-model="formattedProjectValues[index]"
+          class="weekly-timesheet-row__value-input"
+          type="text"
+          value="0"
+          autocomplete="false"
+          :formatter="valueFormatter && valueFormatter.formatter"
+          :readonly="isReadonlyList[index]"
+          @focus.native="handleInputFocus($event.target, index)"
+          @input="$emit('change')"
+        />
+      </b-form>
       <div
         v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
         class="weekly-timesheet-row__value-icon"
@@ -38,7 +34,7 @@
         />
       </div>
     </b-col>
-    <b-col cols="1" class="weekly-timesheet-row__total-column">
+    <b-col cols="2" md="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
     </b-col>
   </b-row>
@@ -182,13 +178,22 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet-row {
-  background: #fff;
+  background-color: var(--color-light);
   color: var(--body-color);
   align-items: center;
   position: relative;
 
+  &:nth-of-type(even) {
+    background-color: var(--color-medium-gray);
+  }
+
   + .weekly-timesheet-row {
     padding-top: 12px;
+
+    @media (max-width: 559px) {
+      padding-top: 6px;
+      padding-bottom: 6px;
+    }
 
     @media (min-width: 560px) {
       padding-top: 0;
@@ -200,6 +205,17 @@ export default defineComponent({
       flex: unset;
       width: 100%;
       max-width: 100%;
+      padding-left: 4px;
+    }
+
+    span {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: 500;
+
+      &::first-letter {
+        text-transform: capitalize;
+      }
     }
   }
 
@@ -207,23 +223,26 @@ export default defineComponent({
     flex: 1;
     padding: 2px;
     text-align: center;
-    background-color: #fff;
     max-width: 100%;
 
     @media (min-width: 768px) {
       padding: 8px;
-    }
-
-    &--dark {
-      background-color: #999;
     }
   }
 
   &__value-input {
     padding-left: 0;
     padding-right: 0;
+    font-size: 17px;
+    font-weight: 500;
     text-align: center;
-    border: 1px solid var(--color-primary);
+    color: var(--color-dark);
+    border: 1px solid var(--color-medium-gray);
+
+    &[readonly] {
+      background-color: transparent;
+      border: 1px solid transparent;
+    }
 
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
@@ -238,6 +257,8 @@ export default defineComponent({
   }
 
   &__total-column {
+    font-size: 18px;
+    font-weight: 500;
     text-align: right;
     padding: 0 4px;
 
