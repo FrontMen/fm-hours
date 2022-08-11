@@ -102,7 +102,10 @@ export default defineComponent({
     })
 
     const hasWeekendHours = computed(() => {
-      return days.value.at(-1).hours > 0 || days.value.at(-2).hours > 0;
+      const saturdayHours = days.value?.at(-1)?.hours || 0;
+      const sundayHours = days.value?.at(-2)?.hours || 0;
+
+      return saturdayHours > 0 || sundayHours > 0;
     });
 
     watch(
