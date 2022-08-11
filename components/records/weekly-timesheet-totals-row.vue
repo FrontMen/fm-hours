@@ -172,6 +172,12 @@ export default defineComponent({
     position: absolute;
     right: 0;
     top: -8px;
+    cursor: pointer;
+
+    svg {
+      border-radius: 50%;
+      background-color: var(--color-light);
+    }
   }
 }
 </style>
