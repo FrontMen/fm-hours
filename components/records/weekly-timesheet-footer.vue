@@ -282,11 +282,6 @@ export default defineComponent({
       isDenied,
       isClosed,
     };
-  },
-  data() {
-    return {
-      show: false
-    }
   }
 });
 </script>
