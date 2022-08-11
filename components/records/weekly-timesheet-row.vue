@@ -242,6 +242,7 @@ export default defineComponent({
     &[readonly] {
       background-color: transparent;
       border: 1px solid transparent;
+      pointer-events: none;
     }
 
     &::-webkit-outer-spin-button,
