@@ -55,10 +55,16 @@ nl:
           </small>
 
           <strong>
-            <span class="h4 d-none d-md-inline">
+            <span
+              :class="shouldShowCaption(date)? 'caption-inline h4 d-none d-md-inline-block' : 'h4 d-none d-md-inline-block'"
+            >
               {{ $d(new Date(date.date), 'date') }}
             </span>
-            <span class="d-md-none">{{ $d(new Date(date.date), 'date') }}</span>
+            <span
+              :class="shouldShowCaption(date)? 'caption-inline d-inline-block d-md-none' : 'd-md-none'"
+            >
+              {{ $d(new Date(date.date), 'date') }}
+            </span>
           </strong>
         </b-col>
 
@@ -173,6 +179,26 @@ export default defineComponent({
       @media (min-width: 560px) {
         left: 0;
         transform: none;
+      }
+    }
+    .caption-inline {
+      position: relative;
+      top: 0;
+      content: "";
+      width: 24px;
+      height: 24px;
+      border-radius: 24px;
+      color: var(--light);
+      line-height: 1.4;
+      font-weight: 300;
+      background-color: var(--color-primary);
+
+      @media (min-width: 560px) {
+        top: -2px;
+        width: 36px;
+        height: 36px;
+        border-radius: 36px;
+        line-height: 1.45;
       }
     }
   }
