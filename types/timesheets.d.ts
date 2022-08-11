@@ -44,10 +44,16 @@ interface TimesheetTableData {
   items: TimesheetTableItem[];
 }
 
+interface TimesheetDayTotal {
+  day: WeekDate;
+  hours: number;
+  expected: number;
+}
+
 interface TimesheetTotals {
   weekTotal: number;
   expectedWeekTotal: number;
-  dayTotal: number[];
+  days: TimesheetDayTotal[];
 }
 
 interface TimesheetEmployee extends Employee {

@@ -59,7 +59,7 @@ nl:
           <weekly-timesheet-totals-row
             :projects="timesheet.projects"
             :show-weekends="showWeekends"
-            :selected-week="relevantWeeksView"
+            :selected-week="selectedWeek"
             :work-scheme="timesheet.workScheme"
             @totals="setTotals"
           />
@@ -272,7 +272,7 @@ export default defineComponent({
     const totals = ref<TimesheetTotals>({
       weekTotal: 0,
       expectedWeekTotal: 0,
-      dayTotal: [],
+      days: [],
     });
 
     const getTimesheet = async () => {
@@ -479,17 +479,11 @@ export default defineComponent({
         );
       } else {
         // Only show this one if total hours is fine, but some days are too long
-        const daysExceedingExpected = totals.value.dayTotal.filter((hoursInDay: number, index: number) => {
-          const workSchemeDay = timesheet.value.workScheme?.[index];
-
-          if (!workSchemeDay) return false;
-
-          const weekendHours = !workSchemeDay && hoursInDay;
-          const exceedsExpectedHours = workSchemeDay?.workHours;
-          return hoursInDay > exceedsExpectedHours || weekendHours;
+        const hasExceedingDay = totals.value.days.some((day: TimesheetDayTotal) => {
+          return day.hours > day.expected;
         });
 
-        if (daysExceedingExpected.length && !showBridgeError.value)
+        if (hasExceedingDay && !showBridgeError.value)
           confirmation = confirm(i18n.t('dayError') as string);
       }
 
