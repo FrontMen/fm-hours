@@ -91,7 +91,7 @@ nl:
             <template #cell()="scope">
               <nuxt-link
                 :class="['container--cell', scope.item[scope.field.key]]"
-                :title="$t(`legend.${scope.item[scope.field.key]}`)"
+                :title="$t(`statuses.${scope.item[scope.field.key]}`)"
                 :to="`/admin/timesheets/${scope.item.id}/${scope.field.year}/${scope.field.weekNumber}`"
               />
             </template>
