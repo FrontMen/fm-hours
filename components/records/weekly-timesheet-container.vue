@@ -41,10 +41,6 @@ nl:
             'weekly-timesheet__date-column--full': !showWeekends,
           }"
         >
-          <span v-if="shouldShowCaption(date)" class="caption text-uppercase">
-            {{ $t(getCaptionText(date)) }}
-          </span>
-
           <small class="d-block text-capitalize">
             <span class="d-md-none">
               {{ $d(new Date(date.date), 'dayNarrow') }}
