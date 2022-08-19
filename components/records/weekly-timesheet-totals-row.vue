@@ -1,22 +1,40 @@
+<i18n lang="yaml">
+en:
+  weekend-hours: "Some hours aren't visible because the weekend is hidden"
+nl:
+  weekend-hours: "Sommige uren zijn niet zichtbaar omdat het weekend verborgen is"
+</i18n>
 <template>
   <b-row class="weekly-timesheet-totals-row" cols="14">
     <b-col class="weekly-timesheet__action-column" cols="0" md="4" />
 
     <b-col
-      v-for="(value, index) in dayTotals"
-      :key="index"
+      v-for="info in daysFiltered"
+      :key="info.day.date"
       cols="auto"
       md="1"
       class="weekly-timesheet-totals-row__column"
     >
-      <span>{{ value }} / {{ dayWorkSchemeHoursTotal[index] }}</span>
+      <span>{{ info.hours }} / {{ info.expected }}</span>
     </b-col>
 
     <b-col cols="auto" class="weekly-timesheet-row__total-column col-2 col-md-1 pr-2 pl-0">
       <b-progress :max="40" height="2.4rem">
-        <b-progress-bar :value="weekTotal" :variant="'success'"></b-progress-bar>
-        <span class="progressbar-title">{{ weekTotal }} / {{ 40 }}</span>
+        <b-progress-bar
+          :value="weekTotal"
+          :max="expectedWeekTotal"
+          :variant="'success'"
+        ></b-progress-bar>
+        <span class="progressbar-title">{{ weekTotal }} / {{ expectedWeekTotal }}</span>
       </b-progress>
+      <span
+        v-if="hasWeekendHours && !showWeekends"
+        v-b-tooltip.hover="{ variant: 'light' }"
+        class="weekend-hours"
+        :title="$t('weekend-hours')"
+      >
+        <b-icon-exclamation-circle-fill variant="danger" />
+      </span>
     </b-col>
   </b-row>
 </template>
@@ -37,51 +55,66 @@ export default defineComponent({
     workScheme: {
       type: Array as PropType<WorkScheme[]>,
       required: true,
+    },
+    showWeekends: {
+      type: Boolean,
+      default: true,
     }
   },
   emits: ["totals"],
   setup(props, {emit}) {
+    // Amount of hours the employee filled in this week
     const weekTotal = computed(() => {
-      let total = 0;
-
-      props.projects.forEach((project) => {
-        total += +project.values.reduce(
-          (prevValue, value) => +prevValue + +value
-        );
-      });
-
-      return total;
+      return days.value.reduce((prevValue, day) => prevValue + day.hours, 0)
     });
 
-    const weekWorkSchemeHoursTotal = computed(() => props.workScheme.reduce(
-      (prevValue, scheme) => prevValue + scheme.workHours,
+    // Total amount of hours the employee works this week
+    const expectedWeekTotal = computed(() => props.workScheme.reduce(
+      (prevValue, scheme) => prevValue + scheme.theoreticalHours,
       0
     ));
 
-    const dayTotals = computed(() => {
-      return props.selectedWeek.map((_, index) => {
-        let total = 0;
+    // Filtered based on if we should show the weekend
+    const daysFiltered = computed(() => {
+      return days.value.filter((day) => !day.day.isWeekend || props.showWeekends);
+    })
 
+    const days = computed(() => {
+      return props.selectedWeek.map((day, index) => {
+        let hours = 0;
+
+        // All hours written on projects
         props.projects.forEach((project) => {
-          total += +project.values[index];
+          hours += +project.values[index];
         });
 
-        return total;
-      });
-    });
+        // Add the leave hours
+        if (props.workScheme[index]) {
+          hours += props.workScheme[index].absenceHours;
+        }
 
-    const dayWorkSchemeHoursTotal = computed(() =>
-      props.selectedWeek.map((_, index) =>
-        props.workScheme?.[index] ? props.workScheme[index].workHours : "0")
-    );
+        return {
+          day,
+          hours,
+          expected: props.workScheme[index]?.theoreticalHours || 0
+        } as TimesheetDayTotal;
+      });
+    })
+
+    const hasWeekendHours = computed(() => {
+      const saturdayHours = days.value?.at(-1)?.hours || 0;
+      const sundayHours = days.value?.at(-2)?.hours || 0;
+
+      return saturdayHours > 0 || sundayHours > 0;
+    });
 
     watch(
       () => [weekTotal.value],
       () => {
         const totals: TimesheetTotals = {
           weekTotal: weekTotal.value,
-          expectedWeekTotal: weekWorkSchemeHoursTotal.value,
-          dayTotal: dayTotals.value,
+          expectedWeekTotal: expectedWeekTotal.value,
+          days: days.value,
         };
 
         emit('totals', totals);
@@ -90,10 +123,11 @@ export default defineComponent({
     );
 
     return {
+      days,
+      daysFiltered,
       weekTotal,
-      weekWorkSchemeHoursTotal,
-      dayTotals,
-      dayWorkSchemeHoursTotal,
+      expectedWeekTotal,
+      hasWeekendHours
     };
   },
 });
@@ -117,28 +151,6 @@ export default defineComponent({
       flex: 1;
       max-width: 100%;
     }
-
-    &.exceeded {
-      color: red;
-    }
-
-    &.exceeded,
-    &.valid {
-      font-weight: bold;
-    }
-  }
-
-  &__week-column {
-    text-align: right;
-    padding: 0 4px;
-
-    @media (min-width: 560px) {
-      padding: 0 15px;
-    }
-
-    &.exceeded {
-      color: red;
-    }
   }
 
   .progressbar {
@@ -156,6 +168,18 @@ export default defineComponent({
     right: 0;
     left: 0;
     top: 0;
+  }
+
+  .weekend-hours {
+    position: absolute;
+    right: 0;
+    top: -8px;
+    cursor: pointer;
+
+    svg {
+      border-radius: 50%;
+      background-color: var(--color-light);
+    }
   }
 }
 </style>
