@@ -144,6 +144,8 @@ export default defineComponent({
     max-width: 100%;
     padding: 8px;
     text-align: center;
+    font-size: 17px;
+    font-weight: 500;
 
     @media (max-width: 560px) {
       flex: 1;
