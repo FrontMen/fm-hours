@@ -1,19 +1,20 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import {lazyFirestore} from '../../lib/db_manager';
-import {Collections} from '../../types/enums';
 import {RecordType} from '../../interfaces/time-record';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method !== 'GET') {
+      return res.status(504).json({});
+    }
     const firestore = await lazyFirestore();
-    const {startDate, endDate} = req.body;
+    const {collection, startDate, endDate} = req.query;
 
-    const snapshot = await firestore
-      .collection(Collections.TIMREC)
-      .where('date', '>=', startDate)
-      .where('date', '<', endDate)
-      .orderBy('date', 'asc')
-      .get();
+    let ref = firestore.collection(collection);
+    if (startDate) ref = ref.where('date', '>=', startDate);
+    if (endDate) ref = ref.where('date', '<', endDate);
+
+    const snapshot = await ref.orderBy('date', 'asc').get();
 
     const result = snapshot.docs.map((doc: any) => ({
       id: doc.id,

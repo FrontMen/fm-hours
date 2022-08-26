@@ -5,17 +5,29 @@ import {Collections} from '../../types/enums';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
-    // n.d.Max you need to limit the getAll query
+    if (req.method !== 'GET') {
+      return res.status(504).json({});
+    }
     const firestore = await lazyFirestore();
-    const {employeeId} = req.body;
+    const employeeId = req.query.employeeId;
+    const email = req.query.email as string;
     let result;
-    const ref = await firestore.collection(Collections.EMPLOYEES);
+
+    let ref = await firestore.collection(Collections.EMPLOYEES);
 
     if (employeeId) {
-      ref.where(firestore.FieldPath.documentId(), '==', employeeId);
+      ref = ref.where(firestore.FieldPath.documentId(), '==', employeeId);
     }
+
+    if (email) {
+      const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+      const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
+      ref = ref.where('email', 'in', [fmMail, ioMail]);
+    }
+
     const snapshot = await ref.get();
-    if (employeeId && !snapshot.empty) {
+    if ((employeeId || email) && !snapshot.empty) {
       result = mapEmployeeFromDocument(snapshot.docs[0]);
     } else {
       result = snapshot.docs.map((res: any) => ({

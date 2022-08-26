@@ -4,6 +4,10 @@ import {Collections} from '../../types/enums';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method !== 'POST') {
+      return res.status(504);
+    }
+
     const firestore = await lazyFirestore();
     const {employee} = req.body;
     const newEmployee = {

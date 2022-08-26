@@ -1,15 +1,19 @@
+import {VercelRequest, VercelResponse} from '@vercel/node';
 import {lazyFirestore} from '../../lib/db_manager';
 import {Collections} from '../../types/enums';
 import {TravelRecord} from '../../interfaces/travel-record';
 
-export default async (req: any, res: any) => {
+export default async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method !== 'GET') {
+      return res.status(504);
+    }
     const firestore = await lazyFirestore();
-    const {startDate, endDate} = req.body;
+    const {startDate, endDate} = req.query;
     const snapshot = await firestore
       .collection(Collections.TRAVELREC)
-      .where('date', '>=', new Date(startDate).getTime())
-      .where('date', '<=', new Date(endDate).getTime())
+      .where('date', '>=', new Date(startDate as string).getTime())
+      .where('date', '<=', new Date(endDate as string).getTime())
       .orderBy('date', 'asc')
       .get();
 

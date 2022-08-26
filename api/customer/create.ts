@@ -3,15 +3,23 @@ import {lazyFirestore} from '../../lib/db_manager';
 import {Collections} from '../../types/enums';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
-  const firestore = await lazyFirestore();
-  const {customer} = req.body;
-  const ref = firestore.collection(Collections.CUSTOMERS);
-  const {id} = await ref.add(customer);
+  try {
+    if (req.method !== 'POST') {
+      return res.status(405);
+    }
 
-  const response = {
-    ...customer,
-    id,
-  };
+    const firestore = await lazyFirestore();
+    const {customer} = req.body;
+    const ref = firestore.collection(Collections.CUSTOMERS);
+    const {id} = await ref.add(customer);
 
-  return res.status(200).json(response);
+    const response = {
+      ...customer,
+      id,
+    };
+
+    return res.status(200).json(response);
+  } catch (e: unknown) {
+    if (e instanceof Error) return res.status(500).json(e.message);
+  }
 };

@@ -41,9 +41,7 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
         });
       }
     }
-  }
-
-  if (request.method === 'DELETE') {
+  } else if (request.method === 'DELETE') {
     try {
       const docToDelete = await ref.doc(worklogId).get();
       await axios.delete(`${process.env.BRIDGE_URL}/api/v1/worklogs/${worklogId}`, {
@@ -63,5 +61,5 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
           message: e.message,
         });
     }
-  }
+  } else return response.status(504);
 }

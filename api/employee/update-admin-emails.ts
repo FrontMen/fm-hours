@@ -4,21 +4,19 @@ import {lazyFirestore} from '../../lib/db_manager';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method !== 'POST') {
+      return res.status(504);
+    }
     const firestore = await lazyFirestore();
-    const {ids} = req.query;
+    const {adminList} = req.body;
 
-    const ref = firestore
-      .collection(Collections.CUSTOMERS)
-      .where(firestore.FieldPath.documentId(), 'in', ids);
+    const docs = await firestore.collection(Collections.ADMINS).get();
+    const docId = docs.docs[0].id;
+    const ref = await firestore.collection(Collections.ADMINS).doc(docId);
 
-    const snapshot = await ref.get();
+    await ref.update({admins: adminList});
 
-    const response = snapshot.docs.map((res: any) => ({
-      id: res.id,
-      ...res.data(),
-    }));
-
-    return res.status(200).json(response);
+    return res.status(200).json(adminList);
   } catch (e: unknown) {
     if (e instanceof Error) return res.status(500).json(e.message);
   }

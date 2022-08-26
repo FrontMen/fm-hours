@@ -4,14 +4,18 @@ import {Collections} from '../../types/enums';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
+    if (req.method !== 'POST') {
+      return res.status(504).json({});
+    }
+
     const firestore = await lazyFirestore();
     const {employee} = req.body;
-    const newEmployee = {...employee} as any;
+    const newEmployee = {...employee.data} as any;
     delete newEmployee.id;
 
     const result = await firestore
       .collection(Collections.EMPLOYEES)
-      .doc(employee.id)
+      .doc(employee.data.id)
       .set(newEmployee, {merge: true});
 
     return res.status(200).json(result);

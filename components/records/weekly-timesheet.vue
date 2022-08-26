@@ -310,7 +310,6 @@ export default defineComponent({
         app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
       ]);
-
       // Combine everything in a single timesheet
       timesheet.value = createWeeklyTimesheet({
         sheet,
@@ -399,7 +398,6 @@ export default defineComponent({
         ),
         app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave})
       ]);
-
       // TODO: use the responses from the save above instead of getting the entire timesheet again
       await getTimesheet();
 
@@ -571,7 +569,6 @@ export default defineComponent({
       lastSaved.value = new Date();
       isSaving.value = false;
     }
-
     getTimesheet();
 
     return {

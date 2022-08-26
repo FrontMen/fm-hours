@@ -1,11 +1,16 @@
+import {VercelRequest, VercelResponse} from '@vercel/node';
 import {lazyFirestore} from '../../lib/db_manager';
 import {Collections} from '../../types/enums';
 
-export default async (req: any, res: any) => {
+export default async (req: VercelRequest, res: VercelResponse) => {
   try {
-    const ref = await (await lazyFirestore()).collection(Collections.TIMESHEETS);
-    // n.d.Max from where it comes the id?
-    const {id, ...newTimesheet} = req.body;
+    if (req.method !== 'POST') {
+      return res.status(504).json({});
+    }
+    const firestore = await lazyFirestore();
+    const ref = firestore.collection(Collections.TIMESHEETS);
+    const {timesheet} = req.body;
+    const {id, ...newTimesheet} = timesheet;
 
     if (id) {
       await ref.doc(id).update(newTimesheet);
@@ -17,7 +22,7 @@ export default async (req: any, res: any) => {
 
     const result = {...newTimesheet, id: newDocument.id};
     return res.status(200).json(result);
-  } catch (e: any) {
-    return res.status(500).json(e.message);
+  } catch (e: unknown) {
+    if (e instanceof Error) return res.status(500).json(e.message);
   }
 };
