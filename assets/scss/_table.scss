@@ -1,3 +1,9 @@
 .b-table-sticky-header {
   max-height: 540px;
 }
+
+.weekly-timesheet-row[readonly] + .weekly-timesheet-row .weekly-timesheet-row__value-input {
+  background-color: transparent;
+  border: 1px solid transparent;
+  pointer-events: none;
+}
