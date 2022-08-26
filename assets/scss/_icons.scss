@@ -1,0 +1,20 @@
+i {
+    display: inline-block;
+    overflow: visible;
+    font-size: 125%;
+    vertical-align: text-bottom;
+
+    &.icon-save {
+        width: 22px;
+        height: 22px;
+        background: url(../images/icon-save.svg) no-repeat 0 0;
+        background-size: contain;
+    }
+
+    &.icon-send {
+        width: 20px;
+        height: 22px;
+        background: url(../images/icon-send.svg) no-repeat 0 0;
+        background-size: contain;
+    }
+}
