@@ -11,7 +11,7 @@ nl:
 
 <template>
   <div class="top-bar hide-print">
-    <b-navbar toggleable="lg" type="light" variant="light">
+    <b-navbar toggleable="lg" :type="$colorMode.value" :variant="$colorMode.value">
       <b-navbar-brand href="/">
         <img src="@/assets/images/logo-black.svg" alt="logo" @click="handleLogoClick" />
         {{ $t('title') }}
@@ -41,6 +41,14 @@ nl:
           </b-nav-item-dropdown>
 
           <LanguageSwitch class="mr-2" :is-nav="true" />
+
+          <!-- <input id="toggle" class="toggle" type="checkbox" :checked="$colorMode.preference = dark"> -->
+
+          <select v-model="$colorMode.preference">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
 
           <b-nav-item-dropdown right class="employee__dropdown">
             <template v-if="employee" #button-content>

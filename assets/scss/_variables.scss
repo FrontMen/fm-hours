@@ -26,6 +26,64 @@
   --color-orange-hover: #ff996d;
 }
 
+.dark-mode {
+  --color-primary: #365fd9;
+  --color-primary-text: #000000ff;
+  --color-secondary: #000000ff;
+  --color-tertiary: #365fd9;
+  --color-tertiary-light: #62c3de;
+  --color-tertiary-darker: #21849f;
+  --body-color: #ebebf599;
+  --bg-dark: #000000ff;
+  --color-success: #a6d9a6;
+  --color-success-darker: #4db34d;
+  --color-alert: #ffb37e;
+  --color-alert-darker: #fe6800;
+  --color-danger: #e8758c;
+  --color-danger-darker: #be203f;
+  --color-light: #1c1c1e;
+  --color-dark: #fff;
+  --color-light-gray: #000000ff;
+  --color-medium-gray: rgba(0, 0, 0, 0.38);
+  --color-medium-gray-darker: rgba(0, 0, 0, 0.6);
+
+  --color-blue: #365fd9;
+  --color-blue-hover: #5079f3;
+  --color-light-blue: #ebf4ff;
+  --color-orange: #ed7f53;
+  --color-orange-hover: #ff996d;
+
+  // bootstrap overrides
+  $theme-colors: (
+    'primary': #365fd9,
+    'secondary': #201e33,
+    'tertiary': #ed7f53,
+    'body-color': #fa0400,
+  );
+
+  .bg-light {
+    background-color: #3b3b3b !important;
+  }
+
+  .bg-dark {
+    background-color: #000000ff !important;
+  }
+
+  body {
+    color: var(--body-color);
+  }
+
+  .form-control:disabled,
+  .form-control[readonly] {
+    background-color: #000000ff;
+  }
+
+  // progress overrides
+  .progress {
+    background-color: var(--color-secondary);
+  }
+}
+
 $theme-colors: (
   'primary': #365fd9,
   'secondary': #201e33,

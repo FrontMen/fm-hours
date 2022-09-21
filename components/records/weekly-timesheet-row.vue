@@ -238,6 +238,7 @@ export default defineComponent({
     text-align: center;
     color: var(--color-dark);
     border: 1px solid var(--color-medium-gray);
+    background-color: var(--color-light);
 
     &[readonly] {
       background-color: transparent;

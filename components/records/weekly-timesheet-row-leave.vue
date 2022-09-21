@@ -122,7 +122,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .weekly-timesheet-row {
-  background: #fff;
+  background: var(--color-light);
   color: var(--body-color);
   align-items: center;
 
@@ -156,7 +156,7 @@ export default defineComponent({
     flex: 1;
     padding: 2px;
     text-align: center;
-    background-color: #fff;
+    background: var(--color-light);
     max-width: 100%;
 
     @media (min-width: 768px) {
