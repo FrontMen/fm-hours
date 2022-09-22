@@ -12,7 +12,7 @@ export default {
   standalone: true,
   // Global page headers (https://go.nuxtjs.dev/config-head)
   head: {
-    title: 'iO on-site - Hours',
+    title: 'iO Consultancy hours',
     meta: [
       {charset: 'utf-8'},
       {

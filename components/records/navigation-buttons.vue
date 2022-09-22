@@ -28,7 +28,7 @@
           :to="localePath(currWeekURL)"
           variant="secondary"
         >
-          <strong>{{$t('today')}}</strong>
+          {{$t('today')}}
         </b-button>
 
         <b-button

@@ -2,12 +2,10 @@
 en:
   title: "Consultancy hours"
   requestLeave: "Request leave"
-  feedback: "Feedback"
   logout: "Logout"
 nl:
   title: "Consultancy uren"
   requestLeave: "Verlof aanvragen"
-  feedback: "Feedback"
   logout: "Uitloggen"
 </i18n>
 
@@ -49,13 +47,6 @@ nl:
               {{ employee.name }}
             </template>
 
-            <b-dropdown-item
-              href="https://docs.google.com/forms/d/e/1FAIpQLSdl99lxgE8VDMfHXX_O35Lm8JeJmgA-yDYmG5mMHGWWdT7PrQ/viewform?usp=sf_link"
-              target="_blank"
-            >
-              {{ $t("feedback") }}
-              <b-icon class="ml-1" icon="box-arrow-up-right" aria-hidden="true" />
-            </b-dropdown-item>
             <b-dropdown-item @click="handleLogoutClick">
               {{ $t("logout") }}
             </b-dropdown-item>
