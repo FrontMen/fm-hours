@@ -1,0 +1,19 @@
+.icon {
+  display: inline-block;
+  overflow: visible;
+  font-size: 125%;
+  vertical-align: text-bottom;
+  width: 22px;
+  height: 22px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+
+  &.icon-save {
+    background-image: url(../images/icon-save.svg);
+  }
+
+  &.icon-send {
+    background-image: url(../images/icon-send.svg);
+  }
+}
