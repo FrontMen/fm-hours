@@ -24,58 +24,166 @@
   --color-light-blue: #ebf4ff;
   --color-orange: #ed7f53;
   --color-orange-hover: #ff996d;
+
+  --pill-color: #fff;
+  --pill-bg: #343a40;
 }
 
 .dark-mode {
-  --color-primary: #365fd9;
-  --color-primary-text: #000000ff;
-  --color-secondary: #000000ff;
-  --color-tertiary: #365fd9;
-  --color-tertiary-light: #62c3de;
-  --color-tertiary-darker: #21849f;
-  --body-color: #ebebf599;
-  --bg-dark: #000000ff;
-  --color-success: #a6d9a6;
-  --color-success-darker: #4db34d;
-  --color-alert: #ffb37e;
-  --color-alert-darker: #fe6800;
-  --color-danger: #e8758c;
-  --color-danger-darker: #be203f;
-  --color-light: #1c1c1e;
-  --color-dark: #fff;
-  --color-light-gray: #000000ff;
-  --color-medium-gray: rgba(0, 0, 0, 0.38);
-  --color-medium-gray-darker: rgba(0, 0, 0, 0.6);
+  @media screen {
+    --color-primary: #0f3460;
+    --color-primary-text: #000000ff;
+    --color-secondary: #000000ff;
+    --color-tertiary: #0f3460;
+    --color-tertiary-light: #62c3de;
+    --color-tertiary-darker: #21849f;
+    --body-color: #ebebf599;
+    --bg-dark: #000000ff;
+    --color-success: #a6d9a6;
+    --color-success-darker: #4db34d;
+    --color-alert: #ffb37e;
+    --color-alert-darker: #fe6800;
+    --color-danger: #e8758c;
+    --color-danger-darker: #be203f;
+    --color-light: #1c1c1e;
+    --color-dark: #fff;
+    --color-light-gray: #000000ff;
+    --color-medium-gray: rgba(0, 0, 0, 0.38);
+    --color-medium-gray-darker: rgba(0, 0, 0, 0.6);
 
-  --color-blue: #365fd9;
-  --color-blue-hover: #5079f3;
-  --color-light-blue: #ebf4ff;
-  --color-orange: #ed7f53;
-  --color-orange-hover: #ff996d;
+    --color-blue: #0f3460;
+    --color-blue-hover: #16213e;
+    --color-light-blue: #ebf4ff;
+    --color-orange: #ed7f53;
+    --color-orange-hover: #ff996d;
+
+    --pill-color: #ebebf599;
+    --pill-bg: #111113;
+  }
 
   // bootstrap overrides
   $theme-colors: (
-    'primary': #365fd9,
+    'primary': #0f3460,
     'secondary': #201e33,
     'tertiary': #ed7f53,
     'body-color': #fa0400,
   );
+
+  $input-bg: var(--color-light);
+  $input-border-color: var(--color-medium-gray);
+  $input-disabled-bg: var(--color-light-gray);
+  $card-bg: var(--color-light);
+  $dropdown-color: var(--body-color);
+  $dropdown-bg: var(--color-light);
+  $dropdown-link-color: var(--body-color);
+  $dropdown-link-hover-color: var(--body-color);
+  $dropdown-link-hover-bg: var(--color-medium-gray);
+  $input-group-addon-color: var(--body-color);
+  $input-group-addon-bg: var(--color-light-gray);
+  $table-color: var(--body-color);
+  $table-border-color: var(--color-medium-gray);
+  $table-accent-bg: var(--color-medium-gray);
+  $tooltip-bg: var(--color-light);
+  $tip-bg-color: var(--color-light);
+  $tooltip-color: var(--color-primary-text);
+  $tip-text-color: var(--color-light);
+
+  // Import customized components to override variables
+  @import '~bootstrap/scss/functions';
+  @import '~bootstrap/scss/variables';
+  @import '~bootstrap/scss/mixins';
+
+  @import '~bootstrap/scss/card';
+  @import '~bootstrap/scss/custom-forms';
+  @import '~bootstrap/scss/dropdown';
+  @import '~bootstrap/scss/forms';
+  @import '~bootstrap/scss/input-group';
+  @import '~bootstrap/scss/tables';
+  @import '~bootstrap/scss/tooltip';
 
   .bg-light {
     background-color: #3b3b3b !important;
   }
 
   .bg-dark {
-    background-color: #000000ff !important;
+    background-color: #111113 !important;
   }
 
   body {
     color: var(--body-color);
   }
 
+  .login-wrapper {
+    background: url(@/assets/images/io-blend-purple.jpg) no-repeat left top;
+  }
+
   .form-control:disabled,
   .form-control[readonly] {
     background-color: #000000ff;
+  }
+
+  .custom-select {
+    color: var(--body-color);
+    border: 1px solid var(--color-medium-gray);
+    background-color: var(--color-light);
+  }
+
+  .multiselect {
+    color: var(--text-color);
+    border-color: var(--text-color);
+    &__select::before {
+      color: var(--color--light);
+    }
+    &__input,
+    &__single,
+    &__content-wrapper,
+    &__tag {
+      color: var(--body-color);
+      background-color: var(--color-light);
+    }
+    &__content-wrapper {
+      border-color: var(--color-medium-gray);
+      background-color: var(--color-light);
+    }
+    &__tags {
+      border: 1px solid var(--color-medium-gray);
+      background-color: var(--color-light);
+    }
+  }
+
+  .tooltip.b-tooltip-light {
+    &.bs-tooltip-top {
+      .arrow::before {
+        border-top-color: var(--color-light-gray);
+      }
+    }
+
+    &.bs-tooltip-right {
+      .arrow::before {
+        border-right-color: var(--color-light-gray);
+      }
+    }
+
+    &.bs-tooltip-bottom {
+      .arrow::before {
+        border-bottom-color: var(--color-light-gray);
+      }
+    }
+
+    &.bs-tooltip-left {
+      .arrow::before {
+        border-left-color: var(--color-light-gray);
+      }
+    }
+    .tooltip-inner {
+      color: var(--body-color);
+      background-color: var(--color-light-gray);
+    }
+  }
+
+  // logo override
+  .top-bar img {
+    filter: invert(1);
   }
 
   // progress overrides

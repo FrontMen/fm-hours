@@ -1,6 +1,6 @@
 .btn {
   &.btn-primary {
-    color: --color-light;
+    color: var(--color-primary-text);
     background-color: var(--color-blue);
     border: 1px solid var(--color-blue);
     &:hover {

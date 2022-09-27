@@ -28,7 +28,19 @@ nl:
                 </div>
                 <div class="col-md-6 col-lg-7 d-flex align-items-center">
                   <div class="card-body p-4 p-lg-5 text-black">
-                    <language-switch class="d-flex justify-content-end mb-2"></language-switch>
+                    <div class="d-flex align-items-center justify-content-end mb-2">
+                      <b-input-group class="w-auto">
+                        <b-input-group-prepend is-text>
+                          <b-icon-palette></b-icon-palette>
+                        </b-input-group-prepend>
+                        <b-form-select v-model="$colorMode.preference" class="mr-2">
+                          <b-form-select-option value="system">Auto</b-form-select-option>
+                          <b-form-select-option value="light">Light</b-form-select-option>
+                          <b-form-select-option value="dark">Dark</b-form-select-option>
+                        </b-form-select>
+                      </b-input-group>
+                      <language-switch></language-switch>
+                    </div>
                     <form>
                       <div class="d-flex align-items-center mb-3 pb-1">
                         <span class="h1 fw-bold mb-0">{{ $t('title') }}</span>

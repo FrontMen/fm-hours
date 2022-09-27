@@ -42,13 +42,11 @@ nl:
 
           <LanguageSwitch class="mr-2" :is-nav="true" />
 
-          <!-- <input id="toggle" class="toggle" type="checkbox" :checked="$colorMode.preference = dark"> -->
-
-          <select v-model="$colorMode.preference">
-            <option value="system">System</option>
-            <option value="light">Light</option>
-            <option value="dark">Dark</option>
-          </select>
+          <b-form-select v-model="$colorMode.preference" class="w-auto">
+            <b-form-select-option value="system">Auto</b-form-select-option>
+            <b-form-select-option value="light">Light</b-form-select-option>
+            <b-form-select-option value="dark">Dark</b-form-select-option>
+          </b-form-select>
 
           <b-nav-item-dropdown right class="employee__dropdown">
             <template v-if="employee" #button-content>

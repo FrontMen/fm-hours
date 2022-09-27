@@ -5,7 +5,7 @@
 
   .nav-link.active,
   .show > .nav-link {
-    color: var(--body-color);
-    background-color: var(--bg-dark);
+    color: var(--pill-color);
+    background-color: var(--pill-bg);
   }
 }
