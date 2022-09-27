@@ -111,14 +111,14 @@ nl:
       >
         <b-button
           v-if="isNew || isDenied"
-          class="mr-3 d-none d-md-flex"
+          class="mr-3 d-none d-md-block"
           size="lg"
           variant="secondary"
           :disabled="isSaving || !hasUnsavedChanges"
           @click="handleSaveClick"
         >
           {{ $t('save') }}
-          <b-icon icon="file-earmark-arrow-down" />
+          <i class="icon icon-save"></i>
         </b-button>
 
         <b-button
@@ -156,7 +156,7 @@ nl:
         @click="handleSubmitClick"
       >
         {{ $t('submit') }}
-        <b-icon icon="file-earmark-arrow-up" />
+        <i class="icon icon-send"></i>
       </b-button>
 
       <b-button

@@ -20,11 +20,7 @@ nl:
 
     <b-col cols="auto" class="weekly-timesheet-row__total-column col-2 col-md-1 pr-2 pl-0">
       <b-progress :max="40" height="2.4rem">
-        <b-progress-bar
-          :value="weekTotal"
-          :max="expectedWeekTotal"
-          :variant="'success'"
-        ></b-progress-bar>
+        <b-progress-bar :value="weekTotal" :max="expectedWeekTotal"></b-progress-bar>
         <span class="progressbar-title">{{ weekTotal }} / {{ expectedWeekTotal }}</span>
       </b-progress>
       <span
@@ -153,8 +149,8 @@ export default defineComponent({
     }
   }
 
-  .progressbar {
-    position: relative;
+  .progress-bar {
+    background-color: var(--color-success);
   }
 
   .progressbar-title {
