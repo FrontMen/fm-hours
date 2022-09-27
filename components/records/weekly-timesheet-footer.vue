@@ -118,7 +118,7 @@ nl:
           @click="handleSaveClick"
         >
           {{ $t('save') }}
-          <i class="icon-save"></i>
+          <i class="icon icon-save"></i>
         </b-button>
 
         <b-button
@@ -156,7 +156,7 @@ nl:
         @click="handleSubmitClick"
       >
         {{ $t('submit') }}
-        <i class="icon-send"></i>
+        <i class="icon icon-send"></i>
       </b-button>
 
       <b-button
