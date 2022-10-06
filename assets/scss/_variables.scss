@@ -80,6 +80,7 @@
   $dropdown-link-color: var(--body-color);
   $dropdown-link-hover-color: var(--body-color);
   $dropdown-link-hover-bg: var(--color-medium-gray);
+  $input-disabled-bg: var(--color-medium-gray);
   $input-group-addon-color: var(--body-color);
   $input-group-addon-bg: var(--color-light-gray);
   $modal-content-bg: var(--color-light);
@@ -106,6 +107,8 @@
   @import '~bootstrap/scss/modal';
   @import '~bootstrap/scss/tables';
   @import '~bootstrap/scss/tooltip';
+  @import '../../node_modules/bootstrap-vue/src/components/form-btn-label-control/';
+  @import '../../node_modules/bootstrap-vue/src/custom-controls';
 
   .bg-light {
     background-color: #3b3b3b !important;
@@ -206,6 +209,21 @@
     filter: invert(0.5);
   }
 
+  // app table overrides
+  .app-table {
+    background: var(--color-light);
+
+    &__top-row {
+      border-top-color: var(--color-light-gray);
+      border-bottom-color: var(--color-light-gray);
+    }
+
+    &__row {
+      + .app-table__row {
+        border-top-color: var(--color-light-gray);
+      }
+    }
+  }
 }
 
 $theme-colors: (

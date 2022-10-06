@@ -17,14 +17,7 @@ nl:
       </b-input-group-append>
     </b-input-group>
 
-    <b-table
-      :items="selectedProjects"
-      :fields="fields"
-      class="rounded"
-      small
-      striped
-      table-variant="light"
-    >
+    <b-table :items="selectedProjects" :fields="fields" class="rounded" small striped>
       <template #cell(contract)="data">
         <div v-if="data.item.contract">
           <b-button size="sm" @click="handleOpenContract(data.item)">
