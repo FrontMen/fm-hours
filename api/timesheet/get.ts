@@ -4,6 +4,7 @@ import {lazyFirestore} from '../../lib/db_manager';
 import {Timesheet} from '../../interfaces/timesheets';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
+  // test
   try {
     const firestore = await lazyFirestore();
     const {date, startDate, endDate, employeeId} = req.query;
