@@ -92,6 +92,8 @@
   $tip-bg-color: var(--color-light);
   $tooltip-color: var(--color-primary-text);
   $tip-text-color: var(--color-light);
+  $body-bg: var(--color-light);
+  $table-bg: var(--color-light);
 
   // Import customized components to override variables
   @import '~bootstrap/scss/functions';
@@ -107,8 +109,10 @@
   @import '~bootstrap/scss/modal';
   @import '~bootstrap/scss/tables';
   @import '~bootstrap/scss/tooltip';
-  @import '../../node_modules/bootstrap-vue/src/components/form-btn-label-control/';
+  @import '../../node_modules/bootstrap-vue/src/variables';
+  @import '../../node_modules/bootstrap-vue/src/components/form-btn-label-control';
   @import '../../node_modules/bootstrap-vue/src/custom-controls';
+  @import '../../node_modules/bootstrap-vue/src/components/table';
 
   .bg-light {
     background-color: #3b3b3b !important;

@@ -349,7 +349,7 @@ export default defineComponent({
 
   th,
   td {
-    padding: 0.3rem;
+    padding: 0.3rem !important;
   }
 }
 </style>

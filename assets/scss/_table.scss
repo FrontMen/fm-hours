@@ -1,5 +1,5 @@
 .b-table-sticky-header {
-  max-height: calc(100vh - 400px);
+  max-height: calc(100vh - 400px) !important;
 }
 
 .weekly-timesheet-row[readonly] + .weekly-timesheet-row .weekly-timesheet-row__value-input {
