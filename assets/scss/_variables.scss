@@ -37,7 +37,7 @@
     --color-tertiary: #0f3460;
     --color-tertiary-light: #62c3de;
     --color-tertiary-darker: #21849f;
-    --body-color: #ebebf599;
+    --body-color: #636369;
     --bg-dark: #000000ff;
     --color-success: #a6d9a6;
     --color-success-darker: #4db34d;
@@ -66,6 +66,10 @@
     'primary': #0f3460,
     'secondary': #201e33,
     'tertiary': #ed7f53,
+    'success': #145322,
+    'info': #0b515c,
+    'warning': #836200,
+    'danger': #74141d,
     'body-color': #fa0400,
   );
 
@@ -94,6 +98,7 @@
   $tip-text-color: var(--color-light);
   $body-bg: var(--color-light);
   $table-bg: var(--color-light);
+  $background: var(--color-orange);
 
   // Import customized components to override variables
   @import '~bootstrap/scss/functions';
@@ -106,6 +111,7 @@
   @import '~bootstrap/scss/dropdown';
   @import '~bootstrap/scss/forms';
   @import '~bootstrap/scss/input-group';
+  @import '~bootstrap/scss/mixins/table-row';
   @import '~bootstrap/scss/modal';
   @import '~bootstrap/scss/tables';
   @import '~bootstrap/scss/tooltip';

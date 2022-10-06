@@ -42,11 +42,18 @@ nl:
 
           <LanguageSwitch class="mr-2" :is-nav="true" />
 
-          <b-form-select v-model="$colorMode.preference" class="w-auto">
-            <b-form-select-option value="system">Auto</b-form-select-option>
-            <b-form-select-option value="light">Light</b-form-select-option>
-            <b-form-select-option value="dark">Dark</b-form-select-option>
-          </b-form-select>
+          <div class="d-flex align-items-center justify-content-end mb-2">
+            <b-input-group class="w-auto">
+              <b-input-group-prepend is-text>
+                <b-icon-palette></b-icon-palette>
+              </b-input-group-prepend>
+              <b-form-select v-model="$colorMode.preference" class="mr-2">
+                <b-form-select-option value="system">Auto</b-form-select-option>
+                <b-form-select-option value="light">Light</b-form-select-option>
+                <b-form-select-option value="dark">Dark</b-form-select-option>
+              </b-form-select>
+            </b-input-group>
+          </div>
 
           <b-nav-item-dropdown right class="employee__dropdown">
             <template v-if="employee" #button-content>

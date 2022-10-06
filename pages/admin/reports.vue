@@ -19,7 +19,7 @@ nl:
       @current="goToCurrentMonth"
     />
 
-    <b-tabs pills card>
+    <b-tabs pills>
       <b-tab :title="$t('totals')" active lazy>
         <reports-table
           :busy="isLoading || !totalsItems.length"

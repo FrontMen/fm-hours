@@ -14,7 +14,6 @@ nl:
 
     <b-table
       bordered
-      table-variant="light"
       sticky-header="75vh"
       striped
       hover
