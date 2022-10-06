@@ -32,7 +32,7 @@
 .dark-mode {
   @media screen {
     --color-primary: #0f3460;
-    --color-primary-text: #000000ff;
+    --color-primary-text: #ebebf599;
     --color-secondary: #000000ff;
     --color-tertiary: #0f3460;
     --color-tertiary-light: #62c3de;
@@ -73,6 +73,8 @@
   $input-border-color: var(--color-medium-gray);
   $input-disabled-bg: var(--color-light-gray);
   $card-bg: var(--color-light);
+  $close-color: var(--color-dark);
+  $close-text-shadow: var(--color-dark);
   $dropdown-color: var(--body-color);
   $dropdown-bg: var(--color-light);
   $dropdown-link-color: var(--body-color);
@@ -80,6 +82,8 @@
   $dropdown-link-hover-bg: var(--color-medium-gray);
   $input-group-addon-color: var(--body-color);
   $input-group-addon-bg: var(--color-light-gray);
+  $modal-content-bg: var(--color-light);
+  $modal-header-border-color: var(--color-light-gray);
   $table-color: var(--body-color);
   $table-border-color: var(--color-medium-gray);
   $table-accent-bg: var(--color-medium-gray);
@@ -94,10 +98,12 @@
   @import '~bootstrap/scss/mixins';
 
   @import '~bootstrap/scss/card';
+  @import '~bootstrap/scss/close';
   @import '~bootstrap/scss/custom-forms';
   @import '~bootstrap/scss/dropdown';
   @import '~bootstrap/scss/forms';
   @import '~bootstrap/scss/input-group';
+  @import '~bootstrap/scss/modal';
   @import '~bootstrap/scss/tables';
   @import '~bootstrap/scss/tooltip';
 
@@ -190,6 +196,16 @@
   .progress {
     background-color: var(--color-secondary);
   }
+
+  // icon overrides
+  .icon.icon-send {
+    filter: invert(0.5);
+  }
+
+  .icon.icon-save {
+    filter: invert(0.5);
+  }
+
 }
 
 $theme-colors: (
