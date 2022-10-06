@@ -9,6 +9,9 @@ import {
   isBefore,
 } from 'date-fns';
 
+import {WeekDate, WeekSpan} from '~/interfaces/time-record';
+import {WorkScheme} from '~/interfaces/work-scheme';
+
 export function formatDate(dirtyDate: string | number | Date) {
   const date = new Date(dirtyDate);
 
