@@ -10,7 +10,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="controls col-12 col-md-5 pb-4">
+  <div class="controls col-12 col-md-5 mb-3">
     <b-row class="m-0 m-md-2 mr-0 mr-md-2 justify-content-between justify-content-md-end">
       <b-dropdown offset="-140" class="messages-dropdown">
         <template #button-content>

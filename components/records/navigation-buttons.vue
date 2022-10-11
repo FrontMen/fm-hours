@@ -40,7 +40,7 @@
           <b-icon icon="arrow-right" />
         </b-button>
       </b-button-group>
-      <h2 class="navigation-buttons__week-label">
+      <h2 class="navigation-buttons__week-label mb-0">
         {{ weekLabel }}
       </h2>
     </div>
