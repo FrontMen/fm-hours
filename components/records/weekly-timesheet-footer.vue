@@ -1,29 +1,34 @@
 <i18n lang="yaml">
-en:
-  unsubmit: "Unsubmit"
-  waiting: "Waiting on approval"
-  denied: "Denied"
-  submit: "Submit for approval"
-  save: "Save concept"
-  deny: "Deny"
-  approve: "Approve"
-  undo: "Undo approval"
-  addBridge: "Add to bridge"
-  removeBridge: "Remove from bridge"
-  validate: "Are the hours complete?"
-nl:
-  unsubmit: "Terugtrekken"
-  waiting: "Indienen gelukt. Wacht op akkoord"
-  denied: "Afgekeurd"
-  submit: "Indienen"
-  save: "Concept opslaan"
-  deny: "Afkeuren"
-  approve: "Akkordeeren"
-  undo: "Ongedaan maken"
-  addBridge: "Toevoegen aan bridge"
-  removeBridge: "Verwijderen van bridge"
-  validate: "Kloppen de totalen?"
-</i18n>
+  en:
+    unsubmit: "Unsubmit"
+    waiting: "Waiting on approval"
+    denied: "Denied"
+    submit: "Submit for approval"
+    save: "Save concept"
+    deny: "Deny"
+    approve: "Approve"
+    undo: "Undo approval"
+    addBridge: "Add to bridge"
+    removeBridge: "Remove from bridge"
+    saveHint: "Keyboard shortcut C"
+    submitHint: "Keyboard shortcut A"
+    unsubmitHint: "Keyboard shortcut U"
+  nl:
+    unsubmit: "Terugtrekken"
+    waiting: "Indienen gelukt. Wacht op akkoord"
+    denied: "Afgekeurd"
+    submit: "Indienen"
+    save: "Concept opslaan"
+    deny: "Afkeuren"
+    approve: "Akkordeeren"
+    undo: "Ongedaan maken"
+    addBridge: "Toevoegen aan bridge"
+    removeBridge: "Verwijderen van bridge"
+    validate: "Kloppen de totalen?"
+    saveHint: "Keyboard shortcut C"
+    submitHint: "Keyboard shortcut I"
+    unsubmitHint: "Keyboard shortcut U"
+  </i18n>
 
 <template>
   <div class="weekly-timesheet-footer mb-5 mt-2 mt-md-0">
@@ -111,7 +116,9 @@ nl:
       >
         <b-button
           v-if="isNew || isDenied"
+          v-b-tooltip.hover="{ variant: 'secondary' }"
           class="mr-3 d-none d-md-block"
+          :title="$t('saveHint')"
           size="lg"
           variant="secondary"
           :disabled="isSaving || !hasUnsavedChanges"
@@ -136,6 +143,8 @@ nl:
 
       <b-button
         v-if="isPending"
+        v-b-tooltip.hover="{ variant: 'secondary' }"
+        :title="$t('unsubmitHint')"
         size="lg"
         variant="warning"
         :disabled="isSaving"
@@ -149,7 +158,7 @@ nl:
         v-if="isNew"
         v-b-tooltip.hover="{ variant: 'secondary' }"
         class="d-none d-md-block"
-        :title="$t('validate')"
+        :title="$t('submitHint')"
         size="lg"
         variant="primary"
         :disabled="isSaving || !canSubmitForApproval"
@@ -184,8 +193,10 @@ import {
   PropType,
   ref,
   watch,
+  onMounted,
 } from "@nuxtjs/composition-api";
 import {formatDistanceToNow} from "date-fns";
+import hotkeys from 'hotkeys-js';
 import {recordStatus} from "~/helpers/record-status";
 
 export default defineComponent({
@@ -264,6 +275,12 @@ export default defineComponent({
 
     onBeforeUnmount(() => clearInterval(intervalHandle));
 
+    onMounted(() => {
+      hotkeys('c', () => emit("save"));
+      hotkeys('i, a', () => emit("submit"));
+      hotkeys('t, u', () => emit("unsubmit"));
+    });
+
     return {
       handleSaveClick,
       handleSubmitClick,
@@ -282,7 +299,12 @@ export default defineComponent({
       isDenied,
       isClosed,
     };
-  }
+  },
+  beforeDestroy() {
+    hotkeys.unbind('c');
+    hotkeys.unbind('i');
+    hotkeys.unbind('t, u');
+  },
 });
 </script>
 

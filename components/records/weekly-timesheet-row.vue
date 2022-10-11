@@ -21,6 +21,7 @@
           :readonly="isReadonlyList[index]"
           @focus.native="handleInputFocus($event.target, index)"
           @input="$emit('change')"
+          @keyup.esc="$event.target.blur()"
         />
       </b-form>
       <div
