@@ -1,5 +1,6 @@
 interface ReportEmployee {
   name: string;
+  bridgeUid?: string;
   team?: string;
   billable: boolean;
   billableRecords: TimeRecord[];

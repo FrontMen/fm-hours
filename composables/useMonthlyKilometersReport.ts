@@ -4,6 +4,7 @@ export default () => {
   const createKilometersFields = () => {
     return [
       {key: 'name', sortable: true},
+      {key: 'bridgeUid', sortable: false},
       {key: 'team', sortable: true},
       {key: 'kilometers', sortable: true},
     ];
@@ -12,19 +13,18 @@ export default () => {
   const createKilometersItems = (report: MonthlyReportData | null) => {
     const items: any = [];
 
-    report?.employees
-      .filter(employee => employee.billable)
-      .forEach(employee => {
-        const kilometers = getTotalsByProp<TravelRecord>(employee.travelRecords, 'kilometers');
+    report?.employees.forEach(employee => {
+      const kilometers = getTotalsByProp<TravelRecord>(employee.travelRecords, 'kilometers');
 
-        if (kilometers > 0) {
-          items.push({
-            name: employee.name,
-            team: employee.team,
-            kilometers,
-          });
-        }
-      });
+      if (kilometers > 0) {
+        items.push({
+          name: employee.name,
+          bridgeUid: employee.bridgeUid,
+          team: employee.team,
+          kilometers,
+        });
+      }
+    });
 
     return items;
   };
