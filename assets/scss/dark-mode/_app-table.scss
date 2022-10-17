@@ -1,0 +1,14 @@
+.app-table {
+  background: var(--color-light);
+
+  &__top-row {
+    border-top-color: var(--color-light-gray);
+    border-bottom-color: var(--color-light-gray);
+  }
+
+  &__row {
+    + .app-table__row {
+      border-top-color: var(--color-light-gray);
+    }
+  }
+}

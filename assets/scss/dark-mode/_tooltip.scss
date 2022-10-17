@@ -1,0 +1,29 @@
+.tooltip.b-tooltip-light {
+  &.bs-tooltip-top {
+    .arrow::before {
+      border-top-color: var(--color-light-gray);
+    }
+  }
+
+  &.bs-tooltip-right {
+    .arrow::before {
+      border-right-color: var(--color-light-gray);
+    }
+  }
+
+  &.bs-tooltip-bottom {
+    .arrow::before {
+      border-bottom-color: var(--color-light-gray);
+    }
+  }
+
+  &.bs-tooltip-left {
+    .arrow::before {
+      border-left-color: var(--color-light-gray);
+    }
+  }
+  .tooltip-inner {
+    color: var(--body-color);
+    background-color: var(--color-light-gray);
+  }
+}

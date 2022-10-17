@@ -73,6 +73,7 @@
     'body-color': #fa0400,
   );
 
+  // declare and override bootstrap default colors
   $input-bg: var(--color-light);
   $input-border-color: var(--color-medium-gray);
   $input-disabled-bg: var(--color-light-gray);
@@ -100,11 +101,24 @@
   $table-bg: var(--color-light);
   $background: var(--color-orange);
 
-  // Import customized components to override variables
+  // import custom dark mode components
+  @import "dark-mode/app-table";
+  @import "dark-mode/custom";
+  @import "dark-mode/custom-select";
+  @import "dark-mode/forms";
+  @import "dark-mode/icons";
+  @import "dark-mode/progress";
+  @import "dark-mode/structure";
+  @import "dark-mode/tooltip";
+  @import "dark-mode/utils";
+  @import "dark-mode/vue-multi-select";
+
+  // import customized components to override variables
   @import '~bootstrap/scss/functions';
   @import '~bootstrap/scss/variables';
   @import '~bootstrap/scss/mixins';
 
+  @import '~bootstrap/scss/badge';
   @import '~bootstrap/scss/card';
   @import '~bootstrap/scss/close';
   @import '~bootstrap/scss/custom-forms';
@@ -118,122 +132,7 @@
   @import '../../node_modules/bootstrap-vue/src/variables';
   @import '../../node_modules/bootstrap-vue/src/components/form-btn-label-control';
   @import '../../node_modules/bootstrap-vue/src/custom-controls';
-  @import '../../node_modules/bootstrap-vue/src/components/table';
-
-  .bg-light {
-    background-color: #3b3b3b !important;
-  }
-
-  .bg-dark {
-    background-color: #111113 !important;
-  }
-
-  body {
-    color: var(--body-color);
-  }
-
-  .login-wrapper {
-    background: url(@/assets/images/io-blend-purple.jpg) no-repeat left top;
-  }
-
-  .form-control:disabled,
-  .form-control[readonly] {
-    background-color: #000000ff;
-  }
-
-  .custom-select {
-    color: var(--body-color);
-    border: 1px solid var(--color-medium-gray);
-    background-color: var(--color-light);
-  }
-
-  .multiselect {
-    color: var(--text-color);
-    border-color: var(--text-color);
-    &__select::before {
-      color: var(--color--light);
-    }
-    &__input,
-    &__single,
-    &__content-wrapper,
-    &__tag {
-      color: var(--body-color);
-      background-color: var(--color-light);
-    }
-    &__content-wrapper {
-      border-color: var(--color-medium-gray);
-      background-color: var(--color-light);
-    }
-    &__tags {
-      border: 1px solid var(--color-medium-gray);
-      background-color: var(--color-light);
-    }
-  }
-
-  .tooltip.b-tooltip-light {
-    &.bs-tooltip-top {
-      .arrow::before {
-        border-top-color: var(--color-light-gray);
-      }
-    }
-
-    &.bs-tooltip-right {
-      .arrow::before {
-        border-right-color: var(--color-light-gray);
-      }
-    }
-
-    &.bs-tooltip-bottom {
-      .arrow::before {
-        border-bottom-color: var(--color-light-gray);
-      }
-    }
-
-    &.bs-tooltip-left {
-      .arrow::before {
-        border-left-color: var(--color-light-gray);
-      }
-    }
-    .tooltip-inner {
-      color: var(--body-color);
-      background-color: var(--color-light-gray);
-    }
-  }
-
-  // logo override
-  .top-bar img {
-    filter: invert(1);
-  }
-
-  // progress overrides
-  .progress {
-    background-color: var(--color-secondary);
-  }
-
-  // icon overrides
-  .icon.icon-send {
-    filter: invert(0.5);
-  }
-
-  .icon.icon-save {
-    filter: invert(0.5);
-  }
-
-  // app table overrides
-  .app-table {
-    background: var(--color-light);
-
-    &__top-row {
-      border-top-color: var(--color-light-gray);
-      border-bottom-color: var(--color-light-gray);
-    }
-
-    &__row {
-      + .app-table__row {
-        border-top-color: var(--color-light-gray);
-      }
-    }
-  }
+  @import '../../node_modules/bootstrap-vue/src/components/table';  
 }
 
 $theme-colors: (

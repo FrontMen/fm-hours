@@ -1,0 +1,22 @@
+.multiselect {
+  color: var(--text-color);
+  border-color: var(--text-color);
+  &__select::before {
+    color: var(--color--light);
+  }
+  &__input,
+  &__single,
+  &__content-wrapper,
+  &__tag {
+    color: var(--body-color);
+    background-color: var(--color-light);
+  }
+  &__content-wrapper {
+    border-color: var(--color-medium-gray);
+    background-color: var(--color-light);
+  }
+  &__tags {
+    border: 1px solid var(--color-medium-gray);
+    background-color: var(--color-light);
+  }
+}
