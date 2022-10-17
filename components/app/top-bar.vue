@@ -3,10 +3,16 @@ en:
   title: "Consultancy hours"
   requestLeave: "Request leave"
   logout: "Logout"
+  auto: "Auto"
+  light: "Light"
+  dark: "Dark"
 nl:
   title: "Consultancy uren"
   requestLeave: "Verlof aanvragen"
   logout: "Uitloggen"
+  auto: "Automatisch"
+  light: "Licht"
+  dark: "Donker"
 </i18n>
 
 <template>
@@ -48,9 +54,9 @@ nl:
                 <b-icon-palette></b-icon-palette>
               </b-input-group-prepend>
               <b-form-select v-model="$colorMode.preference" class="mr-2">
-                <b-form-select-option value="system">Auto</b-form-select-option>
-                <b-form-select-option value="light">Light</b-form-select-option>
-                <b-form-select-option value="dark">Dark</b-form-select-option>
+                <b-form-select-option value="system">{{ $t('auto') }}</b-form-select-option>
+                <b-form-select-option value="light">{{ $t('light') }}</b-form-select-option>
+                <b-form-select-option value="dark">{{ $t('dark') }}</b-form-select-option>
               </b-form-select>
             </b-input-group>
           </div>

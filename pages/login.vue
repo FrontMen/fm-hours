@@ -4,11 +4,17 @@ en:
   login: "Login"
   loginHint: "Login to use the hours registration tool"
   loading: "Loading..."
+  auto: "Auto"
+  light: "Light"
+  dark: "Dark"
 nl:
   title: "Consultancy uren"
   login: "Inloggen"
   loginHint: "Log in voor uren registratie en rapportage"
   loading: "Laden.."
+  auto: "Automatisch"
+  light: "Licht"
+  dark: "Donker"
 </i18n>
 
 <template>
@@ -34,9 +40,13 @@ nl:
                           <b-icon-palette></b-icon-palette>
                         </b-input-group-prepend>
                         <b-form-select v-model="$colorMode.preference" class="mr-2">
-                          <b-form-select-option value="system">Auto</b-form-select-option>
-                          <b-form-select-option value="light">Light</b-form-select-option>
-                          <b-form-select-option value="dark">Dark</b-form-select-option>
+                          <b-form-select-option value="system">
+                            {{ $t('auto') }}
+                          </b-form-select-option>
+                          <b-form-select-option value="light">
+                            {{ $t('light') }}
+                          </b-form-select-option>
+                          <b-form-select-option value="dark">{{ $t('dark') }}</b-form-select-option>
                         </b-form-select>
                       </b-input-group>
                       <language-switch></language-switch>
