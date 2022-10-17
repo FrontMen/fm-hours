@@ -4,7 +4,6 @@ import path from 'path';
 import {Firestore} from '@google-cloud/firestore';
 
 let _firestore: any = null;
-
 export const lazyFirestore = async () => {
   if (!_firestore) {
     if (process.env.GOOGLE_CREDENTIALS) {
