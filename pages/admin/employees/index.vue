@@ -278,7 +278,7 @@ export default defineComponent({
   .multiselect__tags {
     min-height: 38px;
     padding-top: 6px;
-    border-color: #ced4da;
+    border-color: var(--color-medium-gray);
   }
 
   .multiselect__placeholder {
