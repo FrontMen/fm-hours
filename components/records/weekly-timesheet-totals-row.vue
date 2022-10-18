@@ -160,7 +160,7 @@ export default defineComponent({
     text-align: center;
     line-height: 40px;
     overflow: hidden;
-    color: var(--body-color);
+    color: var(--color-font-primary);
     right: 0;
     left: 0;
     top: 0;

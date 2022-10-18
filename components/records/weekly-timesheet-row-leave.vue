@@ -123,7 +123,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .weekly-timesheet-row {
   background: var(--color-light);
-  color: var(--body-color);
+  color: var(--color-font-primary);
   align-items: center;
 
   + .weekly-timesheet-row {
@@ -140,7 +140,7 @@ export default defineComponent({
   }
 
   .title-with-tooltip {
-    border-bottom: dashed 1px var(--body-color);
+    border-bottom: dashed 1px var(--color-font-primary);
   }
 
   &__action-column {

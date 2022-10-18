@@ -131,7 +131,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .weekly-timesheet {
   background-color: var(--color-light);
-  color: var(--body-color);
+  color: var(--color-font-primary);
   border: 1px solid var(--color-light-gray);
   border-radius: 4px;
 

@@ -1,64 +1,80 @@
 :root {
+  // core colors
+  --white: #fff;
+  --black: #000;
+  --grey-000: #ebebeb;
+  --grey-050: #ebebf5;
+  --grey-100: #eaeaea;
+  --grey-150: #e6e6e6;
+  --grey-200: #aaaaaa;
+  --grey-300: #636369;
+  --grey-400: #343a40;
+  --grey-500: #212529;
+  --grey-600: #1c1c1e;
+  --grey-700: rgba(0, 0, 0, 0.38);
+  --grey-800: rgba(0, 0, 0, 0.6);
+  --grey-900: #000000ff;
+
   --color-primary: #365fd9;
-  --color-primary-text: #ffffff;
-  --color-secondary: #e6e6e6;
+  --color-primary-text: --white;
+  --color-secondary: --grey-150;
   --color-tertiary: #365fd9;
   --color-tertiary-light: #62c3de;
   --color-tertiary-darker: #21849f;
-  --body-color: #212529;
-  --bg-dark: #343a40;
+  --color-font-primary: --grey-500;
+  --color-background-primary: --grey-400;
   --color-success: #a6d9a6;
   --color-success-darker: #4db34d;
   --color-alert: #ffb37e;
   --color-alert-darker: #fe6800;
   --color-danger: #e8758c;
   --color-danger-darker: #be203f;
-  --color-light: #fff;
-  --color-dark: #000;
-  --color-light-gray: #ebebeb;
-  --color-medium-gray: #eaeaea;
-  --color-medium-gray-darker: #aaaaaa;
 
-  --color-blue: #365fd9;
-  --color-blue-hover: #5079f3;
-  --color-light-blue: #ebf4ff;
-  --color-orange: #ed7f53;
-  --color-orange-hover: #ff996d;
+  --color-light: --white;
+  --color-dark: --black;
+  --color-light-gray: --grey-000;
+  --color-medium-gray: --grey-100;
+  --elements-high-contrast: --grey-200;
 
-  --pill-color: #fff;
-  --pill-bg: #343a40;
+  --brand-color: #365fd9;
+  --brand-color-hover: #5079f3;
+  --brand-color-secondary: #ed7f53;
+  --brand-color-secondary-hover: #ff996d;
+
+  --pill-color: --white;
+  --pill-bg: --grey-400;
 }
 
 .dark-mode {
   @media screen {
     --color-primary: #0f3460;
-    --color-primary-text: #ebebf599;
-    --color-secondary: #000000ff;
+    --color-primary-text: --grey-050;
+    --color-secondary: --grey-900;
     --color-tertiary: #0f3460;
     --color-tertiary-light: #62c3de;
     --color-tertiary-darker: #21849f;
-    --body-color: #636369;
-    --bg-dark: #000000ff;
+    --color-font-primary: --grey-300;
+    --color-background-primary: --grey-900;
     --color-success: #a6d9a6;
     --color-success-darker: #4db34d;
     --color-alert: #ffb37e;
     --color-alert-darker: #fe6800;
     --color-danger: #e8758c;
     --color-danger-darker: #be203f;
-    --color-light: #1c1c1e;
-    --color-dark: #fff;
-    --color-light-gray: #000000ff;
-    --color-medium-gray: rgba(0, 0, 0, 0.38);
-    --color-medium-gray-darker: rgba(0, 0, 0, 0.6);
 
-    --color-blue: #0f3460;
-    --color-blue-hover: #16213e;
-    --color-light-blue: #ebf4ff;
-    --color-orange: #ed7f53;
-    --color-orange-hover: #ff996d;
+    --color-light: --grey-600;
+    --color-dark: --white;
+    --color-light-gray: --grey-900;
+    --color-medium-gray: --grey-700;
+    --elements-high-contrast: --grey-800;
 
-    --pill-color: #ebebf599;
-    --pill-bg: #111113;
+    --brand-color: #0f3460;
+    --brand-color-hover: #16213e;
+    --brand-color-secondary: #ed7f53;
+    --brand-color-secondary-hover: #ff996d;
+
+    --pill-color: --grey-050;
+    --pill-bg: --grey-600;
   }
 
   // bootstrap overrides
@@ -75,45 +91,45 @@
 
   // declare and override bootstrap default colors
   $input-bg: var(--color-light);
-  $input-border-color: var(--color-medium-gray);
+  $input-border-color: var(--grey-700);
   $input-disabled-bg: var(--color-light-gray);
   $card-bg: var(--color-light);
   $close-color: var(--color-dark);
   $close-text-shadow: var(--color-dark);
-  $dropdown-color: var(--body-color);
+  $dropdown-color: var(--color-font-primary);
   $dropdown-bg: var(--color-light);
-  $dropdown-link-color: var(--body-color);
-  $dropdown-link-hover-color: var(--body-color);
-  $dropdown-link-hover-bg: var(--color-medium-gray);
-  $input-disabled-bg: var(--color-medium-gray);
-  $input-group-addon-color: var(--body-color);
+  $dropdown-link-color: var(--color-font-primary);
+  $dropdown-link-hover-color: var(--color-font-primary);
+  $dropdown-link-hover-bg: var(--grey-700);
+  $input-disabled-bg: var(--grey-700);
+  $input-group-addon-color: var(--color-font-primary);
   $input-group-addon-bg: var(--color-light-gray);
   $modal-content-bg: var(--color-light);
   $modal-header-border-color: var(--color-light-gray);
   $popover-bg: #1c1c1e; // fix static color bootstrap issue
-  $popover-body-color: var(--body-color);
-  $table-color: var(--body-color);
-  $table-border-color: var(--color-medium-gray);
-  $table-accent-bg: var(--color-medium-gray);
+  $popover-body-color: var(--color-font-primary);
+  $table-color: var(--color-font-primary);
+  $table-border-color: var(--grey-700);
+  $table-accent-bg: var(--grey-700);
   $tooltip-bg: var(--color-light);
   $tip-bg-color: var(--color-light);
   $tooltip-color: var(--color-primary-text);
   $tip-text-color: var(--color-light);
   $body-bg: var(--color-light);
   $table-bg: var(--color-light);
-  $background: var(--color-orange);
+  $background: var(--brand-color-secondary);
 
   // import custom dark mode components
-  @import "dark-mode/app-table";
-  @import "dark-mode/custom";
-  @import "dark-mode/custom-select";
-  @import "dark-mode/forms";
-  @import "dark-mode/icons";
-  @import "dark-mode/progress";
-  @import "dark-mode/structure";
-  @import "dark-mode/tooltip";
-  @import "dark-mode/utils";
-  @import "dark-mode/vue-multi-select";
+  @import 'dark-mode/app-table';
+  @import 'dark-mode/custom';
+  @import 'dark-mode/custom-select';
+  @import 'dark-mode/forms';
+  @import 'dark-mode/icons';
+  @import 'dark-mode/progress';
+  @import 'dark-mode/structure';
+  @import 'dark-mode/tooltip';
+  @import 'dark-mode/utils';
+  @import 'dark-mode/vue-multi-select';
 
   // import customized components to override variables
   @import '~bootstrap/scss/functions';
@@ -135,7 +151,7 @@
   @import '../../node_modules/bootstrap-vue/src/variables';
   @import '../../node_modules/bootstrap-vue/src/components/form-btn-label-control';
   @import '../../node_modules/bootstrap-vue/src/custom-controls';
-  @import '../../node_modules/bootstrap-vue/src/components/table';  
+  @import '../../node_modules/bootstrap-vue/src/components/table';
 }
 
 $theme-colors: (

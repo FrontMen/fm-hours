@@ -287,7 +287,7 @@ export default defineComponent({
 
   &.new {
     background-color: var(--color-medium-gray);
-    border: solid 2px var(--color-medium-gray-darker);
+    border: solid 2px var(--elements-high-contrast);
   }
 
   &.denied {
