@@ -35,20 +35,6 @@ nl:
                 <div class="col-md-6 col-lg-7 d-flex align-items-center">
                   <div class="card-body p-4 p-lg-5 text-black">
                     <div class="d-flex align-items-center justify-content-end mb-2">
-                      <b-input-group class="w-auto">
-                        <b-input-group-prepend is-text>
-                          <b-icon-palette></b-icon-palette>
-                        </b-input-group-prepend>
-                        <b-form-select v-model="$colorMode.preference" class="mr-2">
-                          <b-form-select-option value="system">
-                            {{ $t('auto') }}
-                          </b-form-select-option>
-                          <b-form-select-option value="light">
-                            {{ $t('light') }}
-                          </b-form-select-option>
-                          <b-form-select-option value="dark">{{ $t('dark') }}</b-form-select-option>
-                        </b-form-select>
-                      </b-input-group>
                       <language-switch></language-switch>
                     </div>
                     <form>
