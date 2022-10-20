@@ -132,36 +132,42 @@ export default defineComponent({
       store.dispatch('employees/getTeamList');
     });
 
+    const updateProjectsList = () => {
+      if (!props.employee?.projects || !customers.value.length) {
+        selectedProjects.value = [];
+        return;
+      }
+
+      function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
+        return (project as EmployeeProject)?.customerId !== undefined;
+      }
+
+      selectedProjects.value = props.employee.projects.map((project: string | EmployeeProject) => {
+        const customerId = isNewStructure(project) ? project.customerId : project;
+        const customer = customers.value.find((customer) => customer.id === customerId)
+        const contract = isNewStructure(project) ? project.contract : null
+
+        return {
+          customer,
+          contract
+        } as Project;
+      });
+    }
+
     watch(() => props.employee, () => {
       if (props.employee?.team) {
         selectedTeam.value = props.employee.team
       }
+      updateProjectsList();
     }, {immediate: true})
 
     watch([projects, customers],
       () => {
-        if (!props.employee?.projects || !customers.value.length) {
-          selectedProjects.value = [];
-          return;
-        }
-
-        function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
-          return (project as EmployeeProject)?.customerId !== undefined;
-        }
-
-        selectedProjects.value = props.employee.projects.map((project: string | EmployeeProject) => {
-          const customerId = isNewStructure(project) ? project.customerId : project;
-          const customer = customers.value.find((customer) => customer.id === customerId)
-          const contract = isNewStructure(project) ? project.contract : null
-
-          return {
-            customer,
-            contract
-          } as Project;
-        });
+        updateProjectsList();
       },
       {immediate: true, deep: true}
     );
+
 
     // We probably shouldn't watch a store getter imho
     watch(

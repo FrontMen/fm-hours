@@ -11,8 +11,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const {collection, startDate, endDate} = req.query;
 
     let ref = firestore.collection(collection);
-    if (startDate) ref = ref.where('date', '>=', startDate);
-    if (endDate) ref = ref.where('date', '<', endDate);
+    if (startDate) ref = ref.where('date', '>=', parseInt(startDate as string));
+    if (endDate) ref = ref.where('date', '<', parseInt(endDate as string));
 
     const snapshot = await ref.orderBy('date', 'asc').get();
 

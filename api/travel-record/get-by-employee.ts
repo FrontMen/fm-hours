@@ -15,9 +15,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       .collection(Collections.TRAVELREC)
       .where('employeeId', '==', employeeId);
 
-    if (startDate) query.where('date', '>=', new Date(parseInt(startDate as string)).getTime());
+    if (startDate) query.where('date', '>=', parseInt(startDate as string));
 
-    if (endDate) query.where('date', '<=', new Date(parseInt(endDate as string)).getTime());
+    if (endDate) query.where('date', '<=', parseInt(endDate as string));
 
     const snapshot = await query.get();
 

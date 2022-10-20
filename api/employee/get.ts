@@ -1,4 +1,5 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
+import {FieldPath} from '@google-cloud/firestore';
 import {mapEmployeeFromDocument} from '../../lib/employees';
 import {lazyFirestore} from '../../lib/db_manager';
 import {Collections} from '../../types/enums';
@@ -16,7 +17,7 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     let ref = await firestore.collection(Collections.EMPLOYEES);
 
     if (employeeId) {
-      ref = ref.where(firestore.FieldPath.documentId(), '==', employeeId);
+      ref = ref.where(FieldPath.documentId(), '==', employeeId);
     }
 
     if (email) {

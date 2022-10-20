@@ -42,8 +42,8 @@ export default class RecordsService {
       await this.axios.get('api/time-record/get', {
         params: {
           collection,
-          startDate: params.startDate.getTime(),
-          endDate: params.endDate.getTime(),
+          startDate: params.startDate.getTime().toString(),
+          endDate: params.endDate.getTime().toString(),
         },
       })
     ).data;

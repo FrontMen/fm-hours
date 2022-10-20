@@ -12,8 +12,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const snapshot = await firestore
       .collection(Collections.TIMESHEETS)
       .where('status', '==', recordStatus.APPROVED)
-      .where('date', '>=', startDate)
-      .where('date', '<=', endDate)
+      .where('date', '>=', parseInt(startDate as string))
+      .where('date', '<=', parseInt(endDate as string))
       .orderBy('date', 'asc')
       .get();
 

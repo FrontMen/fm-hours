@@ -9,11 +9,11 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     let query = await firestore.collection(collection).where('employeeId', '==', employeeId);
 
     if (startDate) {
-      query = query.where('date', '>=', new Date(+startDate).getTime());
+      query = query.where('date', '>=', parseInt(startDate as string));
     }
 
     if (endDate) {
-      query = query.where('date', '<=', new Date(+endDate).getTime());
+      query = query.where('date', '<=', parseInt(endDate as string));
     }
 
     const snapshot = await query.get();
@@ -22,7 +22,6 @@ export default async (req: VercelRequest, res: VercelResponse) => {
       id: doc.id,
       ...(doc.data() as Omit<RecordType, 'id'>),
     }));
-
     return res.status(200).json(response);
   } catch (e: unknown) {}
 };

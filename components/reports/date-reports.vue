@@ -318,7 +318,7 @@ export default defineComponent({
     });
 
     store.dispatch('reports/getMonthlyReportData', {
-      startDate
+      startDate: startDate.value
     });
 
     const handleFilterBillable = (records: TimeRecord[], force: boolean = false): TimeRecord[] => {

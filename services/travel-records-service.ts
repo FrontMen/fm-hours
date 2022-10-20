@@ -27,8 +27,8 @@ export default class RecordsService {
     return (
       await this.axios.get('api/travel-record/get', {
         params: {
-          startDate: params.startDate,
-          endDate: params.endDate,
+          startDate: params.startDate.getTime(),
+          endDate: params.endDate.getTime(),
         },
       })
     ).data;

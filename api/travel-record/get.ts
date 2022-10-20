@@ -12,8 +12,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     const {startDate, endDate} = req.query;
     const snapshot = await firestore
       .collection(Collections.TRAVELREC)
-      .where('date', '>=', new Date(startDate as string).getTime())
-      .where('date', '<=', new Date(endDate as string).getTime())
+      .where('date', '>=', parseInt(startDate as string))
+      .where('date', '<=', parseInt(endDate as string))
       .orderBy('date', 'asc')
       .get();
 

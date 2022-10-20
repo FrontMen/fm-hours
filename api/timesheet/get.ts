@@ -11,12 +11,11 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
     let query = firestore.collection(Collections.TIMESHEETS);
 
-    if (date && !startDate && !endDate) query = query.where('date', '==', date);
+    if (date && !startDate && !endDate) query = query.where('date', '==', parseInt(date as string));
 
-    if (startDate && !date)
-      query = query.where('date', '>=', new Date(startDate as string).getTime());
+    if (startDate && !date) query = query.where('date', '>=', parseInt(startDate as string));
 
-    if (endDate && !date) query = query.where('date', '<=', new Date(endDate as string).getTime());
+    if (endDate && !date) query = query.where('date', '<=', parseInt(endDate as string));
 
     if (employeeId) query = query.where('employeeId', '==', employeeId);
 
