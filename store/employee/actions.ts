@@ -14,7 +14,6 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
       const employeesService = new EmployeesService(this.$axios);
       const {user} = rootState.auth;
       const employee = await employeesService.getEmployeeByMail(user.email);
-      const isAdmin = await employeesService.isAdmin(user.email);
 
       if (!employee) throw new Error(EMPLOYEE_NOT_FOUND);
 
@@ -32,7 +31,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         });
       }
 
-      commit('setEmployee', {employee, isAdmin});
+      commit('setEmployee', employee);
       commit('setIsFound', true);
 
       return employee;

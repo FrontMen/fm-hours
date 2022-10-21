@@ -49,9 +49,7 @@ nl:
             <b-card>
               <employee-settings
                 :employee="employee"
-                :is-admin="isAdmin"
                 @changed="hasUnsavedChanges = true, errorMessage = null"
-                @changed-admin="changedAdmin"
                 @error-state="handleFormError"
               ></employee-settings>
             </b-card>
@@ -116,9 +114,6 @@ export default defineComponent({
     const errorMessage = ref<string>("");
 
     const customers = computed(() => store.state.customers.customers);
-    const isAdmin = ref<boolean>(
-      store.getters["employees/adminList"].includes(props.employee?.email)
-    );
 
     const pageTitle = computed(() =>
       props.employee ? `${i18n.t("employees")} - ${props.employee.name}` : i18n.t("addEmployee") as string
@@ -128,7 +123,6 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch('customers/getCustomers');
-      store.dispatch('employees/getAdminList');
       store.dispatch('employees/getTeamList');
     });
 
@@ -168,42 +162,7 @@ export default defineComponent({
       {immediate: true, deep: true}
     );
 
-
-    // We probably shouldn't watch a store getter imho
-    watch(
-      () =>
-        store.getters["employees/adminList"].includes(props.employee?.email),
-      () => {
-        isAdmin.value = store.getters["employees/adminList"].includes(
-          props.employee?.email
-        );
-      },
-      {immediate: true}
-    );
-
-    const handleAdminToggle = (): void => {
-      let valueChanged = false;
-      let adminList = [...store.getters["employees/adminList"]];
-      const email = props.employee?.email;
-      const alreadyContained = adminList.includes(email);
-      const adminValue = isAdmin.value;
-
-      if (adminValue && !alreadyContained) {
-        adminList.push(email);
-        valueChanged = true;
-      }
-      if (!adminValue && alreadyContained) {
-        adminList = adminList.filter((admin) => admin !== email);
-        valueChanged = true;
-      }
-
-      // Only dispatch if value changed. Failsafe for spamming the checkbox.
-      if (valueChanged) store.dispatch('employees/updateAdminList', adminList);
-    };
-
     const saveEmployee = async () => {
-      handleAdminToggle();
-
       const newEmployee = {
         ...props.employee,
         team: selectedTeam.value,
@@ -234,11 +193,6 @@ export default defineComponent({
       hasUnsavedChanges.value = true;
     }
 
-    const changedAdmin = (adminValue: boolean) => {
-      isAdmin.value = adminValue;
-      hasUnsavedChanges.value = true;
-    }
-
     const handleFormError = (error: { message: string }) => {
       errorMessage.value = error.message;
     }
@@ -246,14 +200,12 @@ export default defineComponent({
     return {
       updateTeam,
       updateSelectedProjects,
-      isAdmin,
       customers,
       selectedProjects,
       selectedTeam,
       saveEmployee,
       hasUnsavedChanges,
       errorMessage,
-      changedAdmin,
       handleFormError,
     };
   },

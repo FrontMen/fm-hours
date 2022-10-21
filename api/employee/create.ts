@@ -10,6 +10,9 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
     const firestore = await lazyFirestore();
     const {employee} = req.body;
+    const isAdmin = employee.isAdmin;
+    delete employee.isAdmin;
+
     const newEmployee = {
       ...employee,
       picture: '',
@@ -18,6 +21,15 @@ export default async (req: VercelRequest, res: VercelResponse) => {
 
     const ref = firestore.collection(Collections.EMPLOYEES);
     const {id} = await ref.add(newEmployee);
+
+    if (isAdmin) {
+      const docs = await firestore.collection(Collections.ADMINS).get();
+      const adminList = docs.docs[0].data().admins;
+      adminList.push(employee.email);
+      const docId = docs.docs[0].id;
+      const ref = await firestore.collection(Collections.ADMINS).doc(docId);
+      await ref.update({admins: adminList});
+    }
 
     const result = {...newEmployee, id};
     return res.status(200).json(result);

@@ -58,27 +58,7 @@ export default class EmployeesService {
     ).data;
   }
 
-  async isAdmin(email: string): Promise<boolean> {
-    return (
-      await this.axios.post('/api/employee/is-admin', {
-        email,
-      })
-    ).data;
-  }
-
-  async getAdminEmails(): Promise<string[]> {
-    return (await this.axios.get('api/employee/get-admin-emails')).data;
-  }
-
   async getTeams(): Promise<string[]> {
     return (await this.axios.get('api/employee/get-teams')).data;
-  }
-
-  async updateAdminEmails(adminList: string[]): Promise<string[]> {
-    return (
-      await this.axios.post('api/employee/update-admin-emails', {
-        adminList,
-      })
-    ).data;
   }
 }

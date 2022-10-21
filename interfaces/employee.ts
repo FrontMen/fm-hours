@@ -19,4 +19,5 @@ export interface Employee {
   bridgeUid?: string;
   team?: string;
   standBy: boolean;
+  isAdmin: boolean;
 }

@@ -46,10 +46,10 @@ nl:
     />
 
     <b-form-checkbox
-      :checked="localIsAdmin"
+      v-model="localEmployee.isAdmin"
       switch
       class="mt-2 mr-3"
-      @change="$emit('changed-admin', !localIsAdmin)"
+      @input="$emit('changed')"
     >
       {{ $t('admin') }}
     </b-form-checkbox>
@@ -116,7 +116,6 @@ import {formatDate, getDayOnGMT} from "~/helpers/dates";
 
 interface EmployeeSettingsProps {
   employee: Employee,
-  isAdmin: boolean,
 }
 
 export default defineComponent({
@@ -124,15 +123,11 @@ export default defineComponent({
     employee: {
       type: Object as PropType<Employee>,
       required: true,
-    },
-    isAdmin: {
-      type: Boolean as PropType<boolean>,
-      required: true
     }
   },
-  emits: ['changed', 'changed-admin', 'error-state'],
+  emits: ['changed', 'error-state'],
   setup(props: EmployeeSettingsProps, {emit}: SetupContext) {
-    const {employee: localEmployee, isAdmin: localIsAdmin} = toRefs(props)
+    const {employee: localEmployee} = toRefs(props)
     const {i18n} = useContext();
 
     const hasEndDate = ref<boolean>(!!localEmployee.value.endDate);
@@ -191,7 +186,6 @@ export default defineComponent({
       emailTouched,
       startDate,
       endDate,
-      localIsAdmin,
     }
   },
 });

@@ -243,7 +243,6 @@ export default defineComponent({
 
     onBeforeMount(() => {
       store.dispatch('employees/getEmployees');
-      store.dispatch('employees/getAdminList');
     });
 
     const startDate = computed(() => props.startDate);
@@ -252,15 +251,13 @@ export default defineComponent({
 
     const onlyBillable = ref<boolean>(false);
 
-    const user = computed(() => store.state.auth.user);
     const employees = computed(() => store.state.employees.employees);
 
     const employee = computed(() => {
       const id = props.employeeId || store.state.employee?.employee?.id;
 
       const employee = employees.value.find(e => e.id === id);
-      const adminlist = store.getters["employees/adminList"];
-      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
+      const isAuthenticatedUserAdmin = store.state.employee.isAdmin;
       if (employee && isAuthenticatedUserAdmin) return employee;
       return store.state.employee.employee;
     });
