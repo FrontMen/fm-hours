@@ -2,7 +2,6 @@ import {addMonths, startOfISOWeek, startOfMonth} from 'date-fns';
 import {ActionTree} from 'vuex';
 
 import {checkEmployeeAvailability} from '~/helpers/employee';
-import {Collections} from '~/types/enums';
 import {filterApprovedRecords} from '~/helpers/record-status';
 import {getDayOnGMT} from '~/helpers/dates';
 
@@ -23,13 +22,10 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       startDate,
       endDate,
     });
-    const standByRecordsPromise = this.app.$timeRecordsService.getRecords<StandbyRecord>(
-      {
-        startDate,
-        endDate,
-      },
-      Collections.STANDBYREC
-    );
+    const standByRecordsPromise = this.app.$timeRecordsService.getRecords<StandbyRecord>({
+      startDate,
+      endDate,
+    });
     const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
       startDate,
       endDate,

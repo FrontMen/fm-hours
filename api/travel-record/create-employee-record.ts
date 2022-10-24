@@ -1,5 +1,6 @@
 import {lazyFirestore} from '../../lib/db_manager';
 import {Collections} from '../../types/enums';
+import {TravelRecord} from '../../interfaces/travel-record';
 
 export default async (req: any, res: any) => {
   try {

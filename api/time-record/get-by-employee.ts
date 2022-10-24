@@ -1,12 +1,15 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import {lazyFirestore} from '../../lib/db_manager';
 import {RecordType} from '../../interfaces/time-record';
+import {Collections} from '../../types/enums';
 
 export default async (req: VercelRequest, res: VercelResponse) => {
   try {
     const firestore = await lazyFirestore();
-    const {collection, employeeId, startDate, endDate} = req.query;
-    let query = await firestore.collection(collection).where('employeeId', '==', employeeId);
+    const {employeeId, startDate, endDate} = req.query;
+    let query = await firestore
+      .collection(Collections.TIMREC)
+      .where('employeeId', '==', employeeId);
 
     if (startDate) {
       query = query.where('date', '>=', parseInt(startDate as string));

@@ -133,7 +133,6 @@ import {
   getTimeRecordsToSave,
   getTravelRecordsToSave
 } from "~/helpers/timesheet";
-import {Collections} from "~/types/enums";
 import {uuidv4} from "~/helpers/helpers";
 
 export default defineComponent({
@@ -307,7 +306,7 @@ export default defineComponent({
 
       const [timeRecords, standByRecords, travelRecords] = await Promise.all([
         app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
-        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
+        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}),
         app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
       ]);
       // Combine everything in a single timesheet
@@ -393,8 +392,7 @@ export default defineComponent({
         app.$timeRecordsService.saveEmployeeRecords<StandbyRecord>({
             employeeId,
             timeRecords: standByRecordsToSave
-          },
-          Collections.STANDBYREC
+          }
         ),
         app.$travelRecordsService.saveEmployeeRecords({employeeId, travelRecords: travelRecordsToSave})
       ]);

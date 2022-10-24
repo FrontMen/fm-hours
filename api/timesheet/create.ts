@@ -15,7 +15,8 @@ export default async (req: VercelRequest, res: VercelResponse) => {
     if (id) {
       await ref.doc(id).update(newTimesheet);
 
-      return {id, ...newTimesheet};
+      const result = {id, ...newTimesheet};
+      return res.status(200).json(result);
     }
 
     const newDocument = await ref.add(newTimesheet);
