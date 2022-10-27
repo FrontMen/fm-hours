@@ -1,84 +1,124 @@
-import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
+import {DocumentSnapshot} from '@firebase/firestore-types';
+import firebase from 'firebase/compat';
+import {Collections} from '~/types/enums';
 
 export default class EmployeesService {
-  axios: NuxtAxiosInstance;
+  fire: NuxtFireInstance;
+  fireModule: typeof firebase;
 
-  constructor(axios: NuxtAxiosInstance) {
-    this.axios = axios;
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
+    this.fire = fire;
+    this.fireModule = fireModule;
   }
 
   async getEmployees(): Promise<Employee[]> {
-    // paginate this
-    return (await this.axios.get('api/employee/get')).data;
+    const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   async getEmployee(employeeId: string): Promise<Employee | null> {
-    return (
-      await this.axios.get('api/employee/get', {
-        params: {
-          employeeId,
-        },
-      })
-    ).data;
+    const ref = this.fire.firestore
+      .collection(Collections.EMPLOYEES)
+      .where(this.fireModule.firestore.FieldPath.documentId(), '==', employeeId);
+
+    const snapshot = await ref.get();
+
+    if (!snapshot.empty) {
+      return this.mapEmployeeFromDocument(snapshot.docs[0]);
+    }
+
+    return null;
   }
 
   async getEmployeeByMail(email: string): Promise<Employee | null> {
-    return (
-      await this.axios.get('api/employee/get', {
-        params: {
-          email,
-        },
-      })
-    ).data;
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
+    const ref = this.fire.firestore
+      .collection(Collections.EMPLOYEES)
+      .where('email', 'in', [fmMail, ioMail]);
+
+    const snapshot = await ref.get();
+
+    if (!snapshot.empty) {
+      return this.mapEmployeeFromDocument(snapshot.docs[0]);
+    }
+
+    return null;
   }
 
   async createEmployee(params: Omit<Employee, 'id' | 'picture'>): Promise<Employee> {
-    return (
-      await this.axios.post('api/employee/create', {
-        employee: params,
-      })
-    ).data;
+    const newEmployee = {
+      ...params,
+      picture: '',
+      created: new Date().getTime(),
+    };
+
+    const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
+    const {id} = await ref.add(newEmployee);
+
+    return {...newEmployee, id};
   }
 
   async updateEmployee(employee: Employee): Promise<void> {
-    return (
-      await this.axios.post('api/employee/update', {
-        employee,
-      })
-    ).data;
+    const newEmployee = {...employee} as any;
+    delete newEmployee.id;
+
+    return await this.fire.firestore
+      .collection(Collections.EMPLOYEES)
+      .doc(employee.id)
+      .set(newEmployee, {merge: true});
   }
 
   async deleteEmployee(id: string): Promise<void> {
-    return (
-      await this.axios.delete('api/employee/delete', {
-        data: {
-          id,
-        },
-      })
-    ).data;
+    return await this.fire.firestore.collection(Collections.EMPLOYEES).doc(id).delete();
   }
 
   async isAdmin(email: string): Promise<boolean> {
-    return (
-      await this.axios.post('/api/employee/is-admin', {
-        email,
-      })
-    ).data;
+    // TODO: remove when migrated to iO mail
+    const fmMail = email.replace('@iodigital.com', '@frontmen.nl');
+    const ioMail = email.replace('@frontmen.nl', '@iodigital.com');
+
+    const adminEmails = await this.getAdminEmails();
+    return adminEmails.some(mail => [fmMail, ioMail].includes(mail));
   }
 
   async getAdminEmails(): Promise<string[]> {
-    return (await this.axios.get('api/employee/get-admin-emails')).data;
+    const ref = this.fire.firestore.collection(Collections.ADMINS);
+    const snapshot = await ref.get();
+    const result = snapshot.docs[0].data().admins || [];
+
+    return result as string[];
   }
 
   async getTeams(): Promise<string[]> {
-    return (await this.axios.get('api/employee/get-teams')).data;
+    const ref = this.fire.firestore.collection(Collections.TEAMS);
+    const snapshot = await ref.get();
+    const result = snapshot.docs[0].data().teams || [];
+
+    return result as string[];
   }
 
   async updateAdminEmails(adminList: string[]): Promise<string[]> {
-    return (
-      await this.axios.post('api/employee/update-admin-emails', {
-        adminList,
-      })
-    ).data;
+    const docs = await this.fire.firestore.collection(Collections.ADMINS).get();
+    const docId = docs.docs[0].id;
+    const ref = await this.fire.firestore.collection(Collections.ADMINS).doc(docId);
+
+    await ref.update({admins: adminList});
+    return adminList;
+  }
+
+  private mapEmployeeFromDocument(doc: DocumentSnapshot): Employee {
+    return {
+      ...(doc.data() as Employee),
+      id: doc.id,
+    };
   }
 }
