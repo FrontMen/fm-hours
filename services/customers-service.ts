@@ -1,44 +1,68 @@
-import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import type {NuxtFireInstance} from '@nuxtjs/firebase';
+import firebase from 'firebase/compat';
+import {Collections} from '~/types/enums';
 
 export default class CustomersService {
-  axios: NuxtAxiosInstance;
+  fire: NuxtFireInstance;
+  fireModule: typeof firebase;
 
-  constructor(axios: NuxtAxiosInstance) {
-    this.axios = axios;
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
+    this.fire = fire;
+    this.fireModule = fireModule;
   }
 
   async getCustomers() {
-    // we need some filter for this one
-    return (await this.axios.get('api/customer/get')).data;
+    const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   async getCustomersByIds(ids: Array<String>) {
-    return (
-      await this.axios.get('api/customer/get-by-ids', {
-        params: {
-          ids,
-        },
-      })
-    ).data;
+    const ref = this.fire.firestore
+      .collection(Collections.CUSTOMERS)
+      .where(this.fireModule.firestore.FieldPath.documentId(), 'in', ids);
+
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   async addCustomer(customer: Omit<Customer, 'id'>) {
-    return (
-      await this.axios.post('api/customer/create', {
-        customer,
-      })
-    ).data;
+    const ref = this.fire.firestore.collection(Collections.CUSTOMERS);
+    const {id} = await ref.add(customer);
+
+    return {
+      ...customer,
+      id,
+    };
   }
 
   async getDefaultCustomers() {
-    return (await this.axios.get('api/customer/get-default')).data;
+    const ref = this.fire.firestore
+      .collection(Collections.CUSTOMERS)
+      .where('isDefault', '==', true);
+    const snapshot = await ref.get();
+
+    return snapshot.docs.map((res: any) => ({
+      id: res.id,
+      ...res.data(),
+    }));
   }
 
   async updateCustomer(customer: Customer) {
-    return (
-      await this.axios.post('api/customer/update', {
-        customer,
-      })
-    ).data;
+    const newCustomer = {...customer} as any;
+    delete newCustomer.id;
+
+    return await this.fire.firestore
+      .collection(Collections.CUSTOMERS)
+      .doc(customer.id)
+      .update(newCustomer);
   }
 }

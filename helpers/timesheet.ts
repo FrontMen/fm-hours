@@ -47,6 +47,7 @@ const createCustomerProjects = (
       projects.push(project);
     }
   });
+
   // Add records to the right customers
   return projects.map(project => {
     const projectRecords = timeRecords.filter(x => x.customer.id === project.customer.id);
@@ -80,6 +81,7 @@ const createStandByProject = (
   standByRecords: StandbyRecord[] | null
 ): TimesheetProject | null => {
   if (!standByRecords) return null;
+
   const values = week.map(weekDay => {
     const record = findRecordByDate(weekDay, standByRecords) as StandbyRecord;
     return record?.hours || 0;
