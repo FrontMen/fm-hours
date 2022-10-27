@@ -1,14 +1,6 @@
 import {isSameISOWeek} from 'date-fns';
 
 import {getDayOnGMT} from './dates';
-import {
-  TimeRecord,
-  StandbyRecord,
-  TravelRecord,
-  WeekDate,
-  RecordDayStatus,
-} from '~/interfaces/time-record';
-import {Timesheet} from '~/interfaces/timesheets';
 
 export const recordStatus = {
   NEW: 'new',
