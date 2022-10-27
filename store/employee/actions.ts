@@ -11,8 +11,9 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
     if (!rootState.auth.user) return;
 
     try {
-      const employeesService = new EmployeesService(this.$axios);
+      const employeesService = new EmployeesService(this.$fire, this.$fireModule);
       const {user} = rootState.auth;
+
       const employee = await employeesService.getEmployeeByMail(user.email);
       const isAdmin = await employeesService.isAdmin(user.email);
 
