@@ -4,6 +4,7 @@ export default () => {
   const createStandByFields = () => {
     return [
       {key: 'name', sortable: true},
+      {key: 'bridgeUid', sortable: false},
       {key: 'team', sortable: true},
       {key: 'hours', sortable: true},
     ];
@@ -12,6 +13,7 @@ export default () => {
   const createItem = (employee: ReportEmployee) => {
     return {
       name: employee.name,
+      bridgeUid: employee.bridgeUid,
       team: employee.team,
       hours: getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
     };
