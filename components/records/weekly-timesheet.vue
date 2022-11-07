@@ -181,19 +181,11 @@ export default defineComponent({
       store.dispatch("customers/getCustomers");
     }
 
-    function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
-      return (project as EmployeeProject)?.customerId !== undefined;
-    }
-
     const projects = computed(() => {
-      const employeeCustomers: Project[] = employee.projects.map((project: string | EmployeeProject) => {
-        const customerId = isNewStructure(project) ? project.customerId : project;
-        const customer = customers.value.find((customer) => customer.id === customerId);
-        const contract = isNewStructure(project) ? project.contract : null;
-
+      const employeeCustomers: Project[] = employee.projects.map((project: EmployeeProject) => {
         return {
-          customer,
-          contract
+          customer: customers.value.find((customer) => customer.id === project.customerId),
+          contract: project.contract
         } as Project;
       });
 

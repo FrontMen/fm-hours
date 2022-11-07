@@ -211,22 +211,15 @@ export default defineComponent({
     };
 
     const checkEmployeeProjects = (
-      employeeProjects: string[] | EmployeeProject[],
+      employeeProjects: EmployeeProject[],
       selectedProjects: Customer[]
     ) => {
       if (!selectedProjects?.length) return true;
       if (!employeeProjects?.length) return false;
 
-      function isNewStructure(project: string | EmployeeProject): project is EmployeeProject {
-        return (project as EmployeeProject)?.customerId !== undefined;
-      }
-
-      return employeeProjects.some((employeeProject: string | EmployeeProject) => {
+      return employeeProjects.some((employeeProject: EmployeeProject) => {
           return selectedProjects.some((project) => {
-            if (isNewStructure(employeeProject)) {
               return project.id === employeeProject.customerId;
-            }
-            return project.id === employeeProject;
           });
         }
       );

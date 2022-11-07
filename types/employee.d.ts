@@ -15,7 +15,7 @@ interface Employee {
   picture: string;
   travelAllowance: boolean;
   billable: boolean;
-  projects: string[] | EmployeeProject[];
+  projects: EmployeeProject[];
   endDate: number | null;
   startDate: number;
   created: number;
