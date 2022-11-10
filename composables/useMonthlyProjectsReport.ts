@@ -6,7 +6,6 @@ export default () => {
       {key: 'name', sortable: true},
       {key: 'team', sortable: true},
       {key: 'project', sortable: true},
-      {key: 'debtor', sortable: true},
       {key: 'billable', sortable: true, variant: 'success'},
     ];
   };
@@ -19,7 +18,6 @@ export default () => {
       team: employee.team,
       billable: getTotalsByProp<TimeRecord>(records, 'hours') || 0,
       project: customer.name,
-      debtor: customer.debtor,
     };
   };
 

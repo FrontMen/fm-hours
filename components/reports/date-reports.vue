@@ -130,15 +130,12 @@ nl:
       sort-by="date"
       :sort-desc="true"
       :items="reportItems"
-      :fields="['customer', 'debtor', 'date', 'hours']"
+      :fields="['customer', 'date', 'hours']"
       foot-clone
       show-empty
     >
       <template #head()="data">
         <span>{{ $t(data.column) }}</span>
-      </template>
-      <template #head(debtor)="scope">
-        <span class="hide-print">{{ $t(scope.column) }}</span>
       </template>
 
       <template #empty>
@@ -149,9 +146,6 @@ nl:
         <b-badge v-if="scope.item.customer.isBillable" variant="success" class="hide-print">
           {{ $t('billable') }}
         </b-badge>
-      </template>
-      <template #cell(debtor)="scope">
-        <span class="hide-print">{{ scope.item.customer.debtor }}</span>
       </template>
       <template #cell(date)="scope">
         {{ formatDate(scope.item.date) }}

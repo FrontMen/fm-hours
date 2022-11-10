@@ -3,12 +3,10 @@ en:
   notFound: "Customer not found"
   enterName: "Enter name"
   onlyReports: "Only visible in reports"
-  enterDebtor: "Enter debtor"
 nl:
   notFound: "Klant niet gevonden"
   enterName: "Typ naam"
   onlyReports: "Alleen zichtbaar in rapportage"
-  enterDebtor: "typ debiteurnaam"
 </i18n>
 
 <template>
@@ -37,20 +35,6 @@ nl:
                 id="input-name"
                 v-model="form.name"
                 :placeholder="$t('enterName')"
-                required
-              />
-            </b-form-group>
-
-            <b-form-group
-              id="input-group-debtor"
-              :label="$t('debtor') + ':'"
-              label-for="input-debtor"
-              :description="$t('onlyReports')"
-            >
-              <b-form-input
-                id="input-debtor"
-                v-model="form.debtor"
-                :placeholder="$t('enterDebtor')"
                 required
               />
             </b-form-group>
@@ -108,7 +92,6 @@ export default defineComponent({
     const hasUnsavedChanges = ref<boolean>(false);
     const form = ref({
       name: "",
-      debtor: "",
       isBillable: false,
       isDefault: false,
     });
@@ -130,7 +113,6 @@ export default defineComponent({
           ? {...customer.value}
           : {
             name: "",
-            debtor: "",
             isBillable: false,
             isDefault: false,
           };

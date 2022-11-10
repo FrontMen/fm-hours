@@ -102,7 +102,7 @@ export default defineComponent({
         .sort((a, b) => a.name.localeCompare(b.name))
         .map((customer) => ({
           value: customer,
-          text: `${customer.name} - ${customer.debtor}`,
+          text: customer.name,
           disabled: props.selectedProjects.some((project) => project.customer.id === customer.id)
         }))
 
@@ -167,7 +167,6 @@ export default defineComponent({
 
     const fields = [
       {key: 'customer.name', label: 'Customer'},
-      {key: 'customer.debtor', label: 'Debtor'},
       {key: 'contract', class: 'text-center'},
       {key: 'delete', class: 'text-center'}
     ];

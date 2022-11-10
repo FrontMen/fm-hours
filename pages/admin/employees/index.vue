@@ -178,7 +178,7 @@ export default defineComponent({
         .filter((customer) => !customer.isDefault)
         .map((customer) => ({
           ...customer,
-          label: `${customer.name} (${customer.debtor})`,
+          label: customer.name,
         }))
     );
 
