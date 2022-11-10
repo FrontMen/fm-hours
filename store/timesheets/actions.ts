@@ -3,6 +3,7 @@ import {ActionTree} from 'vuex';
 
 import {createTimesheetTableData} from '~/helpers/timesheet';
 import {getWeeksInMonth} from '~/helpers/dates';
+import {checkEmployeeAvailability} from '~/helpers/employee';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   async getTableData(
@@ -22,8 +23,14 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     const [employees, timesheets] = await Promise.all([employeesPromise, timesheetsPromise]);
 
+    const activeEmployees = employees.filter(employee => {
+      const isBillable = employee.billable || employee.billable === undefined;
+      const isAvailable = checkEmployeeAvailability(employee, payload.startDate);
+      return isBillable && isAvailable;
+    });
+
     const tableData = createTimesheetTableData({
-      employees,
+      employees: activeEmployees,
       timesheets,
       weeksSpan,
     });

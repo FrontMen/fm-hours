@@ -143,9 +143,7 @@ export default defineComponent({
     const hideDone = ref<boolean>(false);
     const tableData = computed(() => ({
       fields: store.state.timesheets.timesheetTableData.fields,
-      items: store.state.timesheets.timesheetTableData.items?.filter(
-        item => item.billable || item.billable === undefined
-      ),
+      items: store.state.timesheets.timesheetTableData.items,
     }));
     const weekDateProperties = computed(() => tableData.value?.fields.slice(1).map(x => x.key));
 
