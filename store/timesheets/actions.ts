@@ -25,7 +25,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     const activeEmployees = employees.filter(employee => {
       const isBillable = employee.billable || employee.billable === undefined;
-      const isAvailable = checkEmployeeAvailability(employee, payload.startDate);
+      const isAvailable = checkEmployeeAvailability(employee, payload.startDate, payload.endDate);
       return isBillable && isAvailable;
     });
 
