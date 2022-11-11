@@ -54,10 +54,9 @@ export default class EmployeesService {
     return null;
   }
 
-  async createEmployee(params: Omit<Employee, 'id' | 'picture'>): Promise<Employee> {
+  async createEmployee(params: Omit<Employee, 'id'>): Promise<Employee> {
     const newEmployee = {
       ...params,
-      picture: '',
       created: new Date().getTime(),
     };
 

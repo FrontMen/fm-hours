@@ -14,11 +14,3 @@ export function checkEmployeeAvailability(
 
   return !employee.endDate || isAfter(new Date(employee.endDate), startCompareDate);
 }
-
-export function generateAvatarURL(employeeName: string) {
-  if (!employeeName) return '';
-
-  const normalizedName = employeeName.replace(' ', '+');
-
-  return `https://eu.ui-avatars.com/api/?name=${normalizedName}&background=201e33&color=ffffff`;
-}
