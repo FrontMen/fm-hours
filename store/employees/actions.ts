@@ -8,7 +8,7 @@ const actions: ActionTree<EmployeesStoreState, RootStoreState> = {
     commit('setEmployees', {employees});
   },
 
-  async addNewEmployee({commit}, payload: Omit<Employee, 'id' | 'picture'>) {
+  async addNewEmployee({commit}, payload: Omit<Employee, 'id'>) {
     const newEmployee = await this.app.$employeesService.createEmployee(payload);
     commit('addNewEmployeeSuccess', {employee: newEmployee});
   },

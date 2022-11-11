@@ -12,7 +12,7 @@ interface Employee {
   id: string;
   name: string;
   email: string;
-  picture: string;
+  picture?: string; // deprecated
   travelAllowance: boolean;
   billable: boolean;
   projects: EmployeeProject[];

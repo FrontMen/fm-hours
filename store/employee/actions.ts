@@ -1,7 +1,6 @@
 import type {ActionTree} from 'vuex';
 
 import EmployeesService from '~/services/employees-service';
-import {generateAvatarURL} from '~/helpers/employee';
 import BridgeService from '~/services/bridge-service';
 
 const EMPLOYEE_NOT_FOUND = 'employee_not_found';
@@ -26,7 +25,6 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
         await employeesService.updateEmployee({
           ...employee!,
-          picture: employee.picture || generateAvatarURL(employee.name),
           bridgeUid: employee.bridgeUid,
           standBy: employee.standBy || false,
           billable: employee.billable,
