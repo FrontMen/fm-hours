@@ -29,7 +29,6 @@ const mutations: MutationTree<ReportsStoreState> = {
     const leaveCustomer = {
       id: 'leave-bridge',
       name: 'Leave (Bridge)',
-      debtor: 'Frontmen',
       isBillable: false,
       isDefault: false,
     };

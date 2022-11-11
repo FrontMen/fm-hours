@@ -98,7 +98,6 @@ const createStandByProject = (
       customer: {
         id: 'standByRecordId',
         name: 'Stand-by Hours',
-        debtor: 'Frontmen',
         isBillable: false,
         isDefault: false,
       },
@@ -125,7 +124,6 @@ const createTravelProject = (week: WeekDate[], travelRecords: TravelRecord[]): T
       customer: {
         id: 'travelProjectId',
         name: 'Kilometers',
-        debtor: 'Frontmen',
         isBillable: false,
         isDefault: false,
       },
@@ -148,7 +146,6 @@ export const createLeaveProject = (
           customer: {
             id: 'leaveProjectId',
             name: 'Days',
-            debtor: 'Frontmen',
             isBillable: false,
             isDefault: false,
           },
