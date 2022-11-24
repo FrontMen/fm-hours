@@ -60,6 +60,11 @@ export default class CustomersService {
     const newCustomer = {...customer} as any;
     delete newCustomer.id;
 
+    // Remove contract field if it isn't provided
+    if (!newCustomer.contract) {
+      newCustomer.contract = this.fireModule.firestore.FieldValue.delete();
+    }
+
     return await this.fire.firestore
       .collection(Collections.CUSTOMERS)
       .doc(customer.id)

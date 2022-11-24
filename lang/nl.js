@@ -45,7 +45,7 @@ export default {
   cancel: 'Annuleren',
   ok: 'Bevestig',
   lastSave: 'Laatst opgeslagen {time}',
-  update: 'update',
+  save: 'Opslaan',
   approved: 'akkoordeer',
   delete: 'verwijderen',
   denied: 'niet toegestaan',

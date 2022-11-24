@@ -5,11 +5,11 @@ en:
   showArchived: "Show archived"
   newCustomer: "New Customer"
   manageCustomer: "Manage Customer"
-  addCustomer: "Add a customer"
   default: "Default"
   yes: "Yes"
   no: "No"
   archived: "Archived"
+  contract: "Contract"
   actions: "Actions"
 nl:
   searchName: "Zoeken op klanten"
@@ -17,11 +17,11 @@ nl:
   showArchived: "Laat archief ook zien"
   newCustomer: "Nieuwe klant"
   manageCustomer: "Klant bewerken"
-  addCustomer: "Klant toevoegen"
   default: "Standaard"
   yes: "Ja"
   no: "Nee"
   archived: "Gearchiveerd"
+  contract: "Contract"
   actions: "Acties"
 </i18n>
 
@@ -45,10 +45,10 @@ nl:
             <b-form-checkbox v-model="selectedArchiveOption" switch class="mr-3 ml-auto">
               {{ $t('showArchived') }}
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center variant="primary">
+            <nuxt-link class="btn btn-primary" :to="localePath(`/admin/customers/add`)">
               {{ $t('newCustomer') }}
               <b-icon icon="person" />
-            </b-button>
+            </nuxt-link>
           </div>
         </b-col>
       </b-row>
@@ -78,6 +78,16 @@ nl:
             {{ $t(data.label) }}
           </div>
         </template>
+        <template #head(isDefault)="data">
+          <div class="text-center">
+            {{ $t(data.label) }}
+          </div>
+        </template>
+        <template #head(contract)="data">
+          <div>
+            {{ $t(data.label) }}
+          </div>
+        </template>
         <template #head(actions)="data">
           <div class="text-right">
             {{ $t(data.label) }}
@@ -95,6 +105,19 @@ nl:
             </b-badge>
           </div>
         </template>
+        <template #cell(isDefault)="scope">
+          <div class="text-center">
+            <b-badge :variant="scope.item.isDefault ? 'warning' : 'info'">
+              {{ scope.item.isDefault ? $t('yes') : $t('no') }}
+            </b-badge>
+          </div>
+        </template>
+        <template #cell(contract)="scope">
+          <div v-if="scope.item.contract">
+            {{scope.item.contract.name}}
+          </div>
+          <div v-else>-</div>
+        </template>
         <template #cell(actions)="scope">
           <div class="text-right">
             <nuxt-link
@@ -108,25 +131,6 @@ nl:
         </template>
       </b-table>
     </b-container>
-
-    <b-modal
-      id="modal-center"
-      centered
-      :title="$t('addCustomer')"
-      cancel-variant="danger"
-      :ok-disabled="!canAddCustomer"
-      :ok-title="$t('ok')"
-      :cancel-title="$t('cancel')"
-      @ok="addCustomer()"
-    >
-      <b-form-input v-model="newCustomer.name" :placeholder="$t('customerName')" />
-      <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
-        {{ $t('billable') }}
-      </b-form-checkbox>
-      <b-form-checkbox v-model="newCustomer.isDefault" class="mt-3">
-        {{ $t('availableAll') }}
-      </b-form-checkbox>
-    </b-modal>
   </div>
 </template>
 
@@ -155,6 +159,8 @@ export default defineComponent({
     const fields = [
       {key: "name", label: "customers", sortable: true},
       {key: "archived", label: "archived", sortable: false},
+      {key: "isDefault", label: "default", sortable: false},
+      {key: "contract", label: "contract", sortable: false},
       {key: "actions", label: "actions", sortable: false},
     ];
 
@@ -177,24 +183,6 @@ export default defineComponent({
         checkCustomerProp(searchTerm.value, 'name', customer)
       )));
 
-    const newCustomer = ref({
-      name: "",
-      isBillable: true,
-      isDefault: false,
-    });
-
-    const canAddCustomer = computed(() => {
-      return !!newCustomer.value.name;
-    });
-
-    const addCustomer = () => {
-      store.dispatch("customers/addNewCustomer", {...newCustomer.value});
-
-      newCustomer.value.name = "";
-      newCustomer.value.isBillable = true;
-      newCustomer.value.isDefault = false;
-    };
-
     const sortCompare = (a: Customer, b: Customer, key: keyof Customer) => sortByProp<Customer>(a, b, key);
 
     return {
@@ -205,9 +193,6 @@ export default defineComponent({
       filteredCustomers,
       searchTerm,
       selectedArchiveOption,
-      newCustomer,
-      canAddCustomer,
-      addCustomer,
     };
   },
   head: {},

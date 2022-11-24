@@ -6,6 +6,7 @@ interface Customer {
   isDefault: boolean;
   archived?: boolean;
   archivedDate?: number;
+  contract?: Contract;
 }
 
 interface CustomersStoreState {
