@@ -2,31 +2,29 @@
 en:
   notFound: "Customer not found"
   enterName: "Enter name"
-  onlyReports: "Only visible in reports"
+  contract: "Contract"
+  viewContract: "View contract"
+  selectContract: "Select a contract"
+  removeContract: "Remove contract"
 nl:
   notFound: "Klant niet gevonden"
   enterName: "Typ naam"
-  onlyReports: "Alleen zichtbaar in rapportage"
+  contract: "Contract"
+  viewContract: "Contract bekijken"
+  selectContract: "Selecteer een contract"
+  removeContract: "Verwijder contract"
 </i18n>
 
 <template>
-  <div class="content-wrapper my-5">
-    <div v-if="!customer">{{ $t('notFound') }}</div>
+  <main class="page-wrapper">
+    <section class="content-wrapper my-5">
+      <template v-if="!customer">
+        <p>{{ $t('notFound') }}</p>
+      </template>
 
-    <template v-else>
-      <b-container class="mb-5">
+      <template v-else>
         <div class="row">
-          <div class="col-6 offset-3 mb-5">
-            <nuxt-link :to="localePath('/admin/customers')" class="btn btn-primary">
-              <b-icon class="mr-1" icon="arrow-left-short" aria-hidden="true" />
-              {{ $t('customers') }}
-            </nuxt-link>
-          </div>
-          <b-form
-            class="col-6 offset-3"
-            @submit.prevent="handleSubmit"
-            @change="hasUnsavedChanges = true"
-          >
+          <b-form class="col-4" @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
             <b-alert :show="form.archived" variant="info">
               {{ $t('archivedCustomer', {time: formatDate(form.archivedDate)}) }}
             </b-alert>
@@ -47,6 +45,25 @@ nl:
               {{ $t('availableAll') }}
             </b-form-checkbox>
 
+            <div v-if="form.isDefault" class="mt-2">
+              <b-form-group :label="$t('contract') + ':'">
+                <div v-if="form.contract">
+                  <p class="mb-1 text-muted">{{form.contract.project_name}}</p>
+                  <p class="mb-0 text-muted">{{form.contract.name}}</p>
+                  <b-button class="" size="sm" @click="handleContractOpen">
+                    <b-icon-eye />
+                    {{ $t('viewContract') }}
+                  </b-button>
+                </div>
+                <div v-else>
+                  <b-button v-b-modal.select-contract size="sm" variant="success">
+                    <b-icon-plus />
+                    {{ $t('selectContract') }}
+                  </b-button>
+                </div>
+              </b-form-group>
+            </div>
+
             <div class="d-flex justify-content-end mt-5">
               <b-button
                 type="button"
@@ -64,9 +81,24 @@ nl:
             </div>
           </b-form>
         </div>
-      </b-container>
-    </template>
-  </div>
+      </template>
+
+      <contract-selector
+        id="select-contract"
+        @selected="handleContractSelected"
+      ></contract-selector>
+
+      <b-modal ref="viewContractModal" ok-only>
+        <b-button size="sm" variant="danger" @click="handleContractDelete">
+          <b-icon-trash-fill />
+          {{ $t('removeContract') }}
+        </b-button>
+        <pre v-if="form?.contract">
+          {{ form.contract }}
+        </pre>
+      </b-modal>
+    </section>
+  </main>
 </template>
 
 <script lang="ts">
@@ -82,18 +114,21 @@ import {
   useContext,
 } from "@nuxtjs/composition-api";
 import {format} from "date-fns";
+import {BModal} from "bootstrap-vue";
 
 export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
+    const viewContractModal = ref<InstanceType<typeof BModal> | null>(null);
 
     const hasUnsavedChanges = ref<boolean>(false);
-    const form = ref({
+    const form = ref<Omit<Customer, 'id'>>({
       name: "",
       isBillable: false,
       isDefault: false,
+      contract: undefined
     });
 
     const customerId = router.currentRoute.params.customer_id;
@@ -115,6 +150,7 @@ export default defineComponent({
             name: "",
             isBillable: false,
             isDefault: false,
+            contract: undefined
           };
       },
       {immediate: true}
@@ -165,13 +201,33 @@ export default defineComponent({
       });
 
       hasUnsavedChanges.value = false;
-      router.push("/customers");
+      router.push("/admin/customers");
     };
 
-    const formatDate = (date: string) => {
+    const formatDate = (date?: number) => {
       if (!date) return '';
       return format(new Date(date), "dd MMMM yyyy");
     };
+
+    const handleContractSelected = (contract: Contract) => {
+      form.value = {
+        ...form.value,
+        contract
+      }
+      hasUnsavedChanges.value = true
+    }
+
+    const handleContractOpen = () => {
+      viewContractModal.value?.show();
+    }
+    const handleContractDelete = () => {
+      form.value = {
+        ...form.value,
+        contract: undefined
+      }
+      hasUnsavedChanges.value = true
+      viewContractModal.value?.hide();
+    }
 
     return {
       customer,
@@ -180,6 +236,10 @@ export default defineComponent({
       archiveCustomerToggle,
       handleSubmit,
       formatDate,
+      viewContractModal,
+      handleContractSelected,
+      handleContractDelete,
+      handleContractOpen
     };
   },
   head: {},

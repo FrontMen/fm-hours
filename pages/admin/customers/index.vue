@@ -73,6 +73,11 @@ nl:
             {{ $t(data.label) }}
           </div>
         </template>
+        <template #head(isDefault)="data">
+          <div class="text-center">
+            {{ $t(data.label) }}
+          </div>
+        </template>
         <template #head(archived)="data">
           <div class="text-center">
             {{ $t(data.label) }}
@@ -87,6 +92,13 @@ nl:
         <template #cell(customers)="scope">
           <strong>{{ scope.item.name }}</strong>
           <b-badge v-if="scope.item.isDefault">{{ $t('default') }}</b-badge>
+        </template>
+        <template #cell(isDefault)="scope">
+          <div class="text-center">
+            <b-badge :variant="scope.item.isDefault ? 'warning' : 'info'">
+              {{ scope.item.isDefault ? $t('yes') : $t('no') }}
+            </b-badge>
+          </div>
         </template>
         <template #cell(archived)="scope">
           <div class="text-center">
@@ -155,6 +167,7 @@ export default defineComponent({
     const fields = [
       {key: "name", label: "customers", sortable: true},
       {key: "archived", label: "archived", sortable: false},
+      {key: "isDefault", label: "default", sortable: false},
       {key: "actions", label: "actions", sortable: false},
     ];
 
