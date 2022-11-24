@@ -103,7 +103,7 @@ export default defineComponent({
   emits: ['add', 'toggle-weekends'],
 
   setup(props, {emit}) {
-    const messageInput = ref('');
+    const messageInput = ref<string>('');
     // get creatorName from store
     const store = useStore<RootStoreState>();
     const employeeName = computed(() => store.state.employee.employee?.name);

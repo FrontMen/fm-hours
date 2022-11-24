@@ -40,7 +40,7 @@ export default defineComponent({
     const route = useRoute();
     const store = useStore<RootStoreState>();
 
-    const showEmployeeError = ref(false);
+    const showEmployeeError = ref<Boolean>(false);
 
     const employee = computed(() => {
       showEmployeeError.value = false;

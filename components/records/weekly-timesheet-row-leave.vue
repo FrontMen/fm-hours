@@ -16,12 +16,12 @@ nl:
       <strong
         v-b-tooltip.hover="{ variant: 'light' }"
         class="title-with-tooltip"
-        :title="$t('description')"
+        :title="$tc('description')"
       >
         {{ $t('title') }}
       </strong>
 
-      <span v-b-tooltip.hover="{ variant: 'light' }" class="ml-4" :title="$t('refresh')">
+      <span v-b-tooltip.hover="{ variant: 'light' }" class="ml-4" :title="$tc('refresh')">
         <b-icon
           icon="arrow-counterclockwise"
           :disabled="allowRefresh"
@@ -45,7 +45,7 @@ nl:
       <span
         v-if="day.holiday"
         v-b-tooltip.hover
-        :title="$t('publicHoliday')"
+        :title="$tc('publicHoliday')"
         class="holiday-tooltip"
       >
         <b-icon icon="info-circle"></b-icon>

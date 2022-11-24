@@ -25,7 +25,7 @@ export default class RecordsService {
 
     return snapshot.docs.map(doc => ({
       id: doc.id,
-      ...(doc.data() as TravelRecord),
+      ...(doc.data() as Omit<TravelRecord, 'id'>),
     }));
   }
 
@@ -39,7 +39,7 @@ export default class RecordsService {
 
     return snapshot.docs.map(doc => ({
       id: doc.id,
-      ...(doc.data() as TimeRecord),
+      ...(doc.data() as Omit<TimeRecord, 'id'>),
     }));
   }
 

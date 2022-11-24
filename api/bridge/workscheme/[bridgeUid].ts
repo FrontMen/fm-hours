@@ -2,6 +2,7 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import axios from 'axios';
 import {validateParams} from '../../../lib/request';
+import {handleAxiosError, handleValidationError} from '../../../lib/errors';
 
 interface WorkScheme {
   date: string;
@@ -29,10 +30,8 @@ interface WorkSchemeResponse {
 export default async function Workscheme(request: VercelRequest, response: VercelResponse) {
   try {
     validateParams(request, ['bridgeUid', 'date_from', 'date_to']);
-  } catch (e) {
-    return response.status(400).json({
-      message: e.message,
-    });
+  } catch (error) {
+    return handleValidationError(response, error);
   }
 
   const {bridgeUid, date_from: dateFrom, date_to: dateTo} = request.query;
@@ -56,10 +55,8 @@ export default async function Workscheme(request: VercelRequest, response: Verce
     return response.json({
       data: workScheme,
     });
-  } catch (e) {
-    return response.status(e.response.status).json({
-      message: e.message,
-    });
+  } catch (error) {
+    return handleAxiosError(response, error);
   }
 }
 

@@ -14,7 +14,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Something went wrong while Login');
-      throw new Error(error);
+      throw error;
     }
   },
 

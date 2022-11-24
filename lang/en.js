@@ -55,7 +55,7 @@ export default {
   nonBillable: 'Non-billable',
   kilometers: 'Kilometers',
   hours: 'Hours',
-  availableAll: 'Available to all employeees',
+  availableAll: 'Available to all employees',
   weekNo: 'week: {num}',
   addEmployee: 'Add Employee',
   selectCustomer: 'Select a customer',

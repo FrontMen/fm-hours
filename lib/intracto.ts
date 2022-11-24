@@ -1,5 +1,5 @@
 import jwtDecode from 'jwt-decode';
-import axios from 'axios';
+import axios, {AxiosError} from 'axios';
 
 interface IDecodedToken {
   firebase: {
@@ -59,7 +59,9 @@ export async function getCiSessionCookie(authCookie: string): Promise<string> {
       },
     });
   } catch (e) {
-    return e.response.headers['set-cookie'][0];
+    if (e instanceof AxiosError) {
+      return e?.response?.headers?.['set-cookie']?.[0] || '';
+    }
   }
 
   return '';

@@ -36,10 +36,10 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
 
       return employee;
     } catch (error) {
-      if (error.message === EMPLOYEE_NOT_FOUND) {
+      if (error instanceof Error && error.message === EMPLOYEE_NOT_FOUND) {
         commit('setIsFound', false);
       } else {
-        throw new Error(error);
+        throw error;
       }
     }
   },

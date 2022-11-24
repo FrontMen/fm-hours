@@ -2,6 +2,7 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import {format} from 'date-fns';
 import axios from 'axios';
+import {handleAxiosError} from '../../../lib/errors';
 
 export default async function Worklogs(request: VercelRequest, response: VercelResponse) {
   const {body} = request;
@@ -31,9 +32,7 @@ export default async function Worklogs(request: VercelRequest, response: VercelR
     return response.json({
       worklogId,
     });
-  } catch (e) {
-    return response.status(e.response.status).json({
-      message: e.message,
-    });
+  } catch (error) {
+    return handleAxiosError(response, error);
   }
 }
