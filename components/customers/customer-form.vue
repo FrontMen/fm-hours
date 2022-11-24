@@ -6,6 +6,7 @@ en:
   viewContract: "View contract"
   selectContract: "Select a contract"
   removeContract: "Remove contract"
+  archivedCustomer: "Customer is archived"
 nl:
   notFound: "Klant niet gevonden"
   enterName: "Typ naam"
@@ -13,6 +14,7 @@ nl:
   viewContract: "Contract bekijken"
   selectContract: "Selecteer een contract"
   removeContract: "Verwijder contract"
+  archivedCustomer: "Klant is gearchiveerd"
 </i18n>
 
 <template>
@@ -26,7 +28,7 @@ nl:
         <div class="row">
           <b-form class="col-4" @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
             <b-alert :show="form.archived" variant="info">
-              {{ $t('archivedCustomer', {time: formatDate(form.archivedDate)}) }}
+              {{ $t('archivedCustomer') }}
             </b-alert>
             <b-form-group id="input-group-name" :label="$t('name') + ':'" label-for="input-2">
               <b-form-input
@@ -66,6 +68,7 @@ nl:
 
             <div class="d-flex justify-content-end mt-5">
               <b-button
+                v-if="mode === 'edit'"
                 type="button"
                 variant="secondary"
                 class="mr-2 text-capitalize"
@@ -75,7 +78,7 @@ nl:
                 <b-icon icon="archive" class="ml-1" />
               </b-button>
               <b-button type="submit" variant="primary" :disabled="!hasUnsavedChanges">
-                {{ $t('update') }}
+                {{ $t('save') }}
                 <b-icon icon="check2-circle" />
               </b-button>
             </div>
@@ -105,19 +108,32 @@ nl:
 import {
   computed,
   defineComponent,
-  onMounted,
   useStore,
   useRouter,
   useMeta,
   watch,
   ref,
   useContext,
+  PropType,
 } from "@nuxtjs/composition-api";
-import {format} from "date-fns";
 import {BModal} from "bootstrap-vue";
 
 export default defineComponent({
-  setup() {
+  props: {
+    mode: {
+      type: String,
+      required: true,
+      validator: (value: string) => {
+        return ['add', 'edit'].includes(value)
+      }
+    },
+    customer: {
+      type: Object as PropType<Customer>,
+      required: false,
+      default: null
+    }
+  },
+  setup(props: { mode: string, customer: Customer }) {
     const {i18n} = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
@@ -131,21 +147,11 @@ export default defineComponent({
       contract: undefined
     });
 
-    const customerId = router.currentRoute.params.customer_id;
-    const customers = computed(() => store.state.customers.customers);
-    const customer: { value: Customer | undefined } = computed(() => customers.value.find((x) => x.id === customerId));
-
-    onMounted(() => {
-      if (customers.value.length === 0) {
-        store.dispatch("customers/getCustomers");
-      }
-    });
-
     watch(
-      () => customer.value,
+      () => props.customer,
       () => {
-        form.value = customer.value
-          ? {...customer.value}
+        form.value = props.customer
+          ? {...props.customer}
           : {
             name: "",
             isBillable: false,
@@ -157,7 +163,7 @@ export default defineComponent({
     );
 
     const pageTitle = computed(() =>
-      customer.value ? `Customers - ${customer.value.name}` : "Customers"
+      props.customer ? `Customers - ${props.customer.name}` : "Customers"
     );
     useMeta(() => ({title: pageTitle.value}));
 
@@ -169,7 +175,7 @@ export default defineComponent({
 
       const confirmation = confirm(
         i18n.t('customerArchiveConfirmation', {
-          name: customer.value?.name || '',
+          name: props.customer?.name || '',
           state: archive ? i18n.t('archive') : i18n.t('unarchive')
         }) as string
       );
@@ -177,7 +183,7 @@ export default defineComponent({
       if (!confirmation) return;
 
       store.dispatch("customers/updateCustomer", {
-        ...customer.value,
+        ...props.customer,
         ...archiveData,
       });
     };
@@ -185,28 +191,27 @@ export default defineComponent({
     const handleSubmit = () => {
       if (!hasUnsavedChanges) return;
 
-      if (customer.value?.isBillable !== form.value?.isBillable) {
-        const confirmation = confirm(
-          `Are you sure that you want to make ${
-            customer.value?.name
-          } ${customer.value?.isBillable ? 'not billabled' : 'billabled'}? Past timesheet will not reflect this change.`
-        );
+      if(props.mode === 'edit') {
+        if (props.customer?.isBillable !== form.value?.isBillable) {
+          const confirmation = confirm(
+            `Are you sure that you want to make ${
+              props.customer?.name
+            } ${props.customer?.isBillable ? 'not billabled' : 'billabled'}? Past timesheet will not reflect this change.`
+          );
 
-        if (!confirmation) return;
+          if (!confirmation) return;
+        }
+
+        store.dispatch("customers/updateCustomer", {
+          ...form.value,
+          id: props.customer.id,
+        });
+      } else if(props.mode === 'add') {
+        store.dispatch("customers/addNewCustomer", form.value);
       }
-
-      store.dispatch("customers/updateCustomer", {
-        ...form.value,
-        id: customerId,
-      });
 
       hasUnsavedChanges.value = false;
       router.push("/admin/customers");
-    };
-
-    const formatDate = (date?: number) => {
-      if (!date) return '';
-      return format(new Date(date), "dd MMMM yyyy");
     };
 
     const handleContractSelected = (contract: Contract) => {
@@ -230,12 +235,10 @@ export default defineComponent({
     }
 
     return {
-      customer,
       hasUnsavedChanges,
       form,
       archiveCustomerToggle,
       handleSubmit,
-      formatDate,
       viewContractModal,
       handleContractSelected,
       handleContractDelete,

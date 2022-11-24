@@ -5,7 +5,6 @@ en:
   showArchived: "Show archived"
   newCustomer: "New Customer"
   manageCustomer: "Manage Customer"
-  addCustomer: "Add a customer"
   default: "Default"
   yes: "Yes"
   no: "No"
@@ -17,7 +16,6 @@ nl:
   showArchived: "Laat archief ook zien"
   newCustomer: "Nieuwe klant"
   manageCustomer: "Klant bewerken"
-  addCustomer: "Klant toevoegen"
   default: "Standaard"
   yes: "Ja"
   no: "Nee"
@@ -45,10 +43,10 @@ nl:
             <b-form-checkbox v-model="selectedArchiveOption" switch class="mr-3 ml-auto">
               {{ $t('showArchived') }}
             </b-form-checkbox>
-            <b-button v-b-modal.modal-center variant="primary">
+            <nuxt-link class="btn btn-primary" :to="localePath(`/admin/customers/add`)">
               {{ $t('newCustomer') }}
               <b-icon icon="person" />
-            </b-button>
+            </nuxt-link>
           </div>
         </b-col>
       </b-row>
@@ -120,25 +118,6 @@ nl:
         </template>
       </b-table>
     </b-container>
-
-    <b-modal
-      id="modal-center"
-      centered
-      :title="$t('addCustomer')"
-      cancel-variant="danger"
-      :ok-disabled="!canAddCustomer"
-      :ok-title="$t('ok')"
-      :cancel-title="$t('cancel')"
-      @ok="addCustomer()"
-    >
-      <b-form-input v-model="newCustomer.name" :placeholder="$t('customerName')" />
-      <b-form-checkbox v-model="newCustomer.isBillable" class="mt-3">
-        {{ $t('billable') }}
-      </b-form-checkbox>
-      <b-form-checkbox v-model="newCustomer.isDefault" class="mt-3">
-        {{ $t('availableAll') }}
-      </b-form-checkbox>
-    </b-modal>
   </div>
 </template>
 
@@ -190,24 +169,6 @@ export default defineComponent({
         checkCustomerProp(searchTerm.value, 'name', customer)
       )));
 
-    const newCustomer = ref({
-      name: "",
-      isBillable: true,
-      isDefault: false,
-    });
-
-    const canAddCustomer = computed(() => {
-      return !!newCustomer.value.name;
-    });
-
-    const addCustomer = () => {
-      store.dispatch("customers/addNewCustomer", {...newCustomer.value});
-
-      newCustomer.value.name = "";
-      newCustomer.value.isBillable = true;
-      newCustomer.value.isDefault = false;
-    };
-
     const sortCompare = (a: Customer, b: Customer, key: keyof Customer) => sortByProp<Customer>(a, b, key);
 
     return {
@@ -218,9 +179,6 @@ export default defineComponent({
       filteredCustomers,
       searchTerm,
       selectedArchiveOption,
-      newCustomer,
-      canAddCustomer,
-      addCustomer,
     };
   },
   head: {},

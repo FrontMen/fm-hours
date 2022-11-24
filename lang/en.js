@@ -46,7 +46,7 @@ export default {
   cancel: 'Cancel',
   ok: 'OK',
   lastSave: 'Last saved: {time} ago.',
-  update: 'Update',
+  save: 'Save',
   approved: 'Approved',
   delete: 'Delete',
   denied: 'denied',
