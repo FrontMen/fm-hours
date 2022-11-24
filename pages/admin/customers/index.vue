@@ -9,6 +9,7 @@ en:
   yes: "Yes"
   no: "No"
   archived: "Archived"
+  contract: "Contract"
   actions: "Actions"
 nl:
   searchName: "Zoeken op klanten"
@@ -20,6 +21,7 @@ nl:
   yes: "Ja"
   no: "Nee"
   archived: "Gearchiveerd"
+  contract: "Contract"
   actions: "Acties"
 </i18n>
 
@@ -71,13 +73,18 @@ nl:
             {{ $t(data.label) }}
           </div>
         </template>
+        <template #head(archived)="data">
+          <div class="text-center">
+            {{ $t(data.label) }}
+          </div>
+        </template>
         <template #head(isDefault)="data">
           <div class="text-center">
             {{ $t(data.label) }}
           </div>
         </template>
-        <template #head(archived)="data">
-          <div class="text-center">
+        <template #head(contract)="data">
+          <div>
             {{ $t(data.label) }}
           </div>
         </template>
@@ -91,6 +98,13 @@ nl:
           <strong>{{ scope.item.name }}</strong>
           <b-badge v-if="scope.item.isDefault">{{ $t('default') }}</b-badge>
         </template>
+        <template #cell(archived)="scope">
+          <div class="text-center">
+            <b-badge :variant="scope.item.archived ? 'warning' : 'info'">
+              {{ scope.item.archived ? $t('yes') : $t('no') }}
+            </b-badge>
+          </div>
+        </template>
         <template #cell(isDefault)="scope">
           <div class="text-center">
             <b-badge :variant="scope.item.isDefault ? 'warning' : 'info'">
@@ -98,12 +112,11 @@ nl:
             </b-badge>
           </div>
         </template>
-        <template #cell(archived)="scope">
-          <div class="text-center">
-            <b-badge :variant="scope.item.archived ? 'warning' : 'info'">
-              {{ scope.item.archived ? $t('yes') : $t('no') }}
-            </b-badge>
+        <template #cell(contract)="scope">
+          <div v-if="scope.item.contract">
+            {{scope.item.contract.name}}
           </div>
+          <div v-else>-</div>
         </template>
         <template #cell(actions)="scope">
           <div class="text-right">
@@ -147,6 +160,7 @@ export default defineComponent({
       {key: "name", label: "customers", sortable: true},
       {key: "archived", label: "archived", sortable: false},
       {key: "isDefault", label: "default", sortable: false},
+      {key: "contract", label: "contract", sortable: false},
       {key: "actions", label: "actions", sortable: false},
     ];
 

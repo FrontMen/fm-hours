@@ -189,10 +189,13 @@ export default defineComponent({
         } as Project;
       });
 
-      const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => ({
-        customer,
-        contract: null
-      }));
+      const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => {
+        const { contract, ...cleanCustomer} = customer
+        return {
+          customer: cleanCustomer,
+          contract: contract || null
+        }
+      });
 
       return [...employeeCustomers, ...availableToAll];
     });
