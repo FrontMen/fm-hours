@@ -3,6 +3,7 @@ en:
   notFound: "Customer not found"
   enterName: "Enter name"
   contract: "Contract"
+  contractDescription: "Only when every employee needs to write on the same contract use this!"
   viewContract: "View contract"
   selectContract: "Select a contract"
   removeContract: "Remove contract"
@@ -11,6 +12,7 @@ nl:
   notFound: "Klant niet gevonden"
   enterName: "Typ naam"
   contract: "Contract"
+  contractDescription: "Gebruik dit alleen als elke werknemer op hetzelfde contract moet schrijven!"
   viewContract: "Contract bekijken"
   selectContract: "Selecteer een contract"
   removeContract: "Verwijder contract"
@@ -26,7 +28,7 @@ nl:
 
       <template v-else>
         <div class="row">
-          <b-form class="col-4" @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
+          <b-form class="col-5" @submit.prevent="handleSubmit" @change="hasUnsavedChanges = true">
             <b-alert :show="form.archived" variant="info">
               {{ $t('archivedCustomer') }}
             </b-alert>
@@ -47,24 +49,26 @@ nl:
               {{ $t('availableAll') }}
             </b-form-checkbox>
 
-            <div v-if="form.isDefault" class="mt-2">
-              <b-form-group :label="$t('contract') + ':'">
-                <div v-if="form.contract">
-                  <p class="mb-1 text-muted">{{form.contract.project_name}}</p>
-                  <p class="mb-0 text-muted">{{form.contract.name}}</p>
-                  <b-button class="" size="sm" @click="handleContractOpen">
-                    <b-icon-eye />
-                    {{ $t('viewContract') }}
-                  </b-button>
-                </div>
-                <div v-else>
-                  <b-button v-b-modal.select-contract size="sm" variant="success">
-                    <b-icon-plus />
-                    {{ $t('selectContract') }}
-                  </b-button>
-                </div>
-              </b-form-group>
-            </div>
+            <b-form-group :label="$t('contract') + ':'" class="mt-3">
+              <b-alert :show="true" variant="warning" class="mb-3">
+                {{$t('contractDescription')}}
+              </b-alert>
+
+              <div v-if="form.contract">
+                <p class="mb-1 text-muted">{{form.contract.project_name}}</p>
+                <p class="mb-0 text-muted">{{form.contract.name}}</p>
+                <b-button class="" size="sm" @click="handleContractOpen">
+                  <b-icon-eye />
+                  {{ $t('viewContract') }}
+                </b-button>
+              </div>
+              <div v-else>
+                <b-button v-b-modal.select-contract size="sm" variant="success">
+                  <b-icon-plus />
+                  {{ $t('selectContract') }}
+                </b-button>
+              </div>
+            </b-form-group>
 
             <div class="d-flex justify-content-end mt-5">
               <b-button
