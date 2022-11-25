@@ -10,6 +10,7 @@ interface Message {
   id: string;
   text: string;
   createdAt: number;
+  employeeName?: string;
 }
 
 interface Timesheet {

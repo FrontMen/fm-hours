@@ -13,8 +13,12 @@ export default async function UserMe(request: VercelRequest, response: VercelRes
       bridgeUid,
     });
   } catch (e) {
-    return response.status(401).json({
-      message: e.message,
-    });
+    if (e instanceof Error) {
+      return response.status(401).json({
+        message: e.message,
+      });
+    }
+
+    return response.status(500);
   }
 }

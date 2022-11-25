@@ -25,7 +25,7 @@ nl:
           v-b-tooltip.hover.right="{ variant: 'secondary' }"
           :href="link.href"
           class="nav-link active py-3 px-4"
-          :title="$t(link.name)"
+          :title="$tc(link.name)"
         >
           <b-icon :icon="link.icon" />
         </a>

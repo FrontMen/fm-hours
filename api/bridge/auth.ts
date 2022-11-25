@@ -1,14 +1,13 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
 import {validateHeaders} from '../../lib/request';
 import {getAuthCookie, getCiSessionCookie} from '../../lib/intracto';
+import {handleAuthenticationError, handleValidationError} from '../../lib/errors';
 
 export default async function Auth(request: VercelRequest, response: VercelResponse) {
   try {
     validateHeaders(request, ['authorization']);
-  } catch (e) {
-    return response.status(400).json({
-      message: e.message,
-    });
+  } catch (error) {
+    return handleValidationError(response, error);
   }
 
   try {
@@ -23,9 +22,7 @@ export default async function Auth(request: VercelRequest, response: VercelRespo
 
     response.setHeader('Set-Cookie', cookies);
     return response.end('OK');
-  } catch (e) {
-    return response.status(401).json({
-      message: e.message,
-    });
+  } catch (error) {
+    return handleAuthenticationError(response, error);
   }
 }

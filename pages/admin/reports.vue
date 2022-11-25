@@ -22,7 +22,7 @@ nl:
     <b-tabs pills card>
       <b-tab :title="$t('totals')" active lazy>
         <reports-table
-          :busy="isLoading || !totalsItems.length"
+          :busy="isLoading || !totalsItems?.length"
           :items="totalsItems"
           :fields="totalsFields"
           :csv-file-name="`${$t('totals')}-${formattedMonthDate}`"

@@ -12,7 +12,7 @@ en:
   noDate: "No date selected"
 nl:
   notFoundEmployee: "Medewerker niet gevonden"
-  manageProjects: "Projecten bewerkern"
+  manageProjects: "Projecten bewerken"
   customerSearchPlaceholder: "Klik of zoek naar een klant"
   employeeSettings: "Medewerker instellingen"
   email: "Email"
@@ -20,7 +20,7 @@ nl:
   standBy: "Stand-by"
   endDate: "Eind datum"
   startDate: "Start datum"
-  noDate: "Geen datum geselcteerd"
+  noDate: "Geen datum geselecteerd"
 </i18n>
 
 <template>
@@ -48,7 +48,7 @@ nl:
               <employee-settings
                 :employee="employee"
                 :is-admin="isAdmin"
-                @changed="hasUnsavedChanges = true, errorMessage = null"
+                @changed="hasUnsavedChanges = true, errorMessage = ''"
                 @changed-admin="changedAdmin"
                 @error-state="handleFormError"
               ></employee-settings>
@@ -107,7 +107,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
-    const projects = ref(props.employee?.projects);
+    const projects = ref<EmployeeProject[]>(props.employee?.projects);
     const selectedTeam = ref<string | null>(null);
     const selectedProjects = ref<(Project[] | undefined)>([]);
     const hasUnsavedChanges = ref<boolean>(false);

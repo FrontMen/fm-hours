@@ -95,7 +95,7 @@ export default defineComponent({
       emit('update-selected-projects', newList);
     }
 
-    const customerToAdd = ref<Customer | null>(null);
+    const customerToAdd = ref<Customer>();
     const customersSelectList = computed(() => {
       const customerList = props.customers
         .filter((customer) => !customer.isDefault && !customer.archived)
@@ -122,15 +122,15 @@ export default defineComponent({
         } as Project
       ])
 
-      customerToAdd.value = null;
+      customerToAdd.value = undefined;
     }
 
     const selectedProject = ref<Project>();
-    const selectedCustomer = ref();
+    const selectedCustomer = ref<Project>();
 
     const handleContractSelected = (contract: Contract) => {
       const newList = props.selectedProjects.map((record) => {
-        if (record.customer.id === selectedCustomer.value.customer.id) {
+        if (record.customer.id === selectedCustomer.value?.customer.id) {
           return {
             ...record,
             contract
@@ -150,7 +150,9 @@ export default defineComponent({
       viewContractModal.value?.show();
     }
 
-    const handleContractDelete = (project: Project) => {
+    const handleContractDelete = (project?: Project) => {
+      if(!project) return;
+
       const newList = props.selectedProjects.map((record) => {
         if (record.customer.id === project.customer.id) {
           return {

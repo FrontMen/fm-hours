@@ -16,7 +16,7 @@ nl:
   totalSelectedHours: "Totaal voor geselecteerde periode"
   onlyBillable: "Alleen facturabele uren"
   noResults: "Geen resultaten gevonden voor de geselecteerde {DATE_MSG}"
-  approvedBy: "Geakkoordeerd door"
+  approvedBy: "Goedgekeurd door"
   date: "Datum"
   selectProjects: "Selecteer projecten"
 </i18n>
@@ -41,7 +41,7 @@ nl:
           <b-col cols="12" sm="6">
             <p>
               <strong>{{ $t('employee') }}:</strong>
-              {{ employee.name }}
+              {{ employee?.name }}
             </p>
             <p>
               <strong v-if="selectedCustomers && selectedCustomers.length !== 1">
@@ -181,7 +181,7 @@ nl:
         <br />
         __________________________________________
         <br />
-        {{ employee.name }}
+        {{ employee?.name }}
         <br />
         <br />
         <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
@@ -333,7 +333,7 @@ export default defineComponent({
       return filtered;
     };
 
-    const formatDate = (dateTime: number): string => {
+    const formatDate = (dateTime: Date | number): string => {
       return format(dateTime, 'dd-MMMM-yyyy');
     };
 

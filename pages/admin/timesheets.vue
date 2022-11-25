@@ -18,7 +18,7 @@ nl:
     empty: Leeg
     new: Nieuwe
     pending: In afwachting
-    approved: Akkoordeer
+    approved: Goedgekeurd
     denied: Niet toegestaan
 </i18n>
 

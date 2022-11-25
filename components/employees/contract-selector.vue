@@ -67,9 +67,9 @@ export default defineComponent({
       }
     });
 
-    const searchQuery = ref('');
-    const foundContracts = ref([]);
-    const selectedContract = ref();
+    const searchQuery = ref<string>('');
+    const foundContracts = ref<Contract[]>([]);
+    const selectedContract = ref<Contract>();
 
     let axiosAbortController: AbortController;
     const search = async (value: string) => {
@@ -83,7 +83,7 @@ export default defineComponent({
 
         foundContracts.value = contractList.length > 0 ? contractList : [{name: i18n.t('noContractsFound')}];
       } catch (e) {
-        if (e.name !== 'AbortError') {
+        if (e instanceof Error && e.name !== 'AbortError') {
           console.error(e);
         }
       }

@@ -27,7 +27,7 @@ nl:
         v-if="hasWeekendHours && !showWeekends"
         v-b-tooltip.hover="{ variant: 'light' }"
         class="weekend-hours"
-        :title="$t('weekend-hours')"
+        :title="$tc('weekend-hours')"
       >
         <b-icon-exclamation-circle-fill variant="danger" />
       </span>

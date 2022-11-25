@@ -27,11 +27,9 @@
         v-if="isAdmin && timesheetProject.worklogs && timesheetProject.worklogs[index]"
         class="weekly-timesheet-row__value-icon"
       >
-        <b-icon
-          v-b-tooltip.hover
-          icon="cloud-arrow-up"
-          :title="timesheetProject.worklogs[index].toString()"
-        />
+        <span v-b-tooltip.hover :title="timesheetProject?.worklogs?.[index]?.toString()">
+          <b-icon icon="cloud-arrow-up" />
+        </span>
       </div>
     </b-col>
     <b-col cols="2" md="1" class="weekly-timesheet-row__total-column">
@@ -99,8 +97,6 @@ export default defineComponent({
     }
   },
   setup(props: WeeklyTimesheetRowProps) {
-    const tooltip = ref();
-
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.timesheetProject.project.customer.name === 'Kilometers';
     const getInitialState = (project: TimesheetProject) => {
@@ -115,7 +111,7 @@ export default defineComponent({
         });
     };
 
-    const formattedProjectValues = ref(getInitialState(props.timesheetProject));
+    const formattedProjectValues = ref<string[]>(getInitialState(props.timesheetProject));
     watch(
       formattedProjectValues,
       () => {
@@ -164,7 +160,6 @@ export default defineComponent({
       recordDayStatusProps.some((prop) => day[prop]) || day.isWeekend;
 
     return {
-      tooltip,
       totalValue,
       formattedProjectValues,
       isReadonlyList,

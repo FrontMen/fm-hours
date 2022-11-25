@@ -46,7 +46,7 @@ export default {
   ok: 'Bevestig',
   lastSave: 'Laatst opgeslagen {time}',
   save: 'Opslaan',
-  approved: 'akkoordeer',
+  approved: 'goedkeuren',
   delete: 'verwijderen',
   denied: 'niet toegestaan',
   totalHours: 'Totaal uren',

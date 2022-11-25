@@ -13,12 +13,12 @@ en:
   validate: "Are the hours complete?"
 nl:
   unsubmit: "Terugtrekken"
-  waiting: "Indienen gelukt. Wacht op akkoord"
+  waiting: "Indienen gelukt. Wacht op goedkeuring"
   denied: "Afgekeurd"
   submit: "Indienen"
   save: "Concept opslaan"
   deny: "Afkeuren"
-  approve: "Akkordeeren"
+  approve: "Goedkeuren"
   undo: "Ongedaan maken"
   addBridge: "Toevoegen aan bridge"
   removeBridge: "Verwijderen van bridge"
@@ -214,7 +214,7 @@ export default defineComponent({
   },
   emits: ["submit", "save", "unsubmit", 'approve', 'deny', 'unapprove', 'bridgeAdd', 'bridgeRemove'],
   setup(props, {emit}) {
-    const lastSavedLabel = ref("");
+    const lastSavedLabel = ref<string>("");
     let intervalHandle: NodeJS.Timeout;
 
     const handleSaveClick = () => emit("save");
