@@ -21,7 +21,7 @@ export default () => {
           name: employee.name,
           bridgeUid: employee.bridgeUid,
           team: employee.team,
-          kilometers,
+          kilometers: +kilometers.toFixed(2),
         });
       }
     });
