@@ -125,6 +125,7 @@ import {
   useStore,
 } from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
+import { AxiosError } from "axios";
 import {recordStatus} from "~/helpers/record-status";
 import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
 import {
@@ -182,12 +183,21 @@ export default defineComponent({
     }
 
     const projects = computed(() => {
-      const employeeCustomers: Project[] = employee.projects.map((project: EmployeeProject) => {
-        return {
-          customer: customers.value.find((customer) => customer.id === project.customerId),
-          contract: project.contract
-        } as Project;
-      });
+      const employeeCustomers: Project[] = employee.projects.reduce((list: Project[], project: EmployeeProject) => {
+        const foundCustomer = customers.value.find((customer) => customer.id === project.customerId);
+        if(!foundCustomer) return list;
+
+        const { contract: customerContract , ...customer } = foundCustomer;
+        const contract = project.contract || customerContract || null;
+
+        const newProject = {
+          customer,
+          contract
+        } as Project
+
+        list.push(newProject);
+        return list;
+      }, []);
 
       const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => {
         const { contract, ...cleanCustomer} = customer
@@ -337,7 +347,7 @@ export default defineComponent({
           });
           showBridgeError.value = false;
         } catch (error) {
-          if (error.response?.status === 401) {
+          if (error instanceof AxiosError && error.response?.status === 401) {
             await logout();
           } else {
             showBridgeError.value = true;
