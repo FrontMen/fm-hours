@@ -1,44 +1,43 @@
-<i18n lang="yaml">
-en:
-  editTeam: "Edit team"
-nl:
-  editTeam: "Team bewerken"
-</i18n>
 <template>
-  <div>
-    <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
-    <b-form-select
-      :value="selectedTeam"
-      :options="teamList"
-      class="mb-3"
-      @change="$emit('update', $event)"
-    />
-  </div>
+  <b-form-select :value="value" :options="teamList" class="mb-3" @change="$emit('input', $event)" />
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, PropType, useContext, useStore} from "@nuxtjs/composition-api";
+import {computed, defineComponent, onMounted, PropType, useContext, useStore} from "@nuxtjs/composition-api";
 
 export default defineComponent({
   props: {
-    selectedTeam: {
+    value: {
       type: String as PropType<string>,
       required: false,
       default: '',
     },
+    allowNone: {
+      type: Boolean,
+      default: false,
+    },
   },
-  emits: ['update'],
-  setup() {
+  emits: ['input'],
+  setup(props) {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const teams = computed(() => store.state.teams.teams);
+
+    const NO_TEAM = {
+      value: 'none',
+      text: i18n.t('noTeam')
+    };
+
+    onMounted(() => {
+      store.dispatch('teams/get');
+    });
 
     const teamList = computed(() => {
-      const parsedTeam = store.getters["employees/teamList"].map(
-        (team: string) => {
-          return {value: team, text: team};
-        }
-      );
-      return [{value: null, text: i18n.t("selectTeam")}, ...parsedTeam];
+      const parsedTeam = teams.value.map((team: Team) => ({value: team.id, text: team.name}));
+      return [
+        {value: '', text: i18n.t("selectTeam")},
+        ...(props.allowNone ? [NO_TEAM] : []),
+        ...parsedTeam];
     });
 
     return {teamList}

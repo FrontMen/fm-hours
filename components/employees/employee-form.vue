@@ -10,6 +10,7 @@ en:
   endDate: "End date"
   startDate: "Start date"
   noDate: "No date selected"
+  editTeam: "Edit team"
 nl:
   notFoundEmployee: "Medewerker niet gevonden"
   manageProjects: "Projecten bewerken"
@@ -21,6 +22,7 @@ nl:
   endDate: "Eind datum"
   startDate: "Start datum"
   noDate: "Geen datum geselecteerd"
+  editTeam: "Team bewerken"
 </i18n>
 
 <template>
@@ -34,7 +36,8 @@ nl:
         <b-row class="my-5">
           <b-col cols="12" md="6">
             <b-card>
-              <team-selector :selected-team="selectedTeam" @update="updateTeam"></team-selector>
+              <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
+              <team-selector v-model="selectedTeamId"></team-selector>
               <project-selector
                 :selected-projects="selectedProjects"
                 :customers="customers"
@@ -108,7 +111,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
 
     const projects = ref<EmployeeProject[]>(props.employee?.projects);
-    const selectedTeam = ref<string | null>(null);
+    const selectedTeamId = ref<string>();
     const selectedProjects = ref<(Project[] | undefined)>([]);
     const hasUnsavedChanges = ref<boolean>(false);
     const errorMessage = ref<string>("");
@@ -127,12 +130,11 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('customers/getCustomers');
       store.dispatch('employees/getAdminList');
-      store.dispatch('employees/getTeamList');
     });
 
     watch(() => props.employee, () => {
       if (props.employee?.team) {
-        selectedTeam.value = props.employee.team
+        selectedTeamId.value = props.employee.team
       }
     }, {immediate: true})
 
@@ -152,6 +154,11 @@ export default defineComponent({
       },
       {immediate: true, deep: true}
     );
+
+    watch([selectedTeamId],
+    () => {
+      hasUnsavedChanges.value = true
+    });
 
     // We probably shouldn't watch a store getter imho
     watch(
@@ -190,7 +197,7 @@ export default defineComponent({
 
       const newEmployee = {
         ...props.employee,
-        team: selectedTeam.value,
+        team: selectedTeamId.value,
         projects: selectedProjects.value?.map((project: Project) => {
           return {
             customerId: project.customer.id,
@@ -208,11 +215,6 @@ export default defineComponent({
       }
     };
 
-    const updateTeam = (teamName: string) => {
-      selectedTeam.value = teamName;
-      hasUnsavedChanges.value = true;
-    }
-
     const updateSelectedProjects = (list: Project[]) => {
       selectedProjects.value = list;
       hasUnsavedChanges.value = true;
@@ -228,12 +230,11 @@ export default defineComponent({
     }
 
     return {
-      updateTeam,
       updateSelectedProjects,
       isAdmin,
       customers,
       selectedProjects,
-      selectedTeam,
+      selectedTeamId,
       saveEmployee,
       hasUnsavedChanges,
       errorMessage,

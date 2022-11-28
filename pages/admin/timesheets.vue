@@ -9,7 +9,7 @@ en:
     pending: Pending
     approved: Approved
     denied: Denied
-
+  teamFilter: "Filter on team"
 nl:
   hideDone: "Verberg klaar"
   emptyTable: "Geen medewerkers om te tonen"
@@ -20,6 +20,7 @@ nl:
     pending: In afwachting
     approved: Goedgekeurd
     denied: Niet toegestaan
+  teamFilter: "Filter op team"
 </i18n>
 
 <template>
@@ -28,12 +29,11 @@ nl:
       <b-col cols="3">
         <b-card class="actions-toolbar flex mb-3">
           <div class="mb-2">
-            <strong>Selected team:</strong>
-            {{ selectedTeam }}
+            <strong>{{ $t('teamFilter')}}:</strong>
           </div>
-          <b-form-select v-model="selectedTeam" :options="teamList" class="mb-3" />
+          <team-selector v-model="selectedTeamId" :allow-none="true" class="mb-3"></team-selector>
 
-          <MonthPicker v-model="startDate" class="col-12 px-0" />
+          <month-picker v-model="startDate" class="col-12 px-0"></month-picker>
 
           <div class="d-flex align-items-center justify-content-between mt-2">
             <b-form-checkbox v-model="hideDone" name="checkbox-hide-done" inline switch>
@@ -109,7 +109,6 @@ nl:
 import {
   computed,
   defineComponent,
-  onMounted,
   ref,
   useContext,
   useMeta,
@@ -122,15 +121,13 @@ export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
-    const NO_TEAM = i18n.t('noTeam');
+    const NO_TEAM = 'none';
+
+    const selectedTeamId = ref<string>();
 
     useMeta(() => ({
       title: i18n.t('timesheets') as string,
     }));
-
-    onMounted(() => {
-      store.dispatch('employees/getTeamList');
-    });
 
     const statuses = ref<string[]>(['empty', 'new', 'pending', 'approved', 'denied']);
 
@@ -152,8 +149,6 @@ export default defineComponent({
         weekDateProperties.value.some(d => employee[d] !== TimesheetStatus.APPROVED)
       );
     });
-
-    const selectedTeam = ref<string>('');
 
     const filterItemsBySearch = (
       arrayToFilter: TimesheetTableItem[],
@@ -204,28 +199,16 @@ export default defineComponent({
         filteredItems = filterItemsBySearch(
           items,
           employeesWithMissingTimesheets.value,
-          selectedTeam.value
+          selectedTeamId.value || ''
         );
       } else {
-        filteredItems = filterItemsBySearch(items, [], selectedTeam.value);
+        filteredItems = filterItemsBySearch(items, [], selectedTeamId.value || '');
       }
 
       return {
         fields,
         items: filteredItems || items,
       };
-    });
-
-    const teamList = computed(() => {
-      if (!tableData.value.items) return null;
-      const parsedTeam = store.getters['employees/teamList'].map((team: string) => {
-        return {value: team, text: team};
-      });
-      return [
-        {value: null, text: i18n.t('selectTeam')},
-        {value: NO_TEAM, text: NO_TEAM},
-        ...parsedTeam,
-      ];
     });
 
     watch(
@@ -244,8 +227,7 @@ export default defineComponent({
       tableDataFiltered,
       startDate,
       statuses,
-      selectedTeam,
-      teamList,
+      selectedTeamId,
     };
   },
 
