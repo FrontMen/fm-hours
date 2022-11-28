@@ -134,7 +134,7 @@ export default defineComponent({
 
     watch(() => props.employee, () => {
       if (props.employee?.team) {
-        selectedTeamId.value = props.employee.team.toLowerCase()
+        selectedTeamId.value = props.employee.team
       }
     }, {immediate: true})
 

@@ -7,7 +7,7 @@ const actions: ActionTree<TeamsStoreState, RootStoreState> = {
     const teams = await this.app.$teamsService.getTeams();
 
     const covertedList = teams?.map((team: string) => ({
-      id: team.toLowerCase(),
+      id: team,
       name: team,
     }));
 

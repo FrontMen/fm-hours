@@ -169,14 +169,14 @@ export default defineComponent({
 
             const shouldCompareToExactTeam = isSelectedTeamEqualNoTeam
               ? !item.team
-              : employee.team?.toLowerCase() === selectedTeamValue;
+              : employee.team === selectedTeamValue;
 
             return isEmployeeIdEqual && shouldCompareToExactTeam;
           });
         }
 
         if (item.team && selectedTeamValue) {
-          return item.team.toLowerCase() === selectedTeamValue;
+          return item.team === selectedTeamValue;
         }
 
         if (isSelectedTeamEqualNoTeam) {
