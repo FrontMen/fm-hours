@@ -10,7 +10,6 @@ en:
   no: "No"
   archived: "Archived"
   contract: "Contract"
-  actions: "Actions"
 nl:
   searchName: "Zoeken op klanten"
   searchPlaceholderName: "Bijv. iO Digital"
@@ -22,7 +21,6 @@ nl:
   no: "Nee"
   archived: "Gearchiveerd"
   contract: "Contract"
-  actions: "Acties"
 </i18n>
 
 <template>
@@ -56,7 +54,7 @@ nl:
 
     <b-container fluid class="mb-3">
       <b-table
-        class="row mt-3 app-table timesheet-table"
+        class="row"
         responsive
         striped
         hover
@@ -73,61 +71,26 @@ nl:
             {{ $t(data.label) }}
           </div>
         </template>
-        <template #head(archived)="data">
-          <div class="text-center">
-            {{ $t(data.label) }}
-          </div>
-        </template>
-        <template #head(isDefault)="data">
-          <div class="text-center">
-            {{ $t(data.label) }}
-          </div>
-        </template>
-        <template #head(contract)="data">
-          <div>
-            {{ $t(data.label) }}
-          </div>
-        </template>
-        <template #head(actions)="data">
-          <div class="text-right">
-            {{ $t(data.label) }}
-          </div>
-        </template>
 
-        <template #cell(customers)="scope">
-          <strong>{{ scope.item.name }}</strong>
-          <b-badge v-if="scope.item.isDefault">{{ $t('default') }}</b-badge>
-        </template>
         <template #cell(archived)="scope">
-          <div class="text-center">
-            <b-badge :variant="scope.item.archived ? 'warning' : 'info'">
-              {{ scope.item.archived ? $t('yes') : $t('no') }}
-            </b-badge>
-          </div>
+          <b-badge :variant="scope.item.archived ? 'warning' : 'info'">
+            {{ scope.item.archived ? $t('yes') : $t('no') }}
+          </b-badge>
         </template>
         <template #cell(isDefault)="scope">
-          <div class="text-center">
-            <b-badge :variant="scope.item.isDefault ? 'warning' : 'info'">
-              {{ scope.item.isDefault ? $t('yes') : $t('no') }}
-            </b-badge>
-          </div>
+          <b-badge :variant="scope.item.isDefault ? 'warning' : 'info'">
+            {{ scope.item.isDefault ? $t('yes') : $t('no') }}
+          </b-badge>
         </template>
-        <template #cell(contract)="scope">
-          <div v-if="scope.item.contract">
-            {{scope.item.contract.name}}
-          </div>
-          <div v-else>-</div>
-        </template>
+
         <template #cell(actions)="scope">
-          <div class="text-right">
-            <nuxt-link
-              :to="localePath(`/admin/customers/${scope.item.id}`)"
-              class="btn btn-sm btn-primary align-self-center"
-              :title="$t('manageCustomer')"
-            >
-              <b-icon icon="pencil-fill" />
-            </nuxt-link>
-          </div>
+          <nuxt-link
+            :to="localePath(`/admin/customers/${scope.item.id}`)"
+            class="btn btn-sm btn-primary align-self-center"
+            :title="$t('manageCustomer')"
+          >
+            <b-icon icon="pencil-fill" />
+          </nuxt-link>
         </template>
       </b-table>
     </b-container>
@@ -158,10 +121,10 @@ export default defineComponent({
     const sortKey = ref<string>('');
     const fields = [
       {key: "name", label: "customers", sortable: true},
-      {key: "archived", label: "archived", sortable: false},
-      {key: "isDefault", label: "default", sortable: false},
-      {key: "contract", label: "contract", sortable: false},
-      {key: "actions", label: "actions", sortable: false},
+      {key: "archived", label: "archived", sortable: false, class: 'text-center'},
+      {key: "isDefault", label: "default", sortable: false, class: 'text-center'},
+      {key: "contract", label: "contract", sortable: false, formatter: (value: Contract) => value ? value.name : '-'},
+      {key: "actions", label: "actions", sortable: false, class: 'text-right'},
     ];
 
     const checkCustomerNotArchived = (archived: boolean, customer: Customer) => {

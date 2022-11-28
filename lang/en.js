@@ -59,4 +59,6 @@ export default {
   weekNo: 'week: {num}',
   addEmployee: 'Add Employee',
   selectCustomer: 'Select a customer',
+  actions: 'Actions',
+  status: 'Status',
 };

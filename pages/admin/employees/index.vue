@@ -98,55 +98,56 @@ nl:
         </b-form-checkbox>
       </b-row>
     </b-container>
-    <b-container fluid class="app-table">
-      <b-row class="app-table__top-row px-2 py-2">
-        <span class="font-weight-bold text-dark">{{ $t('employees') }}</span>
-      </b-row>
 
-      <b-row
-        v-if="!filteredEmployees.length"
-        class="app-table__row employee-row p-3 mr-0 align-items-center justify-content-center"
+    <b-container fluid class="mb-3">
+      <b-table
+        class="row"
+        responsive
+        striped
+        hover
+        small
+        :items="filteredEmployees"
+        :fields="fields"
+        :sort-compare="sortCompare"
+        :sort-desc.sync="sortDescending"
+        :sort-by.sync="sortKey"
+        no-sort-reset
       >
-        <b-icon-person-x class="mr-2" />
-        {{ $t('noEmployeeFound') }}.
-      </b-row>
+        <template #head()="data">
+          <div>
+            {{ $t(data.label) }}
+          </div>
+        </template>
 
-      <b-row
-        v-for="employee in filteredEmployees"
-        v-else
-        :key="employee.id"
-        class="app-table__row employee-row px-2 py-1"
-      >
-        <div class="font-weight-bold employee-row__name">
-          {{ employee.name }}
-          <small v-if="employee.team">- {{ employee.team }}</small>
-          <b-badge v-if="!checkEmployeeAvailability(employee, new Date())" variant="danger">
+        <template #cell(status)="scope">
+          <b-badge v-if="!checkEmployeeAvailability(scope.item, new Date())" variant="danger">
             {{ $t('inactive') }}
           </b-badge>
-          <b-badge v-if="!checkEmployeeBillable(false, employee)" variant="warning">
+          <b-badge v-if="!checkEmployeeBillable(false, scope.item)" variant="warning">
             {{ $t('notBillable') }}
           </b-badge>
-        </div>
+        </template>
+        <template #cell(actions)="scope">
+          <div class="text-right">
+            <nuxt-link
+              class="btn btn-sm btn-primary"
+              :to="localePath(`/admin/employees/${scope.item.id}`)"
+              :title="$t('manageEmployee')"
+            >
+              <b-icon icon="pencil-fill" />
+            </nuxt-link>
 
-        <div class="ml-auto d-flex align-items-center">
-          <nuxt-link
-            class="btn btn-sm btn-primary"
-            :to="localePath(`/admin/employees/${employee.id}`)"
-            :title="$t('manageEmployee')"
-          >
-            <b-icon icon="pencil-fill" />
-          </nuxt-link>
-
-          <b-dropdown size="sm" :text="$t('insights')" variant="primary" class="ml-2">
-            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/`)">
-              {{ $t("year") }}
-            </b-dropdown-item>
-            <b-dropdown-item :to="localePath(`/insights/${employee.id}/${year}/${month}`)">
-              {{ $t("month") }}
-            </b-dropdown-item>
-          </b-dropdown>
-        </div>
-      </b-row>
+            <b-dropdown size="sm" :text="$t('insights')" variant="primary" class="ml-2">
+              <b-dropdown-item :to="localePath(`/insights/${scope.item.id}/${year}/`)">
+                {{ $t("year") }}
+              </b-dropdown-item>
+              <b-dropdown-item :to="localePath(`/insights/${scope.item.id}/${year}/${month}`)">
+                {{ $t("month") }}
+              </b-dropdown-item>
+            </b-dropdown>
+          </div>
+        </template>
+      </b-table>
     </b-container>
   </div>
 </template>
@@ -155,7 +156,7 @@ nl:
 import {computed, defineComponent, onMounted, ref, useContext, useStore,} from "@nuxtjs/composition-api";
 
 import {checkEmployeeAvailability} from "~/helpers/employee";
-import {queryOnString} from "~/helpers/helpers";
+import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
@@ -225,6 +226,15 @@ export default defineComponent({
       );
     };
 
+    const sortDescending = ref<boolean>(false);
+    const sortKey = ref<string>('');
+    const fields = [
+      {key: "name", label: "employees", sortable: true},
+      {key: "team", label: "team", sortable: true},
+      {key: "status", label: "status", sortable: false},
+      {key: "actions", label: "actions", sortable: false, class: 'text-right'},
+    ];
+    const sortCompare = (a: Employee, b: Employee, key: keyof Employee) => sortByProp<Employee>(a, b, key);
     const filteredEmployees = computed(() =>
       employees.value.filter((employee) =>
         (
@@ -237,6 +247,10 @@ export default defineComponent({
 
     return {
       employees,
+      fields,
+      sortCompare,
+      sortDescending,
+      sortKey,
       filteredEmployees,
       filterBy,
       filterByOptions,

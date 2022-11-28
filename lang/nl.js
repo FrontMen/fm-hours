@@ -58,4 +58,6 @@ export default {
   weekNo: 'week: {num}',
   addEmployee: 'Medewerker toevoegen',
   selectCustomer: 'Selecteer een klant',
+  actions: 'Acties',
+  status: 'Status',
 };
