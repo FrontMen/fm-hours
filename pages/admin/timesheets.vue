@@ -124,12 +124,14 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const NO_TEAM = i18n.t('noTeam');
 
+    const teams = computed(() => store.state.teams.teams);
+
     useMeta(() => ({
       title: i18n.t('timesheets') as string,
     }));
 
     onMounted(() => {
-      store.dispatch('employees/getTeamList');
+      store.dispatch('teams/get');
     });
 
     const statuses = ref<string[]>(['empty', 'new', 'pending', 'approved', 'denied']);
@@ -218,8 +220,8 @@ export default defineComponent({
 
     const teamList = computed(() => {
       if (!tableData.value.items) return null;
-      const parsedTeam = store.getters['employees/teamList'].map((team: string) => {
-        return {value: team, text: team};
+      const parsedTeam = teams.value.map((team: Team) => {
+        return {value: team.name, text: team.name};
       });
       return [
         {value: null, text: i18n.t('selectTeam')},

@@ -127,7 +127,7 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('customers/getCustomers');
       store.dispatch('employees/getAdminList');
-      store.dispatch('employees/getTeamList');
+      store.dispatch('teams/get');
     });
 
     watch(() => props.employee, () => {

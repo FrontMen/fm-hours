@@ -31,11 +31,12 @@ export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
+    const teams = computed(() => store.state.teams.teams);
 
     const teamList = computed(() => {
-      const parsedTeam = store.getters["employees/teamList"].map(
-        (team: string) => {
-          return {value: team, text: team};
+      const parsedTeam = teams.value.map(
+        (team: Team) => {
+          return {value: team.name, text: team.name};
         }
       );
       return [{value: null, text: i18n.t("selectTeam")}, ...parsedTeam];

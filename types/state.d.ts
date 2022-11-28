@@ -6,4 +6,5 @@ interface RootStoreState {
   timesheets: TimesheetsStoreState;
   employee: EmployeeStoreState;
   employees: EmployeesStoreState;
+  teams: TeamsStoreState;
 }
