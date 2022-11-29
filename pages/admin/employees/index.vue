@@ -164,6 +164,7 @@ export default defineComponent({
     const store = useStore<RootStoreState>();
     const employees = computed(() => store.state.employees.employees);
     const customers = computed(() => store.state.customers.customers);
+    const teams = computed(() => store.state.teams.teams);
     const showMoreFilters = ref<boolean>(false);
 
     const year = new Date().getFullYear();
@@ -172,6 +173,7 @@ export default defineComponent({
     onMounted(() => {
       store.dispatch('employees/getEmployees');
       store.dispatch('customers/getCustomers');
+      store.dispatch('teams/get');
     });
 
     const customerOptions = computed(() =>
@@ -230,7 +232,10 @@ export default defineComponent({
     const sortKey = ref<string>('');
     const fields = [
       {key: "name", label: "employees", sortable: true},
-      {key: "team", label: "team", sortable: true},
+      {key: "team", label: "team", sortable: true, formatter: (teamId: String) => {
+        if(!teamId) return '-';
+        return teams.value.find((t) => t.id === teamId)?.name
+      }},
       {key: "status", label: "status", sortable: false},
       {key: "actions", label: "actions", sortable: false, class: 'text-right'},
     ];
