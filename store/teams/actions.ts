@@ -4,14 +4,17 @@ const actions: ActionTree<TeamsStoreState, RootStoreState> = {
   async get({commit, rootState}) {
     if (rootState.teams.teams?.length) return;
 
-    const teams = await this.app.$teamsService.getTeams();
+    const teams = await this.app.$teamsService.get();
 
-    const covertedList = teams?.map((team: string) => ({
-      id: team,
-      name: team,
-    }));
-
-    commit('set', covertedList);
+    commit('set', teams);
+  },
+  async add({commit}, payload: Omit<Team, 'id'>) {
+    const newTeam = await this.app.$teamsService.add(payload);
+    commit('add', newTeam);
+  },
+  async update({commit}, payload: Team) {
+    await this.app.$teamsService.update(payload);
+    commit('update', payload);
   },
 };
 

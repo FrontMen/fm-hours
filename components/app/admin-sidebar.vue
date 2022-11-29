@@ -3,6 +3,7 @@ en:
   home: "Home"
   customers: "Customers"
   employees: "Employees"
+  teams: "Teams"
   holidays: "Holidays"
   timesheets: "Timesheets"
   reports: "Reports"
@@ -10,6 +11,7 @@ nl:
   home: "Overzicht"
   customers: "Klanten"
   employees: "Medewerkers"
+  teams: "Teams"
   holidays: "Feestdagen"
   timesheets: "Timesheets"
   reports: "Rapportages"
@@ -53,6 +55,11 @@ export default defineComponent({
       {
         href: "/admin/employees",
         name: "employees",
+        icon: "person",
+      },
+      {
+        href: "/admin/teams",
+        name: "teams",
         icon: "people",
       },
       {
