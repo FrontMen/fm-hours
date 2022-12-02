@@ -17,10 +17,19 @@ const mutations: MutationTree<ReportsStoreState> = {
       travelRecords: TravelRecord[];
       standByRecords: StandbyRecord[];
       timesheets: Timesheet[];
+      teams: Team[];
     }
   ) {
-    const {startDate, endDate, employees, timeRecords, travelRecords, standByRecords, timesheets} =
-      payload;
+    const {
+      startDate,
+      endDate,
+      employees,
+      timeRecords,
+      travelRecords,
+      standByRecords,
+      timesheets,
+      teams,
+    } = payload;
     const nonBillableProjects = payload.customers.filter(
       customer => !customer.isBillable && !customer.archived
     );
@@ -72,10 +81,12 @@ const mutations: MutationTree<ReportsStoreState> = {
         x => !nonBillableProjects.some(y => y.id === x.customer.id)
       );
 
+      const teamName = teams.find(t => t.id === employee.team)?.name;
+
       return {
         name: employee.name,
         bridgeUid: employee.bridgeUid,
-        team: employee.team,
+        team: teamName,
         billable: employee.billable,
         travelRecords: employeeTravelRecords,
         billableRecords: employeeBillableRecords,

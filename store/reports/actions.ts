@@ -15,6 +15,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     const customersPromise = this.app.$customersService.getCustomers();
     const employeesPromise = this.app.$employeesService.getEmployees();
+    const teamsPromise = this.app.$teamsService.get();
     const timesheetsPromise = this.app.$timesheetsService.getApprovedTimesheets({
       startDate: getDayOnGMT(startOfISOWeek(startDate)).getTime(),
       endDate: endDate.getTime(),
@@ -35,10 +36,11 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       endDate,
     });
 
-    const [customers, employees, timesheets, timeRecords, travelRecords, standByRecords] =
+    const [customers, employees, teams, timesheets, timeRecords, travelRecords, standByRecords] =
       await Promise.all([
         customersPromise,
         employeesPromise,
+        teamsPromise,
         timesheetsPromise,
         timeRecordsPromise,
         travelRecordsPromise,
@@ -63,6 +65,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       travelRecords: approvedTravelRecords,
       standByRecords: approvedStandByRecords,
       timesheets,
+      teams,
     });
   },
 };
