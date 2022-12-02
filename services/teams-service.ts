@@ -11,9 +11,12 @@ export default class TeamsService {
     this.fireModule = fireModule;
   }
 
-  async get(): Promise<Team[]> {
-    const ref = this.fire.firestore.collection(Collections.TEAMS);
-    const snapshot = await ref.get();
+  get(id?: string): Promise<Team[] | Team | undefined> {
+    return id ? this.getById(id) : this.getAll();
+  }
+
+  private async getAll(): Promise<Team[]> {
+    const snapshot = await this.fire.firestore.collection(Collections.TEAMS).get();
 
     return snapshot.docs.map((res: any) => {
       const team = res.data();
@@ -24,14 +27,28 @@ export default class TeamsService {
     });
   }
 
+  private async getById(id: string): Promise<Team | undefined> {
+    const snapshot = await this.fire.firestore
+      .collection(Collections.TEAMS)
+      .where(this.fireModule.firestore.FieldPath.documentId(), '==', id)
+      .get();
+
+    if (!snapshot.empty) {
+      return {
+        ...(snapshot.docs[0].data() as Team),
+        id: snapshot.docs[0].id,
+      };
+    }
+    return undefined;
+  }
+
   async add(params: Omit<Team, 'id' | 'createdAt'>): Promise<Team> {
     const toAdd = {
       ...params,
       createdAt: new Date().getTime(),
     };
 
-    const ref = this.fire.firestore.collection(Collections.TEAMS);
-    const {id} = await ref.add(toAdd);
+    const {id} = await this.fire.firestore.collection(Collections.TEAMS).add(toAdd);
 
     return {...toAdd, id} as unknown as Team;
   }
@@ -40,8 +57,10 @@ export default class TeamsService {
     const toUpdate = {...team} as any;
     delete toUpdate.id;
 
-    const ref = this.fire.firestore.collection(Collections.TEAMS);
-    return await ref.doc(team.id).set(toUpdate, {merge: true});
+    return await this.fire.firestore
+      .collection(Collections.TEAMS)
+      .doc(team.id)
+      .set(toUpdate, {merge: true});
   }
 
   async delete(id: string): Promise<void> {

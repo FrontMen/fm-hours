@@ -11,14 +11,35 @@ nl:
   <div class="content-wrapper mt-5">
     <b-container fluid class="mb-3">
       <b-row class="justify-content-between">
-        <b-col cols="6" md="auto" class="pl-0 mb-3"></b-col>
+        <b-col cols="6" class="pl-0 d-flex align-items-center">
+          <b-form-group class="mb-0 mr-4">
+            <b-input-group>
+              <b-form-input
+                id="filter-input"
+                v-model="filter"
+                type="search"
+                :placeholder="$t('filter')"
+              ></b-form-input>
+
+              <b-input-group-append>
+                <b-button :disabled="!filter" @click="filter = ''">
+                  {{ $t('clear') }}
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+
+          <b-form-checkbox v-model="archived" switch>
+            {{ $t('showArchived') }}
+          </b-form-checkbox>
+        </b-col>
         <b-col cols="auto">
-          <!-- <div class="d-flex justify-content-between align-items-center mt-1">
+          <div class="d-flex justify-content-between align-items-center mt-1">
             <nuxt-link class="btn btn-primary" :to="localePath(`/admin/teams/add`)">
               {{ $t('addTeam') }}
               <b-icon icon="people" />
             </nuxt-link>
-          </div> -->
+          </div>
         </b-col>
       </b-row>
     </b-container>
@@ -30,15 +51,20 @@ nl:
         striped
         hover
         small
-        :items="teams"
+        :items="items"
         :fields="fields"
-        :sort-compare="sortCompare"
-        :sort-desc.sync="sortDescending"
-        :sort-by.sync="sortKey"
-        no-sort-reset
+        :filter="filter"
       >
         <template #head()="data">
           {{ $t(data.label) }}
+        </template>
+        <template #cell(archived)="scope">
+          <b-badge v-if="scope.item.archived" variant="warning">
+            {{ $t('archived') }}
+          </b-badge>
+          <b-badge v-else variant="success">
+            {{ $t('active') }}
+          </b-badge>
         </template>
 
         <template #cell(actions)="scope">
@@ -59,32 +85,34 @@ nl:
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref, useStore,} from "@nuxtjs/composition-api";
-import { sortByProp } from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
     const store = useStore<RootStoreState>();
+    const teams = computed(() => store.state.teams.teams);
 
     onMounted(() => {
       store.dispatch('teams/get');
     });
 
-    const sortDescending = ref<boolean>(false);
-    const sortKey = ref<string>('');
+    const filter = ref<string>('');
+    const archived = ref<boolean>(false);
     const fields = [
       {key: "name", label: "name", sortable: true},
-      // {key: "actions", label: "actions", sortable: false, class: 'text-right'},
+      {key: "archived", label: "status", sortable: true},
+      {key: "actions", label: "actions", sortable: false, class: 'text-right'},
     ];
-    const sortCompare = (a: Team, b: Team, key: keyof Team) => sortByProp<Team>(a, b, key);
-
-    const teams = computed(() => store.state.teams.teams);
+    const items = computed(() => {
+      return teams.value.filter((team) => {
+        return archived.value ? true : team.archived !== true
+      });
+    });
 
     return {
+      filter,
+      archived,
       fields,
-      sortCompare,
-      sortDescending,
-      sortKey,
-      teams
+      items
     };
   },
   head: {
