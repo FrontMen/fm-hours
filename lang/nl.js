@@ -40,8 +40,11 @@ export default {
   customerDeleteConfirmation: 'Weet je zeker dat je medewerker {name} wil verwijderen?',
   customerArchiveConfirmation:
     'Weet je zeker dat je de status van {name} aan wil passen naar {state}?',
+  active: 'Actief',
   archive: 'Archiveren',
   unarchive: 'Dearchiveren',
+  archived: 'Gearchiveerd',
+  showArchived: 'Toon gearchiveerd',
   cancel: 'Annuleren',
   ok: 'Bevestig',
   lastSave: 'Laatst opgeslagen {time}',
@@ -60,4 +63,6 @@ export default {
   selectCustomer: 'Selecteer een klant',
   actions: 'Acties',
   status: 'Status',
+  filter: 'Typ om te filteren',
+  clear: 'Legen',
 };

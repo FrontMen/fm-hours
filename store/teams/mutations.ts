@@ -10,6 +10,9 @@ const mutations: MutationTree<TeamsStoreState> = {
   update: (state, payload: Team) => {
     state.teams = state.teams.map(team => (team.id === payload.id ? payload : team));
   },
+  delete: (state, payload: Team) => {
+    state.teams = state.teams.filter(team => team.id !== payload.id);
+  },
 };
 
 export default mutations;

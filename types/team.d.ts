@@ -1,5 +1,6 @@
 interface Team {
   id: string;
   name: string;
-  createdAt: number;
+  createdAt?: number;
+  archived?: boolean;
 }
