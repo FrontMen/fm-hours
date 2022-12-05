@@ -21,6 +21,7 @@ export default {
   employeeEmail: 'Email',
   travelAllowance: 'reiskosten',
   name: 'Naam',
+  teams: 'Teams',
   team: 'Team',
   weekError: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',
   weekErrors: 'Je hebt {n} uur meer ingevuld dan de verwachte {expected}uur, is dat correct?',

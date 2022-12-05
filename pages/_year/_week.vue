@@ -1,12 +1,12 @@
 <template>
-  <div class="mt-2 mt-md-5 content-wrapper">
+  <admin-container>
     <weekly-timesheet
       v-if="employee && year && week"
       :employee="employee"
       :year="year"
       :week="week"
     />
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">

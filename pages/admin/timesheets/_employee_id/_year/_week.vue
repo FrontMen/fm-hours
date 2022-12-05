@@ -5,7 +5,7 @@ nl:
   employeeError: "Geselecteerde medewerker is niet gevonden"
 </i18n>
 <template>
-  <div class="content-wrapper">
+  <div>
     <b-alert :show="showEmployeeError" dismissible variant="warning" class="mb-3">
       {{ $t('employeeError') }}
     </b-alert>

@@ -10,7 +10,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="mt-5 content-wrapper">
+  <admin-container>
     <date-navigation-buttons
       class="mb-4"
       :selected-date="monthDate"
@@ -65,7 +65,7 @@ nl:
         />
       </b-tab>
     </b-tabs>
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">

@@ -1,8 +1,5 @@
 <i18n lang="yaml">
 en:
-  searchName: "Search for customers"
-  searchPlaceholderName: "E.g. iO Digital"
-  showArchived: "Show archived"
   newCustomer: "New Customer"
   manageCustomer: "Manage Customer"
   default: "Default"
@@ -11,9 +8,6 @@ en:
   archived: "Archived"
   contract: "Contract"
 nl:
-  searchName: "Zoeken op klanten"
-  searchPlaceholderName: "Bijv. iO Digital"
-  showArchived: "Laat archief ook zien"
   newCustomer: "Nieuwe klant"
   manageCustomer: "Klant bewerken"
   default: "Standaard"
@@ -24,30 +18,35 @@ nl:
 </i18n>
 
 <template>
-  <div class="content-wrapper mt-5">
+  <admin-container>
     <b-container fluid class="mb-3">
       <b-row class="justify-content-between">
-        <b-col cols="6" md="auto" class="pl-0 mb-3">
-          <label class="col-form-label employee-status__label text-bold" for="employee-search">
-            {{ $t('searchName') }}:
-          </label>
-          <b-input
-            id="employee-search"
-            v-model="searchTerm"
-            type="search"
-            :placeholder="$t('searchPlaceholderName')"
-          />
+        <b-col cols="6" md="auto" class="pl-0 d-flex align-items-center">
+          <b-form-group class="mb-0 mr-4">
+            <b-input-group>
+              <b-input
+                id="employee-search"
+                v-model="filter"
+                type="search"
+                :placeholder="$t('filter')"
+              />
+              <b-input-group-append>
+                <b-button :disabled="!filter" @click="filter = ''">
+                  {{ $t('clear') }}
+                </b-button>
+              </b-input-group-append>
+            </b-input-group>
+          </b-form-group>
+
+          <b-form-checkbox v-model="archived" switch>
+            {{ $t('showArchived') }}
+          </b-form-checkbox>
         </b-col>
         <b-col cols="auto">
-          <div class="d-flex justify-content-between align-items-center mt-1">
-            <b-form-checkbox v-model="selectedArchiveOption" switch class="mr-3 ml-auto">
-              {{ $t('showArchived') }}
-            </b-form-checkbox>
-            <nuxt-link class="btn btn-primary" :to="localePath(`/admin/customers/add`)">
-              {{ $t('newCustomer') }}
-              <b-icon icon="person" />
-            </nuxt-link>
-          </div>
+          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/customers/add`)">
+            {{ $t('newCustomer') }}
+            <b-icon icon="person" />
+          </nuxt-link>
         </b-col>
       </b-row>
     </b-container>
@@ -59,17 +58,12 @@ nl:
         striped
         hover
         small
-        :items="filteredCustomers"
+        :items="items"
         :fields="fields"
-        :sort-compare="sortCompare"
-        :sort-desc.sync="sortDescending"
-        :sort-by.sync="sortKey"
-        no-sort-reset
+        :filter="filter"
       >
         <template #head()="data">
-          <div>
-            {{ $t(data.label) }}
-          </div>
+          {{ $t(data.label) }}
         </template>
 
         <template #cell(archived)="scope">
@@ -94,12 +88,11 @@ nl:
         </template>
       </b-table>
     </b-container>
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, onMounted, ref, useContext, useMeta, useStore,} from "@nuxtjs/composition-api";
-import {queryOnString, sortByProp} from "~/helpers/helpers";
 
 export default defineComponent({
   setup() {
@@ -115,10 +108,8 @@ export default defineComponent({
       store.dispatch("customers/getCustomers");
     });
 
-    const searchTerm = ref<string>('');
-    const selectedArchiveOption = ref<boolean>(false);
-    const sortDescending = ref<boolean>(false);
-    const sortKey = ref<string>('');
+    const filter = ref<string>('');
+    const archived = ref<boolean>(false);
     const fields = [
       {key: "name", label: "customers", sortable: true},
       {key: "archived", label: "archived", sortable: false, class: 'text-center'},
@@ -127,35 +118,18 @@ export default defineComponent({
       {key: "actions", label: "actions", sortable: false, class: 'text-right'},
     ];
 
-    const checkCustomerNotArchived = (archived: boolean, customer: Customer) => {
-      if (archived) return true;
+    const items = computed(() => {
+      return customers.value.filter((customer) => {
+        return archived.value ? true : customer.archived !== true
+      });
+    });
 
-      return !customer.archived;
-    }
-
-    const checkCustomerProp = (query: string, filterByProp: keyof Customer, customer: Customer) => {
-      if (!query || !customer) return true;
-      if (!customer[filterByProp]) return;
-
-      return queryOnString(customer[filterByProp] as string, query);
-    }
-
-    const filteredCustomers = computed(() =>
-      customers.value.filter((customer) => (
-        checkCustomerNotArchived(selectedArchiveOption.value, customer) &&
-        checkCustomerProp(searchTerm.value, 'name', customer)
-      )));
-
-    const sortCompare = (a: Customer, b: Customer, key: keyof Customer) => sortByProp<Customer>(a, b, key);
 
     return {
       fields,
-      sortCompare,
-      sortDescending,
-      sortKey,
-      filteredCustomers,
-      searchTerm,
-      selectedArchiveOption,
+      items,
+      filter,
+      archived,
     };
   },
   head: {},

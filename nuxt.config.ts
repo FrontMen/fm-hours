@@ -34,6 +34,7 @@ export default {
   components: {
     dirs: [
       '~/components',
+      '~/components/admin',
       '~/components/app',
       '~/components/records',
       '~/components/reports',

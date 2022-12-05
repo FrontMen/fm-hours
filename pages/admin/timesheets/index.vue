@@ -6,7 +6,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="mt-2 content-wrapper">
+  <div class="mx-4">
     <p>{{ $t('nothingSelected') }}</p>
   </div>
 </template>

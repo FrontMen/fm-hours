@@ -1,5 +1,7 @@
 <template>
-  <team-form mode="edit" :team="team" />
+  <admin-container>
+    <team-form mode="edit" :team="team" />
+  </admin-container>
 </template>
 
 <script lang="ts">
