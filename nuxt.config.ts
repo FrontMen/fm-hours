@@ -33,7 +33,7 @@ export default {
   // Auto import components (https://go.nuxtjs.dev/config-components)
   components: {
     dirs: [
-      '~/components/*',
+      '~/components',
       '~/components/admin',
       '~/components/app',
       '~/components/records',
