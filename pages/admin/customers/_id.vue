@@ -1,5 +1,7 @@
 <template>
-  <customer-form mode="edit" :customer="customer" />
+  <admin-container>
+    <customer-form mode="edit" :customer="customer" />
+  </admin-container>
 </template>
 
 <script lang="ts">

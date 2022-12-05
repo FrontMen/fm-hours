@@ -1,5 +1,7 @@
 <template>
-  <employee-form mode="add" :employee="employee" />
+  <admin-container>
+    <employee-form mode="add" :employee="employee" />
+  </admin-container>
 </template>
 
 <script lang="ts">

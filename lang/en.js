@@ -21,6 +21,7 @@ export default {
   employeeEmail: 'Employee email',
   travelAllowance: 'Travel allowance',
   name: 'Name',
+  teams: 'Teams',
   team: 'Team',
   weekError:
     'You have filled in {n} more hour than the expected {expected} hours a week. Is this correct?',

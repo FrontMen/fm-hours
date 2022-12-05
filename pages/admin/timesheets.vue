@@ -24,7 +24,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="my-5 content-wrapper">
+  <admin-container>
     <b-row no-gutters class="mt-2">
       <b-col cols="3">
         <b-card class="actions-toolbar flex mb-3">
@@ -102,7 +102,7 @@ nl:
         <NuxtChild />
       </b-col>
     </b-row>
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">

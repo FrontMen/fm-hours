@@ -8,7 +8,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="content-wrapper mt-5">
+  <admin-container>
     <b-container fluid class="mb-3">
       <b-row class="justify-content-between">
         <b-col cols="6" class="pl-0 d-flex align-items-center">
@@ -19,7 +19,7 @@ nl:
                 v-model="filter"
                 type="search"
                 :placeholder="$t('filter')"
-              ></b-form-input>
+              />
 
               <b-input-group-append>
                 <b-button :disabled="!filter" @click="filter = ''">
@@ -34,12 +34,10 @@ nl:
           </b-form-checkbox>
         </b-col>
         <b-col cols="auto">
-          <div class="d-flex justify-content-between align-items-center mt-1">
-            <nuxt-link class="btn btn-primary" :to="localePath(`/admin/teams/add`)">
-              {{ $t('addTeam') }}
-              <b-icon icon="people" />
-            </nuxt-link>
-          </div>
+          <nuxt-link class="btn btn-primary" :to="localePath(`/admin/teams/add`)">
+            {{ $t('addTeam') }}
+            <b-icon icon="people" />
+          </nuxt-link>
         </b-col>
       </b-row>
     </b-container>
@@ -59,11 +57,8 @@ nl:
           {{ $t(data.label) }}
         </template>
         <template #cell(archived)="scope">
-          <b-badge v-if="scope.item.archived" variant="warning">
-            {{ $t('archived') }}
-          </b-badge>
-          <b-badge v-else variant="success">
-            {{ $t('active') }}
+          <b-badge :variant="scope.item.archived ? 'warning' : 'info'">
+            {{ scope.item.archived ? $t('yes') : $t('no') }}
           </b-badge>
         </template>
 
@@ -80,16 +75,29 @@ nl:
         </template>
       </b-table>
     </b-container>
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, onMounted, ref, useStore,} from "@nuxtjs/composition-api";
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  useContext,
+  useMeta,
+  useStore,
+} from '@nuxtjs/composition-api';
 
 export default defineComponent({
   setup() {
+    const {i18n} = useContext();
     const store = useStore<RootStoreState>();
     const teams = computed(() => store.state.teams.teams);
+
+    useMeta(() => ({
+      title: i18n.t('teams') as string,
+    }));
 
     onMounted(() => {
       store.dispatch('teams/get');
@@ -98,13 +106,14 @@ export default defineComponent({
     const filter = ref<string>('');
     const archived = ref<boolean>(false);
     const fields = [
-      {key: "name", label: "name", sortable: true},
-      {key: "archived", label: "status", sortable: true},
-      {key: "actions", label: "actions", sortable: false, class: 'text-right'},
+      {key: 'name', label: 'name', sortable: true},
+      {key: 'archived', label: 'archived', sortable: false, class: 'text-center'},
+      {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
+
     const items = computed(() => {
-      return teams.value.filter((team) => {
-        return archived.value ? true : team.archived !== true
+      return teams.value.filter(team => {
+        return archived.value ? true : team.archived !== true;
       });
     });
 
@@ -112,11 +121,9 @@ export default defineComponent({
       filter,
       archived,
       fields,
-      items
+      items,
     };
   },
-  head: {
-    title: "Teams",
-  },
+  head: {},
 });
 </script>

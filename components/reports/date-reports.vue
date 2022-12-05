@@ -22,7 +22,7 @@ nl:
 </i18n>
 
 <template>
-  <div class="content-wrapper mt-5">
+  <admin-container>
     <b-row>
       <b-col cols="12" sm="4" md="4" class="hide-print">
         <b-button class="mb-3" @click="triggerPrint">
@@ -187,7 +187,7 @@ nl:
         <img src="@/assets/images/logo.png" alt="logo" width="100pt" />
       </b-col>
     </b-row>
-  </div>
+  </admin-container>
 </template>
 
 <script lang="ts">

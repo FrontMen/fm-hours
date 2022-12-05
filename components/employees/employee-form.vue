@@ -26,54 +26,52 @@ nl:
 </i18n>
 
 <template>
-  <main class="page-wrapper">
-    <section class="content-wrapper my-5">
-      <template v-if="mode !== 'add' && !employee">
-        <p>{{ $t('notFoundEmployee') }}</p>
-      </template>
-      <template v-else>
-        <employee-header v-if="mode !== 'add'" :employee="employee" />
-        <b-row class="my-5">
-          <b-col cols="12" md="6">
-            <b-card>
-              <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
-              <team-selector v-model="selectedTeamId"></team-selector>
-              <project-selector
-                :selected-projects="selectedProjects"
-                :customers="customers"
-                @update-selected-projects="updateSelectedProjects"
-              ></project-selector>
-            </b-card>
-          </b-col>
+  <div>
+    <template v-if="mode !== 'add' && !employee">
+      <p>{{ $t('notFoundEmployee') }}</p>
+    </template>
+    <template v-else>
+      <employee-header v-if="mode !== 'add'" :employee="employee" />
+      <b-row class="my-5">
+        <b-col cols="12" md="6">
+          <b-card>
+            <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
+            <team-selector v-model="selectedTeamId"></team-selector>
+            <project-selector
+              :selected-projects="selectedProjects"
+              :customers="customers"
+              @update-selected-projects="updateSelectedProjects"
+            ></project-selector>
+          </b-card>
+        </b-col>
 
-          <b-col cols="12" md="6">
-            <b-card>
-              <employee-settings
-                :employee="employee"
-                :is-admin="isAdmin"
-                @changed="hasUnsavedChanges = true, errorMessage = ''"
-                @changed-admin="changedAdmin"
-                @error-state="handleFormError"
-              ></employee-settings>
-            </b-card>
-          </b-col>
-        </b-row>
-        <div class="d-flex justify-content-end">
-          <b-button variant="primary" :disabled="!hasUnsavedChanges" @click="saveEmployee">
-            {{ $t('save') }}
-            <b-icon icon="file-earmark-arrow-down" class="ml-1" />
-          </b-button>
-        </div>
-        <b-row>
-          <b-col cols="12" md="5">
-            <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
-              {{ errorMessage }}
-            </b-alert>
-          </b-col>
-        </b-row>
-      </template>
-    </section>
-  </main>
+        <b-col cols="12" md="6">
+          <b-card>
+            <employee-settings
+              :employee="employee"
+              :is-admin="isAdmin"
+              @changed="hasUnsavedChanges = true, errorMessage = ''"
+              @changed-admin="changedAdmin"
+              @error-state="handleFormError"
+            ></employee-settings>
+          </b-card>
+        </b-col>
+      </b-row>
+      <div class="d-flex justify-content-end">
+        <b-button variant="primary" :disabled="!hasUnsavedChanges" @click="saveEmployee">
+          {{ $t('save') }}
+          <b-icon icon="file-earmark-arrow-down" class="ml-1" />
+        </b-button>
+      </div>
+      <b-row>
+        <b-col cols="12" md="5">
+          <b-alert :show="!!errorMessage" variant="danger" class="mt-3 w-4">
+            {{ errorMessage }}
+          </b-alert>
+        </b-col>
+      </b-row>
+    </template>
+  </div>
 </template>
 
 <script lang="ts">
@@ -106,7 +104,7 @@ export default defineComponent({
     }
   },
   setup(props: { mode: string, employee: Employee }) {
-    const {i18n, localePath} = useContext();
+    const { i18n, localePath } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
@@ -125,7 +123,7 @@ export default defineComponent({
       props.employee ? `${i18n.t("employees")} - ${props.employee.name}` : i18n.t("addEmployee") as string
     );
 
-    useMeta(() => ({title: pageTitle.value}));
+    useMeta(() => ({ title: pageTitle.value }));
 
     onMounted(() => {
       store.dispatch('customers/getCustomers');
@@ -136,7 +134,7 @@ export default defineComponent({
       if (props.employee?.team) {
         selectedTeamId.value = props.employee.team
       }
-    }, {immediate: true})
+    }, { immediate: true })
 
     watch([projects, customers],
       () => {
@@ -152,13 +150,13 @@ export default defineComponent({
           } as Project;
         });
       },
-      {immediate: true, deep: true}
+      { immediate: true, deep: true }
     );
 
     watch([selectedTeamId],
-    () => {
-      hasUnsavedChanges.value = true
-    });
+      () => {
+        hasUnsavedChanges.value = true
+      });
 
     // We probably shouldn't watch a store getter imho
     watch(
@@ -169,7 +167,7 @@ export default defineComponent({
           props.employee?.email
         );
       },
-      {immediate: true}
+      { immediate: true }
     );
 
     const handleAdminToggle = (): void => {
