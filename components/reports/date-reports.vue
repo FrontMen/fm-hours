@@ -248,6 +248,7 @@ export default defineComponent({
 
     const user = computed(() => store.state.auth.user);
     const employees = computed(() => store.state.employees.employees);
+    const adminlist = computed(() => store.getters["employees/adminList"]);
 
     const employee = computed(() => {
       const id = props.employeeId;
@@ -257,8 +258,7 @@ export default defineComponent({
 
       if (employee.id === store.state.employee.employee?.id) return employee;
 
-      const adminlist = store.getters["employees/adminList"];
-      const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
+      const isAuthenticatedUserAdmin = adminlist.value.includes(user.value?.email);
 
       if (isAuthenticatedUserAdmin) return employee;
     });
@@ -272,9 +272,9 @@ export default defineComponent({
     };
 
     watch(
-      [startDate, employee],
+      [startDate, employee, adminlist],
       () => {
-        if (startDate.value && employee.value) {
+        if (startDate.value && employee.value && adminlist.value) {
           getRecords();
         }
       },
