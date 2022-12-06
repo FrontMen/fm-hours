@@ -30,7 +30,7 @@ export default defineComponent({
 
     watch([employee], () => {
       if (employee.value && !employee.value?.billable) {
-        router.push(store.state.employee.isAdmin ? '/admin/reports' : '/welcome')
+        router.push(store.state.employee.employee?.isAdmin ? '/admin/reports' : '/welcome')
       }
     });
 
