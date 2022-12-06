@@ -67,4 +67,5 @@ export default {
   status: 'Status',
   filter: 'Type to filter',
   clear: 'Clear',
+  email: 'Email',
 };
