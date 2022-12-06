@@ -23,7 +23,7 @@ const actions: ActionTree<EmployeeStoreState, RootStoreState> = {
         const bridgeService = new BridgeService(this.$axios);
         employee.bridgeUid = await bridgeService.getMe();
 
-        await employeesService.updateEmployee({
+        await employeesService.update({
           ...employee!,
           bridgeUid: employee.bridgeUid,
           standBy: employee.standBy || false,

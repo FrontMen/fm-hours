@@ -60,7 +60,7 @@ export default defineComponent({
     const routePrefix = computed(() => `/admin/timesheets/${employee.value?.id}`);
 
     // TODO: Overview should retrieve all employees
-    store.dispatch('employees/getEmployees');
+    store.dispatch('employees/get');
 
     useMeta(() => ({
       title: pageTitle.value,

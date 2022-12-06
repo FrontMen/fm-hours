@@ -236,7 +236,7 @@ export default defineComponent({
     });
 
     onBeforeMount(() => {
-      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/get');
       store.dispatch('employees/getAdminList');
     });
 

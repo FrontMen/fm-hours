@@ -54,7 +54,7 @@ export default class EmployeesService {
     return null;
   }
 
-  async createEmployee(params: Omit<Employee, 'id'>): Promise<Employee> {
+  async add(params: Omit<Employee, 'id'>): Promise<Employee> {
     const newEmployee = {
       ...params,
       created: new Date().getTime(),
@@ -66,7 +66,7 @@ export default class EmployeesService {
     return {...newEmployee, id};
   }
 
-  async updateEmployee(employee: Employee): Promise<void> {
+  async update(employee: Employee): Promise<void> {
     const newEmployee = {...employee} as any;
     delete newEmployee.id;
 
@@ -76,7 +76,7 @@ export default class EmployeesService {
       .set(newEmployee, {merge: true});
   }
 
-  async deleteEmployee(id: string): Promise<void> {
+  async delete(id: string): Promise<void> {
     return await this.fire.firestore.collection(Collections.EMPLOYEES).doc(id).delete();
   }
 
