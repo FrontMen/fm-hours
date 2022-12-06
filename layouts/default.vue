@@ -1,6 +1,6 @@
 <template>
   <div class="d-flex">
-    <admin-sidebar v-if="isAdmin" />
+    <admin-sidebar v-if="employee?.isAdmin" />
     <div class="layout-wrapper col p-0">
       <top-bar :employee="employee" :is-dev="$config.isDevelopment" @logout="logout()" />
 
@@ -27,7 +27,6 @@ export default defineComponent({
 
     const user = computed(() => store.state.auth.user);
     const employee = computed(() => store.state.employee.employee);
-    const isAdmin = computed(() => store.state.employee.isAdmin);
 
     const logout = async () => {
       const authState = await store.dispatch('auth/logout');
@@ -36,7 +35,6 @@ export default defineComponent({
 
     return {
       employee,
-      isAdmin,
       user,
       logout,
     };

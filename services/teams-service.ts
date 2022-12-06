@@ -11,11 +11,7 @@ export default class TeamsService {
     this.fireModule = fireModule;
   }
 
-  get(id?: string): Promise<Team[] | Team | undefined> {
-    return id ? this.getById(id) : this.getAll();
-  }
-
-  private async getAll(): Promise<Team[]> {
+  async getAll(): Promise<Team[]> {
     const snapshot = await this.fire.firestore.collection(Collections.TEAMS).get();
 
     return snapshot.docs.map((res: any) => {
@@ -27,7 +23,7 @@ export default class TeamsService {
     });
   }
 
-  private async getById(id: string): Promise<Team | undefined> {
+  async getById(id: string): Promise<Team | undefined> {
     const snapshot = await this.fire.firestore
       .collection(Collections.TEAMS)
       .where(this.fireModule.firestore.FieldPath.documentId(), '==', id)

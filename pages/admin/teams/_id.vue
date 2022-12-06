@@ -14,7 +14,7 @@ export default defineComponent({
     const router = useRouter();
 
     const id = router.currentRoute.params.id;
-    const team = useAsync(() => app.$teamsService.get(id));
+    const team = useAsync(() => app.$teamsService.getById(id));
 
     return {
       team,

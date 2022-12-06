@@ -21,10 +21,10 @@ interface Employee {
   bridgeUid?: string;
   team?: string;
   standBy: boolean;
+  isAdmin: boolean;
 }
 
 interface EmployeeStoreState {
   employee: Employee | null;
-  isAdmin: boolean;
   isFound: boolean;
 }

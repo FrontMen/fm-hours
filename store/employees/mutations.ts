@@ -1,10 +1,6 @@
 import {MutationTree} from 'vuex';
 
 const mutations: MutationTree<EmployeesStoreState> = {
-  setAdminList: (state, payload: string[]) => {
-    state.adminList = payload;
-  },
-
   set: (state, payload: {employees: Employee[]}) => {
     state.employees = payload.employees;
   },

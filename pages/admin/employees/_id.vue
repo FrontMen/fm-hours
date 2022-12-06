@@ -14,7 +14,7 @@ export default defineComponent({
     const router = useRouter();
 
     const employeeId = router.currentRoute.params.id;
-    const employee = useAsync(() => app.$employeesService.getEmployee(employeeId));
+    const employee = useAsync(() => app.$employeesService.getById(employeeId));
 
     return {
       employee,

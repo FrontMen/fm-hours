@@ -14,8 +14,8 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
     const endDate = startOfMonth(addMonths(payload.startDate, 1));
 
     const customersPromise = this.app.$customersService.getCustomers();
-    const employeesPromise = this.app.$employeesService.getEmployees();
-    const teamsPromise = this.app.$teamsService.get();
+    const employeesPromise = this.app.$employeesService.getAll();
+    const teamsPromise = this.app.$teamsService.getAll();
     const timesheetsPromise = this.app.$timesheetsService.getApprovedTimesheets({
       startDate: getDayOnGMT(startOfISOWeek(startDate)).getTime(),
       endDate: endDate.getTime(),
