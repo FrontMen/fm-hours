@@ -56,10 +56,10 @@ nl:
               </span>
               <span
                 v-if="
-                  !(selectedCustomers && selectedCustomers.length) &&
-                    projectOptions &&
-                    projectOptions.length
-                "
+                !(selectedCustomers && selectedCustomers.length) &&
+                projectOptions &&
+                projectOptions.length
+              "
               >
                 <span v-for="(project, i) in projectOptions" :key="project.value">
                   {{ project.value }}
@@ -111,7 +111,7 @@ nl:
         >
           <template slot="selection" slot-scope="{values}">
             <span v-if="values.length">
-              {{ $t('noOptions', {num: values.length}) }}
+              {{ $t('noOptions', { num: values.length }) }}
             </span>
           </template>
         </multiselect>
@@ -139,7 +139,7 @@ nl:
       </template>
 
       <template #empty>
-        <p>{{ $t('noResults', {DATE_MSG}) }}</p>
+        <p>{{ $t('noResults', { DATE_MSG }) }}</p>
       </template>
       <template #cell(customer)="scope">
         {{ scope.item.customer.name }}
@@ -191,9 +191,9 @@ nl:
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useStore, watch, useContext, onBeforeMount} from '@nuxtjs/composition-api';
-import {format} from 'date-fns';
-import {getTotalsByProp} from '~/helpers/helpers';
+import { computed, defineComponent, ref, useStore, watch, useContext, onBeforeMount } from '@nuxtjs/composition-api';
+import { format } from 'date-fns';
+import { getTotalsByProp } from '~/helpers/helpers';
 
 export default defineComponent({
   props: {
@@ -229,7 +229,7 @@ export default defineComponent({
   },
   setup(props) {
     const store = useStore<RootStoreState>();
-    const {i18n} = useContext();
+    const { i18n } = useContext();
     const DATE_MSG = computed(() => {
       const MSG = props.isYearly ? i18n.t("year") : i18n.t("month");
       return `${MSG}`.toLowerCase();
@@ -250,13 +250,17 @@ export default defineComponent({
     const employees = computed(() => store.state.employees.employees);
 
     const employee = computed(() => {
-      const id = props.employeeId || store.state.employee?.employee?.id;
+      const id = props.employeeId;
 
       const employee = employees.value.find(e => e.id === id);
+      if (!employee) return;
+
+      if (employee.id === store.state.employee.employee?.id) return employee;
+
       const adminlist = store.getters["employees/adminList"];
       const isAuthenticatedUserAdmin = adminlist.includes(user.value?.email);
-      if (employee && isAuthenticatedUserAdmin) return employee;
-      return store.state.employee.employee;
+
+      if (isAuthenticatedUserAdmin) return employee;
     });
 
     const getRecords = () => {
@@ -270,7 +274,9 @@ export default defineComponent({
     watch(
       [startDate, employee],
       () => {
-        getRecords();
+        if (startDate.value && employee.value) {
+          getRecords();
+        }
       },
       {
         immediate: true,
@@ -308,7 +314,7 @@ export default defineComponent({
         if (!projects.includes(record.customer.name)) projects.push(record.customer.name);
       });
 
-      return projects.map(project => ({value: project, label: project}));
+      return projects.map(project => ({ value: project, label: project }));
     });
 
     store.dispatch('reports/getMonthlyReportData', {
