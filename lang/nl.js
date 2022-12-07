@@ -66,4 +66,5 @@ export default {
   status: 'Status',
   filter: 'Typ om te filteren',
   clear: 'Legen',
+  email: 'E-mail',
 };

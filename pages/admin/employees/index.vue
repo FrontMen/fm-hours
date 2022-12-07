@@ -151,6 +151,7 @@ export default defineComponent({
           return teams.value.find(t => t.id === teamId)?.name;
         },
       },
+      {key: 'email', label: 'email', sortable: false},
       {key: 'active', label: 'active', sortable: false, class: 'text-center'},
       {key: 'billable', label: 'billable', sortable: false, class: 'text-center'},
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
