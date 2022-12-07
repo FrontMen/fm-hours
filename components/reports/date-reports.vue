@@ -2,7 +2,7 @@
 en:
   customer: "Customer"
   print: "Print"
-  totalBillableHours: "Total billable hours"
+  totalBillableHours: "Total client hours"
   totalSelectedHours: "Total for selected projects"
   onlyBillable: "Only billable"
   noResults: "No records available for selected {DATE_MSG}"
@@ -12,7 +12,7 @@ en:
 nl:
   customer: "Klant"
   print: "Afdrukken"
-  totalBillableHours: "Totaal facturabele uren"
+  totalBillableHours: "Totaal klant uren"
   totalSelectedHours: "Totaal voor geselecteerde periode"
   onlyBillable: "Alleen facturabele uren"
   noResults: "Geen resultaten gevonden voor de geselecteerde {DATE_MSG}"
