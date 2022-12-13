@@ -15,7 +15,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   ) {
     const weeksSpan = getWeeksInMonth(payload.startDate, payload.endDate);
 
-    const employeesPromise = this.app.$employeesService.getEmployees();
+    const employeesPromise = this.app.$employeesService.getAll();
     const timesheetsPromise = this.app.$timesheetsService.getTimesheets({
       startDate: payload.startDate.getTime(),
       endDate: payload.endDate.getTime(),

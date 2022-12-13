@@ -133,7 +133,7 @@ export default defineComponent({
     }));
 
     onMounted(() => {
-      store.dispatch('employees/getEmployees');
+      store.dispatch('employees/get');
       store.dispatch('teams/get');
     });
 

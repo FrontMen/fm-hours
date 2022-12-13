@@ -49,7 +49,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
       }
     }
 
-    await dispatch('employee/getEmployee', {}, {root: true});
+    await dispatch('employee/get', {}, {root: true});
   },
 };
 

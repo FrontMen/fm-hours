@@ -236,8 +236,7 @@ export default defineComponent({
     });
 
     onBeforeMount(() => {
-      store.dispatch('employees/getEmployees');
-      store.dispatch('employees/getAdminList');
+      store.dispatch('employees/get');
     });
 
     const startDate = computed(() => props.startDate);
@@ -246,9 +245,7 @@ export default defineComponent({
 
     const onlyBillable = ref<boolean>(false);
 
-    const user = computed(() => store.state.auth.user);
     const employees = computed(() => store.state.employees.employees);
-    const adminlist = computed(() => store.getters["employees/adminList"]);
 
     const employee = computed(() => {
       const id = props.employeeId;
@@ -258,9 +255,7 @@ export default defineComponent({
 
       if (employee.id === store.state.employee.employee?.id) return employee;
 
-      const isAuthenticatedUserAdmin = adminlist.value.includes(user.value?.email);
-
-      if (isAuthenticatedUserAdmin) return employee;
+      if (store.state.employee.employee?.isAdmin) return employee;
     });
 
     const getRecords = () => {
@@ -272,9 +267,9 @@ export default defineComponent({
     };
 
     watch(
-      [startDate, employee, adminlist],
+      [startDate, employee],
       () => {
-        if (startDate.value && employee.value && adminlist.value) {
+        if (startDate.value && employee.value) {
           getRecords();
         }
       },

@@ -12,7 +12,6 @@ interface Employee {
   id: string;
   name: string;
   email: string;
-  picture?: string; // deprecated
   travelAllowance: boolean;
   billable: boolean;
   projects: EmployeeProject[];
@@ -22,10 +21,10 @@ interface Employee {
   bridgeUid?: string;
   team?: string;
   standBy: boolean;
+  isAdmin: boolean;
 }
 
 interface EmployeeStoreState {
   employee: Employee | null;
-  isAdmin: boolean;
   isFound: boolean;
 }

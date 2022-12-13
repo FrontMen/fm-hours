@@ -4,7 +4,7 @@ const actions: ActionTree<TeamsStoreState, RootStoreState> = {
   async get({commit, rootState}) {
     if (rootState.teams.teams?.length) return;
 
-    const teams = await this.app.$teamsService.get();
+    const teams = await this.app.$teamsService.getAll();
 
     commit('set', teams);
   },
