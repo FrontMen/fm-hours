@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 import {VercelRequest, VercelResponse} from '@vercel/node';
-import axios from 'axios';
+import axios from '../../../lib/axios';
 import {validateParams} from '../../../lib/request';
 import {handleAxiosError, handleValidationError} from '../../../lib/errors';
 

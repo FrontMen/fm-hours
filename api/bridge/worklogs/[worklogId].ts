@@ -1,7 +1,7 @@
 /* eslint-disable camelcase */
 import {VercelRequest, VercelResponse} from '@vercel/node';
-import axios from 'axios';
 import {format} from 'date-fns';
+import axios from '../../../lib/axios';
 import {handleAxiosError} from '../../../lib/errors';
 
 export default async function Worklogs(request: VercelRequest, response: VercelResponse) {

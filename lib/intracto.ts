@@ -1,5 +1,6 @@
 import jwtDecode from 'jwt-decode';
-import axios, {AxiosError} from 'axios';
+import {AxiosError} from 'axios';
+import axios from './axios';
 
 interface IDecodedToken {
   firebase: {
