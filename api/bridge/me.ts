@@ -1,5 +1,5 @@
 import {VercelRequest, VercelResponse} from '@vercel/node';
-import axios from 'axios';
+import axios from '../../lib/axios';
 
 export default async function UserMe(request: VercelRequest, response: VercelResponse) {
   try {
