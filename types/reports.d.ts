@@ -16,5 +16,5 @@ interface MonthlyReportData {
 
 interface ReportsStoreState {
   isLoading: boolean;
-  reportData: MonthlyReportData | null;
+  reportData: MonthlyReportData;
 }
