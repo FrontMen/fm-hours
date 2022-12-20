@@ -346,8 +346,8 @@ describe('getters - non-billable hours', () => {
     // @ts-ignore
     expect(getters.nonBillableItems({reportData: {employees: []}})).toEqual([]);
 
-    // @ts-ignore
     expect(
+      // @ts-ignore
       getters.nonBillableItems({
         reportData: {
           employees: [
@@ -356,6 +356,7 @@ describe('getters - non-billable hours', () => {
               team: 'Team 1',
               billable: true,
             },
+
             {
               name: 'Jane Doe',
               team: 'Team 2',
