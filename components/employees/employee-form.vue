@@ -104,7 +104,7 @@ export default defineComponent({
     const router = useRouter();
     const store = useStore<RootStoreState>();
 
-    const projects = ref<EmployeeProject[]>(props.employee?.projects);
+    const projects = computed(() => props.employee?.projects)
     const selectedTeamId = ref<string>();
     const selectedProjects = ref<(Project[] | undefined)>([]);
     const hasUnsavedChanges = ref<boolean>(false);
