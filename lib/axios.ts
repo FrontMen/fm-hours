@@ -10,7 +10,7 @@ instance.interceptors.request.use(
     const isBridgeUrl = uri.includes(process.env.BRIDGE_URL as string);
     const isAuthUrl = uri.includes(process.env.AUTH_URL as string);
 
-    if (isDev && isGet && isBridgeUrl && !isAuthUrl) {
+    if (isDev && !isGet && isBridgeUrl && !isAuthUrl) {
       throw new axios.Cancel(
         `Not sending '${requestConfig.method}' requests to Bridge production during development.`
       );
