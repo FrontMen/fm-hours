@@ -13,14 +13,15 @@
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@nuxtjs/composition-api";
+import {computed, defineComponent, useStore} from "@nuxtjs/composition-api";
+import {formatToMonthYear} from "~/helpers/dates";
 
 export default defineComponent({
   name: 'KilometersReport',
-  props: {
-    formattedMonthDate: {
-      type: String,
-      required: true,
+  setup() {
+    const store = useStore<RootStoreState>();
+    return {
+      formattedMonthDate: computed(() => formatToMonthYear(store.state.reports.startDate))
     }
   }
 })

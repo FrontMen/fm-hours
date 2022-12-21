@@ -13,7 +13,7 @@ nl:
   <admin-container>
     <date-navigation-buttons
       class="mb-4"
-      :selected-date="monthDate"
+      :selected-date="$store.state.reports.startDate"
       @previous="goToPreviousMonth"
       @next="goToNextMonth"
       @current="goToCurrentMonth"
@@ -21,23 +21,23 @@ nl:
 
     <b-tabs pills card>
       <b-tab :title="$t('totals')" active lazy>
-        <totals-report :formatted-month-date="formattedMonthDate" />
+        <totals-report />
       </b-tab>
 
       <b-tab :title="$t('projects')" lazy>
-        <projects-report :formatted-month-date="formattedMonthDate" />
+        <projects-report />
       </b-tab>
 
       <b-tab :title="$t('kilometers')" lazy>
-        <kilometers-report :formatted-month-date="formattedMonthDate" />
+        <kilometers-report />
       </b-tab>
 
       <b-tab :title="$t('standBy')" lazy>
-        <stand-by-report :formatted-month-date="formattedMonthDate" />
+        <stand-by-report />
       </b-tab>
 
       <b-tab :title="$t('notBillable')" lazy>
-        <not-billable-report :formatted-month-date="formattedMonthDate" />
+        <not-billable-report />
       </b-tab>
     </b-tabs>
   </admin-container>
@@ -45,15 +45,13 @@ nl:
 
 <script lang="ts">
 import {
-  computed,
   defineComponent,
   onMounted,
-  ref,
   useContext,
   useMeta,
   useStore,
 } from '@nuxtjs/composition-api';
-import {addMonths, format, subMonths} from 'date-fns';
+import {addMonths, subMonths} from 'date-fns';
 import NotBillableReport from "~/components/reports/not-billable-report.vue";
 import StandByReport from "~/components/reports/stand-by-report.vue";
 import KilometersReport from "~/components/reports/kilometers-report.vue";
@@ -69,41 +67,33 @@ export default defineComponent({
       title: i18n.t('reports') as string,
     }));
 
-    const monthDate = ref<Date>(new Date());
-
     const store = useStore<RootStoreState>();
 
-    const formattedMonthDate = computed(() =>
-      format(monthDate.value as Date, 'MM-yyyy')
-    );
-
-    const goToPreviousMonth = () => {
-      const startDate = subMonths(monthDate.value as Date, 1);
-      store.dispatch('reports/getMonthlyReportData', {startDate});
-      monthDate.value = startDate
+    const goToPreviousMonth = async () => {
+      const startDate = subMonths(store.state.reports.startDate, 1);
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
-    const goToNextMonth = () => {
-      const startDate = addMonths(monthDate.value as Date, 1);
-      store.dispatch('reports/getMonthlyReportData', {startDate});
-      monthDate.value = startDate;
+    const goToNextMonth = async () => {
+      const startDate = addMonths(store.state.reports.startDate, 1);
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
-    const goToCurrentMonth = () => {
+    const goToCurrentMonth = async () => {
       const startDate = new Date();
-      store.dispatch('reports/getMonthlyReportData', {startDate});
-      monthDate.value = startDate;
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
     onMounted(() => {
       store.dispatch('reports/getMonthlyReportData', {
-        startDate: monthDate.value,
+        startDate: store.state.reports.startDate,
       });
     })
 
     return {
-      monthDate,
-      formattedMonthDate,
       goToPreviousMonth,
       goToNextMonth,
       goToCurrentMonth,

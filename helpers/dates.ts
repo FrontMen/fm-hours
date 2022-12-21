@@ -19,6 +19,10 @@ export function formatDate(dirtyDate: string | number | Date) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+export function formatToMonthYear(date: Date): string {
+  return format(date, 'MM-yyyy');
+}
+
 export function addDays(dirtyDate: string | number | Date, days: number) {
   const date = new Date(dirtyDate);
   date.setDate(date.getDate() + days);

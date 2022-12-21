@@ -9,17 +9,14 @@
 
 <script lang="ts">
 import {computed, defineComponent, useStore} from "@nuxtjs/composition-api";
+import {formatToMonthYear} from "~/helpers/dates";
 
 export default defineComponent({
   name: 'TotalsReport',
-  props: {
-    formattedMonthDate: {
-      type: String,
-      required: true,
-    }
-  },
   setup() {
     const store = useStore<RootStoreState>();
+
+    const formattedMonthDate = computed(() => formatToMonthYear(store.state.reports.startDate));
 
     const fields = computed(() => {
       const leftFields = [
@@ -41,7 +38,8 @@ export default defineComponent({
     })
 
     return {
-      fields
+      formattedMonthDate,
+      fields,
     };
   }
 })
