@@ -21,58 +21,47 @@ nl:
 
     <b-tabs pills card>
       <b-tab :title="$t('totals')" active lazy>
-        <reports-table
-          :busy="isLoading || !$store.getters['reports/totalsItems']?.length"
-          :items="$store.getters['reports/totalsItems']"
-          :fields="$store.getters['reports/totalsFields']"
-          :csv-file-name="`${$t('totals')}-${formattedMonthDate}`"
-        />
+        <totals-report :formatted-month-date="formattedMonthDate" />
       </b-tab>
 
       <b-tab :title="$t('projects')" lazy>
-        <reports-table
-          :busy="isLoading || !$store.getters['reports/projectItems'].length"
-          :items="$store.getters['reports/projectItems']"
-          :fields="$store.getters['reports/projectFields']"
-          :csv-file-name="`projects-${formattedMonthDate}`"
-        />
+        <projects-report :formatted-month-date="formattedMonthDate" />
       </b-tab>
 
       <b-tab :title="$t('kilometers')" lazy>
-        <reports-table
-          :busy="isLoading || !$store.getters['reports/kilometerItems'].length"
-          :items="$store.getters['reports/kilometerItems']"
-          :fields="$store.getters['reports/kilometerFields']"
-          :csv-file-name="`${$t('kilometers')}-${formattedMonthDate}`"
-        />
+        <kilometers-report :formatted-month-date="formattedMonthDate" />
       </b-tab>
 
       <b-tab :title="$t('standBy')" lazy>
-        <reports-table
-          :busy="isLoading || !$store.getters['reports/standByItems'].length"
-          :items="$store.getters['reports/standByItems']"
-          :fields="$store.getters['reports/standByFields']"
-          :csv-file-name="`${$t('standBy')}-${formattedMonthDate}`"
-        />
+        <stand-by-report :formatted-month-date="formattedMonthDate" />
       </b-tab>
 
       <b-tab :title="$t('notBillable')" lazy>
-        <reports-table
-          :busy="isLoading || !$store.getters['reports/nonBillableFields'].length"
-          :items="$store.getters['reports/nonBillableItems']"
-          :fields="$store.getters['reports/nonBillableFields']"
-          :csv-file-name="`${$t('notBillable')}-${formattedMonthDate}`"
-        />
+        <not-billable-report :formatted-month-date="formattedMonthDate" />
       </b-tab>
     </b-tabs>
   </admin-container>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
+import {
+  computed,
+  defineComponent,
+  onMounted,
+  ref,
+  useContext,
+  useMeta,
+  useStore,
+} from '@nuxtjs/composition-api';
 import {addMonths, format, subMonths} from 'date-fns';
+import NotBillableReport from "~/components/reports/not-billable-report.vue";
+import StandByReport from "~/components/reports/stand-by-report.vue";
+import KilometersReport from "~/components/reports/kilometers-report.vue";
+import ProjectsReport from "~/components/reports/projects-report.vue";
+import TotalsReport from "~/components/reports/totals-report.vue";
 
 export default defineComponent({
+  components: {TotalsReport, ProjectsReport, KilometersReport, StandByReport, NotBillableReport},
   setup() {
     const {i18n} = useContext();
 
@@ -83,38 +72,38 @@ export default defineComponent({
     const monthDate = ref<Date>(new Date());
 
     const store = useStore<RootStoreState>();
-    const isLoading = computed(() => store.state.reports.isLoading);
 
     const formattedMonthDate = computed(() =>
       format(monthDate.value as Date, 'MM-yyyy')
     );
 
     const goToPreviousMonth = () => {
-      monthDate.value = subMonths(monthDate.value as Date, 1);
+      const startDate = subMonths(monthDate.value as Date, 1);
+      store.dispatch('reports/getMonthlyReportData', {startDate});
+      monthDate.value = startDate
     };
 
     const goToNextMonth = () => {
-      monthDate.value = addMonths(monthDate.value as Date, 1);
+      const startDate = addMonths(monthDate.value as Date, 1);
+      store.dispatch('reports/getMonthlyReportData', {startDate});
+      monthDate.value = startDate;
     };
 
     const goToCurrentMonth = () => {
-      monthDate.value = new Date();
+      const startDate = new Date();
+      store.dispatch('reports/getMonthlyReportData', {startDate});
+      monthDate.value = startDate;
     };
 
-    watch(
-      monthDate,
-      () => {
-        store.dispatch('reports/getMonthlyReportData', {
-          startDate: monthDate.value,
-        });
-      },
-      {immediate: true}
-    );
+    onMounted(() => {
+      store.dispatch('reports/getMonthlyReportData', {
+        startDate: monthDate.value,
+      });
+    })
 
     return {
       monthDate,
       formattedMonthDate,
-      isLoading,
       goToPreviousMonth,
       goToNextMonth,
       goToCurrentMonth,

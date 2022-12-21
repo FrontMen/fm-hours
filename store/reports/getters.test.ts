@@ -93,22 +93,6 @@ describe('getters - totals', () => {
     },
   };
 
-  it('should return the totals fields', () => {
-    // @ts-ignore
-    expect(getters.totalsFields(state)).toEqual([
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-      {key: 'totalHours', sortable: true, variant: 'info'},
-      {key: 'billable', sortable: true, variant: 'success'},
-      {key: 'nonBillable', sortable: true, variant: 'warning'},
-      {key: 'Project 1', sortable: true},
-      {key: 'Googleday', sortable: true},
-      {key: 'Another one', sortable: true},
-      {key: 'default customer test', sortable: true},
-      {key: 'productivity', sortable: true, variant: 'info'},
-    ]);
-  });
-
   // @ts-ignore
   expect(getters.totalsItems(state)).toEqual([
     {
@@ -139,16 +123,6 @@ describe('getters - totals', () => {
 });
 
 describe('getters - Employee projects', () => {
-  it('should return project fields', () => {
-    // @ts-ignore
-    expect(getters.projectFields()).toEqual([
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-      {key: 'project', sortable: true},
-      {key: 'billable', sortable: true, variant: 'success'},
-    ]);
-  });
-
   it('should return project items', () => {
     // @ts-ignore
     expect(getters.projectItems({reportData: {employees: []}})).toEqual([]);
@@ -219,16 +193,6 @@ describe('getters - Employee projects', () => {
 });
 
 describe('getters - kilometer reimbursement', () => {
-  it('should return kilometer reimbursement fields', () => {
-    // @ts-ignore
-    expect(getters.kilometerFields()).toEqual([
-      {key: 'name', sortable: true},
-      {key: 'bridgeUid', sortable: false},
-      {key: 'team', sortable: true},
-      {key: 'kilometers', sortable: true},
-    ]);
-  });
-
   it('should return kilometer reimbursement items', () => {
     // @ts-ignore
     expect(getters.kilometerItems({reportData: {employees: []}})).toEqual([]);
@@ -286,16 +250,6 @@ describe('getters - kilometer reimbursement', () => {
   });
 });
 describe('getters - stand-by hours', () => {
-  it('should return stand-by fields', () => {
-    // @ts-ignore
-    expect(getters.standByFields()).toEqual([
-      {key: 'name', sortable: true},
-      {key: 'bridgeUid', sortable: false},
-      {key: 'team', sortable: true},
-      {key: 'hours', sortable: true},
-    ]);
-  });
-
   it('should return stand-by items', () => {
     // @ts-ignore
     expect(getters.standByItems({reportData: {employees: []}})).toEqual([]);
@@ -334,14 +288,6 @@ describe('getters - stand-by hours', () => {
 });
 
 describe('getters - non-billable hours', () => {
-  it('should return nonBillableFields', () => {
-    // @ts-ignore
-    expect(getters.nonBillableFields()).toEqual([
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-    ]);
-  });
-
   it('should return nonBillableItems', () => {
     // @ts-ignore
     expect(getters.nonBillableItems({reportData: {employees: []}})).toEqual([]);

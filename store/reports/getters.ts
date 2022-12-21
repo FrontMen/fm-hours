@@ -2,24 +2,6 @@ import {GetterTree} from 'vuex';
 import {getTotalsByProp, uniqueByKey} from '~/helpers/helpers';
 
 const getters: GetterTree<ReportsStoreState, RootStoreState> = {
-  totalsFields(state) {
-    const leftFields = [
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-      {key: 'totalHours', sortable: true, variant: 'info'},
-      {key: 'billable', sortable: true, variant: 'success'},
-      {key: 'nonBillable', sortable: true, variant: 'warning'},
-    ];
-
-    const middleFields = state.reportData.nonBillableProjects.map(project => ({
-      key: project.name,
-      sortable: true,
-    }));
-
-    const rightFields = [{key: 'productivity', sortable: true, variant: 'info'}];
-
-    return [...leftFields, ...(middleFields || []), ...rightFields];
-  },
   totalsItems(state) {
     const getNonBillableColumns = (employee: ReportEmployee, nonBillableProjects: Customer[]) => {
       const {nonBillableRecords} = employee;
@@ -59,14 +41,6 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
         };
       });
   },
-  projectFields() {
-    return [
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-      {key: 'project', sortable: true},
-      {key: 'billable', sortable: true, variant: 'success'},
-    ];
-  },
   projectItems(state) {
     const items: any = [];
 
@@ -92,14 +66,6 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
 
     return items;
   },
-  kilometerFields() {
-    return [
-      {key: 'name', sortable: true},
-      {key: 'bridgeUid', sortable: false},
-      {key: 'team', sortable: true},
-      {key: 'kilometers', sortable: true},
-    ];
-  },
   kilometerItems(state) {
     const items: any = [];
 
@@ -118,14 +84,6 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
 
     return items;
   },
-  standByFields() {
-    return [
-      {key: 'name', sortable: true},
-      {key: 'bridgeUid', sortable: false},
-      {key: 'team', sortable: true},
-      {key: 'hours', sortable: true},
-    ];
-  },
   standByItems(state) {
     return state.reportData.employees
       .filter(employee => employee.billable)
@@ -135,12 +93,6 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
         team: employee.team,
         hours: getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
       }));
-  },
-  nonBillableFields() {
-    return [
-      {key: 'name', sortable: true},
-      {key: 'team', sortable: true},
-    ];
   },
   nonBillableItems(state) {
     return state.reportData.employees
