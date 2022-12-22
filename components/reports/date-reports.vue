@@ -159,9 +159,6 @@ nl:
         <span v-if="scope.item.worklogId" v-b-tooltip.hover :title="scope.item.worklogId">
           <b-icon icon="cloud-check" />
         </span>
-        <span v-else v-b-tooltip.hover :title="$t('notStored')">
-          <b-icon icon="exclamation-octagon-fill" />
-        </span>
       </template>
       <template #cell(hours)="scope">
         {{ parseFloat(scope.item.hours).toFixed(2) }}
@@ -295,7 +292,7 @@ export default defineComponent({
 
       const fields: any[] = ['customer', 'date'];
 
-      if (employee.value?.isAdmin) {
+      if (store.state.employee.employee?.isAdmin) {
         fields.push('worklogId')
       }
 
