@@ -1,4 +1,8 @@
 export default (): ReportsStoreState => ({
   isLoading: false,
-  reportData: null,
+  startDate: new Date(),
+  reportData: {
+    nonBillableProjects: [],
+    employees: [],
+  },
 });

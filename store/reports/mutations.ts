@@ -6,6 +6,10 @@ const mutations: MutationTree<ReportsStoreState> = {
     state.isLoading = payload.isLoading;
   },
 
+  setStartDate(state, payload: Date) {
+    state.startDate = payload;
+  },
+
   createMonthlyReportData(
     state,
     payload: {

@@ -13,7 +13,7 @@ nl:
   <admin-container>
     <date-navigation-buttons
       class="mb-4"
-      :selected-date="monthDate"
+      :selected-date="$store.state.reports.startDate"
       @previous="goToPreviousMonth"
       @next="goToNextMonth"
       @current="goToCurrentMonth"
@@ -21,64 +21,45 @@ nl:
 
     <b-tabs pills card>
       <b-tab :title="$t('totals')" active lazy>
-        <reports-table
-          :busy="isLoading || !totalsItems?.length"
-          :items="totalsItems"
-          :fields="totalsFields"
-          :csv-file-name="`${$t('totals')}-${formattedMonthDate}`"
-        />
+        <totals-report />
       </b-tab>
 
       <b-tab :title="$t('projects')" lazy>
-        <reports-table
-          :busy="isLoading || !projectsItems.length"
-          :items="projectsItems"
-          :fields="projectsFields"
-          :csv-file-name="`projects-${formattedMonthDate}`"
-        />
+        <projects-report />
       </b-tab>
 
       <b-tab :title="$t('kilometers')" lazy>
-        <reports-table
-          :busy="isLoading || !kilometersItems.length"
-          :items="kilometersItems"
-          :fields="kilometersFields"
-          :csv-file-name="`${$t('kilometers')}-${formattedMonthDate}`"
-        />
+        <kilometers-report />
       </b-tab>
 
       <b-tab :title="$t('standBy')" lazy>
-        <reports-table
-          :busy="isLoading || !standByItems.length"
-          :items="standByItems"
-          :fields="standByFields"
-          :csv-file-name="`${$t('standBy')}-${formattedMonthDate}`"
-        />
+        <stand-by-report />
       </b-tab>
 
       <b-tab :title="$t('notBillable')" lazy>
-        <reports-table
-          :busy="isLoading || !nonBillableItems.length"
-          :items="nonBillableItems"
-          :fields="nonBillableFields"
-          :csv-file-name="`${$t('notBillable')}-${formattedMonthDate}`"
-        />
+        <not-billable-report />
       </b-tab>
     </b-tabs>
   </admin-container>
 </template>
 
 <script lang="ts">
-import {computed, defineComponent, ref, useContext, useMeta, useStore, watch,} from '@nuxtjs/composition-api';
-import {addMonths, format, subMonths} from 'date-fns';
-
-import useMonthlyTotalsReport from '~/composables/useMonthlyTotalsReport';
-import useMonthlyProjectsReport from '~/composables/useMonthlyProjectsReport';
-import useMonthlyKilometersReport from '~/composables/useMonthlyKilometersReport';
-import useMonthlyStandByReport from '~/composables/useMonthlyStandbyReport';
-import useMonthlyNotBillableReport from "~/composables/useMonthlyNotBillableReport";
+import {
+  defineComponent,
+  onMounted,
+  useContext,
+  useMeta,
+  useStore,
+} from '@nuxtjs/composition-api';
+import {addMonths, subMonths} from 'date-fns';
+import NotBillableReport from "~/components/reports/not-billable-report.vue";
+import StandByReport from "~/components/reports/stand-by-report.vue";
+import KilometersReport from "~/components/reports/kilometers-report.vue";
+import ProjectsReport from "~/components/reports/projects-report.vue";
+import TotalsReport from "~/components/reports/totals-report.vue";
 
 export default defineComponent({
+  components: {TotalsReport, ProjectsReport, KilometersReport, StandByReport, NotBillableReport},
   setup() {
     const {i18n} = useContext();
 
@@ -86,87 +67,40 @@ export default defineComponent({
       title: i18n.t('reports') as string,
     }));
 
-    const {createTotalsFields, createTotalsItems} = useMonthlyTotalsReport();
-    const {createProjectsFields, createProjectsItems} =
-      useMonthlyProjectsReport();
-    const {createStandByFields, createStandByItems} = useMonthlyStandByReport();
-    const {createNotBillableFields, createNotBillableItems} = useMonthlyNotBillableReport();
-
-    const {createKilometersFields, createKilometersItems} =
-      useMonthlyKilometersReport();
-
-    const monthDate = ref<Date>(new Date());
-
     const store = useStore<RootStoreState>();
-    const reportData = computed(() => {
-      return store.state.reports.reportData;
-    });
-    const isLoading = computed(() => store.state.reports.isLoading);
 
-    const totalsFields = computed(() => createTotalsFields(reportData.value));
-    const totalsItems = computed(() => createTotalsItems(reportData.value));
-
-    const projectsFields = createProjectsFields();
-    const projectsItems = computed(() => createProjectsItems(reportData.value));
-
-    const standByFields = computed(() => createStandByFields());
-    const standByItems = computed(() => createStandByItems(reportData.value));
-
-    const nonBillableFields = computed(() => createNotBillableFields());
-    const nonBillableItems = computed(() => createNotBillableItems(reportData.value));
-
-    const kilometersFields = createKilometersFields();
-    const kilometersItems = computed(() =>
-      createKilometersItems(reportData.value)
-    );
-
-    const formattedMonthDate = computed(() =>
-      format(monthDate.value as Date, 'MM-yyyy')
-    );
-
-    const goToPreviousMonth = () => {
-      monthDate.value = subMonths(monthDate.value as Date, 1);
+    const goToPreviousMonth = async () => {
+      const startDate = subMonths(store.state.reports.startDate, 1);
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
-    const goToNextMonth = () => {
-      monthDate.value = addMonths(monthDate.value as Date, 1);
+    const goToNextMonth = async () => {
+      const startDate = addMonths(store.state.reports.startDate, 1);
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
-    const goToCurrentMonth = () => {
-      monthDate.value = new Date();
+    const goToCurrentMonth = async () => {
+      const startDate = new Date();
+      await store.dispatch('reports/getMonthlyReportData', {startDate});
+      store.commit('reports/setStartDate', startDate);
     };
 
-    watch(
-      monthDate,
-      () => {
-        store.dispatch('reports/getMonthlyReportData', {
-          startDate: monthDate.value,
-        });
-      },
-      {immediate: true}
-    );
+    onMounted(() => {
+      store.dispatch('reports/getMonthlyReportData', {
+        startDate: store.state.reports.startDate,
+      });
+    })
 
     return {
-      monthDate,
-      formattedMonthDate,
-      totalsFields,
-      totalsItems,
-      projectsFields,
-      projectsItems,
-      standByFields,
-      standByItems,
-      kilometersFields,
-      kilometersItems,
-      nonBillableFields,
-      nonBillableItems,
-      isLoading,
       goToPreviousMonth,
       goToNextMonth,
       goToCurrentMonth,
     };
   },
   head: {
-    title: 'Reportssss',
+    title: 'Reports',
   },
 });
 </script>
