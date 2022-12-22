@@ -86,12 +86,15 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
   },
   standByItems(state) {
     return state.reportData.employees
-      .filter(employee => employee.billable)
+      .filter(
+        employee =>
+          employee.billable && getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') > 0
+      )
       .map(employee => ({
         name: employee.name,
         bridgeUid: employee.bridgeUid,
         team: employee.team,
-        hours: getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours') || 0,
+        hours: getTotalsByProp<StandbyRecord>(employee.standByRecords, 'hours'),
       }));
   },
   nonBillableItems(state) {
