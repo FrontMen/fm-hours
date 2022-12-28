@@ -62,3 +62,39 @@ interface RecordDayStatus {
   MID: string;
   LONG: string;
 }
+
+interface IRecordsRepository {
+  getEmployeeRecords(
+    params: {
+      employeeId: string;
+      startDate?: string;
+      endDate?: string;
+    },
+    collection: string
+  ): Promise<RecordType[]>;
+  getRecords(params: {startDate: Date; endDate: Date}, collection: string): Promise<RecordType[]>;
+  addBridgeWorklogs(params: {
+    employeeId: string;
+    bridgeUid: string;
+    timeRecords: TimeRecord[];
+    contracts: number[];
+  }): Promise<void>;
+  addBridgeWorklog(
+    record: TimeRecord,
+    contractId: number,
+    bridgeUid: string,
+    ref: any
+  ): Promise<void>;
+  removeBridgeWorklogs(timeRecords: TimeRecord[]): Promise<void>;
+  removeBridgeWorklog(record: TimeRecord, ref: any): Promise<any>;
+  saveEmployeeRecords(
+    params: {
+      employeeId: string;
+      bridgeUid?: string;
+      timeRecords: RecordType[];
+      contracts?: number[];
+    },
+    collection: string
+  ): Promise<Awaited<RecordType>[]>;
+  deleteEmployeeRecords(params: {recordsToDelete: RecordType[]}, collection: string);
+}
