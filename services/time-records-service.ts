@@ -1,3 +1,5 @@
+import {Collections} from '~/types/enums';
+
 export default class RecordsService {
   timeRecordsRepository: IRecordsRepository;
 
@@ -11,7 +13,7 @@ export default class RecordsService {
       startDate?: string;
       endDate?: string;
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<RecordType[]> {
     return this.timeRecordsRepository.getEmployeeRecords(params, collection);
   }
@@ -21,7 +23,7 @@ export default class RecordsService {
       startDate: Date;
       endDate: Date;
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<RecordType[]> {
     return this.timeRecordsRepository.getRecords(params, collection);
   }
@@ -54,7 +56,7 @@ export default class RecordsService {
       timeRecords: RecordType[];
       contracts?: number[];
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ) {
     return this.timeRecordsRepository.saveEmployeeRecords(params, collection);
   }
@@ -63,7 +65,7 @@ export default class RecordsService {
     params: {
       recordsToDelete: RecordType[];
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<void> {
     return this.timeRecordsRepository.deleteEmployeeRecords(params, collection);
   }

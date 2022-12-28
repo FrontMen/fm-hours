@@ -17,7 +17,7 @@ export default class RecordsRepository implements IRecordsRepository {
       startDate?: string;
       endDate?: string;
     },
-    collection: string = Collections.TIMREC
+    collection: string
   ): Promise<RecordType[]> {
     let query = this.fire.firestore
       .collection(collection)
@@ -44,7 +44,7 @@ export default class RecordsRepository implements IRecordsRepository {
       startDate: Date;
       endDate: Date;
     },
-    collection: string = Collections.TIMREC
+    collection: string
   ): Promise<RecordType[]> {
     const snapshot = await this.fire.firestore
       .collection(collection)
@@ -124,7 +124,7 @@ export default class RecordsRepository implements IRecordsRepository {
       timeRecords: RecordType[];
       contracts?: number[];
     },
-    collection: string = Collections.TIMREC
+    collection: string
   ) {
     const ref = this.fire.firestore.collection(collection);
 
@@ -212,7 +212,7 @@ export default class RecordsRepository implements IRecordsRepository {
     params: {
       recordsToDelete: RecordType[];
     },
-    collection: string = Collections.TIMREC
+    collection: string
   ): Promise<void> {
     const batch = this.fire.firestore.batch();
 
