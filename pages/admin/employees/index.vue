@@ -116,13 +116,13 @@ import {
   useStore,
 } from '@nuxtjs/composition-api';
 
-import {checkEmployeeAvailability} from '~/helpers/employee';
+import {useEmployees} from "~/composables/useEmployees";
 
 export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
-    const employees = computed(() => store.state.employees.employees);
+    const { employeeTableItems: items } = useEmployees();
     const teams = computed(() => store.state.teams.teams);
 
     const year = new Date().getFullYear();
@@ -133,7 +133,6 @@ export default defineComponent({
     }));
 
     onMounted(() => {
-      store.dispatch('employees/get');
       store.dispatch('teams/get');
     });
 
@@ -156,18 +155,6 @@ export default defineComponent({
       {key: 'billable', label: 'billable', sortable: false, class: 'text-center'},
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
-    const items = computed(() =>
-      employees.value
-        .map(employee => ({
-          ...employee,
-          active: checkEmployeeAvailability(employee, new Date()),
-        }))
-        .filter(
-          employee =>
-            (inactive.value ? true : employee.active) &&
-            (billable.value ? true : employee.billable)
-        )
-    );
 
     return {
       filter,
