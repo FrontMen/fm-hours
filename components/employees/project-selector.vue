@@ -2,9 +2,11 @@
 en:
   manageProjects: "Manage Projects"
   removeContract: "Remove contract"
+  viewAdd: "View/Add"
 nl:
   manageProjects: "Projecten bewerken"
   removeContract: "Verwijder contract"
+  viewAdd: "Bekijken/Toevoegen"
 </i18n>
 
 <template>
@@ -185,7 +187,8 @@ export default defineComponent({
 
     const fields = [
       {key: 'customer.name', label: 'Customer'},
-      {key: 'contract', class: 'text-center'},
+      {key: 'contract.name', label: 'Contract' },
+      {key: 'contract', label: 'View/Add', class: 'text-center'},
       {key: 'delete', class: 'text-center'}
     ];
 
