@@ -2,15 +2,15 @@ import {computed, onMounted, ref, useStore} from '@nuxtjs/composition-api';
 import {checkEmployeeAvailability} from '~/helpers/employee';
 
 export function useEmployees() {
-  const employees = computed(() => store.state.employees.employees);
   const store = useStore<RootStoreState>();
+  const employees = computed(() => store.state.employees.employees);
+
+  const inactive = ref<boolean>(false);
+  const billable = ref<boolean>(false);
 
   onMounted(() => {
     store.dispatch('employees/get');
   });
-
-  const inactive = ref<boolean>(false);
-  const billable = ref<boolean>(false);
 
   const employeeTableItems = computed(() =>
     employees.value
@@ -33,5 +33,9 @@ export function useEmployees() {
     if (store.state.employee.employee?.isAdmin) return employee;
   };
 
-  return {employees, employeeTableItems, getEmployeeById};
+  return {
+    employees,
+    employeeTableItems,
+    getEmployeeById,
+  };
 }
