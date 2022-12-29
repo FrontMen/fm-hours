@@ -1,5 +1,5 @@
 <template>
-  <a class="text-body" :href="href" target="_blank">
+  <a class="text-body" v-bind="$attrs" target="_blank" v-on="$listeners">
     <slot />
     <b-icon-box-arrow-up-right />
   </a>
@@ -8,11 +8,5 @@
 <script>
 export default {
   name: "ExternalLink",
-  props: {
-    href: {
-      type: String,
-      required: true,
-    },
-  }
 };
 </script>
