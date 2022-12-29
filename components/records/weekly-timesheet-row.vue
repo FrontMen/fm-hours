@@ -28,7 +28,7 @@
         class="weekly-timesheet-row__value-icon"
       >
         <span v-b-tooltip.hover :title="timesheetProject?.worklogs?.[index]?.toString()">
-          <b-icon icon="cloud-arrow-up" />
+          <b-icon icon="cloud-check" />
         </span>
       </div>
     </b-col>
