@@ -335,7 +335,7 @@ export default defineComponent({
       workWeek: WeekDate[],
       checkOwn: boolean = true
     ): Promise<WorkScheme[]> => {
-      let workScheme: WorkScheme[] = [];
+      let workScheme: WorkScheme[] | undefined = [];
       const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
 
       if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
@@ -354,9 +354,9 @@ export default defineComponent({
           }
         }
       } else {
-        workScheme = sheet.workscheme || [];
+        workScheme = sheet.workscheme;
       }
-      return workScheme
+      return workScheme || [];
     };
 
     const refreshLeave = async () => {
