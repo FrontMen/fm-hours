@@ -271,6 +271,13 @@ describe('getters - stand-by hours', () => {
             billable: false,
             standByRecords: [{hours: 1}, {hours: 2}],
           },
+          {
+            name: 'Jane Doe',
+            bridgeUid: '456',
+            team: 'Team 2',
+            billable: true,
+            standByRecords: [{hours: 0}, {hours: 0}],
+          },
         ],
       },
     };
