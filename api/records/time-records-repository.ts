@@ -1,14 +1,26 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {startOfISOWeek} from 'date-fns';
 import {Collections} from '~/types/enums';
+import {buildWeek} from '~/helpers/dates';
+import {recordStatus} from '~/helpers/record-status';
 
-export default class RecordsRepository implements IRecordsRepository {
+export default class TimeRecordsRepository implements ITimeRecordsRepository {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
+  timesheetsRepository: ITimesheetsRepository;
+  travelRecordsRepository: ITravelRecordsRepository;
 
-  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
+  constructor(
+    fire: NuxtFireInstance,
+    axios: NuxtAxiosInstance,
+    timesheetsRepository: ITimesheetsRepository,
+    travelRecordsRepository: ITravelRecordsRepository
+  ) {
     this.fire = fire;
     this.axios = axios;
+    this.timesheetsRepository = timesheetsRepository;
+    this.travelRecordsRepository = travelRecordsRepository;
   }
 
   async getEmployeeRecords<RecordType>(
@@ -17,7 +29,7 @@ export default class RecordsRepository implements IRecordsRepository {
       startDate?: string;
       endDate?: string;
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<RecordType[]> {
     let query = this.fire.firestore
       .collection(collection)
@@ -44,7 +56,7 @@ export default class RecordsRepository implements IRecordsRepository {
       startDate: Date;
       endDate: Date;
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<RecordType[]> {
     const snapshot = await this.fire.firestore
       .collection(collection)
@@ -124,7 +136,7 @@ export default class RecordsRepository implements IRecordsRepository {
       timeRecords: RecordType[];
       contracts?: number[];
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ) {
     const ref = this.fire.firestore.collection(collection);
 
@@ -212,7 +224,7 @@ export default class RecordsRepository implements IRecordsRepository {
     params: {
       recordsToDelete: RecordType[];
     },
-    collection: string
+    collection: string = Collections.TIMREC
   ): Promise<void> {
     const batch = this.fire.firestore.batch();
 
@@ -225,5 +237,49 @@ export default class RecordsRepository implements IRecordsRepository {
     });
 
     return await batch.commit();
+  }
+
+  async getWeeklyRecords({
+    employeeId,
+    startDate,
+  }: {
+    employeeId: string;
+    startDate: Date;
+  }): Promise<WeeklyRecords> {
+    const workWeek = buildWeek(startOfISOWeek(startDate));
+    const startEpoch = new Date(workWeek[0].date).getTime();
+
+    const sheets = await this.timesheetsRepository.getTimesheets({employeeId, date: startEpoch});
+
+    let sheet: Optional<Timesheet, 'id'>;
+    sheet = sheets[0];
+
+    if (!sheet) {
+      sheet = {
+        employeeId,
+        date: new Date(workWeek[0].date).getTime(),
+        status: recordStatus.NEW as TimesheetStatus,
+        messages: [],
+      };
+    }
+
+    const range = {
+      startDate: new Date(workWeek[0].date).getTime().toString(),
+      endDate: new Date(workWeek[6].date).getTime().toString(),
+    };
+
+    const [timeRecords, standByRecords, travelRecords] = await Promise.all([
+      this.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
+      this.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
+      this.travelRecordsRepository.getEmployeeRecords({employeeId, ...range}),
+    ]);
+
+    return {
+      sheet,
+      week: workWeek,
+      timeRecords,
+      travelRecords,
+      standByRecords,
+    };
   }
 }

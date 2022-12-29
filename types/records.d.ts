@@ -42,6 +42,14 @@ interface TimesheetProject {
   worklogs?: Array<number | null>;
 }
 
+interface WeeklyRecords {
+  sheet: Optional<Timesheet, 'id'> | null;
+  week: WeekDate[];
+  timeRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
+  standByRecords: StandbyRecord[];
+}
+
 interface WeeklyTimesheet {
   info: Optional<Timesheet, 'id'> | null;
   week: WeekDate[];
@@ -63,7 +71,7 @@ interface RecordDayStatus {
   LONG: string;
 }
 
-interface IRecordsRepository {
+interface ITimeRecordsRepository {
   getEmployeeRecords(
     params: {
       employeeId: string;
@@ -97,4 +105,18 @@ interface IRecordsRepository {
     collection: string
   ): Promise<Awaited<RecordType>[]>;
   deleteEmployeeRecords(params: {recordsToDelete: RecordType[]}, collection: string);
+  getWeeklyRecords(params: {employeeId: string; startDate: Date}): Promise<WeeklyRecords>;
+}
+
+interface ITravelRecordsRepository {
+  getEmployeeRecords(params: {
+    employeeId: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<TravelRecord[]>;
+  getRecords(params: {startDate: Date; endDate: Date}): Promise<TimeRecord[]>;
+  saveEmployeeRecords(params: {
+    employeeId: string;
+    travelRecords: TravelRecord[];
+  }): Promise<TravelRecord[]>;
 }

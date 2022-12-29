@@ -1,9 +1,9 @@
 import {Collections} from '~/types/enums';
 
-export default class RecordsService {
-  timeRecordsRepository: IRecordsRepository;
+export default class TimeRecordsService {
+  timeRecordsRepository: ITimeRecordsRepository;
 
-  constructor(timeRecordsRepository: IRecordsRepository) {
+  constructor(timeRecordsRepository: ITimeRecordsRepository) {
     this.timeRecordsRepository = timeRecordsRepository;
   }
 
@@ -68,5 +68,9 @@ export default class RecordsService {
     collection: string = Collections.TIMREC
   ): Promise<void> {
     return this.timeRecordsRepository.deleteEmployeeRecords(params, collection);
+  }
+
+  getWeeklyRecords(params: {employeeId: string; startDate: Date}): Promise<WeeklyRecords> {
+    return this.timeRecordsRepository.getWeeklyRecords(params);
   }
 }

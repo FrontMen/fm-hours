@@ -2,7 +2,6 @@ import firebase from 'firebase/compat';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {DocumentData} from '@firebase/firestore-types';
 import {Collections} from '~/types/enums';
-
 import {recordStatus} from '~/helpers/record-status';
 
 export default class TimesheetsRepository implements ITimesheetsRepository {

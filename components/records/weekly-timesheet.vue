@@ -305,25 +305,15 @@ export default defineComponent({
 
       const workScheme: WorkScheme[] = await getWorkScheme(sheet, workWeek);
 
-      const range = {
-        startDate: new Date(workWeek[0].date).getTime().toString(),
-        endDate: new Date(workWeek[6].date).getTime().toString()
-      }
-
-      const [timeRecords, standByRecords, travelRecords] = await Promise.all([
-        app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
-        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
-        app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
-      ]);
+      const weeklyRecords = await app.$timeRecordsService.getWeeklyRecords({
+        employeeId: employee.id,
+        startDate
+      });
 
       // Combine everything in a single timesheet
       timesheet.value = createWeeklyTimesheet({
-        sheet,
-        week: workWeek,
+        ...weeklyRecords,
         projects: projects.value,
-        timeRecords,
-        travelRecords,
-        standByRecords,
         workScheme,
       });
 
@@ -344,7 +334,7 @@ export default defineComponent({
             bridgeUid: employee.bridgeUid || '',
             startDate: new Date(workWeek[0].date),
             endDate: new Date(workWeek[6].date),
-          });
+          }) || [];
           showBridgeError.value = false;
         } catch (error) {
           if (error instanceof AxiosError && error.response?.status === 401) {
