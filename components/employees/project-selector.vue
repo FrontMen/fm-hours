@@ -2,11 +2,9 @@
 en:
   manageProjects: "Manage Projects"
   removeContract: "Remove contract"
-  viewAdd: "View/Add"
 nl:
   manageProjects: "Projecten bewerken"
   removeContract: "Verwijder contract"
-  viewAdd: "Bekijken/Toevoegen"
 </i18n>
 
 <template>
