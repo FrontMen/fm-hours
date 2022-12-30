@@ -57,13 +57,23 @@ nl:
     <contract-selector id="select-contract" @selected="handleContractSelected"></contract-selector>
 
     <b-modal ref="viewContractModal" ok-only>
-      <b-button size="sm" variant="danger" @click="handleContractDelete(selectedProject)">
-        <b-icon-trash-fill />
-        {{ $t('removeContract') }}
-      </b-button>
-      <pre v-if="selectedProject">
-        {{ selectedProject.contract }}
-      </pre>
+      <template #modal-title>
+        <p class="mb-0">Contract</p>
+      </template>
+      <contract-modal-content
+        v-if="selectedProject"
+        :contract="selectedProject.contract"
+        :handle-contract-delete="handleContractDelete"
+      />
+      <template #modal-footer>
+        <div class="contract-modal-footer-wrapper">
+          <b-button variant="danger" @click="handleContractDelete">
+            <b-icon-trash-fill />
+            {{ $t('removeContract') }}
+          </b-button>
+          <b-button variant="primary" @click="handleContractModalClose">OK</b-button>
+        </div>
+      </template>
     </b-modal>
   </section>
 </template>
@@ -71,8 +81,10 @@ nl:
 <script lang="ts">
 import {computed, defineComponent, PropType, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
 import {BModal} from "bootstrap-vue";
+import ContractModalContent from "~/components/employees/contract/contract-modal-content.vue";
 
 export default defineComponent({
+  components: {ContractModalContent},
   props: {
     selectedProjects: {
       type: Array as PropType<Project[]>,
@@ -150,6 +162,10 @@ export default defineComponent({
       viewContractModal.value?.show();
     }
 
+    const handleContractModalClose = () => {
+      viewContractModal.value?.hide();
+    }
+
     const handleContractDelete = (project?: Project) => {
       if(!project) return;
 
@@ -169,7 +185,8 @@ export default defineComponent({
 
     const fields = [
       {key: 'customer.name', label: 'Customer'},
-      {key: 'contract', class: 'text-center'},
+      {key: 'contract.name', label: 'Contract' },
+      {key: 'contract', label: 'View/Add', class: 'text-center'},
       {key: 'delete', class: 'text-center'}
     ];
 
@@ -183,6 +200,7 @@ export default defineComponent({
       handleContractSelected,
       fields,
       handleOpenContract,
+      handleContractModalClose,
       viewContractModal,
       handleContractDelete
     }
@@ -190,4 +208,11 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style lang="scss" scoped>
+.contract-modal-footer-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+</style>
