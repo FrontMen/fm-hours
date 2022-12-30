@@ -23,8 +23,8 @@ nl:
         />
 
         <weekly-timesheet-messages
-          v-if="timesheet.info"
-          :comments="timesheet.info.messages"
+          v-if="weeklyTimesheet.info"
+          :comments="weeklyTimesheet.info.messages"
           :readonly="isReadonly"
           :show-weekends="showWeekends"
           @add="addMessage"
@@ -51,16 +51,16 @@ nl:
 
           <weekly-timesheet-row-leave
             :show-weekends="showWeekends"
-            :workscheme="timesheet.workScheme"
-            :status="timesheet.info.status"
+            :workscheme="weeklyTimesheet.workScheme"
+            :status="weeklyTimesheet.info.status"
             @refresh="refreshLeave"
           ></weekly-timesheet-row-leave>
 
           <weekly-timesheet-totals-row
-            :projects="timesheet.projects"
+            :projects="weeklyTimesheet.projects"
             :show-weekends="showWeekends"
             :selected-week="selectedWeek"
-            :work-scheme="timesheet.workScheme"
+            :work-scheme="weeklyTimesheet.workScheme"
             @totals="setTotals"
           />
         </template>
@@ -74,7 +74,7 @@ nl:
         <template #rows>
           <weekly-timesheet-row-hours
             v-if="showStandby"
-            :timesheet-project="timesheet.standByProject"
+            :timesheet-project="weeklyTimesheet.standByProject"
             :readonly="isReadonly"
             :show-weekends="showWeekends"
             :selected-week="relevantWeeksView"
@@ -84,7 +84,7 @@ nl:
 
           <weekly-timesheet-row-kilometer
             v-if="showTravel"
-            :timesheet-project="timesheet.travelProject"
+            :timesheet-project="weeklyTimesheet.travelProject"
             :readonly="isReadonly"
             :show-weekends="showWeekends"
             :selected-week="relevantWeeksView"
@@ -121,15 +121,11 @@ import {
   PropType,
   ref,
   useContext,
-  useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
-import {startOfISOWeek} from "date-fns";
-import { AxiosError } from "axios";
 import {recordStatus} from "~/helpers/record-status";
-import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
+import {getDateOfISOWeek} from "~/helpers/dates";
 import {
-  createWeeklyTimesheet,
   getStandByRecordsToSave,
   getTimeRecordsToSave,
   getTravelRecordsToSave
@@ -161,9 +157,8 @@ export default defineComponent({
     }
   },
   setup({employee, year, week}: { employee: Employee, year: number, week: number }) {
-    const {i18n, app, localePath} = useContext();
+    const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
-    const router = useRouter();
 
     const showWeekends = ref<boolean>(JSON.parse(localStorage.getItem('showWeekends')!) || false);
 
@@ -172,46 +167,18 @@ export default defineComponent({
     const hasUnsavedChanges = ref<boolean>(false);
     const isSaving = ref<boolean>(false);
     const lastSaved = ref<Date>();
-    const showBridgeError = ref<boolean>(false);
 
-    const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
+    const weeklyTimesheet = computed(() => store.state.timesheets.weeklyTimesheet);
+    const showBridgeError = computed(() => store.state.timesheets.isErrored.bridge);
 
     // Fetch all customers if we haven't fetched them before
     if (customers.value.length === 0) {
       store.dispatch("customers/getCustomers");
     }
 
-    const projects = computed(() => {
-      const employeeCustomers: Project[] = employee.projects.reduce((list: Project[], project: EmployeeProject) => {
-        const foundCustomer = customers.value.find((customer) => customer.id === project.customerId);
-        if(!foundCustomer) return list;
-
-        const { contract: customerContract , ...customer } = foundCustomer;
-        const contract = project.contract || customerContract || null;
-
-        const newProject = {
-          customer,
-          contract
-        } as Project
-
-        list.push(newProject);
-        return list;
-      }, []);
-
-      const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => {
-        const { contract, ...cleanCustomer} = customer
-        return {
-          customer: cleanCustomer,
-          contract: contract || null
-        }
-      });
-
-      return [...employeeCustomers, ...availableToAll];
-    });
-
     const timesheetStatus = computed(() => {
-      return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
+      return weeklyTimesheet.value.info ? weeklyTimesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
     });
 
     const isReadonly = computed(
@@ -221,35 +188,38 @@ export default defineComponent({
     );
 
     const hasRestDayHours = computed(() => {
-      return timesheet.value.projects.reduce((_: boolean, project: TimesheetProject) => {
+      return weeklyTimesheet.value.projects.reduce((_: boolean, project: TimesheetProject) => {
         return project.values.reduce((acc, value, index) => {
           if (!value) return acc;
 
-          const day = timesheet.value.week[index];
+          const day = weeklyTimesheet.value.week[index];
 
           return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
         }, false);
       }, false);
     });
 
-    const showStandby = computed(() => employee?.standBy && timesheet.value.standByProject);
-    const showTravel = computed(() => employee?.travelAllowance && timesheet.value.travelProject);
+    const showStandby = computed(() => employee?.standBy && weeklyTimesheet.value.standByProject);
+    const showTravel = computed(() => employee?.travelAllowance && weeklyTimesheet.value.travelProject);
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet.value?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
-        // Casting because TS doesn't like to subtract booleans
-        const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
-        return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
-      })
+      {
+        const weeklyTimesheetCopy = JSON.parse(JSON.stringify(weeklyTimesheet.value));
+        return weeklyTimesheetCopy?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
+          // Casting because TS doesn't like to subtract booleans
+          const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
+          return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
+        })
+      }
     );
 
     const selectedWeek = computed(() => {
-      return timesheet.value.week;
+      return weeklyTimesheet.value.week;
     });
 
     const selectedWeekWithoutWeekends = computed(() => {
-      return timesheet.value.week.filter(({isWeekend}) => !isWeekend);
+      return weeklyTimesheet.value.week.filter(({isWeekend}) => !isWeekend);
     });
 
     const relevantWeeksView = computed(() => {
@@ -280,85 +250,17 @@ export default defineComponent({
       days: [],
     });
 
-    const getTimesheet = async () => {
-      if (!employee) return;
-
-      const employeeId = employee.id;
-
-      const workWeek = buildWeek(startOfISOWeek(startDate));
-
-      const startEpoch = new Date(workWeek[0].date).getTime();
-
-      const sheets = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
-
-      let sheet: Optional<Timesheet, 'id'>;
-      sheet = sheets[0];
-
-      if (!sheet) {
-        sheet = {
-          employeeId: employee.id,
-          date: new Date(workWeek[0].date).getTime(),
-          status: recordStatus.NEW as TimesheetStatus,
-          messages: [],
-        }
-      }
-
-      const workScheme: WorkScheme[] = await getWorkScheme(sheet, workWeek);
-
-      const weeklyRecords = await app.$timeRecordsService.getWeeklyRecords({
-        employeeId: employee.id,
-        startDate
-      });
-
-      // Combine everything in a single timesheet
-      timesheet.value = createWeeklyTimesheet({
-        ...weeklyRecords,
-        projects: projects.value,
-        workScheme,
-      });
+    const getTimesheet = async ({checkOwnWorkScheme = true} : {checkOwnWorkScheme?: boolean} = {}) => {
+      await store.dispatch('timesheets/getWeeklyTimesheet', { employee, startDate, checkOwnWorkScheme });
 
       isLoading.value = false;
     }
 
-    const getWorkScheme = async (
-      sheet: Optional<Timesheet, 'id'>,
-      workWeek: WeekDate[],
-      checkOwn: boolean = true
-    ): Promise<WorkScheme[]> => {
-      let workScheme: WorkScheme[] = [];
-      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
-
-      if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
-        try {
-          workScheme = await app.$workSchemeService.getWorkScheme({
-            bridgeUid: employee.bridgeUid || '',
-            startDate: new Date(workWeek[0].date),
-            endDate: new Date(workWeek[6].date),
-          }) || [];
-          showBridgeError.value = false;
-        } catch (error) {
-          if (error instanceof AxiosError && error.response?.status === 401) {
-            await logout();
-          } else {
-            showBridgeError.value = true;
-          }
-        }
-      } else {
-        workScheme = sheet.workscheme || [];
-      }
-      return workScheme
-    };
-
     const refreshLeave = async () => {
-      if (!timesheet.value?.info || !timesheet.value?.week) return;
+      if (!weeklyTimesheet.value?.info || !weeklyTimesheet.value?.week) return;
 
-      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week, false);
+      await getTimesheet({checkOwnWorkScheme : false});
     }
-
-    const logout = async () => {
-      const authState = await store.dispatch('auth/logout');
-      if (authState) router.push(localePath('/login'));
-    };
 
     const saveRecords = async () => {
       if (!employee) return;
@@ -375,9 +277,9 @@ export default defineComponent({
 
       const employeeId = employee.id;
 
-      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
-      const standByRecordsToSave = getStandByRecordsToSave(timesheet.value);
-      const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
+      const timeRecordsToSave = getTimeRecordsToSave(weeklyTimesheet.value);
+      const standByRecordsToSave = getStandByRecordsToSave(weeklyTimesheet.value);
+      const travelRecordsToSave = getTravelRecordsToSave(weeklyTimesheet.value);
 
       await Promise.all([
         app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
@@ -404,23 +306,23 @@ export default defineComponent({
 
     const saveTimesheet = async () => {
       const sheet = {
-        ...timesheet.value.info,
-        workscheme: timesheet.value.workScheme
+        ...weeklyTimesheet.value.info,
+        workscheme: weeklyTimesheet.value.workScheme
       } as Optional<Timesheet, 'id'>;
 
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(sheet);
+      weeklyTimesheet.value.info = await app.$timesheetsService.saveTimesheet(sheet);
     }
 
     const changeStatus = async (status: TimesheetStatus,) => {
-      if (timesheet.value.info === null) return;
+      if (weeklyTimesheet.value.info === null) return;
 
-      timesheet.value.info.status = status;
+      weeklyTimesheet.value.info.status = status;
 
       await saveTimesheet();
     }
 
     const addMessage = async ({text, employeeName}: { text: string, employeeName: string }) => {
-      if (timesheet.value.info === null) return;
+      if (weeklyTimesheet.value.info === null) return;
 
       const newMessage = {
         id: uuidv4(),
@@ -429,7 +331,7 @@ export default defineComponent({
         employeeName,
       };
 
-      timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];
+      weeklyTimesheet.value.info.messages = [...weeklyTimesheet.value.info?.messages, newMessage];
 
       await saveTimesheet();
     }
@@ -530,7 +432,7 @@ export default defineComponent({
       const employeeId = employee.id;
       isSaving.value = true;
 
-      const toSync = removeWithoutContract(getTimeRecordsToSave(timesheet.value));
+      const toSync = removeWithoutContract(getTimeRecordsToSave(weeklyTimesheet.value));
 
       await app.$timeRecordsService.addBridgeWorklogs({
         employeeId,
@@ -551,7 +453,7 @@ export default defineComponent({
 
       isSaving.value = true;
 
-      const timeRecordsToSave = getTimeRecordsToSave(timesheet.value);
+      const timeRecordsToSave = getTimeRecordsToSave(weeklyTimesheet.value);
       await app.$timeRecordsService.removeBridgeWorklogs(timeRecordsToSave.records);
 
       // TODO: use the responses from the save above instead of getting the entire timesheet again
@@ -591,7 +493,8 @@ export default defineComponent({
       handleBridgeRemove,
       addMessage,
       toggleWeekends,
-      refreshLeave
+      refreshLeave,
+      weeklyTimesheet
     };
   }
 });

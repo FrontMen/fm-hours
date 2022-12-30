@@ -63,8 +63,16 @@ interface TimesheetEmployee extends Employee {
   pendingTravelRecords: TravelRecord[];
 }
 
+type TimesheetErrorKey = 'bridge';
+
+type TimesheetErrors = {
+  [key in TimesheetErrorKey]?: boolean;
+};
+
 interface TimesheetsStoreState {
   timesheetTableData: TimesheetTableData;
+  weeklyTimesheet: WeeklyTimesheet;
+  isErrored: TimesheetErrors;
 }
 
 interface WeekSpan {
