@@ -1,15 +1,27 @@
-export default class WorkSchemeService {
-  workSchemeRepository: IWorkSchemeRepository;
+import {format} from 'date-fns';
+import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 
-  constructor(workSchemeRepository: IWorkSchemeRepository) {
-    this.workSchemeRepository = workSchemeRepository;
+export default class WorkSchemeRepository {
+  axios: NuxtAxiosInstance;
+
+  constructor(axios: NuxtAxiosInstance) {
+    this.axios = axios;
   }
 
-  getWorkScheme(params: {
+  async getWorkScheme(params: {
     bridgeUid: string;
     startDate: Date;
     endDate: Date;
   }): Promise<WorkScheme[]> {
-    return this.workSchemeRepository.getWorkScheme(params);
+    const {bridgeUid, startDate, endDate} = params;
+
+    const path = `/api/bridge/workscheme/${bridgeUid}`;
+    const {data} = await this.axios.$get<WorkSchemeResponse>(path, {
+      params: {
+        date_from: format(startDate, 'yyyy-MM-dd'),
+        date_to: format(endDate, 'yyyy-MM-dd'),
+      },
+    });
+    return data;
   }
 }

@@ -12,7 +12,3 @@ interface WorkSchemeResponse {
   message: string;
   data: WorkScheme[];
 }
-
-interface IWorkSchemeRepository {
-  getWorkScheme(params: {bridgeUid: string; startDate: Date; endDate: Date}): Promise<WorkScheme[]>;
-}

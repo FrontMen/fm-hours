@@ -9,29 +9,30 @@ import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
 import ContractsService from '~/services/contracts-service';
 import BridgeService from '~/services/bridge-service';
-import TimesheetsRepository from '~/api/timesheets/timesheets-repository';
-import WorkSchemeRepository from '~/api/work-scheme/work-scheme-repository';
-import TimeRecordsRepository from '~/api/records/time-records-repository';
-import TravelRecordsRepository from '~/api/records/travel-records-repository';
 
 export default defineNuxtPlugin(({$fire, $fireModule, $axios}, inject) => {
-  const travelRecordsRepository = new TravelRecordsRepository($fire);
-  const timesheetsRepository = new TimesheetsRepository($fire);
-  const workSchemeRepository = new WorkSchemeRepository($axios);
-  const timeRecordsRepository = new TimeRecordsRepository(
+  const bridgeService = new BridgeService($axios);
+  const contractsService = new ContractsService($axios);
+  const customersService = new CustomersService($fire, $fireModule);
+  const employeesService = new EmployeesService($fire, $fireModule);
+  const teamsService = new TeamsService($fire, $fireModule);
+  const timesheetsService = new TimesheetsService($fire);
+  const travelRecordsService = new TravelRecordsService($fire);
+  const workSchemeService = new WorkSchemeService($axios);
+  const timeRecordsService = new TimeRecordsService(
     $fire,
     $axios,
-    timesheetsRepository,
-    travelRecordsRepository
+    timesheetsService,
+    travelRecordsService
   );
 
-  inject('contractsService', new ContractsService($axios));
-  inject('customersService', new CustomersService($fire, $fireModule));
-  inject('timeRecordsService', new TimeRecordsService(timeRecordsRepository));
-  inject('travelRecordsService', new TravelRecordsService(travelRecordsRepository));
-  inject('employeesService', new EmployeesService($fire, $fireModule));
-  inject('teamsService', new TeamsService($fire, $fireModule));
-  inject('workSchemeService', new WorkSchemeService(workSchemeRepository));
-  inject('timesheetsService', new TimesheetsService(timesheetsRepository));
-  inject('bridgeService', new BridgeService($axios));
+  inject('bridgeService', bridgeService);
+  inject('contractsService', contractsService);
+  inject('customersService', customersService);
+  inject('employeesService', employeesService);
+  inject('teamsService', teamsService);
+  inject('timeRecordsService', timeRecordsService);
+  inject('timesheetsService', timesheetsService);
+  inject('travelRecordsService', travelRecordsService);
+  inject('workSchemeService', workSchemeService);
 });

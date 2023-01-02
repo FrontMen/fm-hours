@@ -100,9 +100,3 @@ interface EmailData {
   subject: string;
   html: string;
 }
-
-interface ITimesheetsRepository {
-  getTimesheets(params: GetTimesheetsProps): Promise<Timesheet[]>;
-  getApprovedTimesheets(params: {startDate: number; endDate: number}): Promise<Timesheet[]>;
-  saveTimesheet(timesheet: Optional<Timesheet, 'id'>): Promise<Timesheet>;
-}
