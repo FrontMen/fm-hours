@@ -85,7 +85,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       startDate,
     });
 
-    const projects = rootGetters['employees/projects'](employeeId) as Project[];
+    const projects = rootGetters['customers/projects'](employee) as Project[];
 
     // Combine everything in a single timesheet
     const weeklyTimesheet = createWeeklyTimesheet({
