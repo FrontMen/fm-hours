@@ -29,38 +29,21 @@ import {
   defineComponent,
   useContext,
   useMeta,
-  useStore,
-  ref,
   useRoute,
 } from '@nuxtjs/composition-api';
+import {useEmployees} from "~/composables/useEmployees";
 
 export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const route = useRoute();
-    const store = useStore<RootStoreState>();
 
-    const showEmployeeError = ref<Boolean>(false);
-
-    const employee = computed(() => {
-      showEmployeeError.value = false;
-      const employee = store.state.employees.employees.find(
-        (employee: Employee) => employee.id === route.value.params.employee_id
-      );
-      if (!employee) {
-        showEmployeeError.value = true;
-        return;
-      }
-      return employee;
-    });
+    const {employeeByRouteParamId: employee, showEmployeeError} = useEmployees();
 
     const year = computed(() => parseInt(route.value.params.year, 10));
     const week = computed(() => parseInt(route.value.params.week, 10));
     const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
     const routePrefix = computed(() => `/admin/timesheets/${employee.value?.id}`);
-
-    // TODO: Overview should retrieve all employees
-    store.dispatch('employees/get');
 
     useMeta(() => ({
       title: pageTitle.value,

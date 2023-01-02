@@ -1,10 +1,12 @@
-import {computed, onMounted, ref, useStore} from '@nuxtjs/composition-api';
+import {computed, onMounted, ref, useRoute, useStore} from '@nuxtjs/composition-api';
 import {checkEmployeeAvailability} from '~/helpers/employee';
 
 export function useEmployees() {
   const store = useStore<RootStoreState>();
+  const route = useRoute();
   const employees = computed(() => store.state.employees.employees);
 
+  const showEmployeeError = ref<Boolean>(false);
   const inactive = ref<boolean>(false);
   const billable = ref<boolean>(false);
 
@@ -26,16 +28,27 @@ export function useEmployees() {
 
   const getEmployeeById = (id: string) => {
     const employee = employees.value.find(e => e.id === id);
-    if (!employee) return;
+    if (!employee) {
+      showEmployeeError.value = true;
+      return;
+    }
+
+    showEmployeeError.value = false;
 
     if (employee?.id === store.state.employee.employee?.id) return employee;
 
     if (store.state.employee.employee?.isAdmin) return employee;
   };
 
+  const employeeByRouteParamId = computed(() => {
+    return getEmployeeById(route.value.params.employee_id);
+  });
+
   return {
     employees,
     employeeTableItems,
     getEmployeeById,
+    showEmployeeError,
+    employeeByRouteParamId,
   };
 }
