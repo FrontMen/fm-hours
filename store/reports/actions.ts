@@ -1,6 +1,7 @@
 import {addMonths, startOfISOWeek, startOfMonth} from 'date-fns';
 import {ActionTree} from 'vuex';
 
+import {createMonthlyReportData} from '~/helpers/reports';
 import {checkEmployeeAvailability} from '~/helpers/employee';
 import {Collections} from '~/types/enums';
 import {filterApprovedRecords} from '~/helpers/record-status';
@@ -51,12 +52,13 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
     const approvedStandByRecords = filterApprovedRecords(standByRecords, timesheets);
     const approvedTravelRecords = filterApprovedRecords(travelRecords, timesheets);
 
-    const activeEmployees = employees.filter(employee =>
+    const activeEmployees: Employee[] = employees.filter(employee =>
       checkEmployeeAvailability(employee, startDate, endDate)
     );
 
     commit('setIsLoading', {isLoading: false});
-    commit('createMonthlyReportData', {
+
+    const dataPayload = {
       startDate,
       endDate,
       employees: activeEmployees,
@@ -66,7 +68,11 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       standByRecords: approvedStandByRecords,
       timesheets,
       teams,
-    });
+    };
+
+    const monthlyReportToSave = createMonthlyReportData(dataPayload);
+
+    commit('saveMonthlyReportData', monthlyReportToSave);
   },
 };
 
