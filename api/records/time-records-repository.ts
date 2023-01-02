@@ -251,17 +251,14 @@ export default class TimeRecordsRepository implements ITimeRecordsRepository {
 
     const sheets = await this.timesheetsRepository.getTimesheets({employeeId, date: startEpoch});
 
-    let sheet: Optional<Timesheet, 'id'>;
-    sheet = sheets[0];
-
-    if (!sheet) {
-      sheet = {
-        employeeId,
-        date: new Date(workWeek[0].date).getTime(),
-        status: recordStatus.NEW as TimesheetStatus,
-        messages: [],
-      };
-    }
+    const sheet: Optional<Timesheet, 'id'> = sheets.length
+      ? sheets[0]
+      : {
+          employeeId,
+          date: new Date(workWeek[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [],
+        };
 
     const range = {
       startDate: new Date(workWeek[0].date).getTime().toString(),
