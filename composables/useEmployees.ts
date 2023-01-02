@@ -1,5 +1,4 @@
 import {computed, onMounted, ref, useRoute, useStore} from '@nuxtjs/composition-api';
-import {checkEmployeeAvailability} from '~/helpers/employee';
 
 export function useEmployees() {
   const store = useStore<RootStoreState>();
@@ -7,24 +6,10 @@ export function useEmployees() {
   const employees = computed(() => store.state.employees.employees);
 
   const showEmployeeError = ref<Boolean>(false);
-  const inactive = ref<boolean>(false);
-  const billable = ref<boolean>(false);
 
   onMounted(() => {
     store.dispatch('employees/get');
   });
-
-  const employeeTableItems = computed(() =>
-    employees.value
-      .map(employee => ({
-        ...employee,
-        active: checkEmployeeAvailability(employee, new Date()),
-      }))
-      .filter(
-        employee =>
-          (inactive.value ? true : employee.active) && (billable.value ? true : employee.billable)
-      )
-  );
 
   const getEmployeeById = (id: string) => {
     const employee = employees.value.find(e => e.id === id);
@@ -46,7 +31,6 @@ export function useEmployees() {
 
   return {
     employees,
-    employeeTableItems,
     getEmployeeById,
     showEmployeeError,
     employeeByRouteParamId,

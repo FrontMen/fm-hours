@@ -39,10 +39,10 @@ nl:
             </b-input-group>
           </b-form-group>
 
-          <b-form-checkbox v-model="inactive" switch class="mr-4">
+          <b-form-checkbox v-model="includeInactive" switch class="mr-4">
             {{ $t('showInactive') }}
           </b-form-checkbox>
-          <b-form-checkbox v-model="billable" switch>
+          <b-form-checkbox v-model="includeNonBillable" switch>
             {{ $t('showNotBillable') }}
           </b-form-checkbox>
         </b-col>
@@ -62,7 +62,7 @@ nl:
         striped
         hover
         small
-        :items="items"
+        :items="filteredEmployees"
         :fields="fields"
         :filter="filter"
       >
@@ -117,12 +117,13 @@ import {
 } from '@nuxtjs/composition-api';
 
 import {useEmployees} from "~/composables/useEmployees";
+import {checkEmployeeAvailability} from "~/helpers/employee";
 
 export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
-    const { employeeTableItems: items } = useEmployees();
+    const { employees } = useEmployees();
     const teams = computed(() => store.state.teams.teams);
 
     const year = new Date().getFullYear();
@@ -137,8 +138,9 @@ export default defineComponent({
     });
 
     const filter = ref<string>('');
-    const inactive = ref<boolean>(false);
-    const billable = ref<boolean>(false);
+    const includeInactive = ref<boolean>(false);
+    const includeNonBillable = ref<boolean>(false);
+
     const fields = [
       {key: 'name', label: 'employees', sortable: true},
       {
@@ -156,12 +158,25 @@ export default defineComponent({
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
 
+    const filteredEmployees = computed(() =>
+      employees.value
+        .map(employee => ({
+          ...employee,
+          active: checkEmployeeAvailability(employee, new Date()),
+        }))
+        .filter(applyEmployeeFilters)
+    );
+
+    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee & {active: boolean}) => {
+      return (isActive || includeInactive.value) && (isBillable || includeNonBillable.value)
+    }
+
     return {
       filter,
-      inactive,
-      billable,
+      includeInactive,
+      includeNonBillable,
       fields,
-      items,
+      filteredEmployees,
       year,
       month,
     };
