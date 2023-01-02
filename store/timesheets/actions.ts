@@ -61,17 +61,14 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     const sheets = await this.app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
 
-    let sheet: Optional<Timesheet, 'id'>;
-    sheet = sheets[0];
-
-    if (!sheet) {
-      sheet = {
-        employeeId,
-        date: new Date(workWeek[0].date).getTime(),
-        status: recordStatus.NEW as TimesheetStatus,
-        messages: [],
-      };
-    }
+    const sheet: Optional<Timesheet, 'id'> = sheets.length
+      ? sheets[0]
+      : {
+          employeeId,
+          date: new Date(workWeek[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [],
+        };
 
     const workScheme: WorkScheme[] = await dispatch('getWorkScheme', {
       employee,
