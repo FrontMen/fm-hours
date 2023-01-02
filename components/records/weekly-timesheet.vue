@@ -346,7 +346,7 @@ export default defineComponent({
           showBridgeError.value = false;
         } catch (error) {
           if (error instanceof AxiosError && error.response?.status === 401) {
-            await logout();
+            store.dispatch('auth/logout');
           } else {
             showBridgeError.value = true;
           }
@@ -362,10 +362,6 @@ export default defineComponent({
 
       timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week, false);
     }
-
-    const logout = () => {
-      store.dispatch('auth/logout');
-    };
 
     const saveRecords = async () => {
       if (!employee) return;
