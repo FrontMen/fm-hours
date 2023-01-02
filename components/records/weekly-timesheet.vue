@@ -121,7 +121,6 @@ import {
   PropType,
   ref,
   useContext,
-  useRouter,
   useStore,
 } from "@nuxtjs/composition-api";
 import {startOfISOWeek} from "date-fns";
@@ -161,9 +160,8 @@ export default defineComponent({
     }
   },
   setup({employee, year, week}: { employee: Employee, year: number, week: number }) {
-    const {i18n, app, localePath} = useContext();
+    const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
-    const router = useRouter();
 
     const showWeekends = ref<boolean>(JSON.parse(localStorage.getItem('showWeekends')!) || false);
 
@@ -365,9 +363,8 @@ export default defineComponent({
       timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week, false);
     }
 
-    const logout = async () => {
-      const authState = await store.dispatch('auth/logout');
-      if (authState) router.push(localePath('/login'));
+    const logout = () => {
+      store.dispatch('auth/logout');
     };
 
     const saveRecords = async () => {

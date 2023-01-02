@@ -22,7 +22,8 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     await this.$fire.auth.signOut();
     commit('setLoading', false);
     commit('resetUser');
-    return true;
+    // @ts-ignore
+    this.$router.push(this.localePath('/login'));
   },
 
   /**
@@ -42,11 +43,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
         headers: {Authorization: user?.samlToken || ''},
       });
     } catch {
-      const authState = await dispatch('logout');
-      if (authState) {
-        // @ts-ignore
-        this.$router.push(this.localePath('/login'));
-      }
+      dispatch('logout');
     }
 
     await dispatch('employee/get', {}, {root: true});
