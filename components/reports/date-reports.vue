@@ -9,6 +9,8 @@ en:
   approvedBy: "Approved by"
   date: "Date"
   selectProjects: "Select projects"
+  worklogId: "Synced"
+  notStored: "The worklog has not been stored in Bridge. Possibly due to a missing contract at the time of writing."
 nl:
   customer: "Klant"
   print: "Afdrukken"
@@ -19,6 +21,8 @@ nl:
   approvedBy: "Goedgekeurd door"
   date: "Datum"
   selectProjects: "Selecteer projecten"
+  worklogId: "Synced"
+  notStored: "Deze uren zijn niet opgeslagen in Bridge. Mogelijk vanwege het gebrek van een contract ten tijden van invoer."
 </i18n>
 
 <template>
@@ -122,6 +126,7 @@ nl:
         </b-form-checkbox>
       </b-col>
     </b-row>
+
     <b-table
       responsive
       striped
@@ -130,7 +135,7 @@ nl:
       sort-by="date"
       :sort-desc="true"
       :items="reportItems"
-      :fields="['customer', 'date', 'hours']"
+      :fields="reportFields"
       foot-clone
       show-empty
     >
@@ -149,6 +154,11 @@ nl:
       </template>
       <template #cell(date)="scope">
         {{ formatDate(scope.item.date) }}
+      </template>
+      <template #cell(worklogId)="scope">
+        <span v-if="scope.item.worklogId" v-b-tooltip.hover :title="scope.item.worklogId">
+          <b-icon icon="cloud-check" />
+        </span>
       </template>
       <template #cell(hours)="scope">
         {{ parseFloat(scope.item.hours).toFixed(2) }}
@@ -274,6 +284,19 @@ export default defineComponent({
       }
     );
 
+    const reportFields = computed(() => {
+
+      const fields: any[] = ['customer', 'date'];
+
+      if (store.state.employee.employee?.isAdmin) {
+        fields.push('worklogId')
+      }
+
+      fields.push('hours');
+
+      return fields;
+    })
+
     const reportItems = computed(() => {
       let filteredRecords = store.state.records.timeRecords;
 
@@ -341,6 +364,7 @@ export default defineComponent({
     return {
       employee,
       formatDate,
+      reportFields,
       reportItems,
       onlyBillable,
       projectOptions,
