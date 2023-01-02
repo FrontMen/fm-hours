@@ -73,7 +73,7 @@ nl:
     <dl class="row">
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('entity') }}</dt>
       <dd class="col-sm-10">
-        <external-link :href="`${bridgeUrl}/billingcontact/${contract.project_billingentity_id}`">
+        <external-link :href="`${bridgeUrl}/billingcontact/${contract.billingcontact_id}`">
           {{ contract.project_billingentity_name  }}
         </external-link>
       </dd>
