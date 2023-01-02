@@ -5,7 +5,6 @@ import EmployeesService from '~/services/employees-service';
 import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
 import BridgeService from '~/services/bridge-service';
-import ProjectsService from '~/services/projects-service';
 
 declare module '@nuxt/types' {
   interface NuxtAppOptions {
@@ -16,7 +15,6 @@ declare module '@nuxt/types' {
     $workSchemeService: WorkSchemeService;
     $timesheetsService: TimesheetsService;
     $bridgeService: BridgeService;
-    $projectsService: ProjectsService;
   }
 
   interface Context {
@@ -27,6 +25,5 @@ declare module '@nuxt/types' {
     $workSchemeService: WorkSchemeService;
     $timesheetsService: TimesheetsService;
     $bridgeService: BridgeService;
-    $projectsService: ProjectsService;
   }
 }

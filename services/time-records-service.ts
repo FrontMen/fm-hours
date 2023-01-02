@@ -13,11 +13,16 @@ export default class TimeRecordsService {
   timesheetsService: TimesheetsService;
   travelRecordsService: TravelRecordsService;
 
-  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
+  constructor(
+    fire: NuxtFireInstance,
+    axios: NuxtAxiosInstance,
+    timesheetsService: TimesheetsService,
+    travelRecordsService: TravelRecordsService
+  ) {
     this.fire = fire;
     this.axios = axios;
-    this.timesheetsService = new TimesheetsService(fire);
-    this.travelRecordsService = new TravelRecordsService(fire);
+    this.timesheetsService = timesheetsService;
+    this.travelRecordsService = travelRecordsService;
   }
 
   async getEmployeeRecords<RecordType>(
