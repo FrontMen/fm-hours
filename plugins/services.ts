@@ -9,12 +9,14 @@ import WorkSchemeService from '~/services/work-scheme-service';
 import TimesheetsService from '~/services/timesheets-service';
 import ContractsService from '~/services/contracts-service';
 import BridgeService from '~/services/bridge-service';
+import ProjectsService from '~/services/projects-service';
 
 export default defineNuxtPlugin(({$fire, $fireModule, $axios}, inject) => {
   inject('bridgeService', new BridgeService($axios));
   inject('contractsService', new ContractsService($axios));
   inject('customersService', new CustomersService($fire, $fireModule));
   inject('employeesService', new EmployeesService($fire, $fireModule));
+  inject('projectsService', new ProjectsService($fire, $fireModule));
   inject('teamsService', new TeamsService($fire, $fireModule));
   inject('timeRecordsService', new TimeRecordsService($fire, $axios));
   inject('timesheetsService', new TimesheetsService($fire));

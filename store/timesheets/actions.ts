@@ -41,7 +41,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     commit('setTimesheetsTableData', {tableData});
   },
   async getWeeklyTimesheet(
-    {dispatch, rootGetters, commit},
+    {dispatch, commit},
     {
       employee,
       startDate,
@@ -82,7 +82,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       startDate,
     });
 
-    const projects = rootGetters['customers/projects'](employee) as Project[];
+    const projects = await this.app.$projectsService.getProjects(employeeId);
 
     // Combine everything in a single timesheet
     const weeklyTimesheet = createWeeklyTimesheet({
