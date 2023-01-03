@@ -10,12 +10,16 @@ import TimesheetsService from '~/services/timesheets-service';
 import ContractsService from '~/services/contracts-service';
 import BridgeService from '~/services/bridge-service';
 
+import createRepositories from '~/repositories';
+
 export default defineNuxtPlugin(({$fire, $fireModule, $axios}, inject) => {
+  const repositories = createRepositories($fire, $fireModule);
+
   inject('contractsService', new ContractsService($axios));
   inject('customersService', new CustomersService($fire, $fireModule));
   inject('timeRecordsService', new TimeRecordsService($fire, $axios));
   inject('travelRecordsService', new TravelRecordsService($fire));
-  inject('employeesService', new EmployeesService($fire, $fireModule));
+  inject('employeesService', new EmployeesService($fire, $fireModule, repositories));
   inject('teamsService', new TeamsService($fire, $fireModule));
   inject('workSchemeService', new WorkSchemeService($axios));
   inject('timesheetsService', new TimesheetsService($fire));

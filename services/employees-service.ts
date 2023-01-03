@@ -6,13 +6,19 @@ import {Collections} from '~/types/enums';
 export default class EmployeesService {
   fire: NuxtFireInstance;
   fireModule: typeof firebase;
+  repositories: any;
 
-  constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase, repositories: any) {
     this.fire = fire;
     this.fireModule = fireModule;
+    this.repositories = repositories;
   }
 
   async getAll(): Promise<Employee[]> {
+    const foo = await this.repositories.employees.all();
+    console.log('Testing if the repository works...');
+    console.log(foo);
+
     const ref = this.fire.firestore.collection(Collections.EMPLOYEES);
     const snapshot = await ref.get();
 
