@@ -10,7 +10,7 @@ export default defineComponent({
     const router = useRouter();
     const employee = useStore<RootStoreState>().state.employee.employee;
     const year = new Date().getFullYear();
-    const month = new Date().getMonth();
+    const month = new Date().getMonth() + 1;
     router.replace(`/insights/${employee?.id}/${year}/${month}`);
   }
 });
