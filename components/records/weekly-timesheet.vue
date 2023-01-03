@@ -295,7 +295,7 @@ export default defineComponent({
     };
 
     const saveTimesheet = async () => {
-      await store.dispatch('timesheets/saveTimesheet', { weeklyTimesheet: timesheet.value });
+      await store.dispatch('timesheets/saveTimesheet');
     }
 
     const changeStatus = async (status: TimesheetStatus,) => {

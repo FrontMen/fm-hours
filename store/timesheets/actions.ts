@@ -130,14 +130,8 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     }
     return workScheme || [];
   },
-  async saveTimesheet(
-    {commit},
-    {
-      weeklyTimesheet,
-    }: {
-      weeklyTimesheet: WeeklyTimesheet;
-    }
-  ): Promise<void> {
+  async saveTimesheet({state, commit}): Promise<void> {
+    const {weeklyTimesheet} = state;
     const sheet = {
       ...weeklyTimesheet.info,
       workscheme: weeklyTimesheet.workScheme,
