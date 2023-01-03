@@ -21,7 +21,6 @@ export function useEmployees() {
     showEmployeeError.value = false;
 
     if (employee?.id === store.state.employee.employee?.id) return employee;
-
     if (store.state.employee.employee?.isAdmin) return employee;
   };
 
