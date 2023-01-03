@@ -160,7 +160,7 @@ export default defineComponent({
 
     const filteredEmployees = computed(() =>
       employees.value
-        .map(employee => ({
+        .map((employee: Employee) => ({
           ...employee,
           active: checkEmployeeAvailability(employee, new Date()),
         }))
