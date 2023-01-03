@@ -98,12 +98,17 @@ export default class EmployeesService {
     delete newEmployee.id;
 
     let list = await this.getAdminEmails();
+    const totalAdmins = list.length;
     if (isAdmin && !list.includes(newEmployee.email)) {
       list.push(newEmployee.email);
     } else if (!isAdmin) {
       list = list.filter(a => a !== newEmployee.email);
     }
-    await this.updateAdminEmails(list);
+
+    // Check if the the list of admins changed
+    if (list.length !== totalAdmins) {
+      await this.updateAdminEmails(list);
+    }
 
     return await this.fire.firestore
       .collection(Collections.EMPLOYEES)
