@@ -258,11 +258,7 @@ export default defineComponent({
 
     const { getEmployeeById } = useEmployees();
 
-    const employee = computed(() => {
-      const id = props.employeeId;
-
-      return getEmployeeById(id);
-    });
+    const employee = computed(() => getEmployeeById(props.employeeId));
 
     const getRecords = () => {
       store.dispatch('records/getMonthlyTimeRecords', {

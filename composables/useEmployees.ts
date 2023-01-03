@@ -21,11 +21,11 @@ export function useEmployees() {
     showEmployeeError.value = false;
 
     if (employee?.id === store.state.employee.employee?.id) return employee;
+
+    if (store.state.employee.employee?.isAdmin) return employee;
   };
 
-  const employeeByRouteParamId = computed(() => {
-    return getEmployeeById(route.value.params.employee_id);
-  });
+  const employeeByRouteParamId = computed(() => getEmployeeById(route.value.params.employee_id));
 
   return {
     employees,

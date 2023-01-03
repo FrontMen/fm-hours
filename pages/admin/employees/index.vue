@@ -158,6 +158,10 @@ export default defineComponent({
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
 
+    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee & {active: boolean}) => {
+      return (isActive || includeInactive.value) && (isBillable || includeNonBillable.value)
+    }
+
     const filteredEmployees = computed(() =>
       employees.value
         .map((employee: Employee) => ({
@@ -166,10 +170,6 @@ export default defineComponent({
         }))
         .filter(applyEmployeeFilters)
     );
-
-    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee & {active: boolean}) => {
-      return (isActive || includeInactive.value) && (isBillable || includeNonBillable.value)
-    }
 
     return {
       filter,
