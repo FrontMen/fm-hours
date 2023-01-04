@@ -34,12 +34,12 @@ nl:
         <b-col cols="12" md="6">
           <b-card>
             <h6 class="mb-3">{{ $t('editTeam') }}:</h6>
-            <team-selector v-model="selectedTeamId"></team-selector>
+            <team-selector v-model="selectedTeamId" />
             <project-selector
               :selected-projects="selectedProjects"
               :customers="customers"
               @update-selected-projects="updateSelectedProjects"
-            ></project-selector>
+            />
           </b-card>
         </b-col>
 
@@ -49,7 +49,7 @@ nl:
               :employee="employee"
               @changed="hasUnsavedChanges = true, errorMessage = ''"
               @error-state="handleFormError"
-            ></employee-settings>
+            />
           </b-card>
         </b-col>
       </b-row>

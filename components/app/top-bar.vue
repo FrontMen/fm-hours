@@ -80,7 +80,7 @@ export default defineComponent({
     const handleLogoutClick = () => emit('logout');
 
     const year = new Date().getFullYear();
-    const month = new Date().getMonth();
+    const month = new Date().getMonth() + 1;
 
     const employeeId = computed(() => props.employee?.id)
 

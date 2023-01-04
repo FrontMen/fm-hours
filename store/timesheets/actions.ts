@@ -7,6 +7,7 @@ import {createTimesheetTableData, createWeeklyTimesheet} from '~/helpers/timeshe
 import {checkEmployeeAvailability} from '~/helpers/employee';
 import {buildWeek, getWeeksInMonth} from '~/helpers/dates';
 import {recordStatus} from '~/helpers/record-status';
+import {uuidv4} from '~/helpers/helpers';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
   async getTableData(
@@ -130,7 +131,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     }
     return workScheme || [];
   },
-  async saveTimesheet({state, commit}): Promise<void> {
+  async save({state, commit}): Promise<void> {
     const {weeklyTimesheet} = state;
     const sheet = {
       ...weeklyTimesheet.info,
@@ -139,6 +140,16 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
 
     const info = await this.app.$timesheetsService.saveTimesheet(sheet);
     commit('setTimesheetInfo', {info});
+  },
+  addMessage({commit}, {text, employeeName}: {text: string; employeeName: string}): void {
+    const message = {
+      id: uuidv4(),
+      createdAt: new Date().getTime(),
+      text,
+      employeeName,
+    };
+
+    commit('addMessage', {message});
   },
 };
 

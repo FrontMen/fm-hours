@@ -131,7 +131,6 @@ import {
   getTravelRecordsToSave
 } from "~/helpers/timesheet";
 import {Collections} from "~/types/enums";
-import {uuidv4} from "~/helpers/helpers";
 
 export default defineComponent({
   props: {
@@ -295,7 +294,7 @@ export default defineComponent({
     };
 
     const saveTimesheet = async () => {
-      await store.dispatch('timesheets/saveTimesheet');
+      await store.dispatch('timesheets/save');
     }
 
     const changeStatus = async (status: TimesheetStatus,) => {
@@ -309,15 +308,7 @@ export default defineComponent({
     const addMessage = async ({text, employeeName}: { text: string, employeeName: string }) => {
       if (timesheet.value.info === null) return;
 
-      const newMessage = {
-        id: uuidv4(),
-        createdAt: new Date().getTime(),
-        text,
-        employeeName,
-      };
-
-      timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];
-
+      await store.dispatch('timesheets/addMessage', {text, employeeName});
       await saveTimesheet();
     }
 

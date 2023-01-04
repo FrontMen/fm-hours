@@ -17,7 +17,6 @@ import {computed, defineComponent, useStore} from "@nuxtjs/composition-api";
 import {formatToMonthYear} from "~/helpers/dates";
 
 export default defineComponent({
-  name: 'StandByReport',
   setup() {
     const store = useStore<RootStoreState>();
     return {
