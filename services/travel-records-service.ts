@@ -29,7 +29,7 @@ export default class RecordsService {
     }));
   }
 
-  async getRecords(params: {startDate: Date; endDate: Date}): Promise<TimeRecord[]> {
+  async getRecords(params: {startDate: Date; endDate: Date}): Promise<TravelRecord[]> {
     const snapshot = await this.fire.firestore
       .collection(Collections.TRAVELREC)
       .where('date', '>=', params.startDate.getTime())
@@ -39,7 +39,7 @@ export default class RecordsService {
 
     return snapshot.docs.map(doc => ({
       id: doc.id,
-      ...(doc.data() as Omit<TimeRecord, 'id'>),
+      ...(doc.data() as Omit<TravelRecord, 'id'>),
     }));
   }
 

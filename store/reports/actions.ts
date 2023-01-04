@@ -32,7 +32,8 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       },
       Collections.STANDBYREC
     );
-    const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
+    // @ts-ignore
+    const travelRecordsPromise = this.app.$travelRecordsService.getRecords<TravelRecord>({
       startDate,
       endDate,
     });
@@ -58,7 +59,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
 
     commit('setIsLoading', {isLoading: false});
 
-    const dataPayload = {
+    const monthlyReportPreData: MonthlyReportPreData = {
       startDate,
       endDate,
       employees: activeEmployees,
@@ -70,7 +71,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       teams,
     };
 
-    const monthlyReportToSave = createMonthlyReportData(dataPayload);
+    const monthlyReportToSave: MonthlyReportData = createMonthlyReportData(monthlyReportPreData);
 
     commit('saveMonthlyReportData', monthlyReportToSave);
   },
