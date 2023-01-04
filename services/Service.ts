@@ -18,6 +18,10 @@ export default class Service<T extends DocumentData = DocumentData> {
     return this.repository.getById(id);
   }
 
+  getByIds(ids: string[]) {
+    return this.repository.getByIds(ids);
+  }
+
   add(resource: T) {
     return this.repository.add(resource);
   }

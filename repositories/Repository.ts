@@ -70,6 +70,14 @@ export default class Repository<T extends DocumentData = DocumentData> {
     return doc && doc.exists ? includeId(doc) : null;
   }
 
+  async getByIds(ids: DocumentId[]): Promise<DocumentWithId<T>[]> {
+    const ref = this.collection.where(this.fireModule.firestore.FieldPath.documentId(), 'in', ids);
+    const snapshot = await ref.get();
+    const docs = snapshot.docs;
+
+    return docs.map(includeId);
+  }
+
   async getByIndex(index: number): Promise<DocumentWithId<T> | null> {
     const ref = this.collection;
     const snapshot = await ref.get();

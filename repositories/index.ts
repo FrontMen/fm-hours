@@ -4,11 +4,22 @@ import Repository from './Repository';
 import {Collections} from '~/types/enums';
 
 export type {
+  default as Repository,
   DocumentData,
   DocumentWithId,
   WhereTuple,
   OrderTuple,
 } from './Repository';
+
+export type Customer = {
+  name: string;
+  debtor?: string; // deprecated
+  isBillable: boolean;
+  isDefault: boolean;
+  archived?: boolean;
+  archivedDate?: number;
+  contract?: Contract;
+}
 
 export type Team = {
   name: string;
@@ -24,7 +35,7 @@ export type TravelRecord = {
 
 export default class RepositoryManager {
   adminList: Repository;
-  customers: Repository;
+  customers: Repository<Customer>;
   employees: Repository;
   standbyRecords: Repository;
   teams: Repository<Team>;
