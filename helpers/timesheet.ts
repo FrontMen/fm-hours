@@ -36,28 +36,21 @@ const createCustomerProjects = (
 ): TimesheetProject[] => {
   const projects: Project[] = [];
 
-  // Add ID to keep track of it locally. To be generated in BE later on
-  let projectId = 0;
-
   // Get customers from timeRecords
   timeRecords.forEach(timeRecord => {
     if (!projects.some(x => x.customer.id === timeRecord.customer.id)) {
-      projects.push({
-        id: `${projectId++}`,
-        customer: timeRecord.customer,
-        contract:
-          employeeProjects.find(p => p.customer.id === timeRecord.customer.id)?.contract || null,
-      });
+      const foundProject = employeeProjects.find(
+        employeeProject => employeeProject.customer.id === timeRecord.customer.id
+      );
+      if (!foundProject) return;
+      projects.push(foundProject);
     }
   });
 
   // Add all availableCustomers as well
   employeeProjects.forEach(project => {
     if (!projects.some(x => x.customer.id === project.customer.id)) {
-      projects.push({
-        ...project,
-        id: `${projectId++}`,
-      });
+      projects.push(project);
     }
   });
 

@@ -19,6 +19,9 @@ export default class ProjectsService {
     const customers = await this.customersService.getCustomers();
     const defaultCustomers = customers.filter(customer => customer.isDefault);
 
+    // Add ID to keep track of it locally. To be generated in BE later on
+    let projectId = 0;
+
     const employeeCustomers: Project[] = foundEmployee.projects.reduce(
       (list: Project[], project: EmployeeProject) => {
         const foundCustomer = customers.find(customer => customer.id === project.customerId);
@@ -28,6 +31,7 @@ export default class ProjectsService {
         const contract = project.contract || customerContract || null;
 
         const newProject = {
+          id: `${projectId++}`,
           customer,
           contract,
         } as Project;
@@ -41,6 +45,7 @@ export default class ProjectsService {
     const availableToAll: Project[] = defaultCustomers.map((customer: Customer) => {
       const {contract, ...cleanCustomer} = customer;
       return {
+        id: `${projectId++}`,
         customer: cleanCustomer,
         contract: contract || null,
       };
