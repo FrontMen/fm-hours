@@ -4,7 +4,7 @@ interface EmployeeProject {
 }
 
 interface Project {
-  id?: string;
+  id: string;
   customer: Customer;
   contract: Contract | null;
 }
