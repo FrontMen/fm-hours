@@ -5,7 +5,6 @@ import {AxiosError} from 'axios';
 import {createTimesheetTableData} from '~/helpers/timesheet';
 import {checkEmployeeAvailability} from '~/helpers/employee';
 import {getWeeksInMonth} from '~/helpers/dates';
-import {recordStatus} from '~/helpers/record-status';
 import {uuidv4} from '~/helpers/helpers';
 
 const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
@@ -71,43 +70,6 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
         commit('setIsErrored', {key: 'bridge', value: true});
       }
     }
-  },
-  async getWorkScheme(
-    {dispatch, commit, rootState},
-    {
-      employee,
-      sheet,
-      workWeek,
-      checkOwn,
-    }: {
-      employee: Employee;
-      sheet: Optional<Timesheet, 'id'>;
-      workWeek: WeekDate[];
-      checkOwn: boolean;
-    }
-  ): Promise<WorkScheme[]> {
-    let workScheme: WorkScheme[] | undefined = [];
-    const isOwnTimesheet = rootState.employee.employee?.id === employee.id;
-
-    if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
-      try {
-        workScheme = await this.app.$workSchemeService.getWorkScheme({
-          bridgeUid: employee.bridgeUid || '',
-          startDate: new Date(workWeek[0].date),
-          endDate: new Date(workWeek[6].date),
-        });
-        commit('setIsErrored', {key: 'bridge', value: false});
-      } catch (error) {
-        if (error instanceof AxiosError && error.response?.status === 401) {
-          dispatch('auth/logout');
-        } else {
-          commit('setIsErrored', {key: 'bridge', value: true});
-        }
-      }
-    } else {
-      workScheme = sheet.workscheme;
-    }
-    return workScheme || [];
   },
   async save({state, commit}): Promise<void> {
     const {weeklyTimesheet} = state;
