@@ -127,7 +127,7 @@ export default defineComponent({
     const teams = computed(() => store.state.teams.teams);
 
     const year = new Date().getFullYear();
-    const month = new Date().getMonth();
+    const month = new Date().getMonth() + 1;
 
     useMeta(() => ({
       title: i18n.t('employees') as string,
