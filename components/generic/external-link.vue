@@ -4,9 +4,3 @@
     <b-icon-box-arrow-up-right />
   </a>
 </template>
-
-<script>
-export default {
-  name: "ExternalLink",
-};
-</script>

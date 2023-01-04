@@ -1,17 +1,15 @@
 <i18n lang="yaml">
 en:
   manageProjects: "Manage Projects"
-  removeContract: "Remove contract"
 nl:
   manageProjects: "Projecten bewerken"
-  removeContract: "Verwijder contract"
 </i18n>
 
 <template>
   <section>
     <h6 class="mb-3">{{ $t('manageProjects') }}</h6>
     <b-input-group class="mb-2">
-      <b-form-select v-model="customerToAdd" :options="customersSelectList"></b-form-select>
+      <b-form-select v-model="customerToAdd" :options="customersSelectList" />
       <b-input-group-append>
         <b-button :disabled="!customerToAdd" @click="customerAddClick">Add</b-button>
       </b-input-group-append>
@@ -27,7 +25,7 @@ nl:
     >
       <template #cell(contract)="data">
         <div v-if="data.item.contract">
-          <b-button size="sm" @click="handleOpenContract(data.item)">
+          <b-button v-b-modal.view-contract size="sm" @click="selectedProject = data.item">
             <b-icon-eye />
           </b-button>
         </div>
@@ -54,37 +52,19 @@ nl:
       </template>
     </b-table>
 
-    <contract-selector id="select-contract" @selected="handleContractSelected"></contract-selector>
-
-    <b-modal ref="viewContractModal" ok-only>
-      <template #modal-title>
-        <p class="mb-0">Contract</p>
-      </template>
-      <contract-modal-content
-        v-if="selectedProject"
-        :contract="selectedProject.contract"
-        :handle-contract-delete="handleContractDelete"
-      />
-      <template #modal-footer>
-        <div class="contract-modal-footer-wrapper">
-          <b-button variant="danger" @click="handleContractDelete">
-            <b-icon-trash-fill />
-            {{ $t('removeContract') }}
-          </b-button>
-          <b-button variant="primary" @click="handleContractModalClose">OK</b-button>
-        </div>
-      </template>
-    </b-modal>
+    <contract-selector id="select-contract" @selected="handleContractSelected" />
+    <contract-viewer
+      id="view-contract"
+      :contract="selectedProject?.contract"
+      @remove="handleContractDelete(selectedProject)"
+    />
   </section>
 </template>
 
 <script lang="ts">
 import {computed, defineComponent, PropType, ref, SetupContext, useContext} from "@nuxtjs/composition-api";
-import {BModal} from "bootstrap-vue";
-import ContractModalContent from "~/components/employees/contract/contract-modal-content.vue";
 
 export default defineComponent({
-  components: {ContractModalContent},
   props: {
     selectedProjects: {
       type: Array as PropType<Project[]>,
@@ -156,16 +136,6 @@ export default defineComponent({
       emit('update-selected-projects', newList);
     }
 
-    const viewContractModal = ref<InstanceType<typeof BModal> | null>(null);
-    const handleOpenContract = (project: Project) => {
-      selectedProject.value = project;
-      viewContractModal.value?.show();
-    }
-
-    const handleContractModalClose = () => {
-      viewContractModal.value?.hide();
-    }
-
     const handleContractDelete = (project?: Project) => {
       if(!project) return;
 
@@ -180,7 +150,6 @@ export default defineComponent({
       });
 
       emit('update-selected-projects', newList);
-      viewContractModal.value?.hide();
     }
 
     const fields = [
@@ -199,20 +168,8 @@ export default defineComponent({
       handleProjectDelete,
       handleContractSelected,
       fields,
-      handleOpenContract,
-      handleContractModalClose,
-      viewContractModal,
       handleContractDelete
     }
   },
 });
 </script>
-
-<style lang="scss" scoped>
-.contract-modal-footer-wrapper {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-</style>

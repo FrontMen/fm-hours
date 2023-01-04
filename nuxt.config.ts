@@ -73,6 +73,7 @@ export default {
 
   publicRuntimeConfig: {
     isDevelopment: process.env.NODE_ENV === 'development',
+    bridgeUrl: process.env.BRIDGE_URL,
   },
 
   firebase: {
