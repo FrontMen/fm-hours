@@ -1,91 +1,67 @@
-import type {NuxtFireInstance} from '@nuxtjs/firebase';
-import {Collections} from '~/types/enums';
+import Service from './Service';
+import RepositoryManager, {TravelRecord, WhereTuple, DocumentWithId} from '~/repositories';
 
-export default class TravelRecordsService {
-  fire: NuxtFireInstance;
+function parseDate(date: string): number {
+  const number = new Date(date).getTime();
+  if (Number.isNaN(number)) {
+    return parseInt(date, 10);
+  }
+  return number;
+}
 
-  constructor(fire: NuxtFireInstance) {
-    this.fire = fire;
+export default class TravelRecordsService extends Service<TravelRecord> {
+  constructor(repositories: RepositoryManager) {
+    super(repositories, repositories.travelRecords);
   }
 
-  async getEmployeeRecords(params: {
-    employeeId: string;
-    startDate?: string;
-    endDate?: string;
-  }): Promise<TravelRecord[]> {
-    const query = await this.fire.firestore
-      .collection(Collections.TRAVELREC)
-      .where('employeeId', '==', params.employeeId);
+  getEmployeeRecords(params: {employeeId: string; startDate?: string; endDate?: string}) {
+    const {employeeId, startDate, endDate} = params;
 
-    if (params.startDate) query.where('date', '>=', new Date(params.startDate).getTime());
-
-    if (params.endDate) query.where('date', '<=', new Date(params.endDate).getTime());
-
-    const snapshot = await query.get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...(doc.data() as Omit<TravelRecord, 'id'>),
-    }));
+    return this.repository.getByQuery([
+      ['employeeId', '==', employeeId],
+      ...(startDate
+        ? [['date', '>=', parseDate(startDate)] as WhereTuple<TravelRecord>]
+        : []),
+      ...(endDate ? [['date', '<=', parseDate(endDate)] as WhereTuple<TravelRecord>] : []),
+    ]);
   }
 
-  async getRecords(params: {startDate: Date; endDate: Date}): Promise<TimeRecord[]> {
-    const snapshot = await this.fire.firestore
-      .collection(Collections.TRAVELREC)
-      .where('date', '>=', params.startDate.getTime())
-      .where('date', '<=', params.endDate.getTime())
-      .orderBy('date', 'asc')
-      .get();
+  getRecords(params: {startDate: Date; endDate: Date}) {
+    const {startDate, endDate} = params;
 
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...(doc.data() as Omit<TimeRecord, 'id'>),
-    }));
+    return this.repository.getByQuery(
+      [
+        ['date', '>=', startDate.getTime()],
+        ['date', '<=', endDate.getTime()],
+      ],
+      ['date', 'asc']
+    );
   }
 
   async saveEmployeeRecords(params: {employeeId: string; travelRecords: TravelRecord[]}) {
-    const ref = this.fire.firestore.collection(Collections.TRAVELREC);
-
+    const {employeeId, travelRecords} = params;
     const updatedRecords = await Promise.all(
-      params.travelRecords.map(async record => {
-        return await this.updateRecord(ref, params.employeeId, record);
-      })
+      travelRecords.map(record => this.updateRecord({id: null, ...record, employeeId})) // TODO: refactor to remove { id: null }
     );
 
-    return updatedRecords.filter(x => !!x.id);
+    return updatedRecords.filter(record => 'id' in record && record.id !== null);
   }
 
-  private async updateRecord(
-    ref: any,
-    employeeId: string,
-    record: TravelRecord
-  ): Promise<TravelRecord> {
-    const {id, kilometers} = record;
+  private updateRecord(
+    record: DocumentWithId<TravelRecord> | (TravelRecord & {id: null}) // TODO: refactor to remove { id: null }
+  ) {
+    const {kilometers} = record;
 
-    const newRecord: any = {...record};
-    delete newRecord.id;
-
-    if (id) {
-      const shouldDelete = kilometers <= 0;
-
-      if (shouldDelete) await ref.doc(id).delete();
-      else await ref.doc(id).update(newRecord);
-
-      return {
-        ...newRecord,
-        id: shouldDelete ? null : id,
-      };
+    if ('id' in record && record.id !== null) {
+      const {id, ...doc} = record as DocumentWithId<TravelRecord>;
+      if (kilometers) {
+        this.repository.updateById(id, doc);
+      } else {
+        this.repository.delete(id);
+      }
+    } else if (kilometers) {
+      return this.repository.add(record);
     }
-
-    if (kilometers > 0) {
-      const newDocument = await ref.add({employeeId, ...newRecord});
-
-      return {
-        ...newRecord,
-        id: newDocument.id,
-      };
-    }
-
     return record;
   }
 }

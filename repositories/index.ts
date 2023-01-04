@@ -16,6 +16,12 @@ export type Team = {
   archived?: boolean;
 };
 
+export type TravelRecord = {
+  date: number;
+  kilometers: number;
+  employeeId?: string;
+}
+
 export default class RepositoryManager {
   adminList: Repository;
   customers: Repository;
@@ -24,7 +30,7 @@ export default class RepositoryManager {
   teams: Repository<Team>;
   timesheets: Repository;
   timeRecords: Repository;
-  travelRecords: Repository;
+  travelRecords: Repository<TravelRecord>;
 
   constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
     this.adminList = new Repository(Collections.ADMINS, fire, fireModule);

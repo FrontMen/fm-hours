@@ -32,5 +32,5 @@ export default defineNuxtPlugin(({$fire, $fireModule, $axios}, inject) => {
   inject('teamsService', new TeamsService(repositories));
   inject('timeRecordsService', new TimeRecordsService($fire, $axios));
   inject('timesheetsService', new TimesheetsService($fire));
-  inject('travelRecordsService', new TravelRecordsService($fire));
+  inject('travelRecordsService', new TravelRecordsService(repositories));
 });
