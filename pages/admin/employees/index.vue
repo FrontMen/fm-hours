@@ -158,7 +158,7 @@ export default defineComponent({
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
 
-    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee & {active: boolean}) => {
+    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee) => {
       return (isActive || includeInactive.value) && (isBillable || includeNonBillable.value)
     }
 
