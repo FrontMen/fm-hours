@@ -1,6 +1,6 @@
 import {isAfter, isBefore} from 'date-fns';
 
-export function createMonthlyReportData(payload: any): any {
+export function createMonthlyReportData(payload: MonthlyReportPreData): MonthlyReportData {
   const {
     startDate,
     endDate,
@@ -10,9 +10,10 @@ export function createMonthlyReportData(payload: any): any {
     standByRecords,
     timesheets,
     teams,
+    customers,
   } = payload;
 
-  const nonBillableProjects = payload.customers.filter(
+  const nonBillableProjects = customers.filter(
     (customer: Customer) => !customer.isBillable && !customer.archived
   );
 

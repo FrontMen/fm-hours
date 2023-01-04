@@ -14,6 +14,18 @@ interface MonthlyReportData {
   employees: ReportEmployee[];
 }
 
+interface MonthlyReportPreData {
+  startDate: Date;
+  endDate: Date;
+  employees: Employee[];
+  timeRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
+  standByRecords: StandbyRecord[];
+  timesheets: Timesheet[];
+  teams: Team[];
+  customers: Customer[];
+}
+
 interface ReportsStoreState {
   isLoading: boolean;
   startDate: Date;
