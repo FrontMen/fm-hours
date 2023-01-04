@@ -26,7 +26,7 @@ export default class TimesheetsService {
     this.isServer = process.server;
     this.employeesService = new EmployeesService(fire, fireModule);
     this.projectsService = new ProjectsService(fire, fireModule);
-    this.timeRecordsService = new TimeRecordsService(fire, fireModule, axios);
+    this.timeRecordsService = new TimeRecordsService(fire, axios);
     this.workSchemeService = new WorkSchemeService(axios);
   }
 
@@ -126,6 +126,7 @@ export default class TimesheetsService {
 
     return createWeeklyTimesheet({
       ...weeklyRecords,
+      sheet,
       projects,
       workScheme,
     });

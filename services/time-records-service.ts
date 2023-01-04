@@ -1,23 +1,18 @@
-import firebase from 'firebase/compat';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 import {startOfISOWeek} from 'date-fns';
-import TimesheetsService from './timesheets-service';
 import TravelRecordsService from './travel-records-service';
 import {Collections} from '~/types/enums';
 import {buildWeek} from '~/helpers/dates';
-import {recordStatus} from '~/helpers/record-status';
 
 export default class TimeRecordsService {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
-  timesheetsService: TimesheetsService;
   travelRecordsService: TravelRecordsService;
 
-  constructor(fire: NuxtFireInstance, fireModule: typeof firebase, axios: NuxtAxiosInstance) {
+  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
     this.fire = fire;
     this.axios = axios;
-    this.timesheetsService = new TimesheetsService(fire, fireModule, axios);
     this.travelRecordsService = new TravelRecordsService(fire);
   }
 
@@ -245,19 +240,6 @@ export default class TimeRecordsService {
     startDate: Date;
   }): Promise<WeeklyRecords> {
     const workWeek = buildWeek(startOfISOWeek(startDate));
-    const startEpoch = new Date(workWeek[0].date).getTime();
-
-    const sheets = await this.timesheetsService.getTimesheets({employeeId, date: startEpoch});
-
-    const sheet: Optional<Timesheet, 'id'> = sheets.length
-      ? sheets[0]
-      : {
-          employeeId,
-          date: new Date(workWeek[0].date).getTime(),
-          status: recordStatus.NEW as TimesheetStatus,
-          messages: [],
-        };
-
     const range = {
       startDate: new Date(workWeek[0].date).getTime().toString(),
       endDate: new Date(workWeek[6].date).getTime().toString(),
@@ -270,7 +252,6 @@ export default class TimeRecordsService {
     ]);
 
     return {
-      sheet,
       week: workWeek,
       timeRecords,
       travelRecords,
