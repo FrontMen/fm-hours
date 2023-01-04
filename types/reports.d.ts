@@ -19,15 +19,3 @@ interface ReportsStoreState {
   startDate: Date;
   reportData: MonthlyReportData;
 }
-
-interface CreateMonthlyReportDataPayload {
-  startDate: Date;
-  endDate: Date;
-  employees: Employee[];
-  customers: Customer[];
-  timeRecords: TimeRecord[];
-  travelRecords: TravelRecord[];
-  standByRecords: StandbyRecord[];
-  timesheets: Timesheet[];
-  teams: Team[];
-}
