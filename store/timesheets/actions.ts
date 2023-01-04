@@ -130,6 +130,16 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     }
     return workScheme || [];
   },
+  async saveTimesheet({state, commit}): Promise<void> {
+    const {weeklyTimesheet} = state;
+    const sheet = {
+      ...weeklyTimesheet.info,
+      workscheme: weeklyTimesheet.workScheme,
+    } as Optional<Timesheet, 'id'>;
+
+    const info = await this.app.$timesheetsService.saveTimesheet(sheet);
+    commit('setTimesheetInfo', {info});
+  },
 };
 
 export default actions;

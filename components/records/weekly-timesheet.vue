@@ -295,18 +295,13 @@ export default defineComponent({
     };
 
     const saveTimesheet = async () => {
-      const sheet = {
-        ...timesheet.value.info,
-        workscheme: timesheet.value.workScheme
-      } as Optional<Timesheet, 'id'>;
-
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(sheet);
+      await store.dispatch('timesheets/saveTimesheet');
     }
 
     const changeStatus = async (status: TimesheetStatus,) => {
       if (timesheet.value.info === null) return;
 
-      timesheet.value.info.status = status;
+      store.commit('timesheets/setTimesheetStatus', { status });
 
       await saveTimesheet();
     }

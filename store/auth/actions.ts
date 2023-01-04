@@ -22,8 +22,7 @@ const actions: ActionTree<AuthStoreState, RootStoreState> = {
     await this.$fire.auth.signOut();
     commit('setLoading', false);
     commit('resetUser');
-    // @ts-ignore
-    this.$router.push(this.localePath('/login'));
+    this.$router.push(this.app.localePath('/login'));
   },
 
   /**
