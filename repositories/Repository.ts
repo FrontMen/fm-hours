@@ -1,15 +1,28 @@
-import {CollectionReference, DocumentData, QueryDocumentSnapshot} from '@firebase/firestore-types';
+import {
+  CollectionReference,
+  DocumentData,
+  OrderByDirection,
+  Query,
+  QueryDocumentSnapshot,
+  WhereFilterOp,
+} from '@firebase/firestore-types';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import firebase from 'firebase/compat';
 import {Collections} from '~/types/enums';
 
 type DocumentId = string;
 
-export type {DocumentData} from '@firebase/firestore-types';
+type DocumentField<T> = keyof T & string;
+
+export type WhereTuple<T> = [DocumentField<T>, WhereFilterOp, any]; // TODO: stricter definition
+
+export type OrderTuple<T> = [DocumentField<T>, OrderByDirection];
 
 export type DocumentWithId<T extends DocumentData = DocumentData> = T & {
   id: DocumentId;
 };
+
+export type {DocumentData, OrderByDirection} from '@firebase/firestore-types';
 
 function includeId<T extends DocumentData>(doc: QueryDocumentSnapshot<T>): DocumentWithId<T> {
   const data = doc.data();
@@ -51,7 +64,6 @@ export default class Repository<T extends DocumentData = DocumentData> {
 
   async getById(id: DocumentId): Promise<DocumentWithId<T> | null> {
     const ref = this.collection.where(this.fireModule.firestore.FieldPath.documentId(), '==', id);
-
     const snapshot = await ref.get();
     const doc = snapshot.docs[0];
 
@@ -64,6 +76,24 @@ export default class Repository<T extends DocumentData = DocumentData> {
     const doc = snapshot.docs[index];
 
     return doc && doc.exists ? includeId(doc) : null;
+  }
+
+  async getByQuery(
+    where: WhereTuple<T>[],
+    [field, direction]: OrderTuple<T> | never[] = []
+  ): Promise<DocumentWithId<T>[]> {
+    const selection = where.reduce(
+      (acc: CollectionReference<T> | Query<T>, [field, operator, value]) =>
+        acc.where(field, operator, value),
+      this.collection
+    );
+
+    const ref = field && direction ? selection.orderBy(field, direction) : selection;
+
+    const snapshot = await ref.get();
+    const docs = snapshot.docs;
+
+    return docs.map(includeId);
   }
 
   async updateById(id: DocumentId, resource: T): Promise<void> {

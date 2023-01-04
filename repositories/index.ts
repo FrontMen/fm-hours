@@ -3,8 +3,12 @@ import firebase from 'firebase/compat';
 import Repository from './Repository';
 import {Collections} from '~/types/enums';
 
-export type {DocumentWithId} from './Repository';
-export type {DocumentData} from './Repository';
+export type {
+  DocumentData,
+  DocumentWithId,
+  WhereTuple,
+  OrderTuple,
+} from './Repository';
 
 export type Team = {
   name: string;
