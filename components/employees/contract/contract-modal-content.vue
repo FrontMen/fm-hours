@@ -31,20 +31,20 @@ nl:
     <dl class="row mb-4">
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('name') }}</dt>
       <dd class="col-sm-10">
-        <external-link :href="`${bridgeUrl}/contract/${contract.id}`">
+        <external-link :href="`${$config.bridgeUrl}/contract/${contract.id}`">
           {{ contract.name }}
         </external-link>
       </dd>
 
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('company') }}</dt>
       <dd class="col-sm-10">
-        <external-link :href="`${bridgeUrl}/company/${contract.company_id}`" target="_blank">
+        <external-link :href="`${$config.bridgeUrl}/company/${contract.company_id}`">
           {{ contract.company_name }}
         </external-link>
       </dd>
 
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('group') }}</dt>
-      <dd class="col-sm-10">{{ contract.group || '-' }}</dd>
+      <dd class="col-sm-10">{{ contract.group_name || '-' }}</dd>
 
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('active') }}</dt>
       <dd class="col-sm-10">
@@ -57,7 +57,7 @@ nl:
     <dl class="row mb-4">
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('name') }}</dt>
       <dd class="col-sm-10">
-        <external-link :href="`${bridgeUrl}/project/${contract.project_id}`">
+        <external-link :href="`${$config.bridgeUrl}/project/${contract.project_id}`">
           {{ contract.project_name }}
         </external-link>
       </dd>
@@ -73,7 +73,7 @@ nl:
     <dl class="row">
       <dt class="col-sm-2 font-weight-normal text-black-50">{{ $t('entity') }}</dt>
       <dd class="col-sm-10">
-        <external-link :href="`${bridgeUrl}/billingcontact/${contract.billingcontact_id}`">
+        <external-link :href="`${$config.bridgeUrl}/billingcontact/${contract.billingcontact_id}`">
           {{ contract.project_billingentity_name  }}
         </external-link>
       </dd>
@@ -85,27 +85,13 @@ nl:
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@nuxtjs/composition-api";
-import ExternalLink from "~/components/employees/contract/external-link.vue";
+import {defineComponent, PropType} from "@nuxtjs/composition-api";
 
 export default defineComponent({
-  name: 'ContractModalContent',
-  components: {ExternalLink},
   props: {
     contract: {
-      type: Object,
+      type: Object as PropType<Contract>,
       required: true,
-    },
-    handleContractDelete: {
-      type: Function,
-      required: true,
-    }
-  },
-  setup() {
-    const bridgeUrl = 'https://bridge.hosted-tools.com'
-
-    return {
-      bridgeUrl,
     }
   }
 })
