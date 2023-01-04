@@ -87,13 +87,8 @@ nl:
       </div>
     </template>
 
-    <contract-selector id="select-contract" @selected="handleContractSelected"></contract-selector>
-
-    <contract-viewer
-      id="view-contract"
-      :contract="form.contract"
-      @remove="handleContractDelete"
-    ></contract-viewer>
+    <contract-selector id="select-contract" @selected="handleContractSelected" />
+    <contract-viewer id="view-contract" :contract="form.contract" @remove="handleContractDelete" />
   </div>
 </template>
 

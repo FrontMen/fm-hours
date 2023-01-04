@@ -9,7 +9,7 @@ nl:
   <section>
     <h6 class="mb-3">{{ $t('manageProjects') }}</h6>
     <b-input-group class="mb-2">
-      <b-form-select v-model="customerToAdd" :options="customersSelectList"></b-form-select>
+      <b-form-select v-model="customerToAdd" :options="customersSelectList" />
       <b-input-group-append>
         <b-button :disabled="!customerToAdd" @click="customerAddClick">Add</b-button>
       </b-input-group-append>
@@ -52,13 +52,12 @@ nl:
       </template>
     </b-table>
 
-    <contract-selector id="select-contract" @selected="handleContractSelected"></contract-selector>
-
+    <contract-selector id="select-contract" @selected="handleContractSelected" />
     <contract-viewer
       id="view-contract"
       :contract="selectedProject?.contract"
       @remove="handleContractDelete(selectedProject)"
-    ></contract-viewer>
+    />
   </section>
 </template>
 
