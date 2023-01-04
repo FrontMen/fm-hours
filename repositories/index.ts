@@ -3,16 +3,24 @@ import firebase from 'firebase/compat';
 import Repository from './Repository';
 import {Collections} from '~/types/enums';
 
+export type {DocumentWithId} from './Repository';
+export type {DocumentData} from './Repository';
+
+export type Team = {
+  name: string;
+  createdAt?: number;
+  archived?: boolean;
+};
+
 export default class RepositoryManager {
   adminList: Repository;
   customers: Repository;
   employees: Repository;
   standbyRecords: Repository;
-  teams: Repository;
+  teams: Repository<Team>;
   timesheets: Repository;
   timeRecords: Repository;
   travelRecords: Repository;
-
 
   constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {
     this.adminList = new Repository(Collections.ADMINS, fire, fireModule);

@@ -5,6 +5,8 @@ import {Collections} from '~/types/enums';
 
 type DocumentId = string;
 
+export type {DocumentData} from '@firebase/firestore-types';
+
 export type DocumentWithId<T extends DocumentData = DocumentData> = T & {
   id: DocumentId;
 };
