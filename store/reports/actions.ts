@@ -32,8 +32,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       },
       Collections.STANDBYREC
     );
-    // @ts-ignore
-    const travelRecordsPromise = this.app.$travelRecordsService.getRecords<TravelRecord>({
+    const travelRecordsPromise = this.app.$travelRecordsService.getRecords({
       startDate,
       endDate,
     });
