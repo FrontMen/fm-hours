@@ -23,6 +23,10 @@ const mutations: MutationTree<TimesheetsStoreState> = {
     if (!state.weeklyTimesheet.info) return;
     state.weeklyTimesheet.info.status = status;
   },
+  addMessage: (state, {message}: {message: Message}) => {
+    if (!state.weeklyTimesheet.info) return;
+    state.weeklyTimesheet.info.messages = [...state.weeklyTimesheet.info.messages, message];
+  },
 };
 
 export default mutations;
