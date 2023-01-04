@@ -15,7 +15,6 @@ import {defineComponent, useStore, computed} from "@nuxtjs/composition-api";
 import {formatToMonthYear} from "~/helpers/dates";
 
 export default defineComponent({
-  name: 'NotBillableReport',
   setup() {
     const store = useStore<RootStoreState>();
     return {

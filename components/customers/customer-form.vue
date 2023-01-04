@@ -6,7 +6,6 @@ en:
   contractDescription: "Only when every employee needs to write on the same contract use this!"
   viewContract: "View contract"
   selectContract: "Select a contract"
-  removeContract: "Remove contract"
   archivedCustomer: "Customer is archived"
 nl:
   notFound: "Klant niet gevonden"
@@ -15,7 +14,6 @@ nl:
   contractDescription: "Gebruik dit alleen als elke werknemer op hetzelfde contract moet schrijven!"
   viewContract: "Contract bekijken"
   selectContract: "Selecteer een contract"
-  removeContract: "Verwijder contract"
   archivedCustomer: "Klant is gearchiveerd"
 </i18n>
 
@@ -56,7 +54,7 @@ nl:
             <div v-if="form.contract">
               <p class="mb-1 text-muted">{{ form.contract.project_name }}</p>
               <p class="mb-0 text-muted">{{ form.contract.name }}</p>
-              <b-button class="" size="sm" @click="handleContractOpen">
+              <b-button v-b-modal.view-contract size="sm">
                 <b-icon-eye />
                 {{ $t('viewContract') }}
               </b-button>
@@ -91,16 +89,11 @@ nl:
 
     <contract-selector id="select-contract" @selected="handleContractSelected"></contract-selector>
 
-    <b-modal ref="viewContractModal" ok-only>
-      <b-button size="sm" variant="danger" @click="handleContractDelete">
-        <b-icon-trash-fill />
-        {{ $t('removeContract') }}
-      </b-button>
-      <pre v-if="form?.contract">
-          {{ form.contract }}
-        </pre
-      >
-    </b-modal>
+    <contract-viewer
+      id="view-contract"
+      :contract="form.contract"
+      @remove="handleContractDelete"
+    ></contract-viewer>
   </div>
 </template>
 
@@ -116,7 +109,6 @@ import {
   useContext,
   PropType,
 } from "@nuxtjs/composition-api";
-import { BModal } from "bootstrap-vue";
 
 export default defineComponent({
   props: {
@@ -137,7 +129,6 @@ export default defineComponent({
     const { i18n } = useContext();
     const router = useRouter();
     const store = useStore<RootStoreState>();
-    const viewContractModal = ref<InstanceType<typeof BModal> | null>(null);
 
     const hasUnsavedChanges = ref<boolean>(false);
     const form = ref<Omit<Customer, 'id'>>({
@@ -221,16 +212,12 @@ export default defineComponent({
       hasUnsavedChanges.value = true
     }
 
-    const handleContractOpen = () => {
-      viewContractModal.value?.show();
-    }
     const handleContractDelete = () => {
       form.value = {
         ...form.value,
         contract: undefined
       }
       hasUnsavedChanges.value = true
-      viewContractModal.value?.hide();
     }
 
     return {
@@ -238,10 +225,8 @@ export default defineComponent({
       form,
       archiveCustomerToggle,
       handleSubmit,
-      viewContractModal,
       handleContractSelected,
-      handleContractDelete,
-      handleContractOpen
+      handleContractDelete
     };
   },
   head: {},
