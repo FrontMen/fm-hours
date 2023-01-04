@@ -52,14 +52,8 @@ import {
   useStore,
 } from '@nuxtjs/composition-api';
 import {addMonths, subMonths} from 'date-fns';
-import NotBillableReport from "~/components/reports/not-billable-report.vue";
-import StandByReport from "~/components/reports/stand-by-report.vue";
-import KilometersReport from "~/components/reports/kilometers-report.vue";
-import ProjectsReport from "~/components/reports/projects-report.vue";
-import TotalsReport from "~/components/reports/totals-report.vue";
 
 export default defineComponent({
-  components: {TotalsReport, ProjectsReport, KilometersReport, StandByReport, NotBillableReport},
   setup() {
     const {i18n} = useContext();
 
