@@ -1,3 +1,4 @@
+import firebase from 'firebase/compat';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
 import {startOfISOWeek} from 'date-fns';
@@ -13,10 +14,10 @@ export default class TimeRecordsService {
   timesheetsService: TimesheetsService;
   travelRecordsService: TravelRecordsService;
 
-  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase, axios: NuxtAxiosInstance) {
     this.fire = fire;
     this.axios = axios;
-    this.timesheetsService = new TimesheetsService(fire);
+    this.timesheetsService = new TimesheetsService(fire, fireModule, axios);
     this.travelRecordsService = new TravelRecordsService(fire);
   }
 

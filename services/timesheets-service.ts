@@ -1,16 +1,33 @@
 import firebase from 'firebase/compat';
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {DocumentData} from '@firebase/firestore-types';
+import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {startOfISOWeek} from 'date-fns';
+
+import EmployeesService from './employees-service';
+import ProjectsService from './projects-service';
+import TimeRecordsService from './time-records-service';
+import WorkSchemeService from './work-scheme-service';
 import {Collections} from '~/types/enums';
 import {recordStatus} from '~/helpers/record-status';
+import {createWeeklyTimesheet} from '~/helpers/timesheet';
+import {buildWeek} from '~/helpers/dates';
 
 export default class TimesheetsService {
   fire: NuxtFireInstance;
   isServer: boolean;
+  employeesService: EmployeesService;
+  projectsService: ProjectsService;
+  timeRecordsService: TimeRecordsService;
+  workSchemeService: WorkSchemeService;
 
-  constructor(fire: NuxtFireInstance) {
+  constructor(fire: NuxtFireInstance, fireModule: typeof firebase, axios: NuxtAxiosInstance) {
     this.fire = fire;
     this.isServer = process.server;
+    this.employeesService = new EmployeesService(fire, fireModule);
+    this.projectsService = new ProjectsService(fire, fireModule);
+    this.timeRecordsService = new TimeRecordsService(fire, fireModule, axios);
+    this.workSchemeService = new WorkSchemeService(axios);
   }
 
   async getTimesheets({date, startDate, endDate, employeeId}: GetTimesheetsProps) {
@@ -68,5 +85,49 @@ export default class TimesheetsService {
     const newDocument = await ref.add(newTimesheet);
 
     return {...newTimesheet, id: newDocument.id};
+  }
+
+  async getWeeklyTimesheet({
+    employeeId,
+    startDate,
+    checkOwnWorkScheme,
+    isOwnTimesheet,
+  }: {
+    employeeId: string;
+    startDate: Date;
+    checkOwnWorkScheme: boolean;
+    isOwnTimesheet: boolean;
+  }) {
+    const employee = await this.employeesService.getById(employeeId);
+    if (!employee) return;
+    const workWeek = buildWeek(startOfISOWeek(startDate));
+    const startEpoch = new Date(workWeek[0].date).getTime();
+    const sheets = await this.getTimesheets({employeeId, date: startEpoch});
+    const sheet: Optional<Timesheet, 'id'> = sheets.length
+      ? sheets[0]
+      : {
+          employeeId,
+          date: new Date(workWeek[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [],
+        };
+    const workScheme = await this.workSchemeService.getWorkSchemeService({
+      bridgeUid: employee.bridgeUid || '',
+      sheet,
+      workWeek,
+      checkOwn: checkOwnWorkScheme,
+      isOwnTimesheet,
+    });
+    const weeklyRecords = await this.timeRecordsService.getWeeklyRecords({
+      employeeId,
+      startDate,
+    });
+    const projects = await this.projectsService.getProjects(employeeId);
+
+    return createWeeklyTimesheet({
+      ...weeklyRecords,
+      projects,
+      workScheme,
+    });
   }
 }

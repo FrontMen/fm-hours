@@ -1,11 +1,10 @@
 /* eslint-disable camelcase */
 import {ActionTree} from 'vuex';
-import {startOfISOWeek} from 'date-fns';
 import {AxiosError} from 'axios';
 
-import {createTimesheetTableData, createWeeklyTimesheet} from '~/helpers/timesheet';
+import {createTimesheetTableData} from '~/helpers/timesheet';
 import {checkEmployeeAvailability} from '~/helpers/employee';
-import {buildWeek, getWeeksInMonth} from '~/helpers/dates';
+import {getWeeksInMonth} from '~/helpers/dates';
 import {recordStatus} from '~/helpers/record-status';
 import {uuidv4} from '~/helpers/helpers';
 
@@ -42,7 +41,7 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
     commit('setTimesheetsTableData', {tableData});
   },
   async getWeeklyTimesheet(
-    {dispatch, commit},
+    {dispatch, commit, rootState},
     {
       employee,
       startDate,
@@ -53,46 +52,25 @@ const actions: ActionTree<TimesheetsStoreState, RootStoreState> = {
       checkOwnWorkScheme: boolean;
     }
   ) {
-    const workWeek = buildWeek(startOfISOWeek(startDate));
-    if (!employee) return;
+    const isOwnTimesheet = rootState.employee.employee?.id === employee.id;
 
-    const {id: employeeId} = employee;
+    try {
+      const weeklyTimesheet = await this.app.$timesheetsService.getWeeklyTimesheet({
+        employeeId: employee.id,
+        startDate,
+        checkOwnWorkScheme,
+        isOwnTimesheet,
+      });
 
-    const startEpoch = new Date(workWeek[0].date).getTime();
-
-    const sheets = await this.app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
-
-    const sheet: Optional<Timesheet, 'id'> = sheets.length
-      ? sheets[0]
-      : {
-          employeeId,
-          date: new Date(workWeek[0].date).getTime(),
-          status: recordStatus.NEW as TimesheetStatus,
-          messages: [],
-        };
-
-    const workScheme: WorkScheme[] = await dispatch('getWorkScheme', {
-      employee,
-      sheet,
-      workWeek,
-      checkOwn: checkOwnWorkScheme,
-    });
-
-    const weeklyRecords = await this.app.$timeRecordsService.getWeeklyRecords({
-      employeeId,
-      startDate,
-    });
-
-    const projects = await this.app.$projectsService.getProjects(employeeId);
-
-    // Combine everything in a single timesheet
-    const weeklyTimesheet = createWeeklyTimesheet({
-      ...weeklyRecords,
-      projects,
-      workScheme,
-    });
-
-    commit('setWeeklyTimesheet', {weeklyTimesheet});
+      commit('setWeeklyTimesheet', {weeklyTimesheet});
+      commit('setIsErrored', {key: 'bridge', value: false});
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.status === 401) {
+        dispatch('auth/logout');
+      } else {
+        commit('setIsErrored', {key: 'bridge', value: true});
+      }
+    }
   },
   async getWorkScheme(
     {dispatch, commit, rootState},
