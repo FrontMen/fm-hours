@@ -27,6 +27,15 @@ export type Team = {
   archived?: boolean;
 };
 
+export type Timesheet = {
+  date: number;
+  employeeId: string;
+  status: TimesheetStatus;
+  messages: Message[];
+  message?: string /** Only present on old timesheets with single comment */;
+  workscheme?: WorkScheme[];
+}
+
 export type TravelRecord = {
   date: number;
   kilometers: number;
@@ -39,7 +48,7 @@ export default class RepositoryManager {
   employees: Repository;
   standbyRecords: Repository;
   teams: Repository<Team>;
-  timesheets: Repository;
+  timesheets: Repository<Timesheet>;
   timeRecords: Repository;
   travelRecords: Repository<TravelRecord>;
 
