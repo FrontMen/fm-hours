@@ -21,6 +21,20 @@ export type Customer = {
   contract?: Contract;
 }
 
+export type Employee = {
+  name: string;
+  email: string;
+  travelAllowance: boolean;
+  billable: boolean;
+  projects: EmployeeProject[];
+  endDate: number | null;
+  startDate: number;
+  created: number;
+  bridgeUid?: string;
+  team?: string;
+  standBy: boolean;
+}
+
 export type Team = {
   name: string;
   createdAt?: number;
@@ -42,10 +56,11 @@ export type TravelRecord = {
   employeeId?: string;
 }
 
+
 export default class RepositoryManager {
-  adminList: Repository;
+  adminList: Repository<{admins: string[]}>;
   customers: Repository<Customer>;
-  employees: Repository;
+  employees: Repository<Employee>;
   standbyRecords: Repository;
   teams: Repository<Team>;
   timesheets: Repository<Timesheet>;
