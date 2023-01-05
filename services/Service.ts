@@ -1,5 +1,4 @@
-import RepositoryManager, {DocumentData, DocumentWithId} from '~/repositories';
-import Repository from '~/repositories/Repository';
+import RepositoryManager, {DocumentData, DocumentWithId, Repository} from '~/repositories';
 
 export default class Service<T extends DocumentData = DocumentData> {
   repositories: RepositoryManager;

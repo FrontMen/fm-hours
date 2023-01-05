@@ -56,6 +56,13 @@ export type TravelRecord = {
   employeeId?: string;
 }
 
+export type TimeRecord = {
+  date: number;
+  customer: Customer;
+  hours: number;
+  employeeId?: string;
+  worklogId?: number | null;
+}
 
 export default class RepositoryManager {
   adminList: Repository<{admins: string[]}>;
@@ -64,7 +71,7 @@ export default class RepositoryManager {
   standbyRecords: Repository;
   teams: Repository<Team>;
   timesheets: Repository<Timesheet>;
-  timeRecords: Repository;
+  timeRecords: Repository<TimeRecord>;
   travelRecords: Repository<TravelRecord>;
 
   constructor(fire: NuxtFireInstance, fireModule: typeof firebase) {

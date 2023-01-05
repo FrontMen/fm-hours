@@ -1,42 +1,11 @@
-import Service from './Service';
-import RepositoryManager, {TravelRecord, WhereTuple, DocumentWithId} from '~/repositories';
+import RecordsService from './RecordsService';
+import RepositoryManager, {TravelRecord, DocumentWithId} from '~/repositories';
 
-function parseDate(date: string): number {
-  const number = new Date(date).getTime();
-  if (Number.isNaN(number)) {
-    return parseInt(date, 10);
-  }
-  return number;
-}
-
-export default class TravelRecordsService extends Service<TravelRecord> {
+export default class TravelRecordsService extends RecordsService<TravelRecord> {
   constructor(repositories: RepositoryManager) {
     super(repositories, repositories.travelRecords);
   }
 
-  getEmployeeRecords(params: {employeeId: string; startDate?: string; endDate?: string}) {
-    const {employeeId, startDate, endDate} = params;
-
-    return this.repository.getByQuery([
-      ['employeeId', '==', employeeId],
-      ...(startDate
-        ? [['date', '>=', parseDate(startDate)] as WhereTuple<TravelRecord>]
-        : []),
-      ...(endDate ? [['date', '<=', parseDate(endDate)] as WhereTuple<TravelRecord>] : []),
-    ]);
-  }
-
-  getRecords(params: {startDate: Date; endDate: Date}) {
-    const {startDate, endDate} = params;
-
-    return this.repository.getByQuery(
-      [
-        ['date', '>=', startDate.getTime()],
-        ['date', '<=', endDate.getTime()],
-      ],
-      ['date', 'asc']
-    );
-  }
 
   async saveEmployeeRecords(params: {employeeId: string; travelRecords: TravelRecord[]}) {
     const {employeeId, travelRecords} = params;
