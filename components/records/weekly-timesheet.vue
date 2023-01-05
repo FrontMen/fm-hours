@@ -526,10 +526,6 @@ export default defineComponent({
       if (!employee) return;
       if (!employee.bridgeUid) return;
 
-      // Remove existing bridge items
-      // These shouldn't exist but you never know...
-      await handleBridgeRemove();
-
       const employeeId = employee.id;
       isSaving.value = true;
 
