@@ -1,10 +1,4 @@
-import Service from './Service';
-import {recordStatus} from '~/helpers/record-status';
-import RepositoryManager, {DocumentWithId, WhereTuple, Timesheet} from '~/repositories';
-
-function buildDateQuery<T extends {date: number}>(date?: T['date']) {
-  return [...(date ? [['date', '==', date] as WhereTuple<T>] : [])];
-}
+import RecordsService from './RecordsService';
 
 function buildDateRangeQuery<T extends {date: number}>(startDate?: T['date'], endDate?: T['date']) {
   return [
@@ -20,24 +14,29 @@ function buildEmployeeQuery<T extends {employeeId: string}>(employeeId?: T['empl
 function buildStatusQuery<T extends {status: string}>(status?: T['status']) {
   return [...(status ? [['status', '==', status] as WhereTuple<T>] : [])];
 }
+import {recordStatus} from '~/helpers/record-status';
+import RepositoryManager, {DocumentWithId, Timesheet, WhereTuple} from '~/repositories';
 
-export default class TimesheetsService extends Service<Timesheet> {
+export default class TimesheetsService extends RecordsService<Timesheet> {
   constructor(repositories: RepositoryManager) {
     super(repositories, repositories.timesheets);
   }
 
   getTimesheets({date, startDate, endDate, employeeId}: GetTimesheetsProps) {
     return this.repository.getByQuery([
-      ...buildEmployeeQuery(employeeId),
-      ...buildDateRangeQuery(startDate, endDate),
-      ...buildDateQuery(date),
+      ...TimesheetsService.buildEmployeeQuery(employeeId),
+      ...TimesheetsService.buildDateRangeQuery(startDate, endDate),
+      ...TimesheetsService.buildDateQuery(date),
     ]);
   }
 
   getApprovedTimesheets(params: {startDate: number; endDate: number}) {
     const {startDate, endDate} = params;
     return this.repository.getByQuery(
-      [...buildStatusQuery(recordStatus.APPROVED), ...buildDateRangeQuery(startDate, endDate)],
+      [
+        ...TimesheetsService.buildStatusQuery(recordStatus.APPROVED),
+        ...TimesheetsService.buildDateRangeQuery(startDate, endDate)
+    ],
       ['date', 'asc']
     );
   }
@@ -48,5 +47,9 @@ export default class TimesheetsService extends Service<Timesheet> {
     }
     await this.repository.updateById(timesheet.id, timesheet as DocumentWithId<Timesheet>);
     return timesheet;
+  }
+
+  static buildStatusQuery<T extends {status: T['status']}>(status?: T['status']) {
+    return [...(status ? [['status', '==', status] as WhereTuple<T>] : [])];
   }
 }

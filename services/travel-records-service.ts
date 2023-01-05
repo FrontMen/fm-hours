@@ -6,7 +6,6 @@ export default class TravelRecordsService extends RecordsService<TravelRecord> {
     super(repositories, repositories.travelRecords);
   }
 
-
   async saveEmployeeRecords(params: {employeeId: string; travelRecords: TravelRecord[]}) {
     const {employeeId, travelRecords} = params;
     const updatedRecords = await Promise.all(
@@ -22,7 +21,7 @@ export default class TravelRecordsService extends RecordsService<TravelRecord> {
     const {kilometers} = record;
 
     if ('id' in record && record.id !== null) {
-      const {id, ...doc} = record as DocumentWithId<TravelRecord>;
+      const {id, ...doc} = record;
       if (kilometers) {
         this.repository.updateById(id, doc);
       } else {
