@@ -45,6 +45,7 @@ import {
   defineComponent,
   PropType,
   watch,
+  useStore,
 } from '@nuxtjs/composition-api';
 
 import {checkEmployeeAvailability} from '~/helpers/employee';
@@ -97,6 +98,7 @@ export default defineComponent({
     }
   },
   setup(props: WeeklyTimesheetRowProps) {
+    const store = useStore<RootStoreState>();
     // Act as middleware to intercept project values to format it for the view
     const isTravelAllowance = props.timesheetProject.project.customer.name === 'Kilometers';
     const getInitialState = (project: TimesheetProject) => {
@@ -115,12 +117,12 @@ export default defineComponent({
     watch(
       formattedProjectValues,
       () => {
-        // TODO: fix me
-        // eslint-disable-next-line vue/no-mutating-props
-        props.timesheetProject.values = formattedProjectValues.value.map((val) => {
+        const { id: projectId} = props.timesheetProject.project;
+        const values = formattedProjectValues.value.map((val) => {
           if (val === '') return 0;
           return !isTravelAllowance ? timeStringToFloat(val) : +val;
         });
+        store.commit('timesheets/setProjectValues', { projectId, values });
       },
       {deep: true}
     );
