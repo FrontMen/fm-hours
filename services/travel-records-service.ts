@@ -1,22 +1,25 @@
 import RecordsService from './RecordsService';
-import RepositoryManager, {TravelRecord, DocumentWithId} from '~/repositories';
+import RepositoryManager, {TravelRecord, DocumentWithId, DocumentWithIdNull} from '~/repositories';
 
 export default class TravelRecordsService extends RecordsService<TravelRecord> {
   constructor(repositories: RepositoryManager) {
     super(repositories, repositories.travelRecords);
   }
 
-  async saveEmployeeRecords(params: {employeeId: string; travelRecords: TravelRecord[]}) {
+  async saveEmployeeRecords(params: {
+    employeeId: string;
+    travelRecords: (DocumentWithId<TravelRecord> | DocumentWithIdNull<TravelRecord> | TravelRecord)[];
+  }) {
     const {employeeId, travelRecords} = params;
     const updatedRecords = await Promise.all(
-      travelRecords.map(record => this.updateRecord({id: null, ...record, employeeId})) // TODO: refactor to remove { id: null }
+      travelRecords.map(record => this.updateRecord({id: null, ...record, employeeId}))
     );
 
     return updatedRecords.filter(record => 'id' in record && record.id !== null);
   }
 
   private updateRecord(
-    record: DocumentWithId<TravelRecord> | (TravelRecord & {id: null}) // TODO: refactor to remove { id: null }
+    record: DocumentWithId<TravelRecord> | DocumentWithIdNull<TravelRecord> | TravelRecord
   ) {
     const {kilometers} = record;
 

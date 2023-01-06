@@ -7,6 +7,7 @@ export type {
   default as Repository,
   DocumentData,
   DocumentWithId,
+  DocumentWithIdNull,
   WhereTuple,
   OrderTuple,
 } from './Repository';

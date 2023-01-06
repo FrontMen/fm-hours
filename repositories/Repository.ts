@@ -21,6 +21,10 @@ export type OrderTuple<T> = [DocumentField<T>, OrderByDirection];
 export type DocumentWithId<T extends DocumentData = DocumentData> = T & {
   id: DocumentId;
 };
+// TODO: remove usage of { id: null } throughout the codebase, either a resource has an id in the db, or it doesn't.
+export type DocumentWithIdNull<T extends DocumentData = DocumentData> = T & {
+  id: null
+};
 
 export type {DocumentData, OrderByDirection} from '@firebase/firestore-types';
 
