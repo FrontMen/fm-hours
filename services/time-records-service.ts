@@ -86,6 +86,7 @@ export default class TimeRecordsService {
   async addBridgeWorklog(record: TimeRecord, contractId: number, bridgeUid: string, ref: any) {
     if (record.hours <= 0) return;
     if (!record.id) return;
+    if (record.worklogId) return;
 
     const {id} = record;
     const newRecord: any = {...record};
