@@ -271,7 +271,7 @@ export default defineComponent({
       const travelRecordsToSave = getTravelRecordsToSave(timesheet.value);
 
       await Promise.all([
-        app.$timeRecordsService.saveEmployeeRecords<TimeRecord>({
+        app.$timeRecordsService.saveEmployeeRecords({
           employeeId,
           timeRecords: timeRecordsToSave.records,
           contracts: timeRecordsToSave.contracts,

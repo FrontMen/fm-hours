@@ -8,7 +8,7 @@ const actions: ActionTree<RecordsStoreState, RootStoreState> = {
   ) {
     if (!payload.employeeId || !payload.startDate?.getTime() || !payload.endDate?.getTime()) return;
 
-    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords<TimeRecord>({
+    const timeRecords = await this.app.$timeRecordsService.getEmployeeRecords({
       employeeId: payload.employeeId,
       startDate: payload.startDate.getTime().toString(),
       endDate: payload.endDate.getTime().toString(),

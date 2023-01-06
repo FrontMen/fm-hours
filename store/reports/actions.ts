@@ -20,7 +20,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       startDate: getDayOnGMT(startOfISOWeek(startDate)).getTime(),
       endDate: endDate.getTime(),
     });
-    const timeRecordsPromise = this.app.$timeRecordsService.getRecords<TimeRecord>({
+    const timeRecordsPromise = this.app.$timeRecordsService.getRecords({
       startDate,
       endDate,
     });
