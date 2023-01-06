@@ -1,96 +1,43 @@
-import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
-import {startOfISOWeek} from 'date-fns';
-import TimesheetsService from './timesheets-service';
-import TravelRecordsService from './travel-records-service';
-import {Collections} from '~/types/enums';
-import {buildWeek} from '~/helpers/dates';
-import {recordStatus} from '~/helpers/record-status';
+import RecordsService from './RecordsService';
+import RepositoryManager, {DocumentWithId, DocumentWithIdNull, TimeRecord} from '~/repositories';
 
-export default class TimeRecordsService {
-  fire: NuxtFireInstance;
+export default class TimeRecordsService extends RecordsService<TimeRecord> {
   axios: NuxtAxiosInstance;
   timesheetsService: TimesheetsService;
   travelRecordsService: TravelRecordsService;
 
-  constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
-    this.fire = fire;
+  constructor(repositories: RepositoryManager, axios: NuxtAxiosInstance) {
+    super(repositories, repositories.timeRecords);
     this.axios = axios;
     this.timesheetsService = new TimesheetsService(fire);
     this.travelRecordsService = new TravelRecordsService(fire);
   }
 
-  async getEmployeeRecords<RecordType>(
-    params: {
-      employeeId: string;
-      startDate?: string;
-      endDate?: string;
-    },
-    collection: string = Collections.TIMREC
-  ): Promise<RecordType[]> {
-    let query = this.fire.firestore
-      .collection(collection)
-      .where('employeeId', '==', params.employeeId);
-
-    if (params.startDate) {
-      query = query.where('date', '>=', new Date(+params.startDate).getTime());
-    }
-
-    if (params.endDate) {
-      query = query.where('date', '<=', new Date(+params.endDate).getTime());
-    }
-
-    const snapshot = await query.get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...(doc.data() as RecordType),
-    }));
-  }
-
-  async getRecords<RecordType>(
-    params: {
-      startDate: Date;
-      endDate: Date;
-    },
-    collection: string = Collections.TIMREC
-  ): Promise<RecordType[]> {
-    const snapshot = await this.fire.firestore
-      .collection(collection)
-      .where('date', '>=', params.startDate.getTime())
-      .where('date', '<', params.endDate.getTime())
-      .orderBy('date', 'asc')
-      .get();
-
-    return snapshot.docs.map(doc => ({
-      id: doc.id,
-      ...(doc.data() as RecordType),
-    }));
-  }
-
-  async addBridgeWorklogs(params: {
+  addBridgeWorklogs(params: {
     employeeId: string;
     bridgeUid: string;
     timeRecords: TimeRecord[];
     contracts: number[];
   }) {
-    const ref = this.fire.firestore.collection(Collections.TIMREC);
-
-    await Promise.all(
-      params.timeRecords.map(async (record: TimeRecord, index) => {
-        return await this.addBridgeWorklog(record, params.contracts[index], params.bridgeUid, ref);
-      })
+    const {timeRecords, contracts, bridgeUid} = params;
+    return Promise.all(
+      timeRecords.map((record: TimeRecord, index) =>
+        this.addBridgeWorklog(record, contracts[index], bridgeUid)
+      )
     );
   }
 
-  async addBridgeWorklog(record: TimeRecord, contractId: number, bridgeUid: string, ref: any) {
-    if (record.hours <= 0) return;
-    if (!record.id) return;
-    if (record.worklogId) return;
+  async addBridgeWorklog(
+    record: TimeRecord | DocumentWithId<TimeRecord>,
+    bridgeUid: string
+    contractId: number,
+  ) {
+    if (record.hours <= 0 || !('id' in record && record.id !== null)) {
+      return;
+    }
 
-    const {id} = record;
-    const newRecord: any = {...record};
-    delete newRecord.id;
+    const {id, ...rest} = record;
 
     const {
       data: {worklogId},
@@ -99,142 +46,119 @@ export default class TimeRecordsService {
       contractId,
       bridgeUid,
     });
-    newRecord.worklogId = worklogId;
-    await ref.doc(id).update(newRecord);
+
+    return this.repository.updateById(id, {
+      ...rest,
+      worklogId,
+    });
   }
 
-  async removeBridgeWorklogs(timeRecords: TimeRecord[]) {
-    const ref = this.fire.firestore.collection(Collections.TIMREC);
-
-    await Promise.all(
-      timeRecords.map(async (record: TimeRecord) => {
-        return await this.removeBridgeWorklog(record, ref);
-      })
-    );
+  removeBridgeWorklogs(timeRecords: TimeRecord[]) {
+    return Promise.all(timeRecords.map(record => this.removeBridgeWorklog(record)));
   }
 
-  async removeBridgeWorklog(record: TimeRecord, ref: any) {
+  async removeBridgeWorklog(record: TimeRecord | DocumentWithId<TimeRecord>) {
     if (!record.worklogId) return;
+    if (!record.worklogId || !('id' in record && record.id !== null)) {
+      return;
+    }
 
-    const {id} = record;
-    if (!id) return;
+    const {id, ...rest} = record;
 
     await this.axios.delete(`api/bridge/worklogs/${record.worklogId}`);
 
-    const newRecord: any = {...record};
-    delete newRecord.id;
-    newRecord.worklogId = null;
-    return await ref.doc(id).update(newRecord);
+    return await this.repository.updateById(id, {
+      ...rest,
+      worklogId: null,
+    });
   }
 
-  async saveEmployeeRecords<RecordType extends {id: string | null; hours: number}>(
-    params: {
-      employeeId: string;
-      bridgeUid?: string;
-      timeRecords: RecordType[];
-      contracts?: number[];
-    },
-    collection: string = Collections.TIMREC
-  ) {
-    const ref = this.fire.firestore.collection(collection);
-
+  async saveEmployeeRecords(params: {
+    employeeId: string;
+    bridgeUid?: string;
+    timeRecords: (DocumentWithId<TimeRecord> | DocumentWithIdNull<TimeRecord> | TimeRecord)[];
+    contracts?: number[];
+  }) {
     const updatedRecords = await Promise.all(
-      params.timeRecords.map(async (timeRecord: RecordType, index) => {
-        return await this.updateRecord<RecordType>(
-          ref,
+      params.timeRecords.map((timeRecord, index) =>
+        this.updateRecord(
           params.employeeId,
           timeRecord,
           params.contracts?.[index] || -1,
           params.bridgeUid
-        );
-      })
+        )
+      )
     );
 
-    return updatedRecords.filter(x => !!x.id);
+    return updatedRecords.filter(record => 'id' in record && record.id !== null);
   }
 
   private UPDATE_BRIDGE_ON_SAVE = false;
 
-  private async updateRecord<RecordType extends {id: string | null; hours: number}>(
-    ref: any,
+  private async updateRecord(
     employeeId: string,
-    record: RecordType,
+    record: DocumentWithId<TimeRecord> | DocumentWithIdNull<TimeRecord> | TimeRecord,
     contractId: number,
     bridgeUid?: string
-  ): Promise<RecordType> {
+  ): Promise<typeof record> {
     const hasContract = contractId > -1;
-    const {id, hours} = record;
+    const {hours} = record;
 
-    const newRecord: any = {...record};
-    delete newRecord.id;
-
-    if (id) {
+    if ('id' in record && record.id !== null) {
+      const {id, ...doc} = record;
       const shouldDelete = hours <= 0;
-      const updateWorklog = !!newRecord.worklogId && !!bridgeUid;
+
+      const shouldMutateBridge =
+        this.UPDATE_BRIDGE_ON_SAVE && hasContract && !!doc.worklogId && !!bridgeUid;
 
       if (shouldDelete) {
-        if (this.UPDATE_BRIDGE_ON_SAVE && hasContract && updateWorklog) {
-          await this.axios.delete(`api/bridge/worklogs/${newRecord.worklogId}`);
+        if (shouldMutateBridge) {
+          await this.axios.delete(`api/bridge/worklogs/${doc.worklogId}`);
         }
-
-        await ref.doc(id).delete();
+        await this.repository.delete(record.id);
       } else {
-        if (this.UPDATE_BRIDGE_ON_SAVE && hasContract && updateWorklog) {
-          await this.axios.put(`api/bridge/worklogs/${newRecord.worklogId}`, {
-            record: newRecord,
+        if (shouldMutateBridge) {
+          await this.axios.put(`api/bridge/worklogs/${doc.worklogId}`, {
+            record: doc,
             bridgeUid,
           });
         }
-
-        await ref.doc(id).update(newRecord);
+        await this.repository.updateById(id, {...doc, employeeId});
       }
 
       return {
-        ...newRecord,
+        ...record,
         id: shouldDelete ? null : id,
       };
     }
 
     if (hours > 0) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {id, ...doc} = {id: null, ...record}; // Make sure we don't have id: null in record
       if (this.UPDATE_BRIDGE_ON_SAVE && hasContract) {
         const {
           data: {worklogId},
         } = await this.axios.post('api/bridge/worklogs', {
-          record: newRecord,
+          record: doc,
           contractId,
           bridgeUid,
         });
-        newRecord.worklogId = worklogId;
+        doc.worklogId = worklogId;
       }
 
-      const newDocument = await ref.add({employeeId, ...newRecord});
-
-      return {
-        ...newRecord,
-        id: newDocument.id,
-      };
+      return this.repository.add(doc);
     }
 
     return record;
   }
 
-  async deleteEmployeeRecords<RecordType extends {id: string | null}>(
-    params: {
-      recordsToDelete: RecordType[];
-    },
-    collection: string = Collections.TIMREC
-  ): Promise<void> {
-    const batch = this.fire.firestore.batch();
-
-    params.recordsToDelete.forEach(record => {
-      if (record.id) {
-        const ref = this.fire.firestore.collection(collection).doc(record.id!);
-
-        batch.delete(ref);
-      }
-    });
-
-    return await batch.commit();
+  deleteEmployeeRecord(params: {recordsToDelete: (TimeRecord & {id?: null | string})[]}) {
+    const {recordsToDelete} = params;
+    const ids = recordsToDelete.reduce(
+      (acc: string[], record) => [...acc, ...('id' in record && record.id ? [record.id] : [])],
+      []
+    );
+    this.repository.deleteBatch(ids);
   }
 
   async getWeeklyRecords({
