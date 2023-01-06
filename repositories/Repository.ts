@@ -1,6 +1,6 @@
 import {
   CollectionReference,
-  DocumentData,
+  DocumentData as FBDocumentData,
   OrderByDirection,
   Query,
   QueryDocumentSnapshot,
@@ -14,6 +14,7 @@ type DocumentId = string;
 
 type DocumentField<T> = keyof T & string;
 
+type DocumentData = FBDocumentData & { id: never }; // Make id reserved keyword to refer to resources, never save to document data
 export type WhereTuple<T> = [DocumentField<T>, WhereFilterOp, any]; // TODO: stricter definition
 
 export type OrderTuple<T> = [DocumentField<T>, OrderByDirection];
