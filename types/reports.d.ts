@@ -14,7 +14,7 @@ interface MonthlyReportData {
   employees: ReportEmployee[];
 }
 
-interface MonthlyReportPreData {
+interface MonthlyReportPayload {
   startDate: Date;
   endDate: Date;
   employees: Employee[];

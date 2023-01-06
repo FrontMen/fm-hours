@@ -1,6 +1,6 @@
 import {isAfter, isBefore} from 'date-fns';
 
-export function createMonthlyReportData(payload: MonthlyReportPreData): MonthlyReportData {
+export function createMonthlyReportData(payload: MonthlyReportPayload): MonthlyReportData {
   const {
     startDate,
     endDate,

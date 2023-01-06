@@ -10,10 +10,7 @@ const mutations: MutationTree<ReportsStoreState> = {
   },
 
   saveMonthlyReportData(state, payload: MonthlyReportData) {
-    state.reportData = {
-      nonBillableProjects: payload.nonBillableProjects,
-      employees: payload.employees,
-    };
+    state.reportData = payload;
   },
 };
 

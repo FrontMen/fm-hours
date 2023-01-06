@@ -52,13 +52,13 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
     const approvedStandByRecords = filterApprovedRecords(standByRecords, timesheets);
     const approvedTravelRecords = filterApprovedRecords(travelRecords, timesheets);
 
-    const activeEmployees: Employee[] = employees.filter(employee =>
+    const activeEmployees = employees.filter(employee =>
       checkEmployeeAvailability(employee, startDate, endDate)
     );
 
     commit('setIsLoading', {isLoading: false});
 
-    const monthlyReportPreData: MonthlyReportPreData = {
+    const monthlyReportPayload: MonthlyReportPayload = {
       startDate,
       endDate,
       employees: activeEmployees,
@@ -70,7 +70,7 @@ const actions: ActionTree<ReportsStoreState, RootStoreState> = {
       teams,
     };
 
-    const monthlyReportToSave: MonthlyReportData = createMonthlyReportData(monthlyReportPreData);
+    const monthlyReportToSave: MonthlyReportData = createMonthlyReportData(monthlyReportPayload);
 
     commit('saveMonthlyReportData', monthlyReportToSave);
   },
