@@ -204,6 +204,7 @@ nl:
 import { computed, defineComponent, ref, useStore, watch, useContext, onBeforeMount } from '@nuxtjs/composition-api';
 import { format } from 'date-fns';
 import { getTotalsByProp } from '~/helpers/helpers';
+import {useEmployees} from '~/composables/useEmployees';
 
 export default defineComponent({
   props: {
@@ -255,18 +256,9 @@ export default defineComponent({
 
     const onlyBillable = ref<boolean>(false);
 
-    const employees = computed(() => store.state.employees.employees);
+    const { getEmployeeById } = useEmployees();
 
-    const employee = computed(() => {
-      const id = props.employeeId;
-
-      const employee = employees.value.find(e => e.id === id);
-      if (!employee) return;
-
-      if (employee.id === store.state.employee.employee?.id) return employee;
-
-      if (store.state.employee.employee?.isAdmin) return employee;
-    });
+    const employee = computed(() => getEmployeeById(props.employeeId));
 
     const getRecords = () => {
       store.dispatch('records/getMonthlyTimeRecords', {

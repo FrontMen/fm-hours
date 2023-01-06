@@ -23,6 +23,7 @@ interface Employee {
   team?: string;
   standBy: boolean;
   isAdmin: boolean;
+  active?: boolean;
 }
 
 interface EmployeeStoreState {
