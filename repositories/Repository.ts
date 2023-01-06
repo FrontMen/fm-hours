@@ -33,12 +33,14 @@ function includeId<T extends DocumentData>(doc: QueryDocumentSnapshot<T>): Docum
 }
 
 export default class Repository<T extends DocumentData = DocumentData> {
-  collection: CollectionReference<T>;
-  fireModule: typeof firebase;
+  private collection: CollectionReference<T>;
+  private fireModule: typeof firebase;
+  private fire: NuxtFireInstance;
 
   constructor(collectionKey: Collections, fire: NuxtFireInstance, fireModule: typeof firebase) {
-    this.fireModule = fireModule;
     this.collection = fire.firestore.collection(collectionKey) as CollectionReference<T>;
+    this.fireModule = fireModule;
+    this.fire = fire;
   }
 
   async add(resource: T): Promise<DocumentWithId<T>> {
@@ -60,6 +62,16 @@ export default class Repository<T extends DocumentData = DocumentData> {
 
   async delete(id: string): Promise<void> {
     return await this.collection.doc(id).delete();
+  }
+
+  async deleteBatch(ids: string[]) {
+    const batch = this.fire.firestore.batch();
+    ids.forEach(id => {
+      const ref = this.collection.doc(id);
+      batch.delete(ref);
+    })
+
+    return await batch.commit();
   }
 
   async getById(id: DocumentId): Promise<DocumentWithId<T> | null> {
