@@ -36,6 +36,9 @@ const createCustomerProjects = (
 ): TimesheetProject[] => {
   const projects: Project[] = [];
 
+  // Add ID to keep track of it locally. To be generated in BE later on
+  let projectId = 0;
+
   // Get customers from timeRecords
   timeRecords.forEach(timeRecord => {
     if (!projects.some(x => x.customer.id === timeRecord.customer.id)) {
@@ -50,7 +53,10 @@ const createCustomerProjects = (
   // Add all availableCustomers as well
   employeeProjects.forEach(project => {
     if (!projects.some(x => x.customer.id === project.customer.id)) {
-      projects.push(project);
+      projects.push({
+        ...project,
+        id: `${projectId++}`,
+      });
     }
   });
 
