@@ -2749,16 +2749,16 @@
     consola "^2.15.3"
     defu "^5.0.0"
 
-"@nuxtjs/composition-api@^0.33.0":
-  version "0.33.0"
-  resolved "https://registry.yarnpkg.com/@nuxtjs/composition-api/-/composition-api-0.33.0.tgz#f9274f279bc7c38c3cb88e665d77e1849eca9885"
-  integrity sha512-IHDHliPWS1o5whD6xgSB7hneJ6LVAU0xu8Thj5GmDx4VAAVA+6WRfDx+xKwh61SW36th4YHUcD28xYeqezW3+Q==
+"@nuxtjs/composition-api@^0.33.1":
+  version "0.33.1"
+  resolved "https://registry.yarnpkg.com/@nuxtjs/composition-api/-/composition-api-0.33.1.tgz#509ace1ac1e5d3e73ab3a949efacf14f35a46da3"
+  integrity sha512-dI0c5atKDsEIVycrsKw9T+aaos2VggscSJBPZpC1BXKzHR7+9Ilor+SHvnAEb5j2E2v+8x407Uo339oJzhlD1A==
   dependencies:
     defu "^6.0.0"
     estree-walker "^2.0.2"
     fs-extra "^9.1.0"
     magic-string "^0.26.2"
-    pathe "^0.3.2"
+    pathe "^0.3.3"
     ufo "^0.8.5"
 
 "@nuxtjs/eslint-config-typescript@10.0.0":
@@ -11242,10 +11242,10 @@ path-type@^4.0.0:
   resolved "https://registry.yarnpkg.com/path-type/-/path-type-4.0.0.tgz#84ed01c0a7ba380afe09d90a8c180dcd9d03043b"
   integrity sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==
 
-pathe@^0.3.2:
-  version "0.3.2"
-  resolved "https://registry.yarnpkg.com/pathe/-/pathe-0.3.2.tgz#016345ed643027404d7a9ed8d1454ad997a1483a"
-  integrity sha512-qhnmX0TOqlCvdWWTkoM83wh5J8fZ2yhbDEc9MlsnAEtEc+JCwxUKEwmd6pkY9hRe6JR1Uecbc14VcAKX2yFSTA==
+pathe@^0.3.3:
+  version "0.3.9"
+  resolved "https://registry.yarnpkg.com/pathe/-/pathe-0.3.9.tgz#4baff768f37f03e3d9341502865fb93116f65191"
+  integrity sha512-6Y6s0vT112P3jD8dGfuS6r+lpa0qqNrLyHPOwvXMnyNTQaYiwgau2DP3aNDsR13xqtGj7rrPo+jFUATpU6/s+g==
 
 pbkdf2@^3.0.3:
   version "3.1.2"
