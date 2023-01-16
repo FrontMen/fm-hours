@@ -1739,10 +1739,15 @@
     "@firebase/util" "1.4.3"
     tslib "^2.1.0"
 
-"@firebase/firestore-types@2.5.0", "@firebase/firestore-types@^2.5.0":
+"@firebase/firestore-types@2.5.0":
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/@firebase/firestore-types/-/firestore-types-2.5.0.tgz#16fca40b6980fdb000de86042d7a96635f2bcdd7"
   integrity sha512-I6c2m1zUhZ5SH0cWPmINabDyH5w0PPFHk2UHsjBpKdZllzJZ2TwTkXbDtpHUZNmnc/zAa0WNMNMvcvbb/xJLKA==
+
+"@firebase/firestore-types@^2.5.1":
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/@firebase/firestore-types/-/firestore-types-2.5.1.tgz#464b2ee057956599ca34de50eae957c30fdbabb7"
+  integrity sha512-xG0CA6EMfYo8YeUxC8FeDzf6W3FX1cLlcAGBYV6Cku12sZRI81oWcu61RSKM66K6kUENP+78Qm8mvroBcm1whw==
 
 "@firebase/firestore@3.4.4":
   version "3.4.4"
