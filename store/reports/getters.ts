@@ -105,6 +105,27 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
         team: employee.team,
       }));
   },
+  nonSynced(state) {
+    const items: any = [];
+
+    state.reportData.employees
+      .filter(employee => employee.billable)
+      .forEach(employee => {
+        employee.billableRecords.forEach(record => {
+          if (!record.worklogId) {
+            items.push({
+              date: record.date,
+              name: employee.name,
+              team: employee.team,
+              project: record.customer.name,
+              hours: record.hours,
+            });
+          }
+        });
+      });
+
+    return items;
+  },
 };
 
 export default getters;
