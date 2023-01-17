@@ -123,18 +123,14 @@ import {
   useContext,
   useStore,
 } from "@nuxtjs/composition-api";
-import {startOfISOWeek} from "date-fns";
-import { AxiosError } from "axios";
 import {recordStatus} from "~/helpers/record-status";
-import {buildWeek, getDateOfISOWeek} from "~/helpers/dates";
+import {getDateOfISOWeek} from "~/helpers/dates";
 import {
-  createWeeklyTimesheet,
   getStandByRecordsToSave,
   getTimeRecordsToSave,
   getTravelRecordsToSave
 } from "~/helpers/timesheet";
 import {Collections} from "~/types/enums";
-import {uuidv4} from "~/helpers/helpers";
 
 export default defineComponent({
   props: {
@@ -170,43 +166,15 @@ export default defineComponent({
     const hasUnsavedChanges = ref<boolean>(false);
     const isSaving = ref<boolean>(false);
     const lastSaved = ref<Date>();
-    const showBridgeError = ref<boolean>(false);
 
-    const defaultCustomers = computed(() => store.getters['customers/defaultCustomers']);
     const customers = computed(() => store.state.customers.customers);
+    const timesheet = computed(() => store.state.timesheets.weeklyTimesheet);
+    const showBridgeError = computed(() => store.state.timesheets.isErrored.bridge);
 
     // Fetch all customers if we haven't fetched them before
     if (customers.value.length === 0) {
       store.dispatch("customers/getCustomers");
     }
-
-    const projects = computed(() => {
-      const employeeCustomers: Project[] = employee.projects.reduce((list: Project[], project: EmployeeProject) => {
-        const foundCustomer = customers.value.find((customer) => customer.id === project.customerId);
-        if(!foundCustomer) return list;
-
-        const { contract: customerContract , ...customer } = foundCustomer;
-        const contract = project.contract || customerContract || null;
-
-        const newProject = {
-          customer,
-          contract
-        } as Project
-
-        list.push(newProject);
-        return list;
-      }, []);
-
-      const availableToAll: Project[] = defaultCustomers.value.map((customer: Customer) => {
-        const { contract, ...cleanCustomer} = customer
-        return {
-          customer: cleanCustomer,
-          contract: contract || null
-        }
-      });
-
-      return [...employeeCustomers, ...availableToAll];
-    });
 
     const timesheetStatus = computed(() => {
       return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
@@ -235,11 +203,14 @@ export default defineComponent({
 
     // Show client projects first (alphabetic) and then default projects available for everyone
     const projectsOrdered = computed(() =>
-      timesheet.value?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
-        // Casting because TS doesn't like to subtract booleans
-        const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
-        return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
-      })
+      {
+        const timesheetCopy = JSON.parse(JSON.stringify(timesheet.value));
+        return timesheetCopy?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
+          // Casting because TS doesn't like to subtract booleans
+          const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
+          return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
+        })
+      }
     );
 
     const selectedWeek = computed(() => {
@@ -262,105 +233,22 @@ export default defineComponent({
     // const startDate = computed(() => getDateOfISOWeek(parseInt(year.value, 10), parseInt(week.value, 10), 3));
     const startDate = getDateOfISOWeek(year, week, 3);
 
-    const timesheet = ref<WeeklyTimesheet>({
-      info: null,
-      week: [],
-      projects: [],
-      leaveDays: null,
-      travelProject: null,
-      standByProject: null,
-      workScheme: []
-    });
-
     const totals = ref<TimesheetTotals>({
       weekTotal: 0,
       expectedWeekTotal: 0,
       days: [],
     });
 
-    const getTimesheet = async () => {
-      if (!employee) return;
-
-      const employeeId = employee.id;
-
-      const workWeek = buildWeek(startOfISOWeek(startDate));
-
-      const startEpoch = new Date(workWeek[0].date).getTime();
-
-      const sheets = await app.$timesheetsService.getTimesheets({employeeId, date: startEpoch});
-
-      let sheet: Optional<Timesheet, 'id'>;
-      sheet = sheets[0];
-
-      if (!sheet) {
-        sheet = {
-          employeeId: employee.id,
-          date: new Date(workWeek[0].date).getTime(),
-          status: recordStatus.NEW as TimesheetStatus,
-          messages: [],
-        }
-      }
-
-      const workScheme: WorkScheme[] = await getWorkScheme(sheet, workWeek);
-
-      const range = {
-        startDate: new Date(workWeek[0].date).getTime().toString(),
-        endDate: new Date(workWeek[6].date).getTime().toString()
-      }
-
-      const [timeRecords, standByRecords, travelRecords] = await Promise.all([
-        app.$timeRecordsService.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
-        app.$timeRecordsService.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
-        app.$travelRecordsService.getEmployeeRecords({employeeId, ...range}),
-      ]);
-
-      // Combine everything in a single timesheet
-      timesheet.value = createWeeklyTimesheet({
-        sheet,
-        week: workWeek,
-        projects: projects.value,
-        timeRecords,
-        travelRecords,
-        standByRecords,
-        workScheme,
-      });
+    const getTimesheet = async ({checkOwnWorkScheme = true} : {checkOwnWorkScheme?: boolean} = {}) => {
+      await store.dispatch('timesheets/getWeeklyTimesheet', { employee, startDate, checkOwnWorkScheme });
 
       isLoading.value = false;
     }
 
-    const getWorkScheme = async (
-      sheet: Optional<Timesheet, 'id'>,
-      workWeek: WeekDate[],
-      checkOwn: boolean = true
-    ): Promise<WorkScheme[]> => {
-      let workScheme: WorkScheme[] | undefined = [];
-      const isOwnTimesheet = store.state.employee.employee?.id === employee.id;
-
-      if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
-        try {
-          workScheme = await app.$workSchemeService.getWorkScheme({
-            bridgeUid: employee.bridgeUid || '',
-            startDate: new Date(workWeek[0].date),
-            endDate: new Date(workWeek[6].date),
-          });
-          showBridgeError.value = false;
-        } catch (error) {
-          if (error instanceof AxiosError && error.response?.status === 401) {
-            store.dispatch('auth/logout');
-          } else {
-            showBridgeError.value = true;
-          }
-        }
-      } else {
-        workScheme = sheet.workscheme;
-      }
-      return workScheme || [];
-    };
-
     const refreshLeave = async () => {
       if (!timesheet.value?.info || !timesheet.value?.week) return;
 
-      timesheet.value.workScheme = await getWorkScheme(timesheet.value.info, timesheet.value.week, false);
+      await getTimesheet({checkOwnWorkScheme : false});
     }
 
     const saveRecords = async () => {
@@ -406,18 +294,13 @@ export default defineComponent({
     };
 
     const saveTimesheet = async () => {
-      const sheet = {
-        ...timesheet.value.info,
-        workscheme: timesheet.value.workScheme
-      } as Optional<Timesheet, 'id'>;
-
-      timesheet.value.info = await app.$timesheetsService.saveTimesheet(sheet);
+      await store.dispatch('timesheets/save');
     }
 
     const changeStatus = async (status: TimesheetStatus,) => {
       if (timesheet.value.info === null) return;
 
-      timesheet.value.info.status = status;
+      store.commit('timesheets/setTimesheetStatus', { status });
 
       await saveTimesheet();
     }
@@ -425,15 +308,7 @@ export default defineComponent({
     const addMessage = async ({text, employeeName}: { text: string, employeeName: string }) => {
       if (timesheet.value.info === null) return;
 
-      const newMessage = {
-        id: uuidv4(),
-        createdAt: new Date().getTime(),
-        text,
-        employeeName,
-      };
-
-      timesheet.value.info.messages = [...timesheet.value.info?.messages, newMessage];
-
+      await store.dispatch('timesheets/addMessage', {text, employeeName});
       await saveTimesheet();
     }
 
@@ -525,10 +400,6 @@ export default defineComponent({
     const handleBridgeAdd = async () => {
       if (!employee) return;
       if (!employee.bridgeUid) return;
-
-      // Remove existing bridge items
-      // These shouldn't exist but you never know...
-      await handleBridgeRemove();
 
       const employeeId = employee.id;
       isSaving.value = true;

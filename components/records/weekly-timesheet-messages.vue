@@ -12,7 +12,7 @@ nl:
 <template>
   <div class="controls col-12 col-md-5 pb-4">
     <b-row class="m-0 m-md-2 mr-0 mr-md-2 justify-content-between justify-content-md-end">
-      <b-dropdown offset="-140" class="messages-dropdown">
+      <b-dropdown offset="-140" class="messages-dropdown" :disabled="dropdownDisabled">
         <template #button-content>
           {{ $t("Comments") }}
           <b-badge pill variant="success">{{ formatedComments.length }}</b-badge>
@@ -107,6 +107,7 @@ export default defineComponent({
     // get creatorName from store
     const store = useStore<RootStoreState>();
     const employeeName = computed(() => store.state.employee.employee?.name);
+    const dropdownDisabled = computed(() => props.readonly && props.comments.length === 0);
 
     const formatedComments = computed(() => props.comments
       .map((comment) => ({
@@ -131,6 +132,7 @@ export default defineComponent({
       onAddCommentClick,
       formatedComments,
       messageInput,
+      dropdownDisabled
     }
   },
 })

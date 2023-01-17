@@ -42,6 +42,14 @@ interface TimesheetProject {
   worklogs?: Array<number | null>;
 }
 
+interface WeeklyRecords {
+  sheet: Optional<Timesheet, 'id'> | null;
+  week: WeekDate[];
+  timeRecords: TimeRecord[];
+  travelRecords: TravelRecord[];
+  standByRecords: StandbyRecord[];
+}
+
 interface WeeklyTimesheet {
   info: Optional<Timesheet, 'id'> | null;
   week: WeekDate[];

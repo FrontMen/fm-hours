@@ -1,14 +1,23 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {startOfISOWeek} from 'date-fns';
+import TimesheetsService from './timesheets-service';
+import TravelRecordsService from './travel-records-service';
 import {Collections} from '~/types/enums';
+import {buildWeek} from '~/helpers/dates';
+import {recordStatus} from '~/helpers/record-status';
 
-export default class RecordsService {
+export default class TimeRecordsService {
   fire: NuxtFireInstance;
   axios: NuxtAxiosInstance;
+  timesheetsService: TimesheetsService;
+  travelRecordsService: TravelRecordsService;
 
   constructor(fire: NuxtFireInstance, axios: NuxtAxiosInstance) {
     this.fire = fire;
     this.axios = axios;
+    this.timesheetsService = new TimesheetsService(fire);
+    this.travelRecordsService = new TravelRecordsService(fire);
   }
 
   async getEmployeeRecords<RecordType>(
@@ -77,6 +86,7 @@ export default class RecordsService {
   async addBridgeWorklog(record: TimeRecord, contractId: number, bridgeUid: string, ref: any) {
     if (record.hours <= 0) return;
     if (!record.id) return;
+    if (record.worklogId) return;
 
     const {id} = record;
     const newRecord: any = {...record};
@@ -225,5 +235,46 @@ export default class RecordsService {
     });
 
     return await batch.commit();
+  }
+
+  async getWeeklyRecords({
+    employeeId,
+    startDate,
+  }: {
+    employeeId: string;
+    startDate: Date;
+  }): Promise<WeeklyRecords> {
+    const workWeek = buildWeek(startOfISOWeek(startDate));
+    const startEpoch = new Date(workWeek[0].date).getTime();
+
+    const sheets = await this.timesheetsService.getTimesheets({employeeId, date: startEpoch});
+
+    const sheet: Optional<Timesheet, 'id'> = sheets.length
+      ? sheets[0]
+      : {
+          employeeId,
+          date: new Date(workWeek[0].date).getTime(),
+          status: recordStatus.NEW as TimesheetStatus,
+          messages: [],
+        };
+
+    const range = {
+      startDate: new Date(workWeek[0].date).getTime().toString(),
+      endDate: new Date(workWeek[6].date).getTime().toString(),
+    };
+
+    const [timeRecords, standByRecords, travelRecords] = await Promise.all([
+      this.getEmployeeRecords<TimeRecord>({employeeId, ...range}),
+      this.getEmployeeRecords<StandbyRecord>({employeeId, ...range}, 'standby_records'),
+      this.travelRecordsService.getEmployeeRecords({employeeId, ...range}),
+    ]);
+
+    return {
+      sheet,
+      week: workWeek,
+      timeRecords,
+      travelRecords,
+      standByRecords,
+    };
   }
 }

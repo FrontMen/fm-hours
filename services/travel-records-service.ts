@@ -1,7 +1,7 @@
 import type {NuxtFireInstance} from '@nuxtjs/firebase';
 import {Collections} from '~/types/enums';
 
-export default class RecordsService {
+export default class TravelRecordsService {
   fire: NuxtFireInstance;
 
   constructor(fire: NuxtFireInstance) {

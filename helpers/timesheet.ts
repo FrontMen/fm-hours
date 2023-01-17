@@ -3,8 +3,14 @@ import {isSameDay, getISOWeek, getYear, isThisWeek} from 'date-fns';
 import {recordStatus} from './record-status';
 import {getDayOnGMT, formatDate} from './dates';
 
+export const standardProjectIds = {
+  STAND_BY_RECORD_ID: 'standByRecordId',
+  TRAVEL_PROJECT_ID: 'travelProjectId',
+  LEAVE_PROJECT_ID: 'leaveProjectId',
+};
+
 export const createWeeklyTimesheet = (params: {
-  sheet: Optional<Timesheet, 'id'>;
+  sheet: Optional<Timesheet, 'id'> | null;
   week: WeekDate[];
   projects: Project[];
   timeRecords: TimeRecord[];
@@ -30,10 +36,14 @@ const createCustomerProjects = (
 ): TimesheetProject[] => {
   const projects: Project[] = [];
 
+  // Add ID to keep track of it locally. To be generated in BE later on
+  let projectId = 0;
+
   // Get customers from timeRecords
   timeRecords.forEach(timeRecord => {
     if (!projects.some(x => x.customer.id === timeRecord.customer.id)) {
       projects.push({
+        id: `${projectId++}`,
         customer: timeRecord.customer,
         contract:
           employeeProjects.find(p => p.customer.id === timeRecord.customer.id)?.contract || null,
@@ -44,7 +54,10 @@ const createCustomerProjects = (
   // Add all availableCustomers as well
   employeeProjects.forEach(project => {
     if (!projects.some(x => x.customer.id === project.customer.id)) {
-      projects.push(project);
+      projects.push({
+        ...project,
+        id: `${projectId++}`,
+      });
     }
   });
 
@@ -94,9 +107,10 @@ const createStandByProject = (
 
   return {
     project: {
+      id: standardProjectIds.STAND_BY_RECORD_ID,
       contract: null,
       customer: {
-        id: 'standByRecordId',
+        id: standardProjectIds.STAND_BY_RECORD_ID,
         name: 'Stand-by Hours',
         isBillable: false,
         isDefault: false,
@@ -120,9 +134,10 @@ const createTravelProject = (week: WeekDate[], travelRecords: TravelRecord[]): T
 
   return {
     project: {
+      id: standardProjectIds.TRAVEL_PROJECT_ID,
       contract: null,
       customer: {
-        id: 'travelProjectId',
+        id: standardProjectIds.TRAVEL_PROJECT_ID,
         name: 'Kilometers',
         isBillable: false,
         isDefault: false,
@@ -142,9 +157,10 @@ export const createLeaveProject = (
   return !noHolidays
     ? {
         project: {
+          id: standardProjectIds.LEAVE_PROJECT_ID,
           contract: null,
           customer: {
-            id: 'leaveProjectId',
+            id: standardProjectIds.LEAVE_PROJECT_ID,
             name: 'Days',
             isBillable: false,
             isDefault: false,

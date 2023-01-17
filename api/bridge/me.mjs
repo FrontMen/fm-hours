@@ -1,9 +1,8 @@
-import {VercelRequest, VercelResponse} from '@vercel/node';
-import axios from '../../lib/axios';
+import axios from '../../lib/axios.mjs';
 
-export default async function UserMe(request: VercelRequest, response: VercelResponse) {
+export default async function UserMe(request, response) {
   try {
-    const {data: bridgeUid} = await axios.get<Number>(`${process.env.BRIDGE_URL}/api/v1/users/me`, {
+    const {data: bridgeUid} = await axios.get(`${process.env.BRIDGE_URL}/api/v1/users/me`, {
       headers: {
         Cookie: request.headers.cookie || '',
       },

@@ -4,6 +4,7 @@ interface EmployeeProject {
 }
 
 interface Project {
+  id: string;
   customer: Customer;
   contract: Contract | null;
 }
@@ -22,6 +23,7 @@ interface Employee {
   team?: string;
   standBy: boolean;
   isAdmin: boolean;
+  active?: boolean;
 }
 
 interface EmployeeStoreState {

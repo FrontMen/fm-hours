@@ -1,7 +1,6 @@
-import {VercelRequest, VercelResponse} from '@vercel/node';
-import axios from '../../../lib/axios';
+import axios from '../../../lib/axios.mjs';
 
-export default function Contracts(request: VercelRequest, response: VercelResponse) {
+export default function Contracts(request, response) {
   const {contractId, jiraId, projectId, projectJiraId, projectKey, search} = request.query;
 
   return axios
