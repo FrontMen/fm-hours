@@ -3,12 +3,12 @@ en:
   totals: "Totals"
   standBy: "Stand-by"
   notBillable: "Not billable"
-  syncIssues: "Not synchronized"
+  notSynced: "Not synchronized"
 nl:
   totals: "Totalen"
   standBy: "Stand-by"
   notBillable: "Niet billable"
-  syncIssues: "Niet gesynchroniseerd"
+  notSynced: "Niet gesynchroniseerd"
 </i18n>
 
 <template>
@@ -42,7 +42,7 @@ nl:
         <not-billable-report />
       </b-tab>
 
-      <b-tab :title="$t('syncIssues')" lazy>
+      <b-tab :title="$t('notSynced')" lazy>
         <not-synced />
       </b-tab>
     </b-tabs>

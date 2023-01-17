@@ -1,7 +1,7 @@
 <template>
   <reports-table
     :busy="$store.state.reports.isLoading || !$store.getters['reports/nonBillableItems'].length"
-    :items="$store.getters['reports/nonSynced']"
+    :items="$store.getters['reports/notSynced']"
     :fields=" [
       {key: 'name', sortable: true},
       {key: 'date', sortable: true, formatter: formatDate},

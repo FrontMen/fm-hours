@@ -105,7 +105,7 @@ const getters: GetterTree<ReportsStoreState, RootStoreState> = {
         team: employee.team,
       }));
   },
-  nonSynced(state) {
+  notSynced(state) {
     const items: any = [];
 
     state.reportData.employees
