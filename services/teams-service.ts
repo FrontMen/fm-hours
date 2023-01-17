@@ -14,13 +14,15 @@ export default class TeamsService {
   async getAll(): Promise<Team[]> {
     const snapshot = await this.fire.firestore.collection(Collections.TEAMS).get();
 
-    return snapshot.docs.map((res: any) => {
-      const team = res.data();
-      return {
-        id: res.id,
-        ...team,
-      } as Team;
-    });
+    return snapshot.docs
+      .map((res: any) => {
+        const team = res.data();
+        return {
+          id: res.id,
+          ...team,
+        } as Team;
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   async getById(id: string): Promise<Team | undefined> {

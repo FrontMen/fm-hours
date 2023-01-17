@@ -1,10 +1,8 @@
-/* eslint-disable camelcase */
-import {VercelRequest, VercelResponse} from '@vercel/node';
 import {format} from 'date-fns';
-import axios from '../../../lib/axios';
-import {handleAxiosError} from '../../../lib/errors';
+import axios from '../../../lib/axios.mjs';
+import {handleAxiosError} from '../../../lib/errors.mjs';
 
-export default async function Worklogs(request: VercelRequest, response: VercelResponse) {
+export default async function Worklogs(request, response) {
   const {body} = request;
 
   const timeSpent = body.record.hours * 60 * 60;

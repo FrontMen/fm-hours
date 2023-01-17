@@ -39,10 +39,10 @@ nl:
             </b-input-group>
           </b-form-group>
 
-          <b-form-checkbox v-model="inactive" switch class="mr-4">
+          <b-form-checkbox v-model="includeInactive" switch class="mr-4">
             {{ $t('showInactive') }}
           </b-form-checkbox>
-          <b-form-checkbox v-model="billable" switch>
+          <b-form-checkbox v-model="includeNonBillable" switch>
             {{ $t('showNotBillable') }}
           </b-form-checkbox>
         </b-col>
@@ -62,7 +62,7 @@ nl:
         striped
         hover
         small
-        :items="items"
+        :items="filteredEmployees"
         :fields="fields"
         :filter="filter"
       >
@@ -116,13 +116,14 @@ import {
   useStore,
 } from '@nuxtjs/composition-api';
 
-import {checkEmployeeAvailability} from '~/helpers/employee';
+import {useEmployees} from "~/composables/useEmployees";
+import {checkEmployeeAvailability} from "~/helpers/employee";
 
 export default defineComponent({
   setup() {
     const {i18n} = useContext();
     const store = useStore<RootStoreState>();
-    const employees = computed(() => store.state.employees.employees);
+    const { employees } = useEmployees();
     const teams = computed(() => store.state.teams.teams);
 
     const year = new Date().getFullYear();
@@ -133,13 +134,13 @@ export default defineComponent({
     }));
 
     onMounted(() => {
-      store.dispatch('employees/get');
       store.dispatch('teams/get');
     });
 
     const filter = ref<string>('');
-    const inactive = ref<boolean>(false);
-    const billable = ref<boolean>(false);
+    const includeInactive = ref<boolean>(false);
+    const includeNonBillable = ref<boolean>(false);
+
     const fields = [
       {key: 'name', label: 'employees', sortable: true},
       {
@@ -156,25 +157,26 @@ export default defineComponent({
       {key: 'billable', label: 'billable', sortable: false, class: 'text-center'},
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
-    const items = computed(() =>
+
+    const applyEmployeeFilters = ({ active: isActive, billable: isBillable }: Employee) => {
+      return (isActive || includeInactive.value) && (isBillable || includeNonBillable.value)
+    }
+
+    const filteredEmployees = computed(() =>
       employees.value
-        .map(employee => ({
+        .map((employee: Employee) => ({
           ...employee,
           active: checkEmployeeAvailability(employee, new Date()),
         }))
-        .filter(
-          employee =>
-            (inactive.value ? true : employee.active) &&
-            (billable.value ? true : employee.billable)
-        )
+        .filter(applyEmployeeFilters)
     );
 
     return {
       filter,
-      inactive,
-      billable,
+      includeInactive,
+      includeNonBillable,
       fields,
-      items,
+      filteredEmployees,
       year,
       month,
     };
