@@ -8,7 +8,7 @@
       {key: 'team', sortable: true},
       {key: 'hours', sortable: true},
     ]"
-    :csv-file-name="`${$t('standBy')}-${formattedMonthDate}`"
+    :csv-file-name="`standby-${formattedMonthDate}`"
   />
 </template>
 

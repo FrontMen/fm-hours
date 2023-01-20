@@ -8,7 +8,7 @@
       {key: 'team', sortable: true},
       {key: 'kilometers', sortable: true},
     ]"
-    :csv-file-name="`${$t('kilometers')}-${formattedMonthDate}`"
+    :csv-file-name="`kilometers-${formattedMonthDate}`"
   />
 </template>
 
