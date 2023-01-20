@@ -9,7 +9,7 @@
       {key: 'project', sortable: true},
       {key: 'hours', sortable: true},
     ]"
-    :csv-file-name="`${$t('syncIssues')}-${formattedMonthDate}`"
+    :csv-file-name="`sync-issues-${formattedMonthDate}`"
   />
 </template>
 

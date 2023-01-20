@@ -3,7 +3,7 @@
     :busy="$store.state.reports.isLoading || !$store.getters['reports/totalsItems']?.length"
     :items="$store.getters['reports/totalsItems']"
     :fields="fields"
-    :csv-file-name="`${$t('totals')}-${formattedMonthDate}`"
+    :csv-file-name="`totals-${formattedMonthDate}`"
   />
 </template>
 

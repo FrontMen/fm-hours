@@ -13,6 +13,7 @@ nl:
     </div>
 
     <b-table
+      ref="tableRef"
       bordered
       table-variant="light"
       sticky-header="75vh"
@@ -20,6 +21,8 @@ nl:
       hover
       small
       responsive
+      :fields="fields"
+      :items="items"
       v-bind="$attrs"
       v-on="$listeners"
     >
@@ -31,7 +34,8 @@ nl:
 </template>
 
 <script lang="ts">
-import {defineComponent} from "@nuxtjs/composition-api";
+import {defineComponent, ref} from "@nuxtjs/composition-api";
+import { BTable } from "bootstrap-vue";
 
 function isNumeric(str: string) {
   return !isNaN(Number(str)) && !isNaN(parseFloat(str));
@@ -44,8 +48,12 @@ function convertDecimalToEuropeanStyle(numberText: string) {
 export default defineComponent({
   props: {
     csvFileName: {type: String, default: "export"},
+    fields: {type: Array, required: true},
+    items: {type: Array, required: true},
   },
-  setup(props: { csvFileName: string }) {
+  setup(props: { csvFileName: string, fields: Array<any>, items: Array<any> }) {
+    const tableRef = ref<InstanceType<typeof BTable> | null>(null);
+
     const downloadCsv = (csv: any, filename: string) => {
       const csvFile = new Blob(["\uFEFF" + csv], {type: "text/csv; charset=utf-18"});
       const downloadLink = document.createElement("a");
@@ -59,33 +67,30 @@ export default defineComponent({
     };
 
     function exportToCsv() {
-      const csv: string[] = [];
-      const tableRows = document.querySelectorAll("table tr");
+      const csvString = [getCSVHeaders(), getCSVData()].join("\n");
+      downloadCsv(csvString, `${props.csvFileName}.csv`);
+    }
 
-      tableRows.forEach((tableRow) => {
-        const row: string[] = [];
-        const cols = tableRow.querySelectorAll("td, th");
+    function getCSVHeaders() {
+      // Use the computed fields because header translations happen in the Bootstrap table
+      return tableRef.value?.computedFields.map((field: any) => field.label).join(",");
+    }
 
-        cols.forEach((col) => {
-          let textContent = col.textContent || "";
-          textContent = textContent.replaceAll("(Click to sort Ascending)", "");
-          textContent = textContent.replaceAll(
-            "(Click to sort Descending)",
-            ""
-          );
-
-          textContent = textContent.trim();
-          row.push(isNumeric(textContent) ? convertDecimalToEuropeanStyle(textContent) : textContent);
-        });
-
-        csv.push(row.join(","));
-      });
-
-      downloadCsv(csv.join("\n"), `${props.csvFileName}.csv`);
+    function getCSVData() {
+      return props.items.map((item: any) => {
+        return props.fields.map((field: any) => {
+          let val = item[field.key]?.toString() || "";
+          if(field.formatter) {
+            val = field.formatter(item[field.key]);
+          }
+          return isNumeric(val) ? convertDecimalToEuropeanStyle(val) : val
+        }).join(',');
+      }).join("\n")
     }
 
     return {
       exportToCsv,
+      tableRef
     };
   },
 });
