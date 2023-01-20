@@ -6,7 +6,7 @@
       {key: 'name', sortable: true},
       {key: 'team', sortable: true},
     ]"
-    :csv-file-name="`${$t('notBillable')}-${formattedMonthDate}`"
+    :csv-file-name="`not-billable-${formattedMonthDate}`"
   />
 </template>
 
