@@ -32,33 +32,18 @@ export const createWeeklyTimesheet = (params: {
 const createCustomerProjects = (
   week: WeekDate[],
   timeRecords: TimeRecord[],
-  employeeProjects: Project[]
+  projects: Project[]
 ): TimesheetProject[] => {
-  const projects: Project[] = [];
+  // Add projects to the list if there are hours written on them
+  // This happens when someone wrote hours on a project they no longer can write on
+  timeRecords.forEach(({customer}) => {
+    const alreadyInProjectList = projects.some(x => x.customer.id === customer.id);
+    if (alreadyInProjectList) return;
 
-  // Add ID to keep track of it locally. To be generated in BE later on
-  let projectId = 0;
-
-  // Get customers from timeRecords
-  timeRecords.forEach(timeRecord => {
-    if (!projects.some(x => x.customer.id === timeRecord.customer.id)) {
-      projects.push({
-        id: `${projectId++}`,
-        customer: timeRecord.customer,
-        contract:
-          employeeProjects.find(p => p.customer.id === timeRecord.customer.id)?.contract || null,
-      });
-    }
-  });
-
-  // Add all availableCustomers as well
-  employeeProjects.forEach(project => {
-    if (!projects.some(x => x.customer.id === project.customer.id)) {
-      projects.push({
-        ...project,
-        id: `${projectId++}`,
-      });
-    }
+    projects.push({
+      customer,
+      contract: null,
+    });
   });
 
   // Add records to the right customers

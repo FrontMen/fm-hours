@@ -43,7 +43,6 @@ interface TimesheetProject {
 }
 
 interface WeeklyRecords {
-  sheet: Optional<Timesheet, 'id'> | null;
   week: WeekDate[];
   timeRecords: TimeRecord[];
   travelRecords: TravelRecord[];

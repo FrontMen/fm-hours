@@ -1,5 +1,6 @@
 import {format} from 'date-fns';
 import type {NuxtAxiosInstance} from '@nuxtjs/axios';
+import {recordStatus} from '~/helpers/record-status';
 
 export default class WorkSchemeService {
   axios: NuxtAxiosInstance;
@@ -23,5 +24,33 @@ export default class WorkSchemeService {
       },
     });
     return data;
+  }
+
+  // To be moved to Service layer when Sander's changes are merged
+  async getWorkSchemeService({
+    bridgeUid,
+    sheet,
+    workWeek,
+    checkOwn,
+    isOwnTimesheet,
+  }: {
+    bridgeUid: string;
+    sheet: Optional<Timesheet, 'id'>;
+    workWeek: WeekDate[];
+    checkOwn: boolean;
+    isOwnTimesheet: boolean;
+  }): Promise<WorkScheme[]> {
+    let workScheme: WorkScheme[] | undefined = [];
+
+    if (sheet.status === recordStatus.NEW && (!checkOwn || isOwnTimesheet)) {
+      workScheme = await this.getWorkScheme({
+        bridgeUid: bridgeUid || '',
+        startDate: new Date(workWeek[0].date),
+        endDate: new Date(workWeek[6].date),
+      });
+    } else {
+      workScheme = sheet.workscheme;
+    }
+    return workScheme || [];
   }
 }
