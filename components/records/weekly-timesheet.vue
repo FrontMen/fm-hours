@@ -25,7 +25,7 @@ nl:
         <weekly-timesheet-messages
           v-if="timesheet.info"
           :comments="timesheet.info.messages"
-          :readonly="isReadonly"
+          :readonly="$store.getters['timesheets/isReadonly']"
           :show-weekends="showWeekends"
           @add="addMessage"
           @toggle-weekends="toggleWeekends"
@@ -37,10 +37,10 @@ nl:
       <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
         <template #rows>
           <weekly-timesheet-row-hours
-            v-for="(timesheetProject) in projectsOrdered"
+            v-for="(timesheetProject) in $store.getters['timesheets/projectsOrdered']"
             :key="timesheetProject.project.customer.id"
             :timesheet-project="timesheetProject"
-            :readonly="isReadonly"
+            :readonly="$store.getters['timesheets/isReadonly']"
             :show-weekends="showWeekends"
             :selected-week="relevantWeeksView"
             :employee="employee"
@@ -75,7 +75,7 @@ nl:
           <weekly-timesheet-row-hours
             v-if="showStandby"
             :timesheet-project="timesheet.standByProject"
-            :readonly="isReadonly"
+            :readonly="$store.getters['timesheets/isReadonly']"
             :show-weekends="showWeekends"
             :selected-week="relevantWeeksView"
             :employee="employee"
@@ -85,7 +85,7 @@ nl:
           <weekly-timesheet-row-kilometer
             v-if="showTravel"
             :timesheet-project="timesheet.travelProject"
-            :readonly="isReadonly"
+            :readonly="$store.getters['timesheets/isReadonly']"
             :show-weekends="showWeekends"
             :selected-week="relevantWeeksView"
             :employee="employee"
@@ -99,7 +99,7 @@ nl:
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="isSaving"
         :last-saved="lastSaved"
-        :status="timesheetStatus"
+        :status="$store.getters['timesheets/timesheetStatus']"
         :is-admin="isAdmin"
         @save="handleSave"
         @submit="handleSubmit"
@@ -176,42 +176,8 @@ export default defineComponent({
       store.dispatch("customers/getCustomers");
     }
 
-    const timesheetStatus = computed(() => {
-      return timesheet.value.info ? timesheet.value.info.status : (recordStatus.NEW as TimesheetStatus);
-    });
-
-    const isReadonly = computed(
-      () =>
-        timesheetStatus.value === recordStatus.APPROVED ||
-        timesheetStatus.value === recordStatus.PENDING
-    );
-
-    const hasRestDayHours = computed(() => {
-      return timesheet.value.projects.reduce((_: boolean, project: TimesheetProject) => {
-        return project.values.reduce((acc, value, index) => {
-          if (!value) return acc;
-
-          const day = timesheet.value.week[index];
-
-          return index === 5 || index === 6 || day.isHoliday || day.isLeaveDay;
-        }, false);
-      }, false);
-    });
-
     const showStandby = computed(() => employee?.standBy && timesheet.value.standByProject);
     const showTravel = computed(() => employee?.travelAllowance && timesheet.value.travelProject);
-
-    // Show client projects first (alphabetic) and then default projects available for everyone
-    const projectsOrdered = computed(() =>
-      {
-        const timesheetCopy = JSON.parse(JSON.stringify(timesheet.value));
-        return timesheetCopy?.projects.sort((projectA: TimesheetProject, projectB: TimesheetProject) => {
-          // Casting because TS doesn't like to subtract booleans
-          const defaultCompare = +projectA.project.customer.isDefault - +projectB.project.customer.isDefault;
-          return defaultCompare !== 0 ? defaultCompare : projectA.project.customer.name.localeCompare(projectB.project.customer.name);
-        })
-      }
-    );
 
     const selectedWeek = computed(() => {
       return timesheet.value.week;
@@ -255,8 +221,7 @@ export default defineComponent({
       if (!employee) return;
 
       if (!hasUnsavedChanges.value) return;
-
-      if (hasRestDayHours.value) {
+      if (store.getters['timesheets/hasRestDayHours']) {
         const confirmation = confirm(i18n.t('restDayHours') as string);
 
         if (!confirmation) return;
@@ -323,7 +288,7 @@ export default defineComponent({
     };
 
     const handleSave = () => {
-      if (timesheetStatus.value === recordStatus.DENIED) {
+      if (store.getters['timesheets/timesheetStatus'] === recordStatus.DENIED) {
         changeStatus(recordStatus.NEW as TimesheetStatus);
       }
 
@@ -441,13 +406,10 @@ export default defineComponent({
       isLoading,
       startDate,
       timesheet,
-      projectsOrdered,
       selectedWeek,
       selectedWeekWithoutWeekends,
       relevantWeeksView,
       showBridgeError,
-      timesheetStatus,
-      isReadonly,
       showStandby,
       showTravel,
       hasUnsavedChanges,
