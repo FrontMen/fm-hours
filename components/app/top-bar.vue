@@ -23,6 +23,7 @@ nl:
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav class="ml-auto">
           <b-nav-item
+            v-if="!employee?.freelancer"
             href="https://bridge.hosted-tools.com/myprofile/absences"
             target="_blank"
             rel="noreferrer"

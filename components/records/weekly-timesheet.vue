@@ -50,6 +50,7 @@ nl:
           />
 
           <weekly-timesheet-row-leave
+            v-if="showLeave"
             :show-weekends="showWeekends"
             :workscheme="timesheet.workScheme"
             :status="timesheet.info.status"
@@ -176,6 +177,7 @@ export default defineComponent({
       store.dispatch("customers/getCustomers");
     }
 
+    const showLeave = computed(() => !employee?.freelancer);
     const showStandby = computed(() => employee?.standBy && timesheet.value.standByProject);
     const showTravel = computed(() => employee?.travelAllowance && timesheet.value.travelProject);
 
@@ -410,6 +412,7 @@ export default defineComponent({
       selectedWeekWithoutWeekends,
       relevantWeeksView,
       showBridgeError,
+      showLeave,
       showStandby,
       showTravel,
       hasUnsavedChanges,
