@@ -24,6 +24,7 @@ interface Employee {
   standBy: boolean;
   isAdmin: boolean;
   active?: boolean;
+  freelancer?: boolean;
 }
 
 interface EmployeeStoreState {

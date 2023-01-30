@@ -42,14 +42,18 @@ export default class ProjectsService {
       []
     );
 
-    const availableToAll: Project[] = defaultCustomers.map((customer: Customer) => {
-      const {contract, ...cleanCustomer} = customer;
-      return {
-        id: `${projectId++}`,
-        customer: cleanCustomer,
-        contract: contract || null,
-      };
-    });
+    let availableToAll: Project[] = [];
+
+    if (!foundEmployee.freelancer) {
+      availableToAll = defaultCustomers.map((customer: Customer) => {
+        const {contract, ...cleanCustomer} = customer;
+        return {
+          id: `${projectId++}`,
+          customer: cleanCustomer,
+          contract: contract || null,
+        };
+      });
+    }
 
     return [...employeeCustomers, ...availableToAll];
   }

@@ -8,6 +8,7 @@ en:
   endDate: "End date"
   startDate: "Start date"
   noDate: "No date selected"
+  freelancer: "Freelancer"
 nl:
   employeeSettings: "Medewerker instellingen"
   email: "Email"
@@ -17,6 +18,7 @@ nl:
   endDate: "Eind datum"
   startDate: "Start datum"
   noDate: "Geen datum geselecteerd"
+  freelancer: "Freelancer"
 </i18n>
 
 <template>
@@ -76,6 +78,14 @@ nl:
       @change="$emit('changed')"
     >
       {{ $t('shouldWriteHours') }}
+    </b-form-checkbox>
+    <b-form-checkbox
+      v-model="localEmployee.freelancer"
+      switch
+      class="mt-2 mr-3"
+      @change="$emit('changed')"
+    >
+      {{ $t('freelancer') }}
     </b-form-checkbox>
     <label class="mt-2" for="start-datepicker">{{ $t('startDate') }}:</label>
     <b-form-datepicker
