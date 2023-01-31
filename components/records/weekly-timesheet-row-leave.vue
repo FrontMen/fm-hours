@@ -84,7 +84,7 @@ import {
   PropType,
 } from '@nuxtjs/composition-api';
 import {recordStatus} from "~/helpers/record-status";
-import {floatToTotalTimeString} from "~/helpers/timesheet";
+import {hoursToHHmm} from "~/helpers/timesheet";
 
 export default defineComponent({
   props: {
@@ -105,7 +105,7 @@ export default defineComponent({
   setup(props: { workscheme: WorkScheme[], status: TimesheetStatus }) {
     const totalValue = computed(() => {
       const total = props.workscheme.reduce((prev: number, curr: WorkScheme) => prev + curr.absenceHours, 0);
-      return floatToTotalTimeString(total)
+      return hoursToHHmm(total)
     })
 
     const allowRefresh = computed(() => {
