@@ -173,15 +173,7 @@ const findRecordByDate = (
   });
 };
 
-export function floatTo24TimeString(float: number): string {
-  const n = new Date(0, 0);
-  n.setMinutes(Math.round(float * 60));
-  const result = n.toTimeString();
-
-  return result !== 'Invalid Date' ? result.slice(0, 5) : '0';
-}
-
-export function floatToTotalTimeString(float: number): string {
+export function hoursToHHmm(float: number): string {
   const hoursMinutes = float.toString().split('.');
   const hours = +hoursMinutes[0] ? hoursMinutes[0].padStart(2, '0') : '00';
 
@@ -191,7 +183,7 @@ export function floatToTotalTimeString(float: number): string {
   return `${hours}:${minutes}`;
 }
 
-export function timeStringToFloat(timeString: string): number {
+export function HHmmToHours(timeString: string): number {
   const hoursMinutes = timeString.split(':');
   const hours = parseInt(hoursMinutes[0], 10);
   const minutes = hoursMinutes[1] ? parseInt(hoursMinutes[1], 10) : 0;
@@ -200,13 +192,13 @@ export function timeStringToFloat(timeString: string): number {
 }
 
 function validateTimeString(timeString: string, maxHours: number): string {
-  const float = timeStringToFloat(timeString);
+  const float = HHmmToHours(timeString);
 
   if (float >= maxHours) {
     return `${maxHours}:00`;
   }
 
-  return floatTo24TimeString(float);
+  return hoursToHHmm(float);
 }
 
 export function timesheetFormatter(maxHours: number) {
@@ -222,7 +214,7 @@ export function timesheetFormatter(maxHours: number) {
         if (num >= maxHours) return `${maxHours}:00`;
 
         if (!numString.includes(':')) {
-          return floatTo24TimeString(num);
+          return hoursToHHmm(num);
         }
 
         return validateTimeString(numString, maxHours);

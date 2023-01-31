@@ -50,9 +50,8 @@ import {
 
 import {checkEmployeeAvailability} from '~/helpers/employee';
 import {
-  floatTo24TimeString,
-  floatToTotalTimeString,
-  timeStringToFloat,
+  hoursToHHmm,
+  HHmmToHours,
 } from '~/helpers/timesheet';
 import {recordDayStatusProps} from '~/helpers/record-status';
 
@@ -108,7 +107,7 @@ export default defineComponent({
           if (num === 0) {
             return '0';
           } else {
-            return floatTo24TimeString(num);
+            return hoursToHHmm(num);
           }
         });
     };
@@ -120,7 +119,7 @@ export default defineComponent({
         const { id: projectId} = props.timesheetProject.project;
         const values = formattedProjectValues.value.map((val) => {
           if (val === '') return 0;
-          return !isTravelAllowance ? timeStringToFloat(val) : +val;
+          return !isTravelAllowance ? HHmmToHours(val) : +val;
         });
         store.commit('timesheets/setProjectValues', { projectId, values });
       },
@@ -131,7 +130,7 @@ export default defineComponent({
       const total = props.timesheetProject.values.reduce(
         (total: number, current: number) => +total + +current
       );
-      return isTravelAllowance ? total : floatToTotalTimeString(total);
+      return isTravelAllowance ? total : hoursToHHmm(total);
     });
 
     // An array of booleans, one for each day of the selected week, that states
