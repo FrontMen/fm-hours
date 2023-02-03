@@ -300,7 +300,10 @@ export default defineComponent({
     const handleSubmit = () => {
       let confirmation = true;
 
-      if (totals.value.weekTotal > totals.value.expectedWeekTotal && !showBridgeError.value) {
+      const hasZeroHours = totals.value.expectedWeekTotal === 0;
+      const toManyHours = totals.value.weekTotal > totals.value.expectedWeekTotal;
+
+      if (!hasZeroHours && toManyHours && !showBridgeError.value) {
         const difference = +(
           totals.value.weekTotal - totals.value.expectedWeekTotal
         ).toFixed(2);
