@@ -80,6 +80,11 @@ nl:
             {{ scope.item.billable ? $t('yes') : $t('no') }}
           </b-badge>
         </template>
+        <template #cell(freelancer)="scope">
+          <b-badge :variant="scope.item.freelancer ? 'info' : 'warning'">
+            {{ scope.item.freelancer ? $t('yes') : $t('no') }}
+          </b-badge>
+        </template>
         <template #cell(actions)="scope">
           <div class="text-right">
             <nuxt-link
@@ -155,6 +160,7 @@ export default defineComponent({
       {key: 'email', label: 'email', sortable: false},
       {key: 'active', label: 'active', sortable: false, class: 'text-center'},
       {key: 'billable', label: 'billable', sortable: false, class: 'text-center'},
+      {key: 'freelancer', label: 'freelancer', sortable: false, class: 'text-center'},
       {key: 'actions', label: 'actions', sortable: false, class: 'text-right'},
     ];
 
