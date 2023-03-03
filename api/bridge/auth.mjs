@@ -1,5 +1,5 @@
 import {validateHeaders} from '../../lib/request.mjs';
-import {getAuthCookie, getCiSessionCookie} from '../../lib/intracto.mjs';
+import {getAuthCookie, getBridgeCookies} from '../../lib/intracto.mjs';
 import {handleAuthenticationError, handleValidationError} from '../../lib/errors.mjs';
 
 export default async function Auth(request, response) {
@@ -10,14 +10,12 @@ export default async function Auth(request, response) {
   }
 
   try {
-    const cookies = [];
+    let cookies = [];
     const authCookie = await getAuthCookie(request.headers.authorization);
     cookies.push(authCookie);
 
-    const ciSession = await getCiSessionCookie(authCookie);
-    if (ciSession !== '') {
-      cookies.push(ciSession);
-    }
+    const ciSession = await getBridgeCookies(authCookie);
+    cookies = [...cookies, ciSession];
 
     response.setHeader('Set-Cookie', cookies);
     return response.end('OK');
