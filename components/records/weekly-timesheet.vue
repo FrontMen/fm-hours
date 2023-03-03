@@ -405,7 +405,7 @@ export default defineComponent({
       isSaving.value = false;
     }
 
-    getTimesheet();
+    getTimesheet({checkOwnWorkScheme : false});
 
     return {
       isLoading,
