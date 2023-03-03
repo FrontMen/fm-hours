@@ -2,12 +2,12 @@
 en:
   title: "Leave"
   description: "Please request your leave via Bridge. After approval they will show up here."
-  refresh: "Refresh the leave hours (when timesheet is not submitted)"
+  refresh: "Refresh the leave hours"
   publicHoliday: "Public holiday"
 nl:
   title: "Verlof"
   description: "Vraag je verlof aan via Bridge. Na goedkeuring zullen ze hier verschijnen."
-  refresh: "Ververs de verlofuren (als de timesheet niet ingediend is)"
+  refresh: "Ververs de verlofuren"
   publicHoliday: "Wettelijke feestdag"
 </i18n>
 <template>
@@ -21,12 +21,13 @@ nl:
         {{ $t('title') }}
       </strong>
 
-      <span v-b-tooltip.hover="{ variant: 'light' }" class="ml-4" :title="$tc('refresh')">
-        <b-icon
-          icon="arrow-counterclockwise"
-          :disabled="allowRefresh"
-          @click="$emit('refresh', $event)"
-        />
+      <span
+        v-if="allowRefresh"
+        v-b-tooltip.hover="{ variant: 'light' }"
+        class="ml-4"
+        :title="$tc('refresh')"
+      >
+        <b-icon icon="arrow-counterclockwise" @click="$emit('refresh', $event)" />
       </span>
     </b-col>
 
@@ -109,7 +110,7 @@ export default defineComponent({
     })
 
     const allowRefresh = computed(() => {
-      return props.status !== (recordStatus.NEW as TimesheetStatus);
+      return props.status === (recordStatus.NEW as TimesheetStatus);
     })
 
     return {
