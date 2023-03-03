@@ -15,7 +15,7 @@ export default async function Auth(request, response) {
     cookies.push(authCookie);
 
     const ciSession = await getBridgeCookies(authCookie);
-    cookies = [...cookies, ciSession];
+    cookies = [...cookies, ...ciSession];
 
     response.setHeader('Set-Cookie', cookies);
     return response.end('OK');
