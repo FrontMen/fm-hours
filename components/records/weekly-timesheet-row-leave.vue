@@ -1,11 +1,13 @@
 <i18n lang="yaml">
 en:
-  title: "Leave"
+  title: "Absence"
+  short_description: "Leave and public holiday's"
   description: "Please request your leave via Bridge. After approval they will show up here."
   refresh: "Refresh the leave hours"
   publicHoliday: "Public holiday"
 nl:
-  title: "Verlof"
+  title: "Afwezigheid"
+  short_description: "Verlof en feestdagen"
   description: "Vraag je verlof aan via Bridge. Na goedkeuring zullen ze hier verschijnen."
   refresh: "Ververs de verlofuren"
   publicHoliday: "Wettelijke feestdag"
@@ -13,22 +15,27 @@ nl:
 <template>
   <b-row class="weekly-timesheet-row" cols="14">
     <b-col class="weekly-timesheet-row__action-column" cols="4">
-      <strong
-        v-b-tooltip.hover="{ variant: 'light' }"
-        class="title-with-tooltip"
-        :title="$tc('description')"
-      >
-        {{ $t('title') }}
-      </strong>
+      <div class="d-flex flex-row">
+        <div class="d-flex flex-column">
+          <strong
+            v-b-tooltip.hover="{ variant: 'light' }"
+            class="flex-shrink-1"
+            :title="$tc('description')"
+          >
+            {{ $t('title') }}
+          </strong>
+          <span>{{ $t('short_description') }}</span>
+        </div>
 
-      <span
-        v-if="allowRefresh"
-        v-b-tooltip.hover="{ variant: 'light' }"
-        class="ml-4"
-        :title="$tc('refresh')"
-      >
-        <b-icon icon="arrow-counterclockwise" @click="$emit('refresh', $event)" />
-      </span>
+        <span
+          v-if="allowRefresh"
+          v-b-tooltip.hover="{ variant: 'light' }"
+          class="ml-4"
+          :title="$tc('refresh')"
+        >
+          <b-icon icon="arrow-counterclockwise" @click="$emit('refresh', $event)" />
+        </span>
+      </div>
     </b-col>
 
     <b-col
@@ -138,10 +145,6 @@ export default defineComponent({
     @media (min-width: 560px) {
       padding-top: 0;
     }
-  }
-
-  .title-with-tooltip {
-    border-bottom: dashed 1px var(--body-color);
   }
 
   &__action-column {
