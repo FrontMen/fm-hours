@@ -8,7 +8,6 @@ en:
   endDate: "End date"
   startDate: "Start date"
   noDate: "No date selected"
-  freelancer: "Freelancer"
 nl:
   employeeSettings: "Medewerker instellingen"
   email: "Email"
@@ -18,12 +17,20 @@ nl:
   endDate: "Eind datum"
   startDate: "Start datum"
   noDate: "Geen datum geselecteerd"
-  freelancer: "Freelancer"
 </i18n>
 
 <template>
   <section>
     <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>
+
+    BridgeUid:
+    <b-form-input
+      v-model="localEmployee.bridgeUid"
+      type="text"
+      class="mt-2 w-25 mb-2"
+      :trim="true"
+      @input="$emit('changed')"
+    />
 
     {{ $t('name') }}:
     <b-form-input

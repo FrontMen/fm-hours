@@ -34,6 +34,7 @@ export default {
   project: 'projects',
   filterByCustomer: 'Filteren op gebruikers',
   billable: 'Facturabel',
+  freelancer: 'Freelancer',
   insights: 'Uren inzichten',
   month: 'Maand',
   year: 'Jaar',

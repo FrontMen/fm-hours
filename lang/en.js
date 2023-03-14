@@ -36,6 +36,7 @@ export default {
   project: 'Project',
   filterByCustomer: 'Filter by customer',
   billable: 'Billable',
+  freelancer: 'Freelancer',
   insights: 'Hours insights',
   month: 'Month',
   year: 'Year',
