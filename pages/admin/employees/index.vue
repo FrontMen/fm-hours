@@ -95,6 +95,14 @@ nl:
               <b-icon icon="pencil-fill" />
             </nuxt-link>
 
+            <nuxt-link
+              class="btn btn-sm btn-primary ml-2"
+              :to="localePath(`/admin/timesheets/${scope.item.id}/${year}/${week}`)"
+              :title="$t('manageEmployee')"
+            >
+              {{ $t('timesheets') }}
+            </nuxt-link>
+
             <b-dropdown size="sm" :text="$t('insights')" variant="primary" class="ml-2">
               <b-dropdown-item :to="localePath(`/insights/${scope.item.id}/${year}/`)">
                 {{ $t("year") }}
@@ -120,7 +128,7 @@ import {
   useMeta,
   useStore,
 } from '@nuxtjs/composition-api';
-
+import { getWeek } from 'date-fns';
 import {useEmployees} from "~/composables/useEmployees";
 import {checkEmployeeAvailability} from "~/helpers/employee";
 
@@ -131,8 +139,10 @@ export default defineComponent({
     const { employees } = useEmployees();
     const teams = computed(() => store.state.teams.teams);
 
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const week = getWeek(date)
 
     useMeta(() => ({
       title: i18n.t('employees') as string,
@@ -147,6 +157,7 @@ export default defineComponent({
     const includeNonBillable = ref<boolean>(false);
 
     const fields = [
+      {key: 'bridgeUid', label: 'BridgeUid', sortable: true},
       {key: 'name', label: 'employees', sortable: true},
       {
         key: 'team',
@@ -185,6 +196,7 @@ export default defineComponent({
       filteredEmployees,
       year,
       month,
+      week
     };
   },
   head: {},

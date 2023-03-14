@@ -1,11 +1,6 @@
 <template>
-  <header class="employee-header">
-    <div class="employee-details">
-      <span class="h3">
-        {{ employee.name }}
-      </span>
-      <span class="text-muted">BridgeUid: {{ employee.bridgeUid }}</span>
-    </div>
+  <header class="h3">
+    {{ employee.name }}
   </header>
 </template>
 
@@ -21,31 +16,3 @@ export default defineComponent({
   },
 });
 </script>
-
-<style lang="scss" scoped>
-
-.employee-header {
-  align-items: center;
-  display: flex;
-}
-
-.avatar {
-  display: flex;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.employee-details {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-
-  .bold {
-    font-weight: 700;
-  }
-
-  .light {
-    font-weight: 200;
-  }
-}
-</style>
