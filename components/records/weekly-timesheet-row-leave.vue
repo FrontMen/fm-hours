@@ -1,13 +1,13 @@
 <i18n lang="yaml">
 en:
   title: "Absence"
-  short_description: "Leave and public holiday's"
+  short_description: "Leave, Sick leave and public holiday's"
   description: "Please request your leave via Bridge. After approval they will show up here."
   refresh: "Refresh the leave hours"
   publicHoliday: "Public holiday"
 nl:
   title: "Afwezigheid"
-  short_description: "Verlof en feestdagen"
+  short_description: "Verlof, ziekteverlof en feestdagen"
   description: "Vraag je verlof aan via Bridge. Na goedkeuring zullen ze hier verschijnen."
   refresh: "Ververs de verlofuren"
   publicHoliday: "Wettelijke feestdag"
