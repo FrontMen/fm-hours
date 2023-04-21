@@ -23,14 +23,16 @@ nl:
   <section>
     <h6 class="mb-3">{{ $t('employeeSettings') }}</h6>
 
-    BridgeUid:
-    <b-form-input
-      v-model="localEmployee.bridgeUid"
-      type="text"
-      class="mt-2 w-25 mb-2"
-      :trim="true"
-      @input="$emit('changed')"
-    />
+    <template v-if="mode !== 'add'">
+      BridgeUid:
+      <b-form-input
+        v-model="localEmployee.bridgeUid"
+        type="text"
+        class="mt-2 w-25 mb-2"
+        :trim="true"
+        @input="$emit('changed')"
+      />
+    </template>
 
     {{ $t('name') }}:
     <b-form-input
@@ -132,11 +134,19 @@ import {
 import {formatDate, getDayOnGMT} from "~/helpers/dates";
 
 interface EmployeeSettingsProps {
+  mode: string,
   employee: Employee,
 }
 
 export default defineComponent({
   props: {
+    mode: {
+      type: String,
+      required: true,
+      validator: (value: string) => {
+        return ['add', 'edit', 'view'].includes(value)
+      }
+    },
     employee: {
       type: Object as PropType<Employee>,
       required: true,

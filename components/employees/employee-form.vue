@@ -46,6 +46,7 @@ nl:
         <b-col cols="12" md="6">
           <b-card>
             <employee-settings
+              :mode="mode"
               :employee="employee"
               @changed="hasUnsavedChanges = true, errorMessage = ''"
               @error-state="handleFormError"
