@@ -39,7 +39,7 @@ nl:
     </b-col>
 
     <b-col
-      v-for="(day) in workscheme"
+      v-for="(day) in workschemeDays"
       :key="day.date"
       cols="1"
       class="weekly-timesheet-row__date-column"
@@ -59,25 +59,6 @@ nl:
         <b-icon icon="info-circle"></b-icon>
       </span>
     </b-col>
-
-    <template v-if="showWeekends">
-      <b-col cols="1" class="weekly-timesheet-row__date-column">
-        <b-form-input
-          class="weekly-timesheet-row__value-input"
-          type="text"
-          disabled
-          placeholder="0"
-        />
-      </b-col>
-      <b-col cols="1" class="weekly-timesheet-row__date-column">
-        <b-form-input
-          class="weekly-timesheet-row__value-input"
-          type="text"
-          disabled
-          placeholder="0"
-        />
-      </b-col>
-    </template>
 
     <b-col cols="1" class="weekly-timesheet-row__total-column">
       {{ totalValue }}
@@ -110,7 +91,7 @@ export default defineComponent({
     }
   },
   emits: ['refresh'],
-  setup(props: { workscheme: WorkScheme[], status: TimesheetStatus }) {
+  setup(props: { workscheme: WorkScheme[], status: TimesheetStatus, showWeekends: boolean }) {
     const totalValue = computed(() => {
       const total = props.workscheme.reduce((prev: number, curr: WorkScheme) => prev + curr.absenceHours, 0);
       return hoursToHHmm(total)
@@ -120,9 +101,14 @@ export default defineComponent({
       return props.status === (recordStatus.NEW as TimesheetStatus);
     })
 
+    const workschemeDays = computed(() => {
+      return props.showWeekends ? props.workscheme : props.workscheme.slice(0, 5)
+    })
+
     return {
       totalValue,
       allowRefresh,
+      workschemeDays
     };
   },
 });
