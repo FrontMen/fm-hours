@@ -23,7 +23,7 @@ nl:
         />
 
         <weekly-timesheet-messages
-          v-if="timesheet.info"
+          v-if="timesheet.info && !showEndOfLife"
           :comments="timesheet.info.messages"
           :readonly="$store.getters['timesheets/isReadonly']"
           :show-weekends="showWeekends"
@@ -34,7 +34,12 @@ nl:
     </div>
 
     <div class="container">
-      <weekly-timesheet-container :selected-week="relevantWeeksView" :show-weekends="showWeekends">
+      <end-of-life v-if="showEndOfLife"></end-of-life>
+      <weekly-timesheet-container
+        v-if="!showEndOfLife"
+        :selected-week="relevantWeeksView"
+        :show-weekends="showWeekends"
+      >
         <template #rows>
           <weekly-timesheet-row-hours
             v-for="(timesheetProject) in $store.getters['timesheets/projectsOrdered']"
@@ -68,7 +73,7 @@ nl:
       </weekly-timesheet-container>
 
       <weekly-timesheet-container
-        v-if="showStandby || showTravel"
+        v-if="(showStandby || showTravel) && !showEndOfLife"
         :show-header="false"
         class="mt-4"
       >
@@ -96,6 +101,7 @@ nl:
       </weekly-timesheet-container>
 
       <weekly-timesheet-footer
+        v-if="!showEndOfLife"
         class="mt-3 mt-md-5"
         :has-unsaved-changes="hasUnsavedChanges"
         :is-saving="isSaving"
@@ -154,9 +160,17 @@ export default defineComponent({
     routePrefix: {
       type: String,
       default: undefined
-    }
+    },
+    isFreelancer: {
+      type: Boolean,
+      default: false
+    },
+    isEndOfLife: {
+      type: Boolean,
+      default: false
+    },
   },
-  setup({employee, year, week}: { employee: Employee, year: number, week: number }) {
+  setup({employee, year, week, isEndOfLife, isFreelancer}: { employee: Employee, year: number, week: number, isEndOfLife: boolean, isFreelancer: boolean}) {
     const {i18n, app} = useContext();
     const store = useStore<RootStoreState>();
 
@@ -168,6 +182,7 @@ export default defineComponent({
     const isSaving = ref<boolean>(false);
     const lastSaved = ref<Date>();
 
+    const showEndOfLife = computed(() => isEndOfLife && !isFreelancer);
     const customers = computed(() => store.state.customers.customers);
     const timesheet = computed(() => store.state.timesheets.weeklyTimesheet);
     const showBridgeError = computed(() => store.state.timesheets.isErrored.bridge);
@@ -408,6 +423,7 @@ export default defineComponent({
     getTimesheet();
 
     return {
+      showEndOfLife,
       isLoading,
       startDate,
       timesheet,
