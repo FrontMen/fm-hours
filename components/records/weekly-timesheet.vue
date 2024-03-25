@@ -23,7 +23,7 @@ nl:
         />
 
         <weekly-timesheet-messages
-          v-if="timesheet.info && !(showEndOfLife)"
+          v-if="timesheet.info && !showEndOfLife"
           :comments="timesheet.info.messages"
           :readonly="$store.getters['timesheets/isReadonly']"
           :show-weekends="showWeekends"

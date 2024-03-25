@@ -6,19 +6,9 @@
       which makes it suitable for us.
     </p>
     <p>That's why, starting April, we all will use Bridge for time writing.</p>
+    <p>Use these contract names to find the right items to write hours in Bridge:</p>
 
-    <table class="mb-4">
-      <thead>
-        <tr>
-          <th>Contract</th>
-          <th>Project</th>
-        </tr>
-      </thead>
-      <tr v-for="contract in contracts" :key="contract.id">
-        <td>{{ contract.name }}</td>
-        <td>{{ contract.project_name }}</td>
-      </tr>
-    </table>
+    <b-table class="mb-4" striped :items="contracts" :fields="fields"></b-table>
 
     <b-button
       variant="success"
@@ -45,9 +35,8 @@ export default defineComponent({
     const timesheet = computed(() => store.state.timesheets.weeklyTimesheet);
     const contracts = computed(() => timesheet.value.projects.map((project) => project.project.contract));
 
-    console.log(contracts.value)
-
     return {
+      fields: [{ key: 'name', label: 'Contract' }, { key: 'project_name', label: 'Project' }],
       contracts,
     };
   },
