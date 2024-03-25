@@ -5,6 +5,8 @@
       :employee="employee"
       :year="year"
       :week="week"
+      :is-freelancer="isFreelancer"
+      :is-end-of-life="isEndOfLife"
     />
   </admin-container>
 </template>
@@ -24,10 +26,12 @@ export default defineComponent({
     const week = computed(() => parseInt(router.currentRoute.params.week, 10));
     const pageTitle = computed(() => `${i18n.t('timesheets')} - ${employee.value?.name}`);
 
+    const isFreelancer = computed(() => !!employee?.value?.freelancer);
+    const isEndOfLife = computed(() => year.value >= 2024 && week.value >= 14);
+
     if (!router.currentRoute.params.year || !router.currentRoute.params.week) {
       router.replace(format(new Date(), '/yyyy/I'));
     }
-
     watch([employee], () => {
       if (employee.value && !employee.value?.billable) {
         router.push(store.state.employee.employee?.isAdmin ? '/admin/reports' : '/welcome')
@@ -42,6 +46,8 @@ export default defineComponent({
       employee,
       year,
       week,
+      isFreelancer,
+      isEndOfLife,
     };
   },
 
